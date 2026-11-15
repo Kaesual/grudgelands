@@ -37,6 +37,15 @@
 -- `server` privilege), for a player who is offline at the next join. The tab
 -- lists it only once granted.
 --
+-- Account cloaks (Round 79, round79-plan.md §4 PAGE): a catalogue cloak with
+-- `account = true` is the website-account reward cloak:<id> of
+-- grug_accounts. A character owns it while its account gives it, read live
+-- (grug_accounts.has_reward) at every check and never stored; the earned
+-- cloaks and the manual Supporter achievement stay as they are. When the
+-- website's list changes a character's binding or rewards, an online one is
+-- redrawn (its look and the stored appearance) and its Character page
+-- re-sent; an offline one reads the new state at its next join.
+--
 -- Public API:
 --   grug_achievements.add(player, counter[, amount])  count and settle
 --   grug_achievements.select_cloak(player, id) -> bool
@@ -63,6 +72,24 @@ grug_achievements.book = book
 local EMPTY = {}
 local DONE_COLOR = "#7fd66b"
 local PROGRESS_COLOR = "#f0c75e"
+
+-- The account cloaks the character's website account gives, as a set for
+-- the cloak rules (core.lua). The portable fixtures load this file without
+-- grug_accounts: no account cloaks there.
+local accounts = rawget(_G, "grug_accounts")
+local function account_cloaks(player)
+	if not accounts or #book.account_cloaks == 0 then
+		return EMPTY
+	end
+	local name, set = player:get_player_name(), nil
+	for _, id in ipairs(book.account_cloaks) do
+		if accounts.has_reward(name, "cloak:" .. id) then
+			set = set or {}
+			set[id] = true
+		end
+	end
+	return set or EMPTY
+end
 
 --
 -- Counters and settling
@@ -150,7 +177,7 @@ local function apply_manual(player, ach, action)
 		end
 		return #rows > 0
 	end
-	local had, worn = R.revoke(book, meta, ach)
+	local had, worn = R.revoke(book, meta, ach, account_cloaks(player))
 	if had then
 		grug_core.feed(player, "notice", "Achievement removed: " .. ach.name,
 			"achievement:" .. ach.id .. ":1")
@@ -343,15 +370,15 @@ end
 --
 
 function grug_achievements.selected_cloak(player)
-	return R.selected(book, player:get_meta())
+	return R.selected(book, player:get_meta(), account_cloaks(player))
 end
 
 function grug_achievements.unlocked_cloaks(player)
-	return R.unlocked(book, player:get_meta())
+	return R.unlocked(book, player:get_meta(), account_cloaks(player))
 end
 
 function grug_achievements.select_cloak(player, id)
-	if not R.select(book, player:get_meta(), id) then
+	if not R.select(book, player:get_meta(), id, account_cloaks(player)) then
 		return false
 	end
 	grug_visuals.apply(player)
@@ -365,18 +392,18 @@ end
 -- Supporter Cloak is the first). grug_visuals shows it only with the offhand
 -- look on.
 grug_visuals.register_cloak_source(function(player)
-	local meta = player:get_meta()
-	local id = R.selected(book, meta)
-	return R.cloak_texture(book, meta), id, book.cloak[id].wings
+	local meta, account = player:get_meta(), account_cloaks(player)
+	local id = R.selected(book, meta, account)
+	return R.cloak_texture(book, meta, account), id, book.cloak[id].wings
 end)
 
 -- The Character page's cloak picker (Stats mode, beside the model). Items are
 -- the owned cloaks by name; the client sends the chosen name back.
 function grug_achievements.cloak_dropdown(player, x, y, w)
-	local meta = player:get_meta()
-	local selected = R.selected(book, meta)
+	local meta, account = player:get_meta(), account_cloaks(player)
+	local selected = R.selected(book, meta, account)
 	local items, index = {}, 1
-	for position, id in ipairs(R.unlocked(book, meta)) do
+	for position, id in ipairs(R.unlocked(book, meta, account)) do
 		items[position] = core.formspec_escape(book.cloak[id].name)
 		if id == selected then
 			index = position
@@ -389,14 +416,35 @@ end
 -- Every submission of the page carries the dropdown's value, so only a name
 -- that differs from the selection is a choice.
 function grug_achievements.choose_cloak_by_name(player, name)
-	local meta = player:get_meta()
-	local selected = R.selected(book, meta)
-	for _, id in ipairs(R.unlocked(book, meta)) do
+	local meta, account = player:get_meta(), account_cloaks(player)
+	local selected = R.selected(book, meta, account)
+	for _, id in ipairs(R.unlocked(book, meta, account)) do
 		if book.cloak[id].name == name then
 			return id ~= selected and grug_achievements.select_cloak(player, id)
 		end
 	end
 	return false
+end
+
+-- The account cloaks in grug_accounts' reward catalogue (the Account page
+-- shows the cloak's outer face as the row's icon), and the redraw when the
+-- website's list changes what a character's account gives.
+if accounts then
+	for _, id in ipairs(book.account_cloaks) do
+		local cloak = book.cloak[id]
+		accounts.register_reward("cloak:" .. id, {kind = "cloak", name = cloak.name,
+			icon = "[combine:32x32:8,0=" .. cloak.texture .. "\\^[sheet\\:2x1\\:0,0",
+			hint = "Choose it on the Character page."})
+	end
+	accounts.register_on_change(function(names)
+		for _, name in ipairs(names) do
+			local player = core.get_player_by_name(name)
+			if player then
+				grug_visuals.apply(player)
+				grug_inventory.refresh_character(player)
+			end
+		end
+	end)
 end
 
 --

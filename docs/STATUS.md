@@ -1,6 +1,33 @@
 # Project status
 
-Updated 2026-11-12. This is the delivery pointer, not another game specification.
+Updated 2026-11-15. This is the delivery pointer, not another game specification.
+
+**0.79.0 / Round 79 (website accounts, phase 1) is complete on the integration branch
+`round79`; not on main, not pushed; the GUI test is open, and the end-to-end test on the
+rehearsal realm waits for the platform side.** Its planning (the
+[concept](planning/accounts-concept.md), the [plan](planning/round79-plan.md) and the
+contract [web-accounts.md](technical/web-accounts.md)) was pushed on 2026-11-15
+(`origin/main` = `35f16338`). A character can be linked to an account on the realm's
+website, by a code entered on the new Account page or by its password on the website, and
+the rewards an administrator grants the account (first: the Supporter Cloak) reach every
+linked character ([accounts.md](design/accounts.md)). Lanes: ACC (the new mod
+`grug_accounts`, the bridge side with `account.set_password`, the fake bridge's accounts
+mode), PAGE (the Account page, the cloak as an account reward), D (docs). Both had an
+independent review (ACC MERGE, PAGE MERGE AFTER FIXES) with a fix round and a delta review
+MERGE; PAGE was merged after the user's go on its screenshots. The user ruled two contract
+sentences during the round (a `linked` answer after its list is `ok`; duplicate account ids
+keep the first), the creation view (one line), the re-grant (worn again) and the tab's
+place (kept). **Compatible:** no step, no map reset; new saved keys: mod storage
+`grug_accounts` / `list` and `id:<lower-case name>`, player meta
+`grug_accounts:character_id` (an external key, [module
+guide](technical/module-guide.md#player-meta-read-by-external-tools)) and
+`grug_accounts:seen`; `account.set_password` writes the engine's auth entry. Fixtures: the
+new `r79_acc` (362) and `r79_page` (190), `r691_bridge` (418) and its engine scenario
+(147/147); `r39_wm` updated. **Open for the user:** the 20-item desktop and web checklist
+(plan §6), the end-to-end test on the rehearsal realm (contract §9), the website's
+confirmation of the typed-password rate limits (contract §6a item 4), the round-end full
+run, the squash merge into main and the push
+([completion](planning/round79-plan.md#completion-2026-11-15)).
 
 **0.78.0 / Round 78 (game-night fixes) is on main (`895a5d16`, tag
 `round-78`) and pushed 2026-11-12; the GUI test is open.** Fourteen items from a game night (rulings

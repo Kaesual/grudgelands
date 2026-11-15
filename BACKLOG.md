@@ -6,6 +6,37 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 79 — website accounts, phase 1 (GUI acceptance pending)
+
+Delivered in 0.79.0 (**compatible**) on `round79`, not on main and not pushed
+([completion and checklist](docs/planning/round79-plan.md#completion-2026-11-15); rules in
+[accounts.md](docs/design/accounts.md), the protocol in
+[web-accounts.md](docs/technical/web-accounts.md)). Open before the push: the end-to-end test
+on the rehearsal realm (contract §9) once the platform side is ready, and the website's
+confirmation of the typed-password rate limits (contract §6a item 4). Carry-overs from the
+lane reports and reviews, none blocking:
+
+- **List validation (`grug_accounts/model.lua`):** two character rows for one name of which
+  one is malformed: the malformed one is dropped first, so the valid one is kept instead of
+  both being dropped (contract §5.2). A list version that is not a positive integer is
+  applied (the contract says only "numeric"; version 0 keeps the tab hidden); left to the
+  website (ACC Q3, coordinator).
+- **The id index:** a character whose meta holds an id the index lacks rewrites the index
+  without a log line (the log line is only for a disagreement). A tombstone is overwritten
+  by the next new id at a join; **fix this with the deletion amendment**, before anything
+  writes tombstones (contract §10).
+- **The Account card does not scroll:** more than about 9 rewards would leave the card
+  (phase 2 adds rewards; add a scroll container then).
+- **An offline character's stored appearance** (`grug_visuals:appearance`) names a revoked
+  account cloak until its next join, so the website's preview shows it until then.
+- **The Account page's edges** (`grug_accounts/page.lua`): the message `confirm_link` and
+  `cancel_link` return is ignored on a stale window (the page re-renders from `link_state`
+  instead); the `handling` guard is not reset if an API call raises (the page would then
+  miss redraws for that player until the next click); the creation view relies on
+  `can_link` giving the creation reason first among its refusals.
+- **A local refusal line** (for example the attempt limit) stays until the next request;
+  the flow could clear it at the arrival (PAGE review Q2, left as is).
+
 ## Round 78 — game-night fixes (GUI acceptance pending)
 
 Delivered in 0.78.0 (**compatible**) on `round78`, not on main and not pushed

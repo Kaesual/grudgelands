@@ -157,6 +157,10 @@ local SECTIONS = {
 		"• Dying wears your equipped items by 10% of their durability, unless an enemy player hit you in the last 30 s, and ends your active buffs. You keep your items and XP and respawn at your home. In an Expedition you respawn at its waystone; while your group is still fighting there, the Respawn button waits up to 10 s.",
 		"• The Social tab holds your party and your clan, every online player of both factions and the Flag me for PvP button. Mark favourites with the star; invite a player of your faction with Party (a party of up to 10 with its own HUD, the group for Expeditions) or Clan (a purely social group of up to 100). A party invitation shows at the left of the screen, a clan invitation as a chat line; both expire after 2 minutes, and you answer them on the Social tab. Clan mates carry a small green mark in the list.",
 		"• In a clan, the leader and captains invite and remove members; the leader makes captains and can hand over the lead. Chat with your party with /p and with your clan with /c.",
+		"",
+		heading("Website account"),
+		"• Link your characters to your account on grudgelands.com/play: the rewards on your account, such as the Supporter Cloak, then reach every linked character. Sign in there and link a character with its name and password, or create a link code there and enter it on the Account tab. Only an administrator can undo a link.",
+		"• The Account tab shows only on realms with the website.",
 	})},
 	-- Round 67 ruling 16: built per player (materials_content below).
 	{id = "materials", label = "Materials", text = ""},

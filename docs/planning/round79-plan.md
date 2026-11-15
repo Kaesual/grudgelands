@@ -270,7 +270,10 @@ keeps its stored list and sends nothing.
     in `tools/web_accounts/luanti_password.py` does
   - it checks the auth entry with `core.get_auth_handler().get_auth(name)` before
     writing and never writes when it is missing (`set_player_password` would create
-    a login; `core.player_exists` looks at the player database, not the auth table)
+    a login). *Corrected 2026-11-15 (ACC's re-check, refuted):* this sentence said
+    `core.player_exists` looks at the player database; in 5.18.0 it is
+    `core.get_auth_handler().get_auth(name) ~= nil` (`builtin/game/misc.lua:96-98`),
+    so it reads the auth table too. ACC calls `get_auth` directly; nothing changes
   - it checks the counting binding for `account_id`
   - it writes the entry with `core.set_player_password`
   - an online character gets the feed line
@@ -375,58 +378,100 @@ round end, the upgrade declaration's self-test, a headless boot without bridge
 settings (the mod inert, no tab).
 
 **User GUI test** (desktop and web), with the fake bridge in accounts mode, two test
-accounts and at least three characters:
+accounts and at least three characters. Items 1–19 are the plan's, refined from the lane
+reports (ACC, PAGE) and the user's rulings during the round; 20 is new.
+
+**Setup.** Start the fake bridge on the game's machine, for example
+`python3 tools/r691_bridge/fake_bridge.py 8080 <64 lower-case hex characters> --accounts
+--delay 3`, and give the realm `secure.http_mods = grug_bridge`, `grug_bridge.url =
+http://127.0.0.1:8080` and `grug_bridge.token` = the same 64 characters. It holds the
+accounts `a_test1` ("Test One") and `a_test2` ("Test Two"), sends an empty list (version 1)
+at once and reads commands on stdin: `code <account>` (prints a fresh code: this terminal
+is the website's screen), `grant`/`revoke <account> <reward>`, `unlink <name>`,
+`rename <account> <new name>`, `delete <account>`, `bind <name> <account>`,
+`setpw <name> <password> [<account>]`, `send`, `state` and `help` (usage in its
+docstring). Options: `--delay S` (each link event answered S seconds late, so the waits
+show), `--hold-list` (no list until `send`), `--code-minutes M` (a code's validity; 1
+reaches `expired_code` quickly), `--limit N` (characters per account; 1 reaches
+`account_full`), `--already-linked NAME` (a binding the website holds and the game does
+not: `already_linked`; repeatable), `--echo` (every request printed too, codes masked).
 
 1. Without the bridge settings: no Account tab; the game plays as before. With the
-   bridge but before the fake bridge sent any list: no Account tab either.
-2. With the bridge: every character has the Account tab. Not linked, it shows the
-   explanation, the website address and the code field.
-3. A code of the wrong length or with `0`, `O`, `I` or `1` is refused at once. The
-   same code in lower case, with spaces or with the hyphen is accepted.
-4. Each refusal the fake bridge can give (unknown, expired, used, account full,
-   already linked) shows its own text.
-5. After **Link** the page says it is asking the website and that this takes a few
-   seconds (try it with the fake bridge's delay); the buttons wait, and the page
-   changes by itself. A valid code then shows the confirmation with the account
-   name. **Cancel** goes back, and the code still works afterwards. **Link** shows
-   the waiting text again, then "Linked to the website account …" and "no rewards
-   yet".
-6. A character still in character creation cannot link; the page says why.
-7. `grant <account> cloak:supporter`: the linked character gets the notice, the
-   Supporter Cloak appears in the Character page's picker and can be worn (with its
-   wings when the offhand look is on).
+   bridge but before the fake bridge sent any list (start it with `--hold-list`): no
+   Account tab either. Type `send`: the tab appears at the inventory window's next build
+   (reopen the inventory or change tab).
+2. With the bridge: every character has the Account tab (caption "Account", title
+   "Website Account"). Not linked, it shows the explanation, the website address
+   `grudgelands.com/play`, the code field and Link.
+3. A code of the wrong length or with `0`, `O`, `I` or `1` is refused at once ("A code
+   has 10 letters and digits, as the website shows it."), without a wait. The same code
+   in lower case, with spaces or with the hyphen (as `code` prints it) is accepted.
+4. Each refusal the fake bridge can give shows its own text: unknown (any made-up
+   valid-looking code), expired (`--code-minutes 1`, wait a minute), used (a code that
+   already linked, or an older code after a second `code` for the same account),
+   account full (`--limit 1` with one character already linked), already linked
+   (`--already-linked NAME`, then link NAME with a fresh code).
+5. After **Link** the page says it is checking the code with the website and that this
+   takes a few seconds (with `--delay 3`); Link is shown inert, and the page changes by
+   itself. A valid code then shows "Link <character> to the website account Test One?",
+   the warning, a green **Link** and a red **Cancel**. **Cancel** goes back, and the code
+   still works afterwards. **Link** shows "Linking your character …" with both buttons
+   inert, then "Linked to the website account Test One." and "Your account has no
+   rewards yet.", and the feed shows the success line once.
+6. A character still in character creation sees only the one line "Finish creating your
+   character first. You can link it afterwards." on the Account tab: no code field, no
+   Link (the user, 2026-11-15). After "Create character" the tab shows the code field and
+   Link, without that line.
+7. `grant a_test1 cloak:supporter`: the linked character gets "Your account gives you:
+   Supporter Cloak.", the Account page lists the cloak (icon, name, kind, "Choose it on
+   the Character page."), and the Supporter Cloak appears in the Character page's picker
+   and can be worn (with its wings when the offhand look is on).
 8. A second character linked to the same account has the cloak too; a character of
    the other account does not.
-9. `revoke`: the worn cloak falls back to none, with the notice, and the picker no
-   longer lists it. A character with the old character-bound Supporter achievement
-   keeps its cloak through grant and revoke; and with the account reward granted,
-   `/achievement revoke <name> supporter` keeps the worn cloak.
-10. A restart keeps bindings and rewards. With the fake bridge stopped, rewards stay;
-    a link attempt ends after about 30 s with "The website did not answer …".
-11. `unlink <name>`: the page returns to "not linked", the account's rewards leave
-    that character. `delete <account>`: every character of it is unlinked and plays
-    on. `rename <account>`: the linked page shows the new name.
-12. A sixth link request within 10 minutes is refused.
-13. Logging out with an open offer cancels it, and the fake bridge sees
-    `account.link_cancel`.
-14. `bind <name> <account>` (a direct binding): the online character reads "This
-    character is now linked to the website account …", the page shows it linked;
-    `unlink` gives "… no longer linked …". With an open code request, the request
-    ends. A character still in character creation is bound without disturbing it;
-    its notices come after "Create character".
-15. `setpw <name> <password>` for an offline character: the next login takes only
-    the new password. For an online character: the feed line "Your password was
-    changed on the website …", the session goes on, and the next login takes only
-    the new password. For an unlinked character the fake bridge reports `refused`.
-16. The fake bridge's online rows show `character_id` for every character and
-    `account_id` for linked ones only.
+9. `revoke`: the worn cloak falls back to none, with "Your account no longer gives you:
+   Supporter Cloak.", and the picker no longer lists it. `grant` again: the cloak is worn
+   again without choosing it (the stored choice stays; the user, 2026-11-15). A character
+   with the old character-bound Supporter achievement keeps its cloak through grant and
+   revoke; and with the account reward granted, `/achievement revoke <name> supporter`
+   keeps the worn cloak.
+10. A restart of the game (the fake bridge keeps running) keeps bindings and rewards.
+    With the fake bridge stopped, rewards stay; a link attempt ends after about 30 s with
+    "The website did not answer. Please try again later." (The fake bridge keeps its state
+    in memory only: restarted, it sends a new empty list, which the game applies like any
+    list of another version, and every binding goes.)
+11. `unlink <name>`: the page returns to "not linked", the feed says "This character is
+    no longer linked to a website account.", the account's rewards leave that character.
+    `delete <account>`: every character of it is unlinked and plays on. `rename <account>
+    <name>`: the linked page shows the new name.
+12. A sixth link request within 10 minutes is refused ("Too many link attempts …"); a
+    relog resets the count.
+13. Logging out with an open offer cancels it, and the fake bridge prints the
+    `account.link_cancel`. An offer left for 2 minutes lapses ("The offer lapsed …").
+14. `bind <name> <account>` (a direct binding; the character must have been online, for
+    its `character_id`): the online character reads "This character is now linked to
+    the website account …", the page shows it linked; `unlink` gives "… no longer linked
+    …". With an open code request, the request ends. A character still in character
+    creation is bound without disturbing it; its notices come after "Create character".
+15. `setpw <name> <password>` for an offline linked character: the next login takes only
+    the new password. For an online one: the feed line "Your password was changed on the
+    website. It applies from your next login.", the session goes on, and the next login
+    takes only the new password. For an unlinked character
+    (`setpw <name> <password> a_test1`) the fake bridge reports `refused`.
+16. The fake bridge's online rows (`--echo`) show `character_id` for every character and
+    `account_id` for linked ones only; a link or unlink updates them with the next
+    request.
 17. The Account tab fits the navigation bar beside every other tab at the smallest and
-    largest text size, desktop and web. A 64-character account name does not overflow
-    the page.
+    largest text size, desktop and web (PAGE checked desktop GUI scales 1 and 2 with a
+    creative admin's ten tabs; the client's font-size setting and the web build were not
+    checked). A 64-character account name (`rename a_test1 <64 characters>`) wraps inside
+    the card on the offer and the linked page.
 18. No other player can see the account name anywhere: nametag, Social tab, clan and
     party lists, mail.
 19. The server log shows link requests, bindings and password changes with name and
     account id, never a code or an entry.
+20. Help → Basics → "Website account" names `grudgelands.com/play`, both ways to link,
+    that only an administrator undoes a link, and that the tab shows only on realms with
+    the website.
 
 ## 7. Orchestration notes
 
@@ -440,3 +485,147 @@ accounts and at least three characters:
 - **Handover:** `~/projects/grudgelands-orchestration/r79/HANDOVER.md`.
 - **Decided during the round:** the page's wording and layout from the screenshots
   (the user's iteration style: a first version, the user proposes fixes).
+
+## Completion (2026-11-15)
+
+ACC and PAGE are merged into `round79` at `1cc9454c`; this lane D runs on it (branch
+`r79-d`). **Nothing is on main and nothing is pushed:** `round79` lands on main as one
+squash commit (0.79.0) after the round-end full run and the user's go. The planning commits
+(the concept, this plan, the contract and `tools/web_accounts`) were pushed on 2026-11-15
+(`origin/main` = `35f16338`) so that the website's agent builds on the same text. Both lanes
+had an independent review, a fix round and a delta review.
+
+Round-end full run (coordinator, 2026-11-15, round79 at 2a7e7ac9): 356 fixtures passed, 0 failed; check_upgrade and check_fresh_server PASS; headless smoke boot without bridge settings PASS (no errors; grug_accounts inert without the bridge).
+
+**0.79.0 is compatible:** no step, no map reset, no new world. Both lane reports say
+compatible, and lane D's reading agrees: one new mod with its own storage, two new
+player-meta keys, and nothing existing read differently. A 0.78.0 world holds no list, so
+the tab stays hidden until the website sends one; every character gets its id at its next
+join. **New saved keys:** mod storage `grug_accounts` / `list` (the applied list) and
+`id:<lower-case name>` (a character id, or `tombstone`, which phase 1 only reads); player
+meta `grug_accounts:character_id` (an external key, in the module guide's table) and
+`grug_accounts:seen`. `account.set_password` writes the engine's auth entry. Existing keys
+read as before: `grug_achievements:cloak`/`:cloaks` (the account set is read live, never
+stored), `grug_visuals:appearance` (names the account cloak while worn) and
+`grug_classes:arriving` (read by `in_creation`). `check_upgrade.py` (0.79.0 against
+`origin/main` = `35f16338`, the 0.78.0 code) and `check_fresh_server.py`: PASS.
+
+### Lanes
+
+`round79`'s first-parent merges from the plan `35f16338` (lane tip in brackets):
+
+| Lane | Merge | What | Review |
+|---|---|---|---|
+| ACC | `1ee2f207` (`aca5f49e`; first build `d25939d8`) | The mod `grug_accounts` (`model.lua`, `flow.lua`, `init.lua`), `grug_bridge`'s accounts side and `account.set_password`, `web-bridge.md`'s amendment, the fake bridge's accounts mode, the scenario's link | MERGE (1 medium for the user, 2 low); fixes; delta MERGE |
+| — | `a7b6a095` | The two contract sentences the user ruled (`web-accounts.md` §5.2, §5.4) | coordinator |
+| PAGE | `1cc9454c` (`9e8647ba`; first build `38ebe0ca`) | The Account page (`grug_accounts/page.lua`), its caption row, the Supporter Cloak as an account reward in `grug_achievements`, the capture tool | MERGE AFTER FIXES (`r39_wm`); fixes and the `in_creation` export; delta MERGE; merged after the user's go on the screenshots |
+| D | this branch, `r79-d` | Design doc, mod map, module guide, help text, release 0.79.0, this completion, the checklist, BACKLOG | coordinator |
+
+### What shipped, with numbers
+
+Fixture numbers on the fixture's fake engine.
+
+- **ACC** (`r79_acc`, 353 checks, 362 after the fix round; two mutation runs as a sanity
+  check): the website's list validated, stored and indexed (dropped rows logged, any
+  differing version applied, account names cleaned and cut to 64); the character id (32
+  hex digits from `SecureRandom`) with all three index states and the adoption; the
+  binding and reward notices through `grug_accounts:seen`, deferred during creation
+  until the arrival; the link flow with the contract's per-state answer table, timeouts of
+  30 s and 120 s on `core.after` (no globalstep), 5 attempts per 10 minutes, a cancel on
+  leave. `grug_bridge`: capabilities `accounts` and `accounts.password`,
+  `accounts_version` in every request, the catalogue until a 200 answers it and on
+  `resync: ["reward_catalog"]`, `character_id`/`account_id` in the online rows, the list
+  after the ban list and before the commands, the three `account.link_*` events,
+  `account.link_answer` and `account.set_password` (auth entry, binding, then the entry's
+  form; one log line without the entry). `r691_bridge` 418 checks (section H: the accounts
+  side, with `luanti_password.py`'s self-test entries); the engine scenario 147/147 (a link
+  end to end, `set_password` on the real auth handler without creating a login, a restart
+  that keeps the binding and resends the catalogue). **Two engine runs each** for the
+  smoke boot and the scenario: the first smoke boot found that the engine's mod storage
+  is userdata, not a table (fixed in `d25939d8`), and the first scenario run failed on the
+  same load error. Fix round: only the first `linked` answer to a request its list ended
+  is `ok`, a later one `refused`; a created character still waiting for its arrival counts
+  as in creation. The fake bridge (`--accounts`): two test accounts, every stdin command of
+  §4 plus `send` and `state`, the options `--delay`, `--code-minutes`, `--limit`,
+  `--already-linked`, `--hold-list` and `--echo`, codes masked in printed requests.
+- **PAGE** (`r79_page`, 180 checks, 186 and 190 after the fixes; seven mutations, one per
+  rule, all caught): the Account page as a view of the API in every state (not linked,
+  refusals, both waits with inert buttons, the offer, linked with and without rewards, the
+  timeout, creation), a 64-character account name escaped and wrapped inside the card;
+  title "Website Account", caption "Account", `is_in_nav = enabled()`. The Supporter Cloak
+  flagged `account = true` and registered as `cloak:supporter` (icon: the cloak's outer
+  face); the account set injected into `R.has_cloak`, `R.unlocked`, `R.selected`,
+  `R.select`, `R.cloak_texture` and `R.revoke`; online characters redrawn and their
+  Character page re-sent on a change. `r33_c3`, `r55_supporter`, `r58_rep`, `r79_acc` and
+  `r691_bridge`: PASS. `r39_wm` (pins the cloak source's text) updated in the fix round:
+  102167 checks PASS. **Three capture runs** (the brief allowed one plus one for a fix):
+  run 1 stopped on a bug in the capture tool before any shot; run 2 never chose the cloak
+  (the probe's `id` clash) and the world-preparation window covered one shot; run 3 took
+  18/18 shots (`~/projects/grudgelands-orchestration/r79/page-shots/`, desktop GUI scales
+  1 and 2) with a passing smoke boot. Runs 2 and 3 fixed the tool, not the game. The web
+  build was not captured.
+- **D:** `docs/design/accounts.md` (new, in the design index), the mod map's
+  `grug_accounts` row and the changed `grug_bridge` and `grug_achievements` rows, the
+  module guide (a "Website accounts" section, the bridge's accounts paragraph, the
+  account cloaks, `grug_accounts:character_id` in the external player-meta table), the
+  Help's "Website account" paragraph (Basics), release 0.79.0 (`game.conf`,
+  `upgrade.json`, the upgrade contract's no-step line, CHANGELOG, STATUS, the AGENTS
+  pointer, README, ROADMAP), BACKLOG, the `tools/web_accounts` paragraph in
+  `tools/README.md`. `r37_dc` (the version, the changelog, the README links) and
+  `r38_wc` (the help's hypertext) PASS.
+
+### The user's decisions during the round
+
+§2 (rulings 1–18, 2026-11-14 and 2026-11-15). During the round (2026-11-15):
+
+- **Two contract sentences** (committed as `a7b6a095`, `web-accounts.md`): a `linked`
+  answer for a request that the list applied just before it already ended as linked is
+  `ok`, any further answer with that `request_id` `refused` (§5.4; ACC Q1); two account
+  rows with one `id`: the first is used, the second dropped with a warning (§5.2; ACC Q2).
+  The message for the website's agent went through the user.
+- **The creation view:** only the one line, no code field and no Link (PAGE's screenshots).
+- **A re-granted cloak is worn again** (the stored choice stays; PAGE Q3).
+- **The tab's place** stays where the registration order puts it, after Admin Mail and
+  before Creative (PAGE Q4).
+- **Go for the PAGE merge** after the fixes ("Passt alles").
+
+### Coordinator decisions on the lanes' questions (from the handover)
+
+- **ACC Q3:** a list version that is not positive is applied (the contract says
+  "numeric"; version 0 keeps the tab hidden); the website's duty, kept (BACKLOG).
+- **ACC review:** `in_creation` also covers the arrival window (`grug_classes:arriving`),
+  read directly because `grug_classes` has no accessor; not `player_in_creation_stasis`.
+- **PAGE Q1:** `link_state` has no `account_name` in `confirming`; the page keeps the name
+  it showed in the offer (sfinv context) for the wait. Kept as built; a one-line change in
+  `flow.lua` would make the page's memory unnecessary.
+- **PAGE Q2:** a local refusal line stays until the next request; left (BACKLOG).
+- **The creation check** (second PAGE fix, coordinator): the page no longer compares
+  `can_link`'s text; `grug_accounts/init.lua` exports its existing local as
+  `grug_accounts.in_creation(player)` and the page asks it.
+
+### Deviations
+
+- **`grug_accounts.in_creation`** joins the §3.3 API (exported in the PAGE fix round, with
+  the coordinator's permission).
+- **`link_state` in `confirming`** carries no `account_name` (§3.3 lists it as optional);
+  the page keeps the name itself.
+- **Engine runs:** ACC needed two per run kind and PAGE three captures (reasons above).
+- **`web-accounts.md`** gained the two sentences the user ruled; nothing else in the
+  contract changed.
+- **Correction:** §4 ACC said that `core.player_exists` reads the player database. ACC's
+  re-check refuted it: in 5.18.0 it is `get_auth(name) ~= nil`
+  (`builtin/game/misc.lua:96-98`). The sentence is corrected in place with a dated note;
+  the code calls `get_auth` directly, so nothing changes.
+
+### Open for the user
+
+- The GUI test (§6, 20 items, desktop and web), with the fake bridge in accounts mode.
+- The end-to-end test on the rehearsal realm (contract §9: link by code and by password,
+  grant, revoke, set a password, unlink, delete an account, restart) once the platform
+  side is ready; it comes before the push.
+- The website's confirmation of the typed-password rate limits (contract §6a item 4: at
+  most 5 failed checks per character per 15 minutes and per account per hour, a global
+  ceiling, one generic refusal text).
+- The squash merge into main and the push after the round-end full run.
+- Backlog notes from the reports and reviews:
+  [BACKLOG](../../BACKLOG.md#round-79--website-accounts-phase-1-gui-acceptance-pending).

@@ -11,6 +11,12 @@
 --   grug_achievements:cloak           the selected cloak id ("" = No cloak)
 -- The default cloaks are never stored: every character owns them.
 --
+-- Account cloaks (Round 79): a catalogue cloak with `account = true` is also
+-- owned while the character's website account gives it. The caller passes
+-- that set as the optional last argument `account` ({id = true}, default
+-- none) to every cloak function; it is read live and never stored, so it
+-- never touches the earned cloaks and their selection survives a loss.
+--
 -- A manual achievement (`manual = true`, Round 55) is granted and revoked by
 -- an admin, never earned by playing: its counter is manual:<id>, 1 while
 -- granted. A grant or revoke for a player who is offline waits in mod
@@ -35,7 +41,7 @@ local ROMAN = {"", " II", " III", " IV", " V", " VI"}
 -- error, never a silently missing cloak.
 function R.build(catalog)
 	local book = {cloaks = {}, cloak = {}, achievements = {}, achievement = {},
-		by_counter = {}, default = {}}
+		by_counter = {}, default = {}, account_cloaks = {}}
 	for index, cloak in ipairs(catalog.cloaks) do
 		assert(type(cloak.id) == "string" and cloak.id:find("^[a-z0-9_]+$"),
 			"grug_achievements: cloak " .. index .. " needs an id")
@@ -50,6 +56,14 @@ function R.build(catalog)
 	for _, id in ipairs(catalog.defaults) do
 		assert(book.cloak[id], "grug_achievements: unknown default cloak " .. id)
 		book.default[id] = true
+	end
+	for _, cloak in ipairs(book.cloaks) do
+		assert(cloak.account == nil or (cloak.account == true and cloak.texture and
+			not book.default[cloak.id]), "grug_achievements: cloak " .. cloak.id ..
+			"'s account is true or absent, on a cloak with a texture that is no default")
+		if cloak.account then
+			book.account_cloaks[#book.account_cloaks + 1] = cloak.id
+		end
 	end
 	local cloak_uses = {}
 	for index, ach in ipairs(catalog.achievements) do
@@ -202,20 +216,30 @@ local function stored_cloaks(book, meta)
 	return list, seen
 end
 
-function R.has_cloak(book, meta, id)
+-- Does the account set give cloak `id`? Only a catalogue cloak marked
+-- `account` counts.
+local function from_account(book, account, id)
+	local cloak = book.cloak[id]
+	return account ~= nil and account[id] == true and cloak ~= nil and cloak.account == true
+end
+
+function R.has_cloak(book, meta, id, account)
 	if book.default[id] then
 		return book.cloak[id] ~= nil
+	end
+	if from_account(book, account, id) then
+		return true
 	end
 	local _, seen = stored_cloaks(book, meta)
 	return seen[id] == true
 end
 
--- Owned cloaks in catalogue order (defaults included).
-function R.unlocked(book, meta)
+-- Owned cloaks in catalogue order (defaults and the account's included).
+function R.unlocked(book, meta, account)
 	local _, seen = stored_cloaks(book, meta)
 	local list = {}
 	for _, cloak in ipairs(book.cloaks) do
-		if book.default[cloak.id] or seen[cloak.id] then
+		if book.default[cloak.id] or seen[cloak.id] or from_account(book, account, cloak.id) then
 			list[#list + 1] = cloak.id
 		end
 	end
@@ -266,14 +290,16 @@ function R.grant(book, meta, ach)
 end
 
 -- Take manual achievement `ach` back: counter and tier cleared, its cloak no
--- longer owned, a character wearing it back to No cloak. Returns whether it
--- was granted and whether its cloak was worn.
-function R.revoke(book, meta, ach)
+-- longer owned, a character wearing it back to No cloak, unless the account
+-- set still gives that cloak (then it stays worn). Returns whether it was
+-- granted and whether its cloak was taken off.
+function R.revoke(book, meta, ach, account)
 	local had = R.earned(meta, ach) > 0
 	meta:set_string(R.KEY_COUNT .. ach.counter, "")
 	meta:set_string(R.KEY_TIER .. ach.id, "")
 	local cloak = ach.tiers[1].cloak
-	local worn = cloak ~= nil and meta:get_string(R.KEY_SELECTED) == cloak
+	local worn = cloak ~= nil and meta:get_string(R.KEY_SELECTED) == cloak and
+		not from_account(book, account, cloak)
 	if worn then
 		meta:set_string(R.KEY_SELECTED, "")
 	end
@@ -316,17 +342,18 @@ function R.take_queue(storage, name)
 end
 
 -- The selected cloak; anything not owned (or no longer in the catalogue)
--- reads as No cloak.
-function R.selected(book, meta)
+-- reads as No cloak: an account cloak the account no longer gives falls
+-- back to none (the stored choice stays, so a new grant wears it again).
+function R.selected(book, meta, account)
 	local id = meta:get_string(R.KEY_SELECTED)
-	if id ~= "" and R.has_cloak(book, meta, id) then
+	if id ~= "" and R.has_cloak(book, meta, id, account) then
 		return id
 	end
 	return R.NONE
 end
 
-function R.select(book, meta, id)
-	if not book.cloak[id] or not R.has_cloak(book, meta, id) then
+function R.select(book, meta, id, account)
+	if not book.cloak[id] or not R.has_cloak(book, meta, id, account) then
 		return false
 	end
 	meta:set_string(R.KEY_SELECTED, id == R.NONE and "" or id)
@@ -334,8 +361,8 @@ function R.select(book, meta, id)
 end
 
 -- The model texture of the selected cloak, nil for No cloak.
-function R.cloak_texture(book, meta)
-	return book.cloak[R.selected(book, meta)].texture
+function R.cloak_texture(book, meta, account)
+	return book.cloak[R.selected(book, meta, account)].texture
 end
 
 return R

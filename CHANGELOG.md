@@ -12,6 +12,38 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.79.0 — website accounts (2026-11-15)
+
+Compatible: no map reset, no new world, nothing for the host to do. Nothing
+changes on a realm whose website does not support accounts yet.
+
+- **Website accounts:** link your characters to your account on the realm's
+  website (grudgelands.com/play), and the rewards an administrator grants
+  your account reach every linked character. Accounts are optional; a
+  character without one plays exactly as before.
+- **The Account tab** in the inventory names the linked account and lists
+  its rewards. To link, sign in on the website and link the character there
+  with its name and password, or create a link code there and enter it on
+  the Account tab: the page asks the website (this takes a few seconds),
+  then shows the account's name for you to confirm with **Link** or
+  **Cancel**. Only an administrator can undo a link. The tab shows only on
+  realms with the website; while you are still creating your character, it
+  says to link afterwards.
+- **The Supporter Cloak** is the first account reward: every linked
+  character of an account that has it can choose it on the Character page.
+  The Supporter Cloak granted to a character, as before, stays exactly as it
+  is.
+- **Messages** in the feed tell you when a character is linked or unlinked
+  and when your account gains or loses a reward, also for a change made
+  while you were offline.
+- **For hosts and websites:** the web bridge speaks
+  [website accounts](docs/technical/web-accounts.md), the contract a
+  realm's website builds on: the website's list of accounts, bindings and
+  rewards, the link by code and the direct binding by password, and setting a
+  linked character's password from the website. For tests without a
+  website, the fake bridge (`tools/r691_bridge/fake_bridge.py --accounts`)
+  plays the website's part.
+
 ## 0.78.0 — game-night fixes (2026-11-12)
 
 Compatible: no map reset, no new world, nothing for the host to do.

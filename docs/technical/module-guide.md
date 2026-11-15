@@ -24,7 +24,8 @@ voices](#mob-voices), [Dawn departure](#dawn-departure), [Mobs in
 water](#mobs-in-water), [Enchantments](#enchantments), [Materials and
 tier-rock gating](#materials-and-tier-rock-gating), [Traders and
 money](#traders-and-money), [Quests](#quests), [Parties](#parties),
-[Mail](#mail), [Web bridge](#web-bridge), [Housing](#housing), [Travel](#travel),
+[Mail](#mail), [Web bridge](#web-bridge), [Website
+accounts](#website-accounts), [Housing](#housing), [Travel](#travel),
 [Expeditions](#expeditions), [Atlas](#atlas),
 [Preparation](#preparation), [World version and
 migrations](#world-version-and-migrations), [Performance log
@@ -2317,8 +2318,74 @@ nothing and logs one line, so local and browser worlds play as without it.
 - **The ledger** of command ids stays in memory on purpose ([contract](web-bridge.md#commands)).
 - **Commands** treat their arguments as untrusted and return result codes; a grant
   goes through the same paths as `/money`, `/xp` and a letter's attachments.
+- **Website accounts** (Round 79, capabilities `accounts` and `accounts.password`,
+  [contract](web-accounts.md)): `link.lua` adds `accounts_version` to every request,
+  the reward catalogue to a boot's first request and every one until a 200 answers it
+  (and again on `resync: ["reward_catalog"]`), and `character_id`/`account_id` to the
+  online rows; it hands the response's `accounts` list to `grug_accounts.apply_list`
+  after the ban list and before the commands. `commands.lua` runs
+  `account.link_answer` (into `grug_accounts.link_answer`) and `account.set_password`:
+  the auth entry must exist (`core.get_auth_handler().get_auth`, never
+  `set_player_password` alone, which would create a login), the binding must name the
+  account, and the entry's form is checked by decoding and re-encoding both base64
+  parts before `core.set_player_password`. The bridge calls only `grug_accounts`'
+  bridge functions; the rules live there.
 - **Tests:** `tools/r691_bridge`: `portable_test.lua` on a stub engine, `run.sh` a
-  real server and client against `fake_bridge.py`.
+  real server and client against `fake_bridge.py` (also `--accounts`, the website's
+  part of accounts for the GUI test).
+
+## Website accounts
+
+`grug_accounts` (Round 79) is the game's side of [website accounts](../design/accounts.md),
+phase 1 ([contract](web-accounts.md)). The website owns accounts, bindings and rewards;
+the mod keeps the website's list and never writes a binding.
+
+- **Pure files:** `model.lua` (the list's validation, persistence and index, the id
+  index, the counting rule, the notices) and `flow.lua` (the link by code: states,
+  the per-state answer table, both timeouts and the attempt limit on an injected
+  clock and `core.after`) take every engine call from `init.lua`, so
+  `tools/r79_acc` runs the shipped files. No globalstep: an open request waits on a `core.after`
+  timer that re-arms for its current state.
+- **The API** (other mods): `enabled()` (the bridge attached and a list held,
+  `accounts_version` > 0; the Account tab's `is_in_nav`), `character_id(player)`,
+  `account_of(name)` → nil or `{id, name}` (the counting binding, for offline names
+  through the index), `in_creation(player)` (no class or faction yet, or still waiting
+  for the arrival: `grug_classes:arriving` is read directly, there is no accessor),
+  `can_link(player)` → ok, reason, `has_reward(name, id)`, `rewards_of(name)` → list of
+  `{id, kind, name}` in catalogue order, `register_reward(id, {kind, name, icon, hint,
+  description?})` (load time only; `catalog()` lists them, only `id`, `kind` and `name`
+  go to the website), `register_on_change(fn(names))` after a list was applied, and the
+  link flow `link_state(player)` → `{state, account_name?, message?, expires_at?}`
+  (`idle`, `checking`, `offer`, `confirming`, `linked` as the one-off success line,
+  `refused`; the page's own refusals appear as `refused` with a message), `request_link`,
+  `confirm_link`, `cancel_link`, `register_on_link_state(fn(player))`. `WEBSITE` is the
+  one address the page names. The bridge alone calls `attach(push_event)`,
+  `apply_list(list)`, `link_answer(args)`, `catalog_rows()` and `accounts_version()`.
+- **Linked or not** is `account_of`, from the list only; the flow's `linked` state is
+  only the success line. `apply_list` ends the open request of a character the list
+  binds, reports the notices of online characters and then runs the change callbacks.
+- **Notices** compare the list with player meta `grug_accounts:seen`
+  (`<account id>|<reward,...>`) at every apply, join and arrival, and wait while
+  `in_creation` holds; rewards are read live and never copied into player meta.
+- **The Account page** (`page.lua`, an sfinv page; its caption row is in
+  `grug_inventory/navigation.lua`) is a view: it shows `account_of`, `link_state`,
+  the `can_link` reason and `rewards_of` with the catalogue's icon and hint, and
+  re-sends itself on `register_on_link_state`, `register_on_change` and the arrival,
+  only while it is shown and once per click. The typed code and the offered account's
+  name live in the sfinv context (never stored or logged). During creation it shows
+  only the `can_link` line (the user, 2026-11-15).
+- **Saved keys:** mod storage `list` (the applied list, serialized) and
+  `id:<lower-case name>` (the character id or `tombstone`, which phase 1 never writes);
+  player meta `grug_accounts:character_id` ([external
+  table](#player-meta-read-by-external-tools)) and `grug_accounts:seen`. Mod storage and
+  player meta are saved on separate timers, so a crash can lose one; the id adoption and
+  the "meta wins" rule recover it ([contract](web-accounts.md#2-terms) §2).
+- **Without the bridge** the mod loads, keeps its stored list, grants its rewards and
+  sends nothing; the tab stays hidden.
+- **Logs:** link requests, confirmations, bindings and password changes at `action`
+  with the name and the account id; never a code or a password entry.
+- **Tests:** `tools/r79_acc` (the model and the flow), `tools/r79_page` (the page and the
+  account cloak), `tools/r691_bridge` (the bridge side and the engine scenario).
 
 ## Housing
 
@@ -3866,6 +3933,21 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   faction rule, and a manual row only once granted). Cloak textures are 32×32 (outer face left, lining
   right). Fixtures `tools/r33_c3`, `tools/r55_supporter`; rules
   [character_visuals.md](../design/character_visuals.md) §5b.
+- **Account cloaks (Round 79):** a catalogue cloak with `account = true` (so far
+  `supporter`) is also the website-account reward `cloak:<id>`: `init.lua` registers it
+  with `grug_accounts.register_reward` (kind `cloak`, the outer face as the Account
+  page's icon). `account_cloaks(player)` builds the set of the ones the character's
+  account gives (`grug_accounts.has_reward`, read live at every check, never stored),
+  and the pure `core.lua` functions take it as an optional last argument: `R.has_cloak`,
+  `R.unlocked` (the picker, `cloak_dropdown`, `choose_cloak_by_name`), `R.selected`,
+  `R.select`, `R.cloak_texture` and `R.revoke` (revoking the manual Supporter row keeps
+  a worn cloak the account still gives; the earned cloaks are never touched). Without
+  the set the rules are unchanged. The stored choice `grug_achievements:cloak` stays
+  when the account loses the cloak, which then reads as none, so a re-grant wears it
+  again (the user, 2026-11-15). On `grug_accounts.register_on_change` an online
+  character is redrawn (`grug_visuals.apply`: look and stored appearance) and its
+  Character page re-sent; an offline one follows at its next join, so its stored
+  appearance names a revoked account cloak until then. Fixture `tools/r79_page`.
 
 ## Player meta read by external tools
 
@@ -3888,6 +3970,7 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   | `grug_classes:class` | string | `warrior`, `mage`, `priest`, `scout`; missing: none yet. Never changes once set (no class change, admins included) | `grug_classes.set_class`: "Create character" only |
   | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a new server or a migration step ([upgrade contract](upgrade-contract.md) §1) |
   | `grug_visuals:appearance` | compact JSON string | the format below; missing: no apply yet (the first join writes it) | `grug_visuals.apply` (`apply.lua`, built in the pure `appearance.lua`) |
+  | `grug_accounts:character_id` | string | 32 lower-case hex digits (`[0-9a-f]{32}`); missing: not joined since 0.79.0 | `grug_accounts` (`init.lua` `ensure_id`): written at the character's first join with 0.79.0, also during character creation, and never changed or rewritten ([web-accounts.md](web-accounts.md) §2: the website binds only an id this table shows) |
 
 - **The appearance** (`APPEARANCE_VERSION` 3 since Round 55, which added
   `textures.offhand` and `textures.wings`; a version 2 value is rebuilt at

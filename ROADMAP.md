@@ -32,6 +32,13 @@ remain delivered foundations, with this refinement work still ahead.
   fires the wall traps every 2 s and walks every Expedition mob over a precomputed grid; 0.78.0
   keeps every node a template places unchangeable and adds a 10 s respawn wait while the group fights. Next:
   tuning run length, bosses and coins from the user's runs.
+- **Website accounts** ([rules](docs/design/accounts.md),
+  [concept](docs/planning/accounts-concept.md)): phase 1 in 0.79.0 (linking by code and by
+  password on the website, account rewards with the Supporter Cloak first, the website
+  setting a linked character's password). Next: the end-to-end test on the rehearsal
+  realm, then phase 2 (a cloak and an emote for every website user) once phase 1 works on
+  the live realm; account bans, characters created through a bridge command, character
+  deletion and the shared Claim Stone as later phases.
 - **Fair fights** (0.72.0, from player reports): combat from the moment a mob targets you, no
   building in combat, kings and bosses that reset when they cannot reach their target, guards
   that reset at once out of reach, ranged kings that shoot, no mounts in enemy towns, friend

@@ -52,10 +52,12 @@ local function online_rows()
 	for _, player in ipairs(core.get_connected_players()) do
 		local name = player:get_player_name()
 		local info = core.get_player_information(name) or {}
+		local account = grug_accounts.account_of(name)
 		rows[#rows + 1] = {name = name, level = grug_xp.get_level(player),
 			class = grug_classes.get_class(player), race = grug_classes.get_race(player),
 			faction = grug_factions.get_faction(player),
-			joined_at = joined_at[name] or os.time(), address = info.address}
+			joined_at = joined_at[name] or os.time(), address = info.address,
+			character_id = grug_accounts.character_id(player), account_id = account and account.id}
 	end
 	return rows
 end
@@ -77,13 +79,16 @@ local function apply_banlist(sent)
 	end
 end
 
-local mirror
+local mirror, link
 local function resync(name)
-	if name ~= "mail" then return end
-	mirror:resync(grug_mail.tickets(), grug_mail.broadcasts())
+	if name == "reward_catalog" then
+		link:catalog_changed()
+	elseif name == "mail" then
+		mirror:resync(grug_mail.tickets(), grug_mail.broadcasts())
+	end
 end
 
-local link = L.new({
+link = L.new({
 	boot = core.sha1(os.time() .. ":" .. core.get_us_time()):sub(1, 16),
 	version = grug_inventory.GAME_VERSION or "unknown",
 	capabilities = C.CAPABILITIES,
@@ -97,7 +102,23 @@ local link = L.new({
 	run_command = C.run,
 	on_banlist = apply_banlist,
 	on_resync = resync,
+	accounts_version = grug_accounts.accounts_version,
+	catalog_rows = grug_accounts.catalog_rows,
+	on_accounts = grug_accounts.apply_list,
 })
+
+-- Accounts (docs/technical/web-accounts.md): the link events go into the
+-- event queue, and a list that changes an online character's binding sends
+-- the online list again (its account_id).
+grug_accounts.attach(function(event) link:push(event) end)
+grug_accounts.register_on_change(guarded("the account hook", function(names)
+	for _, name in ipairs(names) do
+		if core.get_player_by_name(name) then
+			link:online_changed()
+			return
+		end
+	end
+end))
 
 mirror = Mirror.new(function(event) link:push(event) end, core.write_json)
 -- The lists as they stand now; the website asks for them at a new boot. Read

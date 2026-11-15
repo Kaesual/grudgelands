@@ -12,7 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.78.0, Round 78 (game-night fixes: mob stand-off and ranged/melee by distance,
+**Current state:** 0.79.0, Round 79 (website accounts, phase 1: `grug_accounts`, the Account page, linking by code
+and by password on the website, the Supporter Cloak as an account reward, `account.set_password`; compatible; on the
+integration branch `round79`, not on main, not pushed, GUI test open:
+[completion](docs/planning/round79-plan.md#completion-2026-11-15)), on 0.78.0, Round 78 (game-night fixes: mob stand-off and ranged/melee by distance,
 friendly casts past bodies, the Expedition respawn lock and static nodes, nametags rebuilt, potion cooldown 30 s
 in the status row, repair ½, armor ×10, emotes; compatible; on main `895a5d16`, tag `round-78`, pushed, GUI test open:
 [completion](docs/planning/round78-plan.md#completion-2026-11-12)), on 0.76.2, Round 76.2 (`/home` triggers Return home, the same trip and

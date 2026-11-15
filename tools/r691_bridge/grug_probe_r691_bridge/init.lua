@@ -104,6 +104,33 @@ function OPS.chat(request)
 	return {eaten = false}
 end
 
+-- Website accounts (Round 79): the link through grug_accounts' own API, as
+-- the Account page calls it.
+function OPS.link(request)
+	local ok, message = grug_accounts.request_link(core.get_player_by_name(request.name), request.code)
+	return {ok = ok, message = message}
+end
+
+function OPS.confirm(request)
+	local ok, message = grug_accounts.confirm_link(core.get_player_by_name(request.name))
+	return {ok = ok, message = message}
+end
+
+function OPS.account(request)
+	local player = core.get_player_by_name(request.name)
+	local account = grug_accounts.account_of(request.name)
+	return {account_id = account and account.id, account_name = account and account.name,
+		version = grug_accounts.accounts_version(), enabled = grug_accounts.enabled(),
+		state = player and grug_accounts.link_state(player) or nil,
+		character_id = player and player:get_meta():get_string("grug_accounts:character_id") or nil}
+end
+
+-- Whether the auth entry exists and is `entry`; the entry never goes out.
+function OPS.auth(request)
+	local auth = core.get_auth_handler().get_auth(request.name)
+	return {exists = auth ~= nil, matches = auth ~= nil and auth.password == request.entry}
+end
+
 function OPS.lines()
 	return {chat = chat_lines, feed = feed_lines}
 end

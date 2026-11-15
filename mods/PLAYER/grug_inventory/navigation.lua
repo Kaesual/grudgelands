@@ -20,6 +20,7 @@ local captions = {
     ["grug_map:atlas"] = {"Map & Quests", "map"},
     ["grug_inventory:help"] = {"Help", "help"},
     ["grug_mail:admin"] = {"Admin Mail", "mail"},
+    ["grug_accounts:account"] = {"Account", "emblem"},
 }
 
 -- `selected` (optional) is the page being drawn: the Creative category row

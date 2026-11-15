@@ -19,7 +19,11 @@
 -- manual:<id>), no `faction`, one tier `at = 1` with `text_one`, and its
 -- cloak (if any) is unlocked by no other tier; the tab lists it only once
 -- granted. A cloak may carry `wings`, a 16x32 texture for the cloak's two
--- optional wing pieces (offhand-format.md §5).
+-- optional wing pieces (offhand-format.md §5). `account = true` (Round 79)
+-- makes a cloak a website-account reward as well: grug_accounts lists it as
+-- cloak:<id>, and every character of an account the administrator granted it
+-- owns it while the account holds it (init.lua); a character may also earn
+-- it the usual way. Only the Supporter Cloak is one so far.
 -- Names, flavour and cloak names are GPT-6 Astra's proposals
 -- (Round 33); the selection and tiers are the user's (2026-10-04). Counters:
 --   kill:animal           every wild animal: critters and hostile beasts,
@@ -138,7 +142,7 @@ return {
 		{id = "broken_due", name = "Mantle of the Broken Due",
 			texture = "grug_achievements_cloak_broken_due.png"},
 		-- Round 55: the first cloak with wings, GPT-6 Astra's (tools/r55_art).
-		{id = "supporter", name = "Supporter Cloak",
+		{id = "supporter", name = "Supporter Cloak", account = true,
 			texture = "grug_achievements_cloak_supporter.png",
 			wings = "grug_achievements_cloak_supporter_wings.png"},
 		-- Round 58: the Miner's Guild series, GPT-6 Astra's (guild art drop-01

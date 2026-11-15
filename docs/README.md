@@ -20,6 +20,7 @@ reading every development round.
 | Which mod owns a concern? | [Mod ownership map](technical/mod-map.md) |
 | What does a realm website read, and in which format? | [Module guide, "Player meta read by external tools"](technical/module-guide.md#player-meta-read-by-external-tools), [web data export](../tools/web_data/README.md) |
 | How does the hosting platform's website administer a running realm? | [Web bridge](technical/web-bridge.md) (the wire contract), [module guide](technical/module-guide.md#web-bridge) |
+| How do website accounts work (linking, account rewards)? | [Accounts design](design/accounts.md), the contract with the website [web-accounts.md](technical/web-accounts.md), [module guide](technical/module-guide.md#website-accounts), later phases in the [concept](planning/accounts-concept.md) |
 | How does a world survive a version upgrade? | [Upgrade contract](technical/upgrade-contract.md) (release mode, the declaration, the map reset, migrations and the tool) |
 | Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](technical/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
 | Why was something decided or how was it tested? | [Research and historical evidence](research/README.md) |

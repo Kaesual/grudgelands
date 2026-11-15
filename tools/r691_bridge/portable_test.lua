@@ -1,6 +1,7 @@
 -- 0.69.1 web bridge portable test: mods/PLAYER/grug_bridge on a stub engine.
 -- Loads the REAL link.lua, mirror.lua, bans.lua, commands.lua and init.lua,
--- and grug_mail's real model.lua, store.lua and api.lua, and checks:
+-- grug_mail's real model.lua, store.lua and api.lua, and (Round 79) the real
+-- grug_accounts, and checks:
 --   A. the exchange: the waits (next_ms and its bounds, the backoff, 401 and
 --      409), the request's fields, empty arrays, the first online list;
 --   B. the queue: seq, ack, 100 events a request, the byte bound, the oldest
@@ -15,12 +16,21 @@
 --   G. init.lua: inert without any of the three, with not one hook or
 --      request; active, the chat hook (shout, commands, escapes, 500
 --      characters, never returning true), the request's headers.
+--   H. accounts (docs/technical/web-accounts.md): the capabilities, the
+--      request's accounts_version and reward_catalog (resent until a 200,
+--      again on resync), the online rows' character_id and account_id, the
+--      list applied before the commands, account.link_answer's argument
+--      checks and answer table, the events through the queue,
+--      account.set_password (the entry's form with the cases of
+--      tools/web_accounts/luanti_password.py's self-test, the auth entry, the
+--      binding, the results, the feed line, a log line without the entry).
 --
 -- Usage (repo root): luajit tools/r691_bridge/portable_test.lua [REPO]
 
 local repo = arg[1] or "."
 local MOD = repo .. "/mods/PLAYER/grug_bridge"
 local MAIL = repo .. "/mods/PLAYER/grug_mail"
+local ACCOUNTS = repo .. "/mods/PLAYER/grug_accounts"
 
 local checks = 0
 local function check(ok, label)
@@ -170,7 +180,7 @@ local world -- what one setup changed
 local function fresh_world()
 	world = {players = {}, known = {}, privs = {}, logs = {}, chat = {}, kicked = {},
 		disconnected = {}, feed = {}, hooks = {}, after = {}, storage = {},
-		settings = {}, added = {}, http = nil, stores = {}}
+		settings = {}, added = {}, http = nil, stores = {}, auth = {}, passwords = {}}
 end
 fresh_world()
 
@@ -230,7 +240,7 @@ _G.core = {
 	end,
 	add_item = function(_, stack) world.added[#world.added + 1] = stack end,
 	get_modpath = function(name) return repo .. "/mods/PLAYER/" .. name end,
-	get_current_modname = function() return "grug_bridge" end,
+	get_current_modname = function() return world.modname or "grug_bridge" end,
 	get_mod_storage = function()
 		local name = world.storage_name or "grug_bridge"
 		world.stores[name] = world.stores[name] or new_storage()
@@ -241,12 +251,72 @@ _G.core = {
 	settings = {get = function(_, key) return world.settings[key] end},
 	request_http_api = function() return world.http end,
 	after = function(delay, func) world.after[#world.after + 1] = {delay, func} end,
+	get_auth_handler = function()
+		return {get_auth = function(name) return world.auth[name] end}
+	end,
+	set_player_password = function(name, entry)
+		world.passwords[#world.passwords + 1] = {name, entry}
+		world.auth[name] = world.auth[name] or {created = true}
+		world.auth[name].password = entry
+		return true
+	end,
 }
+
+-- core.encode_base64 and core.decode_base64 as the engine has them
+-- (src/util/base64.cpp, src/script/lua_api/l_util.cpp): no padding written;
+-- decode answers nil for what base64_is_valid refuses (a length of 1 mod 4, a
+-- non-canonical last character, a foreign character, wrong padding).
+local B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+function core.encode_base64(data)
+	local out = {}
+	for at = 1, #data, 3 do
+		local a, b, c = data:byte(at, at + 2)
+		local n = a * 65536 + (b or 0) * 256 + (c or 0)
+		local chars = {math.floor(n / 262144) % 64, math.floor(n / 4096) % 64,
+			math.floor(n / 64) % 64, n % 64}
+		for index = 1, (c and 4) or (b and 3) or 2 do
+			out[#out + 1] = B64:sub(chars[index] + 1, chars[index] + 1)
+		end
+	end
+	return table.concat(out)
+end
+function core.decode_base64(text)
+	local count = #(text:match("^[A-Za-z0-9+/]*"))
+	local padding = 3 - ((count + 3) % 4)
+	local last = text:sub(count, count)
+	if padding == 3 or (padding == 1 and not ("AEIMQUYcgkosw048"):find(last, 1, true)) or
+			(padding == 2 and not ("AQgw"):find(last, 1, true)) then
+		return nil
+	end
+	local rest = text:sub(count + 1)
+	if rest ~= "" and (rest ~= ("="):rep(#rest) or #rest ~= padding) then return nil end
+	local out, bits, value = {}, 0, 0
+	for index = 1, count do
+		value = value * 64 + B64:find(text:sub(index, index), 1, true) - 1
+		bits = bits + 6
+		if bits >= 8 then
+			bits = bits - 8
+			local byte = math.floor(value / 2 ^ bits)
+			out[#out + 1] = string.char(byte)
+			value = value - byte * 2 ^ bits
+		end
+	end
+	return table.concat(out)
+end
+_G.SecureRandom = function()
+	local counter = 0
+	return {next_bytes = function(_, count)
+		counter = counter + 1
+		return (("%0" .. (count * 2) .. "x"):format(counter):gsub("..", function(hex)
+			return string.char(tonumber(hex, 16))
+		end))
+	end}
+end
 setmetatable(core.registered_items, {__index = function(items, name)
 	return rawget(items, core.registered_aliases[name])
 end})
 for _, name in ipairs({"register_on_joinplayer", "register_on_leaveplayer",
-		"register_on_prejoinplayer", "register_on_chat_message"}) do
+		"register_on_prejoinplayer", "register_on_chat_message", "register_on_mods_loaded"}) do
 	core[name] = function(func)
 		world.hooks[name] = world.hooks[name] or {}
 		table.insert(world.hooks[name], func)
@@ -272,8 +342,10 @@ local function new_player(name, ready)
 	function player:get_player_name() return self.name end
 	function player:get_pos() return {x = 0, y = 0, z = 0} end
 	function player:is_player() return true end
+	player.meta = {}
 	function player:get_meta()
-		return {get_string = function() return "" end, set_string = function() end}
+		return {get_string = function(_, key) return self.meta[key] or "" end,
+			set_string = function(_, key, value) self.meta[key] = value end}
 	end
 	world.players[name] = player
 	return player
@@ -324,7 +396,19 @@ local function load_mail()
 	world.storage_name = nil
 end
 
+-- The real grug_accounts, with the Supporter Cloak as its one reward.
+local function load_accounts()
+	world.storage_name, world.modname = "grug_accounts", "grug_accounts"
+	_G.grug_accounts = nil
+	dofile(ACCOUNTS .. "/init.lua")
+	grug_accounts.register_reward("cloak:supporter", {kind = "cloak", name = "Supporter Cloak",
+		icon = "grug_cloak_supporter.png", hint = "Choose it on the Character page."})
+	for _, func in ipairs(world.hooks.register_on_mods_loaded or {}) do func() end
+	world.storage_name, world.modname = nil, nil
+end
+
 load_mail()
+load_accounts()
 local L = dofile(MOD .. "/link.lua")
 local Mirror = dofile(MOD .. "/mirror.lua")
 local B = dofile(MOD .. "/bans.lua")
@@ -805,7 +889,8 @@ end
 local function boot(settings, http)
 	fresh_world()
 	load_mail()
-	world.hooks = {} -- grug_mail's own join hook
+	load_accounts()
+	world.hooks = {} -- grug_mail's and grug_accounts' own hooks
 	world.settings = settings
 	world.http = http
 	_G.grug_bridge = nil
@@ -898,6 +983,7 @@ do
 	local stored = world.stores.grug_bridge
 	fresh_world()
 	load_mail()
+	load_accounts()
 	world.hooks = {}
 	world.settings, world.http = HTTP_KEYS, http
 	world.stores.grug_bridge = stored
@@ -928,6 +1014,249 @@ do
 	grug_mail.store.save_tickets({5}) -- not a ticket: the mirror raises, the save stands
 	check(#world.logs > logged and world.logs[#world.logs][1] == "error", "G the mirror's error is logged")
 	eq(world.logs[#world.logs][2]:find("the mail mirror", 1, true) ~= nil, true, "G by its name")
+end
+
+-- H. Accounts ---------------------------------------------------------------
+local ID_ROWAN = ("a"):rep(32)
+local ACCOUNT = {id = "a_1842", name = "jan", rewards = {"cloak:supporter"}}
+do
+	-- The link alone: the request's fields and the catalogue's flight.
+	local version, rows = 0, {{id = "cloak:supporter", kind = "cloak", name = "Supporter Cloak"}}
+	local applied, at_apply = {}, nil
+	local link, state
+	link, state = new_link({accounts_version = function() return version end,
+		catalog_rows = function() return rows end,
+		on_accounts = function(list)
+			applied[#applied + 1] = list
+			at_apply = #state.commands
+		end})
+	local sent = decode(link:request())
+	eq(sent.accounts_version, 0, "H accounts_version 0 before a list")
+	eq(sent.reward_catalog[1].id, "cloak:supporter", "H the catalogue in the first request")
+	eq(sent.reward_catalog[1].kind .. sent.reward_catalog[1].name, "cloakSupporter Cloak", "H its fields")
+	eq(sent.reward_catalog[1].icon, nil, "H only id, kind and name")
+	link:finish({completed = true, succeeded = false, code = 0, data = ""})
+	check(decode(link:request()).reward_catalog, "H a failed request sends it again")
+	link:finish({completed = true, succeeded = true, code = 500, data = ""})
+	check(decode(link:request()).reward_catalog, "H so does a server error")
+	link:finish(reply({}))
+	eq(decode(link:request()).reward_catalog, nil, "H a 200 ends it")
+	link:finish(reply({}))
+	link:catalog_changed()
+	rows = {}
+	local body = link:request()
+	check(body:find('"reward_catalog":[]', 1, true), "H on demand again; an empty one is an array")
+	link:finish(reply({}))
+	eq(decode(link:request()).reward_catalog, nil, "H and then not")
+	link:finish(reply({}))
+	-- The list before the commands of the same response.
+	version = 4
+	link:request()
+	link:finish(reply({accounts = {version = 5}, commands = {{id = "after", type = "x"}}}))
+	eq(#applied, 1, "H the list is handed over")
+	eq(at_apply, 0, "H before the commands")
+	eq(state.commands[1], "after", "H the command ran after it")
+	eq(decode(link:request()).accounts_version, 4, "H accounts_version is what the game holds")
+	link:finish(reply({accounts = "nonsense"}))
+	eq(#applied, 1, "H a list that is no object is ignored")
+	-- Without the accounts options, nothing of it.
+	sent = decode(new_link():request())
+	check(sent.accounts_version == nil and sent.reward_catalog == nil, "H nothing without the options")
+	-- One failing list leaves the rest of the answer alone.
+	local broken, parts = new_link({on_accounts = function() error("list") end})
+	broken:request()
+	broken:finish(reply({accounts = {version = 1}, commands = {{id = "q", type = "x"}}}))
+	eq(parts.commands[1], "q", "H a failing list leaves the commands")
+end
+
+-- The whole bridge with the real grug_accounts.
+do
+	local fetches = {}
+	local http = {fetch = function(request, callback)
+		fetches[#fetches + 1] = {request = request, callback = callback}
+	end}
+	boot(HTTP_KEYS, http)
+	-- Answers the request in flight (acknowledging what it carried) and
+	-- sends the next one.
+	local function exchange(fields)
+		local fetch = fetches[#fetches]
+		local carried = decode(fetch.request.data).events or {}
+		fields.ack_seq = #carried > 0 and carried[#carried].seq or 0
+		fetch.callback(reply(fields))
+		world.after[#world.after][2]()
+		return decode(fetches[#fetches].request.data)
+	end
+	world.after[1][2]()
+	local sent = decode(fetches[1].request.data)
+	local capabilities = table.concat(sent.capabilities, ",")
+	check(capabilities:find(",accounts,accounts.password$"), "H the capabilities")
+	eq(#sent.capabilities, 12, "H twelve capabilities")
+	eq(sent.accounts_version, 0, "H no list yet")
+	eq(sent.reward_catalog[1].id, "cloak:supporter", "H the registered catalogue")
+	eq(grug_accounts.enabled(), false, "H the bridge alone does not enable accounts")
+
+	local rowan = new_player("Rowan")
+	rowan.meta["grug_accounts:character_id"] = ID_ROWAN
+	local newbie = new_player("Newbie", false)
+	local elara = new_player("Elara")
+	for _, player in ipairs({rowan, newbie, elara}) do world.hooks.register_on_joinplayer[1](player) end
+	sent = exchange({accounts = {version = 1, characters = {
+		{name = "Rowan", character_id = ID_ROWAN, account_id = "a_1842"}}, accounts = {ACCOUNT}},
+		commands = {{id = "stale", type = "account.link_answer", args = {request_id = ("0"):rep(16),
+			name = "Rowan", outcome = "offer", account_name = "jan"}}}})
+	eq(sent.accounts_version, 1, "H the held version")
+	eq(grug_accounts.enabled(), true, "H enabled with a list")
+	eq(sent.reward_catalog, nil, "H the catalogue went with a 200")
+	eq(sent.results[1].code, "refused", "H an answer for no open request")
+	local by_name = {}
+	for _, row in ipairs(sent.online) do by_name[row.name] = row end
+	eq(by_name.Rowan.character_id, ID_ROWAN, "H the online row's character_id")
+	eq(by_name.Rowan.account_id, "a_1842", "H and account_id while linked")
+	eq(#by_name.Newbie.character_id, 32, "H a character in creation has its id")
+	eq(by_name.Newbie.account_id, nil, "H no account_id without a binding")
+	local elara_id = by_name.Elara.character_id
+	eq(elara.meta["grug_accounts:character_id"], elara_id, "H the row's id is the meta's")
+
+	sent = exchange({resync = {"reward_catalog"}})
+	eq(sent.reward_catalog[1].id, "cloak:supporter", "H resync: the catalogue again")
+	eq(sent.online, nil, "H nothing changed online")
+
+	-- One link end to end; the list and the linked answer in one response.
+	eq(grug_accounts.request_link(elara, "abcde fgh23"), true, "H a link request")
+	sent = exchange({})
+	local event = sent.events[#sent.events]
+	eq(event.type, "account.link_request", "H the request event in the queue")
+	check(event.seq and event.time, "H with seq and time")
+	eq(event.code, "ABCDEFGH23", "H the normalized code")
+	eq(event.character_id, elara_id, "H the character id")
+	local R = event.request_id
+	local function answer(args, id)
+		args.request_id = args.request_id or R
+		args.name = args.name or "Elara"
+		return {id = id, type = "account.link_answer", args = args, expires_at = clock + 60}
+	end
+	sent = exchange({commands = {
+		answer({outcome = "linked", account_name = "jan"}, "a1"),
+		answer({outcome = "offer"}, "a2"),
+		answer({outcome = "offer", account_name = "jan"}, "a3"),
+		answer({outcome = "offer", account_name = "jan"}, "a4")}})
+	local codes = {}
+	for _, result in ipairs(sent.results) do codes[result.id] = result.code end
+	eq(codes.a1, "invalid_args", "H linked in checking")
+	eq(codes.a2, "invalid_args", "H an offer without account_name")
+	eq(codes.a3, "ok", "H the offer")
+	eq(codes.a4, "invalid_args", "H a second offer in offer")
+	eq(grug_accounts.link_state(elara).state, "offer", "H the page's state")
+	grug_accounts.confirm_link(elara)
+	sent = exchange({})
+	event = sent.events[#sent.events]
+	eq(event.type .. event.request_id, "account.link_confirm" .. R, "H the confirmation event")
+	sent = exchange({
+		accounts = {version = 2, characters = {
+			{name = "Rowan", character_id = ID_ROWAN, account_id = "a_1842"},
+			{name = "Elara", character_id = elara_id, account_id = "a_1842"}}, accounts = {ACCOUNT}},
+		commands = {answer({outcome = "linked", account_name = "jan"}, "a5")}})
+	eq(sent.results[1].code, "ok", "H the list first, then the linked answer")
+	eq(grug_accounts.link_state(elara).state, "linked", "H linked")
+	by_name = {}
+	for _, row in ipairs(sent.online or {}) do by_name[row.name] = row end
+	eq(by_name.Elara and by_name.Elara.account_id, "a_1842", "H a changed binding sends the online list")
+	eq(world.feed[#world.feed - 1][3], "Linked to the website account jan.", "H the success line")
+	eq(world.feed[#world.feed][3], "Your account gives you: Supporter Cloak.", "H then the reward")
+	-- A cancel through the queue.
+	grug_accounts.apply_list({version = 3, characters = {}, accounts = {}})
+	grug_accounts.request_link(elara, "ABCDE-FGH23")
+	grug_accounts.cancel_link(elara)
+	sent = exchange({})
+	local types = {}
+	for _, row in ipairs(sent.events) do types[#types + 1] = row.type end
+	eq(table.concat(types, ","), "account.link_request,account.link_cancel", "H the cancel follows the request")
+	eq(sent.events[2].request_id, sent.events[1].request_id, "H for the same request")
+	for _, row in ipairs(world.logs) do
+		check(not row[2]:find("FGH23", 1, true), "H no code in the log")
+	end
+end
+
+-- account.set_password (web-accounts.md §6b).
+do
+	load_accounts()
+	local good = "#1#AAECAwQFBgcICQoLDA0ODw#q8LwnNKrKrCcWczylPFS6dl/Vb7NQgAcpngqZ9Nczwz4NP1X4HjOFf58ndlws5" ..
+		"HBFBO70sfY6MrIGpIMy5JyyufXw/7LclL/bj/HtihnOMOf3hFP9CQh5YnmdyRJRH/W3V0rg0E+WibydYYcXjDgC9RjSOyVssTHiP" ..
+		"MyEGOX8toQo6WCu4MVLk50eBii3nZqSOeK/3het0HdHmyzVAAo4k7GRPfhyy7KwZWNqQXA5PuRRepzZLIG90RQcjoRTEPLLU2fECA" ..
+		"pIUjQwegBm9IEL9PmD6c81jMxFI26LOHKUF6PH5aID0HOhbNrehl+ojkatpEqRRl/iPZcSvEiXuBTzQ"
+	-- make_entry("Rowan", "correct horse", bytes(range(16))) of luanti_password.py's self-test.
+	local salt, verifier = good:match("^#1#([^#]+)#([^#]+)$")
+	check(C.valid_entry(good), "H the self-test's good entry")
+	check(C.valid_entry("#1#" .. salt .. "#" .. core.encode_base64(("\1"):rep(256))), "H a 256-byte verifier")
+	check(C.valid_entry("#1#" .. salt .. "#" .. core.encode_base64(("\1"):rep(255))), "H a 255-byte verifier")
+	check(C.valid_entry("#1#AA#AQ"), "H one byte each")
+	local bad = {
+		-- The self-test's cases.
+		["a verifier cut by one character"] = "#1#" .. salt .. "#" .. verifier:sub(1, -2),
+		["a length of 1 mod 4"] = "#1#" .. salt .. "#" .. verifier .. "AAAAA",
+		["a non-canonical last character"] = "#1#" .. salt:sub(1, -2) .. "R#" .. verifier,
+		["padding"] = "#1#" .. salt .. "==#" .. verifier,
+		["a legacy entry"] = "aF279JkAQ3m38xybb/eIkidtM8w",
+		["a plain password"] = "correct horse",
+		["an empty salt"] = "#1##" .. verifier,
+		["a verifier over 256 bytes"] = "#1#" .. salt .. "#" .. core.encode_base64(("\1"):rep(258)),
+		-- And these.
+		["a verifier of 257 bytes"] = "#1#" .. salt .. "#" .. core.encode_base64(("\1"):rep(257)),
+		["an empty verifier"] = "#1#" .. salt .. "#",
+		["a trailing #"] = good .. "#",
+		["another mechanism"] = "#2#" .. salt .. "#" .. verifier,
+		["a part before the first #"] = "x#1#" .. salt .. "#" .. verifier,
+		["a line end"] = good .. "\n",
+		["not a string"] = 5,
+	}
+	for label, entry in pairs(bad) do check(not C.valid_entry(entry), "H refused: " .. label) end
+
+	local rowan = new_player("Rowan")
+	rowan.meta["grug_accounts:character_id"] = ID_ROWAN
+	world.players.Rowan = rowan
+	world.auth = {Rowan = {password = "old"}, Away = {password = "old"}, Free = {password = "old"}}
+	grug_accounts.apply_list({version = 1, characters = {
+		{name = "Rowan", character_id = ID_ROWAN, account_id = "a_1842"},
+		{name = "Away", character_id = ("d"):rep(32), account_id = "a_1842"},
+		{name = "Nobody", character_id = ("e"):rep(32), account_id = "a_1842"}}, accounts = {ACCOUNT}})
+	local function set(args) return C.run({type = "account.set_password", args = args}) end
+	eq(set({account_id = "a_1842", entry = good}), "invalid_args", "H no name")
+	eq(set({name = "Rowan", entry = good}), "invalid_args", "H no account_id")
+	eq(set({name = "Nobody", account_id = "a_1842", entry = good}), "unknown_target",
+		"H no auth entry, even with a binding")
+	eq(world.auth.Nobody, nil, "H no login was created")
+	local code, message = set({name = "Free", account_id = "a_1842", entry = good})
+	eq(code, "refused", "H no binding")
+	eq(message, "not linked to this account", "H its message")
+	eq(set({name = "Rowan", account_id = "a_9", entry = good}), "refused", "H another account")
+	eq(set({name = "Free", account_id = "a_1842", entry = "nonsense"}), "refused",
+		"H the binding is checked before the form")
+	for label, entry in pairs(bad) do
+		eq(set({name = "Rowan", account_id = "a_1842", entry = entry}), "invalid_args", "H malformed: " .. label)
+	end
+	eq(#world.passwords, 0, "H nothing written so far")
+	local feeds = #world.feed
+	eq(set({name = "Rowan", account_id = "a_1842", entry = good}), "ok", "H set for an online character")
+	eq(world.auth.Rowan.password, good, "H the entry as sent")
+	eq(world.feed[feeds + 1][3], "Your password was changed on the website. It applies from your next login.",
+		"H the feed line")
+	eq(set({name = "Away", account_id = "a_1842", entry = good}), "ok", "H set for an offline character")
+	eq(#world.feed, feeds + 1, "H no feed line offline")
+	-- Through the link: neither the log nor the result holds the entry.
+	local link = new_link({run_command = C.run})
+	local logs = #world.logs
+	link:command({id = "pw", type = "account.set_password",
+		args = {name = "Rowan", account_id = "a_1842", entry = good}})
+	local result = decode(link:request()).results[1]
+	eq(result.code, "ok", "H through the link")
+	eq(#world.logs, logs + 1, "H one log line")
+	check(world.logs[logs + 1][2]:find("Rowan", 1, true) and world.logs[logs + 1][2]:find("a_1842", 1, true),
+		"H with name and account id")
+	check(not result.message:find(salt, 1, true), "H the result holds no entry")
+	for _, row in ipairs(world.logs) do
+		check(not row[2]:find(salt, 1, true) and not row[2]:find(verifier:sub(1, 20), 1, true),
+			"H no entry in the log")
+	end
 end
 
 os.time = real_time -- luacheck: ignore

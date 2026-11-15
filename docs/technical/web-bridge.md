@@ -7,7 +7,9 @@ fixed admin actions. The platform's repository keeps the design and the reasons;
 this file holds what both sides must agree on, as the game implements it. A
 change goes through the user, because the website side builds on it. The
 [amendments](#amendments-2026-11-07) name what this copy adds to the first
-version. How the mod is built: [module guide](module-guide.md#web-bridge).
+version. Website accounts (0.79.0) are a separate contract that extends this one:
+[web-accounts.md](web-accounts.md); the rows below that it adds are marked
+**(accounts)**. How the mod is built: [module guide](module-guide.md#web-bridge).
 
 ## Settings
 
@@ -93,6 +95,14 @@ Content-Type: application/json
   are absent for a character still being created.
 - `address` is what `core.get_player_information` reports. The bridge discards it
   for browser players, whose address is the proxy's.
+- **(accounts)** `capabilities` adds `accounts` and `accounts.password`.
+  `accounts_version` is the account list version the mod holds, `0` before the
+  first, in every request. `reward_catalog` lists the rewards the game can give
+  (`id`, `kind`, `name`): in the first request of a boot and in every request until
+  a `200` answered one that carried it. Online rows add `character_id` and, only
+  while the character has a binding that counts, `account_id`; a list that changes
+  an online character's binding sends the online list again
+  ([web-accounts.md](web-accounts.md) §5.1).
 
 ### Response
 
@@ -116,8 +126,13 @@ Content-Type: application/json
 ```
 
 - `ack_seq`: the mod forgets every event up to and including it.
-- `resync`: the mod sends the named state again. The only value is `"mail"`.
+- `resync`: the mod sends the named state again: `"mail"`, and **(accounts)**
+  `"reward_catalog"`, which sends the catalogue again.
 - `banlist` is present only when the mod's version differs, and is the complete list.
+- **(accounts)** `accounts` is the complete account list, present when its
+  `version` differs from the request's `accounts_version`; the mod applies it
+  after `banlist` and before the `commands` ([web-accounts.md](web-accounts.md)
+  §5.2).
 
 ## Events
 
@@ -136,6 +151,9 @@ event over 128 KiB, which no game text reaches.
 | `mail.broadcast` | `broadcast` | an announcement was added |
 | `mail.broadcast_removed` | `id` | an announcement was deleted or expired |
 | `mail.snapshot_end` | `ticket_ids`, `broadcast_ids` | a `resync` finished |
+| `account.link_request` **(accounts)** | `request_id`, `name`, `character_id`, `code` | a player entered a well-formed link code ([web-accounts.md](web-accounts.md) §5.3) |
+| `account.link_confirm` **(accounts)** | `request_id`, `name`, `character_id` | the player confirmed an offer |
+| `account.link_cancel` **(accounts)** | `request_id`, `name` | the player cancelled or left, or the game gave up |
 
 - **Chat** is what other players can read: never a command, so neither `/msg` nor
   `/me`. The hook `core.register_on_chat_message` runs before the engine checks
@@ -207,6 +225,8 @@ down.
 | `action.give_item` | same | `name`, `item`, `count` 1 to the item's stack size | `grug_inventory.give` |
 | `action.grant_priv` | same | `name`, `priv` | `core.set_player_privs` |
 | `action.revoke_priv` | same | `name`, `priv` | `core.set_player_privs` |
+| `account.link_answer` **(accounts)** | `accounts` | `request_id`, `name`, `outcome`, `account_name` or `reason` | `grug_accounts.link_answer` ([web-accounts.md](web-accounts.md) §5.4) |
+| `account.set_password` **(accounts)** | `accounts.password` | `name`, `account_id`, `entry` | `core.set_player_password` after the auth entry, the binding and the entry's form are checked ([web-accounts.md](web-accounts.md) §6b) |
 
 - Chat and kick text from the website is untrusted: the mod removes colour escapes
   and control characters, and a line break becomes a space. An empty `text` is
@@ -276,3 +296,13 @@ What this copy adds to or changes in the platform's first version:
   admin keeps; a held or absent privilege is `ok`; money and item grants show in the
   feed; a privilege's callbacks run; `kick` reads `Kicked: `.
 - **Bans:** a ban disconnects through `core.disconnect_player`; the date's format.
+
+## Amendment 2026-11-15: website accounts
+
+Game 0.79.0 (Round 79). The contract is [web-accounts.md](web-accounts.md), agreed with
+the user on 2026-11-15; it extends this protocol without changing anything above.
+This file lists what it adds, marked **(accounts)**: the capabilities `accounts` and
+`accounts.password`, the request's `accounts_version` and `reward_catalog`, the
+online rows' `character_id` and `account_id`, the response's `accounts`, the
+`resync` value `"reward_catalog"`, the three `account.link_*` events and the
+commands `account.link_answer` and `account.set_password`. Protocol stays `1`.

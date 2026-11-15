@@ -98,6 +98,15 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.79.0** adds website accounts: link your characters to your account on the realm's
+website (grudgelands.com/play), by a code entered on the new Account tab or with the
+character's password on the website, and the rewards an administrator grants the account
+(first: the Supporter Cloak) reach every linked character. Accounts are optional; the tab
+shows only on realms with the website
+([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)). Compatible;
+not pushed yet; desktop and web acceptance is pending
+([checklist](docs/planning/round79-plan.md#6-verification-and-gui-checklist)).
+
 **0.78.0** fixes what a game night found: bosses and every mob with both attacks keep about
 a node of distance and choose ranged or melee by distance, heals reach the tank past the
 boss, a 10 s respawn wait while the Expedition group still fights, Expedition lights that

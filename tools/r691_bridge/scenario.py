@@ -4,9 +4,13 @@ client on a private Xvfb display, the fake bridge on the other side.
 
 Boot 1: the token is missing, so the mod stays inert.
 Boot 2: every command type with success and refusal, a repeated id, dropped
-        responses, the chat hook, kick, a ban online, at pre-join and expiring.
-Boot 3: the same world with the bridge failing: the stored ban holds; then the
-        bridge answers and sees a new boot and the held list's version.
+        responses, the chat hook, kick, a ban online, at pre-join and expiring;
+        website accounts (Round 79, the fake bridge's accounts mode): one link
+        by code end to end, the online row's ids, account.set_password on the
+        engine's auth handler.
+Boot 3: the same world with the bridge failing: the stored ban and the stored
+        binding hold; then the bridge answers and sees a new boot, the held
+        lists' versions and the reward catalogue again.
 
 Called by run.sh, which holds the temp directories. Isolation as in
 tools/luanti_headless.sh: every engine process has a fresh temp dir as its user
@@ -24,7 +28,7 @@ import sys
 import time
 from pathlib import Path
 
-from fake_bridge import Bridge
+from fake_bridge import Accounts, Bridge, load_password_reference, masked
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
@@ -249,7 +253,10 @@ def boot_main(bridge):
     check(first["protocol"] == 1, "request: protocol", first)
     check(re.fullmatch(r"[0-9a-f]{16}", first["boot"]), "request: boot", first["boot"])
     check(first["game_version"] == VERSION, "request: the game's version", first["game_version"])
-    check(len(first["capabilities"]) == 10, "request: capabilities", first["capabilities"])
+    check(len(first["capabilities"]) == 12 and "accounts" in first["capabilities"] and
+          "accounts.password" in first["capabilities"], "request: capabilities", first["capabilities"])
+    check(first.get("accounts_version") == 0, "request: no account list yet", first.get("accounts_version"))
+    check("reward_catalog" in first, "request: the reward catalogue in the first request")
     check(first["banlist_version"] == 0, "request: no list yet")
     check(first.get("online") == [], "request: the first online list, empty", first.get("online"))
     check(bridge.bad_auth == 0, "request: the token")
@@ -437,6 +444,8 @@ def boot_main(bridge):
           "a command in a lost reply runs once, when it comes again")
     check(bridge.most_in_flight == 1, "one request at a time", bridge.most_in_flight)
 
+    link_by_code(server, driver, bridge)
+
     # Kick: the leave path saves the character.
     money = server.probe("state", name=PLAYER)["money"]
     driver.expect("kick", {"name": "Nobody"}, "unknown_target", "unknown")
@@ -482,9 +491,88 @@ def boot_main(bridge):
     bridge.banlist = {"version": 3, "entries": [{"name": PLAYER, "expires_at": None}]}
     driver.online(lambda rows: not rows, "ban: version 3")
     client.stop()
+    set_password(server, driver)
     check(bridge.bad_auth == 0, "every request carried the token")
     check(server.stop() == 0, "main: a clean boot")
     return boot
+
+
+def link_by_code(server, driver, bridge):
+    """One link by code end to end (web-accounts.md §6), the page's calls made
+    through the probe. The code goes only into the probe's input file."""
+    accounts = bridge.accounts
+    wait("the first list", lambda: bridge.requests[-1].get("accounts_version") == 1, 30)
+    check(True, "accounts: the game holds the first list")
+    check(server.probe("account", name=PLAYER)["enabled"], "accounts: enabled with a list")
+    driver.online(lambda rows: [r for r in rows if r["name"] == PLAYER and
+                                re.fullmatch(r"[0-9a-f]{32}", r.get("character_id") or "") and
+                                "account_id" not in r],
+                  "accounts: the online row has a character_id, no account_id")
+    with bridge.lock:
+        code = accounts.new_code("a_test1")
+    answer = server.probe("link", name=PLAYER, code=code[:5].lower() + "-" + code[5:])
+    check(answer.get("ok"), "accounts: the link request", answer.get("message"))
+
+    def state_is(wanted):
+        def test():
+            row = server.probe("account", name=PLAYER)
+            return row if (row.get("state") or {}).get("state") == wanted else None
+        return test
+    try:
+        row = wait("the offer", state_is("offer"), 30, 0.5)
+        check(row["state"].get("account_name") == "Test One", "accounts: the offer names the account",
+              row["state"])
+    except TimeoutError:
+        check(False, "accounts: the offer", server.probe("account", name=PLAYER).get("state"))
+    driver.event("account.link_request", lambda e: e["name"] == PLAYER and e.get("code") == code and
+                 re.fullmatch(r"[0-9a-f]{16}", e.get("request_id") or ""),
+                 "accounts: the request event with the normalized code")
+    check(server.probe("confirm", name=PLAYER).get("ok"), "accounts: confirmed")
+    try:
+        row = wait("linked", state_is("linked"), 30, 0.5)
+        check(row.get("account_id") == "a_test1", "accounts: bound to the account", row.get("account_id"))
+        check(row["state"].get("message") == "Linked to the website account Test One.",
+              "accounts: the success line on the page", row["state"])
+    except TimeoutError:
+        check(False, "accounts: linked", server.probe("account", name=PLAYER).get("state"))
+
+    def linked_result():
+        with bridge.lock:
+            return [r for i, r in accounts.results.items()
+                    if accounts.mine[i] == f"the linked answer to {PLAYER}"]
+    try:
+        result = wait("the linked answer's result", linked_result, 30, 0.2)[0]
+        check(result["code"] == "ok", "accounts: the linked answer after its list is ok", result)
+    except TimeoutError:
+        check(False, "accounts: the linked answer's result")
+    check(any("Linked to the website account Test One." in line for line in server.probe("lines")["feed"]),
+          "accounts: the success line in the feed")
+    driver.online(lambda rows: [r for r in rows if r["name"] == PLAYER and r.get("account_id") == "a_test1"],
+                  "accounts: the online row's account_id")
+    wait("version 2", lambda: bridge.requests[-1].get("accounts_version") == 2, 10)
+    check(True, "accounts: the game holds version 2")
+    check(code not in server.log_text() and code[:5] not in server.log_text(),
+          "accounts: no code in the server log")
+
+
+def set_password(server, driver):
+    """account.set_password on the engine's auth handler (web-accounts.md
+    §6b), for the offline, linked Rowan. The entry goes only into commands
+    and the probe's input file."""
+    entry = load_password_reference().make_entry(PLAYER, secrets.token_hex(8))
+    driver.expect("account.set_password", {"name": "Nobody", "account_id": "a_test1", "entry": entry},
+                  "unknown_target", "no auth entry")
+    check(not server.probe("auth", name="Nobody", entry=entry)["exists"],
+          "set_password: no login was created")
+    driver.expect("account.set_password", {"name": PLAYER, "account_id": "a_test2", "entry": entry},
+                  "refused", "another account")
+    driver.expect("account.set_password", {"name": PLAYER, "account_id": "a_test1", "entry": entry + "#"},
+                  "invalid_args", "a malformed entry")
+    check(not server.probe("auth", name=PLAYER, entry=entry)["matches"], "set_password: nothing written yet")
+    driver.expect("account.set_password", {"name": PLAYER, "account_id": "a_test1", "entry": entry},
+                  "ok", "an offline character")
+    check(server.probe("auth", name=PLAYER, entry=entry)["matches"], "set_password: the entry is stored")
+    check(entry.split("#")[3][:24] not in server.log_text(), "set_password: no entry in the server log")
 
 
 def boot_stored(bridge, old_boot):
@@ -504,11 +592,19 @@ def boot_stored(bridge, old_boot):
     check(request["boot"] != old_boot, "restart: a new boot", request["boot"])
     check(request["banlist_version"] == 3, "restart: the held version", request["banlist_version"])
     check(request.get("online") == [], "restart: the first list", request.get("online"))
+    check(request.get("accounts_version") == bridge.accounts.version,
+          "restart: the held account list's version", request.get("accounts_version"))
+    check("reward_catalog" in request, "restart: the reward catalogue again")
+    row = server.probe("account", name=PLAYER)
+    check(row.get("account_id") == "a_test1" and row.get("account_name") == "Test One",
+          "restart: the binding holds", row)
     check(server.stop() == 0, "stored: a clean boot")
 
 
 def main():
     bridge = Bridge(free_port(socket.SOCK_STREAM), TOKEN)
+    account_lines = []
+    bridge.accounts = Accounts(out=account_lines.append)
     bridge.start()
     failure = None
     try:
@@ -520,7 +616,8 @@ def main():
     finally:
         bridge.stop()
     (OUT / "results.json").write_text(json.dumps(checks, indent=1))
-    (OUT / "requests.json").write_text(json.dumps(bridge.requests[:200], indent=1))
+    (OUT / "requests.json").write_text(json.dumps([masked(r) for r in bridge.requests[:200]], indent=1))
+    (OUT / "accounts.txt").write_text("\n".join(account_lines) + "\n")
     failed = [row for row in checks if not row["ok"]]
     print(f"r691 scenario: {len(checks) - len(failed)} of {len(checks)} checks passed")
     return 1 if failed else 0

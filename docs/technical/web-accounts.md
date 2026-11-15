@@ -213,6 +213,9 @@ new and optional for the other side.
   - A character row whose `account_id` has no account row is dropped.
   - Two character rows for one name (also differing only in case): both are
     dropped. The website's own rule (§3 item 2) makes this impossible.
+  - Two account rows with one `id`: the first is used, the second is dropped with a
+    warning in the server log. Account ids are unique on the website, so this
+    should not happen either.
   - An account `name` is cleaned (no colour escapes or control characters) and cut
     to 64 characters; it is display text only.
   - Unknown fields anywhere are ignored. Every later amendment that the game must
@@ -274,6 +277,9 @@ sending.
 
 - A `linked` answer whose binding is not in the applied list: result `invalid_args`
   ("binding not in the list"); the request waits for the list until its 30 s end.
+- A `linked` answer for a request that the list applied just before it already
+  ended as linked (the normal case, §6: list and answer in one response): result
+  `ok`. Any further answer with that `request_id` gets `refused`.
 - A `name` that is not the request's character is `invalid_args`.
 - An unknown `reason` is shown as `other`.
 - **The website answers only in reply to an event**, never unprompted. A new code

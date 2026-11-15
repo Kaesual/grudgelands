@@ -73,11 +73,14 @@ Link.__index = Link
 -- decode(JSON) -> table or nil; now() -> Unix seconds; log(level, text);
 -- clean(text, max) -> one line of at most `max` characters; online_rows() ->
 -- list; banlist_version() -> number; run_command(command) -> code, message;
--- on_banlist(banlist); on_resync(name).
+-- on_banlist(banlist); on_resync(name). For accounts (web-accounts.md §5),
+-- optional: accounts_version() -> number; catalog_rows() -> list;
+-- on_accounts(list).
 function L.new(opts)
 	local link = setmetatable({opts = opts, boot = opts.boot, first = 1, last = 0,
 		events = {}, next_seq = 1, dropped = 0, results = {}, ledger = {},
-		online_change = 1, online_sent = 0, online_at = nil, failures = 0}, Link)
+		online_change = 1, online_sent = 0, online_at = nil, failures = 0,
+		catalog_due = true}, Link)
 	return link
 end
 
@@ -118,6 +121,12 @@ function Link:online_changed()
 	self.online_change = self.online_change + 1
 end
 
+-- The reward catalogue goes again, in every request until a 200 answers one
+-- that carried it (web-accounts.md §5.1).
+function Link:catalog_changed()
+	self.catalog_due = true
+end
+
 --
 -- The request
 --
@@ -133,23 +142,30 @@ function Link:online_due()
 		self.opts.now() - self.online_at >= L.ONLINE_EVERY
 end
 
--- The request body. Results go first, then the online list, then the oldest
--- unacknowledged events, up to L.EVENTS_PER_REQUEST and L.MAX_REQUEST. What
--- did not fit stays queued for the next request.
+local function encoded(encode, rows)
+	local out = {}
+	for index, row in ipairs(rows) do out[index] = encode(row) end
+	return array(out)
+end
+
+-- The request body. Results go first, then the online list and the reward
+-- catalogue, then the oldest unacknowledged events, up to
+-- L.EVENTS_PER_REQUEST and L.MAX_REQUEST. What did not fit stays queued for
+-- the next request.
 function Link:request()
 	local opts = self.opts
 	local head = opts.encode({protocol = L.PROTOCOL, boot = self.boot,
 		game_version = opts.version, capabilities = opts.capabilities,
-		banlist_version = opts.banlist_version(), dropped_events = self.dropped})
+		banlist_version = opts.banlist_version(), dropped_events = self.dropped,
+		accounts_version = opts.accounts_version and opts.accounts_version() or nil})
 	head = head:sub(1, -2) -- reopened for the fields written below
-	local online
-	if self:online_due() then
-		local rows = {}
-		for index, row in ipairs(opts.online_rows()) do rows[index] = opts.encode(row) end
-		online = array(rows)
+	local online, catalog
+	if self:online_due() then online = encoded(opts.encode, opts.online_rows()) end
+	if opts.catalog_rows and self.catalog_due then
+		catalog = encoded(opts.encode, opts.catalog_rows())
 	end
 	-- 40: the fields' names and punctuation below.
-	local size = #head + 40 + (online and #online + 10 or 0)
+	local size = #head + 40 + (online and #online + 10 or 0) + (catalog and #catalog + 20 or 0)
 	local results, events = {}, {}
 	for index, entry in ipairs(self.results) do
 		if size + #entry.json + 1 > L.MAX_REQUEST then break end
@@ -163,9 +179,10 @@ function Link:request()
 		events[#events + 1] = json
 	end
 	self.flight = {results = #results, online = online ~= nil,
-		online_change = self.online_change}
+		online_change = self.online_change, catalog = catalog ~= nil}
 	return head .. ',"results":' .. array(results) .. ',"events":' .. array(events) ..
-		(online and ',"online":' .. online or "") .. "}"
+		(online and ',"online":' .. online or "") ..
+		(catalog and ',"reward_catalog":' .. catalog or "") .. "}"
 end
 
 --
@@ -228,6 +245,7 @@ function Link:accept(reply, flight)
 		self.online_sent = flight.online_change
 		self.online_at = self.opts.now()
 	end
+	if flight.catalog then self.catalog_due = false end
 	if self.failures > 0 or self.refused then
 		self.opts.log("action", "the bridge answers again")
 	end
@@ -239,6 +257,10 @@ function Link:accept(reply, flight)
 	end
 	if type(reply.banlist) == "table" then
 		self:guard("the ban list", self.opts.on_banlist, reply.banlist)
+	end
+	-- Before the commands: an answer may rely on the list (web-accounts.md §5.2).
+	if type(reply.accounts) == "table" and self.opts.on_accounts then
+		self:guard("the account list", self.opts.on_accounts, reply.accounts)
 	end
 	if type(reply.resync) == "table" then
 		for _, name in ipairs(reply.resync) do

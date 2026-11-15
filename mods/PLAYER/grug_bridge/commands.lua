@@ -8,7 +8,8 @@ local M = grug_mail.model
 local C = {}
 
 C.CAPABILITIES = {"online", "kick", "banlist", "chat", "mail", "action.give_money",
-	"action.give_xp", "action.give_item", "action.grant_priv", "action.revoke_priv"}
+	"action.give_xp", "action.give_item", "action.grant_priv", "action.revoke_priv",
+	"accounts", "accounts.password"}
 
 C.REASON_MAX = 200
 C.CHAT_MAX = 500
@@ -289,6 +290,58 @@ TYPES["action.revoke_priv"] = function(args)
 		return "refused", args.name .. " keeps " .. priv .. " as the server's admin."
 	end
 	return "ok", args.name .. " no longer has " .. priv .. "."
+end
+
+--
+-- Accounts (docs/technical/web-accounts.md)
+--
+
+-- §5.4: the rules live in grug_accounts.
+TYPES["account.link_answer"] = function(args)
+	return grug_accounts.link_answer(args)
+end
+
+-- True for the one entry form account.set_password takes (§6b), as
+-- valid_entry in tools/web_accounts/luanti_password.py: "#1#<salt>#<verifier>",
+-- each part canonical base64 without padding (decoded and encoded again it
+-- gives the same text: the engine's base64_is_valid refuses anything else at
+-- a login), a salt of at least one byte and a verifier of 1 to 256 bytes.
+-- core.decode_base64 answers nil for what base64_is_valid refuses and
+-- core.encode_base64 writes no padding (src/util/base64.cpp).
+function C.valid_entry(entry)
+	if type(entry) ~= "string" then return false end
+	local salt, verifier = entry:match("^#1#([A-Za-z0-9+/]+)#([A-Za-z0-9+/]+)$")
+	if not salt then return false end
+	local salt_bytes, verifier_bytes = core.decode_base64(salt), core.decode_base64(verifier)
+	if not salt_bytes or not verifier_bytes or core.encode_base64(salt_bytes) ~= salt or
+			core.encode_base64(verifier_bytes) ~= verifier then
+		return false
+	end
+	return #salt_bytes >= 1 and #verifier_bytes >= 1 and #verifier_bytes <= 256
+end
+
+-- §6b. The checks in the contract's order. The one log line is link.lua's
+-- for every command: it names the character and the account, never the entry.
+TYPES["account.set_password"] = function(args)
+	local name = args.name
+	if type(name) ~= "string" or name == "" then return invalid("name") end
+	if type(args.account_id) ~= "string" or args.account_id == "" then return invalid("account_id") end
+	-- Never set_player_password without an entry: it would create a login.
+	if not core.get_auth_handler().get_auth(name) then
+		return "unknown_target", "There is no character called " .. name .. "."
+	end
+	local account = grug_accounts.account_of(name)
+	if not account or account.id ~= args.account_id then
+		return "refused", "not linked to this account"
+	end
+	if not C.valid_entry(args.entry) then return invalid("entry") end
+	core.set_player_password(name, args.entry)
+	local player = core.get_player_by_name(name)
+	if player then
+		grug_core.feed(player, "notice",
+			"Your password was changed on the website. It applies from your next login.")
+	end
+	return "ok", ("Password set for %s (account %s)."):format(name, account.id)
 end
 
 -- A code and a message for `command`.

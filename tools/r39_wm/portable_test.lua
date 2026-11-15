@@ -245,12 +245,15 @@ end
 grug_visuals.index_armor(registered)
 grug_visuals.register_cloak_source(function(player)
 	-- The body of grug_achievements' registration (checked against it below).
-	local meta = player:get_meta()
-	local id = R.selected(book, meta)
-	return R.cloak_texture(book, meta), id, book.cloak[id].wings
+	-- Round 79 passes the account's cloaks; without grug_accounts the set is
+	-- empty, so nil stands in for it here.
+	local meta, account = player:get_meta(), nil
+	local id = R.selected(book, meta, account)
+	return R.cloak_texture(book, meta, account), id, book.cloak[id].wings
 end)
 check(read_file(ROOT .. "/mods/PLAYER/grug_achievements/init.lua"):find(
-	"\tlocal id = R.selected(book, meta)\n\treturn R.cloak_texture(book, meta), id, book.cloak[id].wings",
+	"\tlocal id = R.selected(book, meta, account)\n" ..
+	"\treturn R.cloak_texture(book, meta, account), id, book.cloak[id].wings",
 	1, true) ~= nil,
 	"grug_achievements' cloak source returns the texture, the selected id and the wings")
 
