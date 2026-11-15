@@ -1,0 +1,124 @@
+{
+ "source": "tools/web_accounts/engine_vectors/make_vectors.py; SRP verifiers from reference_projects/luanti/src/util/srp.cpp",
+ "vectors": [
+  {
+   "note": "SRP: right password",
+   "name": "Rowan",
+   "entry": "#1#TOUBnwnt68eT8bkFR2OPbg#GaWRwG6iI82RSnVfBOaX/b2/6wNqSqIczQ1vUrvpVOeCMZYAJZd7DfvVGxLBhdPmsPYJK08uEqUrtSpkarzwlCotxToqTSqXB6bw5swhzeBxuMZ4jH8yHBb1zATCuR7WnwnH+zP6EcKcuyo9Jz6sxOvHqDMYzCOoJbIvH/uDtXWAYckjeczn6lyDtE1s4Co4UXI20xbmzisjaVny5N7vYYQj7p0Rskdy02JU3r5SIUIbtIA5rx+AZY1CQIL4RiIKoHNJShh68T/2PzgMjIPN5g1tiMohzEhNgCbK6pJs3Vv9OMTm7+wTAl+dNI/3fcDPyMrv63kjC6ohj64dICJafA",
+   "password": "correct horse",
+   "match": true
+  },
+  {
+   "note": "SRP: wrong password",
+   "name": "Rowan",
+   "entry": "#1#TOUBnwnt68eT8bkFR2OPbg#GaWRwG6iI82RSnVfBOaX/b2/6wNqSqIczQ1vUrvpVOeCMZYAJZd7DfvVGxLBhdPmsPYJK08uEqUrtSpkarzwlCotxToqTSqXB6bw5swhzeBxuMZ4jH8yHBb1zATCuR7WnwnH+zP6EcKcuyo9Jz6sxOvHqDMYzCOoJbIvH/uDtXWAYckjeczn6lyDtE1s4Co4UXI20xbmzisjaVny5N7vYYQj7p0Rskdy02JU3r5SIUIbtIA5rx+AZY1CQIL4RiIKoHNJShh68T/2PzgMjIPN5g1tiMohzEhNgCbK6pJs3Vv9OMTm7+wTAl+dNI/3fcDPyMrv63kjC6ohj64dICJafA",
+   "password": "wrong horse",
+   "match": false
+  },
+  {
+   "note": "SRP: the password in another case",
+   "name": "Rowan",
+   "entry": "#1#TOUBnwnt68eT8bkFR2OPbg#GaWRwG6iI82RSnVfBOaX/b2/6wNqSqIczQ1vUrvpVOeCMZYAJZd7DfvVGxLBhdPmsPYJK08uEqUrtSpkarzwlCotxToqTSqXB6bw5swhzeBxuMZ4jH8yHBb1zATCuR7WnwnH+zP6EcKcuyo9Jz6sxOvHqDMYzCOoJbIvH/uDtXWAYckjeczn6lyDtE1s4Co4UXI20xbmzisjaVny5N7vYYQj7p0Rskdy02JU3r5SIUIbtIA5rx+AZY1CQIL4RiIKoHNJShh68T/2PzgMjIPN5g1tiMohzEhNgCbK6pJs3Vv9OMTm7+wTAl+dNI/3fcDPyMrv63kjC6ohj64dICJafA",
+   "password": "Correct horse",
+   "match": false
+  },
+  {
+   "note": "SRP, mixed-case name: the stored name",
+   "name": "BrightAxe",
+   "entry": "#1#+V1wjG+HIlbWfnMipvc/XA#JTzke8Kv+SasY1gwjo8EfY2SSLR94bpjVExt/zGIwP+GdzA6TUdcMt1Xb7s3zSHhiChoIMap/VYP8IWUIYO7fLyZp07CB5207X8cUgI9yyG2YM/YrzAb5/P2lj5uyScRqqUMUey0HKM1NH5F3nL82QKh2s0exSvshtZYy12iLJH43Rbh9mxeZThDcf9/2sMqGBeJtvBgeh5m+uojGlPxxOKMWRycu8SjAO2v/8eadnIb/HyBnYNzU42YAuHdTxeJJqYHZoxiELBo2Udht4fU2uxC6AmUNZsFt8T7lk4KfREKpTqRk32LZ4SKyjGKSXUWNoN8dfxhJrzUPnY2SMcWjw",
+   "password": "secret",
+   "match": true
+  },
+  {
+   "note": "SRP, mixed-case name: the name typed in lower case (SRP lowers the name)",
+   "name": "brightaxe",
+   "entry": "#1#+V1wjG+HIlbWfnMipvc/XA#JTzke8Kv+SasY1gwjo8EfY2SSLR94bpjVExt/zGIwP+GdzA6TUdcMt1Xb7s3zSHhiChoIMap/VYP8IWUIYO7fLyZp07CB5207X8cUgI9yyG2YM/YrzAb5/P2lj5uyScRqqUMUey0HKM1NH5F3nL82QKh2s0exSvshtZYy12iLJH43Rbh9mxeZThDcf9/2sMqGBeJtvBgeh5m+uojGlPxxOKMWRycu8SjAO2v/8eadnIb/HyBnYNzU42YAuHdTxeJJqYHZoxiELBo2Udht4fU2uxC6AmUNZsFt8T7lk4KfREKpTqRk32LZ4SKyjGKSXUWNoN8dfxhJrzUPnY2SMcWjw",
+   "password": "secret",
+   "match": true
+  },
+  {
+   "note": "legacy, mixed-case name: the stored name",
+   "name": "BrightAxe",
+   "entry": "Yyu92DPKNYM0qUEU4DRZVQhQBEI",
+   "password": "secret",
+   "match": true
+  },
+  {
+   "note": "legacy, mixed-case name: the name typed in lower case fails, so always use the stored name",
+   "name": "brightaxe",
+   "entry": "Yyu92DPKNYM0qUEU4DRZVQhQBEI",
+   "password": "secret",
+   "match": false
+  },
+  {
+   "note": "SRP: empty password",
+   "name": "Quiet",
+   "entry": "#1#AI8HR/TifIRiuqmRpTgCWw#hjGrBMn+4JGZtWFlWxCtu7Mu8bztmpTG+76XgZoKDQTGNAmV0uNtodwe+6cN93NACza5iq9Lb97hmEJBAbca67iVVsB6dQnbc1/a8X0VN6ANVFVObQvUyPGYnU3HPXY4SAwaVPex6KRUpTtwlSdNw7NanFYcm2W/mxYkLBWMn3DzS9Vop9JJBbFVbRQrVh+syLU8qOSU2RRhiq1Ez/aEDftbNRqHygUXas5dpCR13qvDNprDVnJt2I+fYX+rV2p3qeyywa99uayD1ZpJ763E+ZhXtr09QMP8SlzyR9pCt9LWAcEjau3ISGGGsVo91/Wc+tAScJAEgsOfRbMzmwXOYQ",
+   "password": "",
+   "match": true
+  },
+  {
+   "note": "SRP: empty password, a non-empty one given",
+   "name": "Quiet",
+   "entry": "#1#AI8HR/TifIRiuqmRpTgCWw#hjGrBMn+4JGZtWFlWxCtu7Mu8bztmpTG+76XgZoKDQTGNAmV0uNtodwe+6cN93NACza5iq9Lb97hmEJBAbca67iVVsB6dQnbc1/a8X0VN6ANVFVObQvUyPGYnU3HPXY4SAwaVPex6KRUpTtwlSdNw7NanFYcm2W/mxYkLBWMn3DzS9Vop9JJBbFVbRQrVh+syLU8qOSU2RRhiq1Ez/aEDftbNRqHygUXas5dpCR13qvDNprDVnJt2I+fYX+rV2p3qeyywa99uayD1ZpJ763E+ZhXtr09QMP8SlzyR9pCt9LWAcEjau3ISGGGsVo91/Wc+tAScJAEgsOfRbMzmwXOYQ",
+   "password": "x",
+   "match": false
+  },
+  {
+   "note": "legacy: empty entry, empty password",
+   "name": "Quiet",
+   "entry": "",
+   "password": "",
+   "match": true
+  },
+  {
+   "note": "legacy: empty entry, a non-empty password",
+   "name": "Quiet",
+   "entry": "",
+   "password": "a",
+   "match": false
+  },
+  {
+   "note": "SRP: non-ASCII password (UTF-8, NFC)",
+   "name": "Elara",
+   "entry": "#1#Uq+aVRTirSLxvBX4Vo6WFQ#NuF9JQ+4OMN2C4DAufie7CEsItsUNP9haD2R2b/OWIf8nTGRrUWoykvKj/5VrPe1lEhqFdYhIdh/O67kUnCLV18MHnxYF2CI16niu3RmGAztrLefB267EgjsRxY+Npq7s13hU1V7+O5vwvuPeUoi5bcS5YK5sku4X3sB6BCuBv/TUlQKhC0ocEongbkAJLTOYE9DAqCJh/SpfOQ7bYPluWqsAyM3lSiSUjHKr+4uNcgDZfwW4vYL9tbxiHodaAqZwlsWRX7vpUdsSrXXNdrYUm6teRc4tTHh++WXw98LP+G4ItWqyNmH1X4ApYZI+4FPZgqUpOSzJHnWf/mqAmBdEg",
+   "password": "Pässwörd-✓ дракон",
+   "match": true
+  },
+  {
+   "note": "SRP: the same password decomposed (NFD) fails: compare the bytes as typed",
+   "name": "Elara",
+   "entry": "#1#Uq+aVRTirSLxvBX4Vo6WFQ#NuF9JQ+4OMN2C4DAufie7CEsItsUNP9haD2R2b/OWIf8nTGRrUWoykvKj/5VrPe1lEhqFdYhIdh/O67kUnCLV18MHnxYF2CI16niu3RmGAztrLefB267EgjsRxY+Npq7s13hU1V7+O5vwvuPeUoi5bcS5YK5sku4X3sB6BCuBv/TUlQKhC0ocEongbkAJLTOYE9DAqCJh/SpfOQ7bYPluWqsAyM3lSiSUjHKr+4uNcgDZfwW4vYL9tbxiHodaAqZwlsWRX7vpUdsSrXXNdrYUm6teRc4tTHh++WXw98LP+G4ItWqyNmH1X4ApYZI+4FPZgqUpOSzJHnWf/mqAmBdEg",
+   "password": "Pässwörd-✓ дракон",
+   "match": false
+  },
+  {
+   "note": "legacy: non-ASCII password",
+   "name": "Elara",
+   "entry": "Sks3rWf3DdvsopGSCourrEK5kDc",
+   "password": "Pässwörd-✓ дракон",
+   "match": true
+  },
+  {
+   "note": "SRP: a verifier of 255 bytes (leading zero byte dropped)",
+   "name": "Short",
+   "entry": "#1#Xntrx4PH2qJYbhgFVkyu7A#ZLgYPdDAy9nrP6JMI+zTk5TvKb924CTSrI787FfYoPq1kihAeynDcMIM4MBUsoarDvgFkQiy9391EfgBerWf2GBO6FyU923sMZh1KiefSD+qnxjk8a4P3yoGA/mOuWmQVNiqLrrNWwkPwJrwIYTrpIFMSqcz4FpG2t0ANQDKAfc5bYxtfkFOnmUTsbtUywiGqV/nmfht3EYEpwwkSrhNMplmr6VJLcM82dpHEC0yQIi4GrzC2Y7v1F9WizIyj5xKgHLEO1RfFzIVoAu9JtOrHpb6p3rgRaFovMF/98pSgsdp8nM+Mv5fGUrA2Z+Syh8qSgXAeJPfM3AexzhH5RQa",
+   "password": "pw",
+   "match": true
+  },
+  {
+   "note": "malformed: unknown format version",
+   "name": "Rowan",
+   "entry": "#2#AAAA#AAAA",
+   "password": "correct horse",
+   "match": false
+  },
+  {
+   "note": "malformed: missing part",
+   "name": "Rowan",
+   "entry": "#1#AAAA",
+   "password": "correct horse",
+   "match": false
+  }
+ ]
+}
