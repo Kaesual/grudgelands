@@ -24,28 +24,30 @@ Players should be able to link their characters to an account on the realm's
 website, so that rewards an administrator grants an account reach every character
 of it. The first reward is the Supporter Cloak. The link is the foundation for
 everything later (concept §4): rewards for every website user, account bans,
-passwords, characters created on the website, deletion, and the shared Claim Stone.
+characters created through a bridge command, deletion, and the shared Claim Stone.
 So this round puts weight on getting the identities and the data flow right, and
 ships only one visible thing: a new inventory page.
 
 ## 1. Lanes and order
 
-Start state: main `7576a392` (0.78.0). Integration branch `round79` in
-`.claude/worktrees/round79`; every lane branches from it.
+Start state: main at the last account planning commit (0.78.0, no game change). Integration
+branch `round79` in `.claude/worktrees/round79`; every lane branches from it.
 
 | Lane | Goal (§4) | Wave | Merge order | Review |
 |---|---|---|---|---|
-| ACC | New mod `grug_accounts` (the list, bindings, character id, reward catalogue, the link flow); `grug_bridge` speaks it; the protocol amendment; the fake bridge's accounts mode | 1 | 1 | independent |
+| ACC | New mod `grug_accounts` (the list, bindings, character id, reward catalogue, the link flow); `grug_bridge` speaks it, including `account.set_password`; the protocol amendment; the fake bridge's accounts mode | 1 | 1 | independent |
 | PAGE | The Account page; the Supporter Cloak as an account reward in `grug_achievements` | 2 (after ACC merged) | 2 | independent; screenshots to the user before the merge |
 | D | Design doc, mod map, module guide, help text, completion, GUI checklist | after every merge | — | coordinator |
 
 PAGE waits for ACC because the page is a view of ACC's API. The API is fixed here
 (§3.3), so PAGE's brief can be written before ACC finishes.
 
-**The website's part** (code creation, the password check and direct binding, the admin's reward page, the list, the link
-answers) is built on the platform by its own agent, from the contract
-[web-accounts.md](../technical/web-accounts.md) (§3.2 here) that the user hands over. This round tests against the fake bridge; the
-end-to-end test on the rehearsal realm follows once the platform side is ready.
+**The website's part** (code creation, the password check and direct binding, the
+admin's reward page, the list, the link answers, the random password) is built on the
+platform by its own agent, from the contract
+[web-accounts.md](../technical/web-accounts.md) (§3.2 here) that the user hands over.
+This round tests against the fake bridge; the end-to-end test on the rehearsal realm
+follows once the platform side is ready.
 
 ## 2. User rulings
 
@@ -55,7 +57,8 @@ From [accounts-concept.md](accounts-concept.md) §2, the ones this round builds:
    plays exactly as today; linking only adds. No new rule for anyone: multiboxing
    stays allowed, no session takeover.
 2. **Linking by code** (2026-11-15): the website creates the code, the player enters
-   it on the in-game Account page; only an online character can be linked.
+   it on the in-game Account page; only an online character can be linked this way
+   (ruling 16 adds the password path on the website).
 3. **The code** (2026-11-15): 10 characters, upper-case letters and digits without
    `0`, `O`, `I`, `1`.
 4. **The Account page** (2026-11-15) names the linked website account and lists the
@@ -171,8 +174,9 @@ From [accounts-concept.md](accounts-concept.md) §2, the ones this round builds:
   in `grug_accounts` (rulings 13 and 17). No setting.
 - **Website text** (account names) is cleaned like every other website text: no
   escapes or control characters, at most 64 characters.
-- **Logs:** a code is never written to the server log. Requests, confirmations and
-  bindings are logged at `action` level with name and account id.
+- **Logs:** a code or a password entry is never written to the server log. Requests,
+  confirmations, bindings and password changes are logged at `action` level with name
+  and account id.
 
 ### 3.2 The contract with the website
 
@@ -182,7 +186,9 @@ the user on 2026-11-15) and the website agent's brief. In short: the new capabil
 `character_id` and `account_id`, the response's complete `accounts` list (applied
 before the commands), the events `account.link_request`, `account.link_confirm`,
 `account.link_cancel` and the command `account.link_answer` with its refusal
-reasons. Protocol 1 stays.
+reasons, the direct binding by password (§6a, website only), and the command
+`account.set_password` with its capability `accounts.password` (§6b). Protocol 1
+stays.
 
 ACC builds the game side exactly to it. A lane that finds it must change stops and
 reports: the change goes through the user, because the website builds on it. ACC adds
@@ -289,9 +295,10 @@ keeps its stored list and sends nothing.
   `make_entry`. Usage goes in its docstring.
 - **Fixtures:**
   - A focused portable fixture covers: list validation and versions, the
-    character-id rule with all three index states and the adoption, an unlink, unknown reward ids, persistence across a reload,
-    code normalization, every state transition of the link flow including both
-    timeouts, a cancel on leave and the attempt limit, stale and duplicate answers,
+    character-id rule with all three index states and the adoption, an unlink,
+    unknown reward ids, persistence across a reload, the binding and reward notices
+    (also deferred by creation and after an offline change), code normalization,
+    every state transition of the link flow including both timeouts, a cancel on leave and the attempt limit, stale and duplicate answers,
     and the change callbacks.
   - The bridge's portable test covers the request fields, the catalogue's
     resend-until-200 and its resync, the order list-then-commands, the command's
@@ -317,8 +324,8 @@ keeps its stored list and sends nothing.
     seconds, please wait."). The buttons are disabled meanwhile, and the page changes
     by itself when the answer arrives.
   - **Offer:** "Link <character> to the website account <name>?", the warning "Only
-    link to your own account. Only an administrator can undo a link.", **Link** (green) and
-    **Cancel** (red), as the 0.72.2 buttons.
+    link to your own account. Only an administrator can undo a link.", **Link**
+    (green) and **Cancel** (red), as the 0.72.2 buttons.
   - **Linked:** "Linked to the website account <name>.", and the rewards as rows
     (icon, name, kind, one line where to use it: "Choose it on the Character page.").
     Without rewards: "Your account has no rewards yet."
@@ -380,9 +387,10 @@ accounts and at least three characters:
    already linked) shows its own text.
 5. After **Link** the page says it is asking the website and that this takes a few
    seconds (try it with the fake bridge's delay); the buttons wait, and the page
-   changes by itself. A valid code then shows the confirmation with the account name. **Cancel** goes back,
-   and the code still works afterwards. **Link** shows the waiting text again, then
-   "Linked to the website account …" and "no rewards yet".
+   changes by itself. A valid code then shows the confirmation with the account
+   name. **Cancel** goes back, and the code still works afterwards. **Link** shows
+   the waiting text again, then "Linked to the website account …" and "no rewards
+   yet".
 6. A character still in character creation cannot link; the page says why.
 7. `grant <account> cloak:supporter`: the linked character gets the notice, the
    Supporter Cloak appears in the Character page's picker and can be worn (with its
@@ -422,11 +430,13 @@ accounts and at least three characters:
 
 ## 7. Orchestration notes
 
-- **Start:** on the user's go, from main `7576a392`. ACC first; PAGE's brief is
+- **Start:** on the user's go, from main at the last account planning commit. ACC first; PAGE's brief is
   written from §3.3 while ACC runs and starts after ACC's merge.
 - **The platform:** the user hands [web-accounts.md](../technical/web-accounts.md) to
-  the platform agent; nothing in this round
-  waits for it. Once both sides exist, an end-to-end check on the rehearsal realm
-  (link, grant, revoke, unlink, restart) comes before the push.
+  the platform agent; nothing in this round waits for it. Once both sides exist, an
+  end-to-end check on the rehearsal realm (contract §9: link by code and by password,
+  grant, revoke, set a password, unlink, delete an account, restart) comes before the
+  push.
+- **Handover:** `~/projects/grudgelands-orchestration/r79/HANDOVER.md`.
 - **Decided during the round:** the page's wording and layout from the screenshots
   (the user's iteration style: a first version, the user proposes fixes).
