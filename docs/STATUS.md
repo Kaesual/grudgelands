@@ -8,7 +8,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 ## Now
 
 - **Game:** 0.80.1 (`game.conf`), Round 80.1 (character-creation pictures for the
-  website, compatible): squash commit `73b142c4`, tag `round-80.1`. Not pushed. Before it:
+  website, compatible): squash commit `73b142c4`, tag `round-80.1`. Pushed 2026-11-16. Before it:
   0.80.0, Round 80 (accounts phase 2 and five fixes), `f2ee52cb`, tag `round-80`, pushed
   2026-11-16.
 - **Production:** 0.78.0 (the user, 2026-11-16).
@@ -32,7 +32,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
-| 80 | 0.80.0–0.80.1 | compatible | 0.80.0 yes | [Round 80](planning/round80-plan.md#completion-2026-11-16), [80.1](planning/round80.1-plan.md#completion-2026-11-16) |
+| 80 | 0.80.0–0.80.1 | compatible | yes | [Round 80](planning/round80-plan.md#completion-2026-11-16), [80.1](planning/round80.1-plan.md#completion-2026-11-16) |
 | 79 | 0.79.0 | compatible | yes | [Round 79](planning/round79-plan.md#completion-2026-11-15) |
 | 78 | 0.78.0 | compatible | yes | [Round 78](planning/round78-plan.md#completion-2026-11-12) |
 | 76 | 0.76.0–0.76.2 | compatible | yes | [Round 76](planning/round76-plan.md#completion-2026-11-11) |
