@@ -7,8 +7,8 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.80.0 (`game.conf`), Round 80 (accounts phase 2 and five fixes); its squash
-  commit and tag `round-80` follow the round-end gates. Not pushed.
+- **Game:** 0.80.0 (`game.conf`), Round 80 (accounts phase 2 and five fixes): squash
+  commit `f2ee52cb`, tag `round-80`. Not pushed.
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the documentation cleanup of 2026-11
   ([plan](planning/docs-cleanup-plan.md)); no game change.
