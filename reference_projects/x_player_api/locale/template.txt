@@ -1,0 +1,50 @@
+# textdomain: x_player_api
+
+### emotes.lua ###
+Player not found=
+Standing up=
+Playing gesture: @1=
+Perform the wave gesture=
+Playing gesture: wave=
+Perform the point gesture=
+Playing gesture: point=
+Perform the cheer gesture=
+Playing gesture: cheer=
+Perform a courtly bow (single graceful bow)=
+Bowing respectfully=
+Sit down on the ground (move to stand up)=
+Sitting down (move to stand up)=
+Lie down on the ground (move to stand up)=
+Lying down (move to stand up)=
+
+### controls.lua ###
+Display current player control and locomotion state=
+[Controls] Loco: @1 | Action: @2 | Hurt: @3 | Fly: @4 | Hover: @5 | Sprint: @6 | Crouch: @7 | Water: @8 | Climb: @9=
+Trigger the hurt flinch animation (for testing)=
+Triggered hurt animation=
+[glb|b3d|toggle|status]=
+Switch active player model format (glb or b3d) in real-time or query status=
+[x_player_api] Format: @1 | Default model: @2 | Your model: @3=
+Invalid format: use 'glb', 'b3d', 'toggle', or 'status'=
+Failed to switch format: @1=
+GLB (multi-track glTF binary)=
+B3D (Blitz3D single-track)=
+[x_player_api] Switched player model format to @1 (mesh: @2)=
+Toggle between GLB and B3D player models on the fly=
+
+### test_anim.lua ###
+[x_player_api] Animation showcase stopped. Restored normal player animations.=
+[x_player_api] Animation showcase completed! Successfully tested all @1 animations.=
+Action Track (Track 1)=
+Locomotion Track (Track 0)=
+Looping=
+One-shot (repeating)=
+No animations registered for current player model (@1)=
+Animation '@1' not found on model @2=
+[x_player_api] Testing single animation '@1' for @2s. Type /test_anim stop to cancel.=
+[x_player_api] Starting animation slideshow: @1 animations, @2s each. Type /test_anim stop to cancel.=
+[duration|anim_name|stop|list] [duration]=
+Admin animation test suite & slideshow. Displays all animations in private chat and on character.=
+No animations found for model.=
+[x_player_api] Registered animations for @1 (@2): =
+Alias for /test_anim=

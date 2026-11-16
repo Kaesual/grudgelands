@@ -1,0 +1,9 @@
+# Settings for i_have_hands
+
+# Requires the x_player_api mod. Raises both arms while carrying a
+# container so the character visually holds the chest/box.
+i_have_hands.enable_carrying_posture (Enable arm carrying posture (x_player_api)) bool true
+
+# Requires the x_player_api mod. Keeps players standing upright
+# while riding carts and minecarts.
+i_have_hands.enable_cart_posture (Enable upright standing posture in carts (x_player_api)) bool true

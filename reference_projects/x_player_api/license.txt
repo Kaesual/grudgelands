@@ -1,0 +1,111 @@
+License of source code
+----------------------
+
+GNU Lesser General Public License, version 2.1
+Copyright (C) 2011 celeron55, Perttu Ahola
+Copyright (C) 2011 Various Luanti developers and contributors
+
+This program is free software; you can redistribute it and/or modify it under the terms
+of the GNU Lesser General Public License as published by the Free Software Foundation;
+either version 2.1 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Lesser General Public License for more details:
+https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+
+### Portions of `b3d_wiggler.lua`
+
+Portions adapted from `modlib` (https://github.com/appgurueu/modlib) and `character_anim` by Lars Mueller (LMD / appgurueu):
+
+MIT License
+Copyright (c) 2020-2024 Lars Mueller
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+Licenses of media (textures, models and sounds)
+-----------------------------------------------
+
+Attribution 4.0 International (CC BY 4.0)
+
+`models/character.b3d`, `models/character.glb`, `assets/character.blend`:
+Copyright (C) 2012 MirceaKitsune
+Copyright (C) 2015 kilbith
+Copyright (C) 2016 sofar
+Copyright (C) 2016 xunto
+Copyright (C) 2016 Rogier-5
+Copyright (C) 2017 TeTpaAka
+Copyright (C) 2017 Desour
+Copyright (C) 2018 stujones11
+Copyright (C) 2019 An0n3m0us
+Copyright (C) 2026 SaKeL
+
+`textures/character.png`:
+Copyright (C) 2012 Jordach
+Copyright (C) 2026 SaKeL
+
+`textures/x_player_api_bubble.png`:
+Copyright (C) 2026 SaKeL
+
+`textures/player.png`, `textures/player_back.png`:
+Copyright (C) 2011 celeron55, Perttu Ahola
+
+You are free to:
+Share — copy and redistribute the material in any medium or format.
+Adapt — remix, transform, and build upon the material for any purpose, even commercially.
+The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+Attribution — You must give appropriate credit, provide a link to the license, and
+indicate if changes were made. You may do so in any reasonable manner, but not in any way
+that suggests the licensor endorses you or your use.
+
+No additional restrictions — You may not apply legal terms or technological measures that
+legally restrict others from doing anything the license permits.
+
+Notices:
+
+You do not have to comply with the license for elements of the material in the public
+domain or where your use is permitted by an applicable exception or limitation.
+No warranties are given. The license may not give you all of the permissions necessary
+for your intended use. For example, other rights such as publicity, privacy, or moral
+rights may limit how you use the material.
+
+For more details:
+https://creativecommons.org/licenses/by/4.0/
+
+### Sounds
+
+**CC0-1.0, by Vrymaa**, https://freesound.org/people/Vrymaa/sounds/734609
+
+- x_player_api_draw_bow.ogg
+
+
+**CC0-1.0, by harrisonlace**, https://freesound.org/people/harrisonlace/sounds/829499
+
+- x_player_api_draw_blade.ogg
+
+
+**CC0-1.0, by mrickey13**, https://freesound.org/people/mrickey13/sounds/518850
+
+- x_player_api_draw_tool.ogg
+
