@@ -641,7 +641,7 @@ The 0.48.0 step's handler reads the live sizes: a character still carrying its m
   the holds at the eight new places with the area's mobs around, the Carrier Clearing where it falls back, the
   "West Trench Mouth" label, Orrel's departure at 40 reaching Drek one level before his first front quest, the bags
   with four 20-slot bags, the moot-house door; then the production deploy ([deploy plan](deploy-plan.md)).
-- The reviews' and reports' notes are in the [Round 62 carry-overs](../../BACKLOG.md#round-62-carry-overs).
+- The reviews' and reports' notes are in the [Round 62 carry-overs](#carry-overs).
 
 ### Round-end gates
 
@@ -664,3 +664,75 @@ failed**), the **full seed fleet on main's tree** (`seed_fleet/run.sh full` thro
 quest-place check: **304 of 304 seeds build, 0 failed, 24 min 6 s**; Round 61's took 22 min 34 s) and one headless
 boot (PASS, listening). Each code lane ran the full `run_fixtures.sh` once (BAGS 277/0, TEMPLATEFIX 278/0,
 FRONTQUESTS 279/279; FRONTTEXT 279/279 per Astra).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **The Skyglass Carrier Clearing** (FRONTQUESTS' Q3, accepted): where the
+  canopy forms no `clearings` region the place falls back to the Cloudwood,
+  on 3 of 6 rendered seeds; its texts name the place only. Flagging the
+  clearings as a quest kind would change Skyglass's map.
+- **"West Trench Mouth"** (FRONTQUESTS' Q2, accepted): the objective label
+  of `throng_main_03` "An Oath in Hock" reads "… at West Trench Mouth"
+  (the engine appends the place's name; the texts never name it, `r29_q1`).
+  Moving the pledged standard to 083 would end it (the r36 pins allow it).
+- **Orrel's departure at 40** (lane D): "Work Waiting at Red Ramp"
+  (`blackwind_road_red_ramp`) reaches Drek Rampbinder at 40, whose first
+  front quests now open at 41 ("Seed for the Trampled Plots"); Nella and
+  Yarra offer their fortress calls at 40. One level, the GUI test judges it
+  (item 90).
+- **Two T6 choices at minimum level 50** (FRONTQUESTS' review):
+  `splitbolt_shoring_check` and `kezamba_melons` (reward level 51) give
+  tier-6 armor offered at 50; the band follows the reward level, as ruled.
+- **Items without a quest** (FRONTQUESTS' review): Salt Chitin and Siege
+  Cat Claw lost their last quest; `items.json` still lists them with uses
+  `["quest"]`.
+- **The validator's warnings:** 17 (11 before the round): six new
+  `W-night-count` on the spine's fixed objectives, now in flagged files;
+  `validate.py --game` 0 errors.
+- **Texts** (TEXTREVIEW): the texts call both Warmasters "he" (5 places;
+  no canon contradicts it); two place names repeat their zone
+  ("Stormscale Thunderwood on Stormscale Summit", "Causeway Toll Fields on
+  The Broken Causeway"); the overlaps orders → audit and Huskell → Eriath's
+  page come from the kept texts and stay.
+- **The template checker** (TEMPLATEFIX' Q3): letting `check.py`'s walker
+  also start at every standing cell on a template's box edge at y = 1
+  (the street round a building) would turn 11 warnings into 1 (only
+  Sunscar's platform; measured on a scratch copy, `--self-test` passing);
+  it changes the §6.2 entrance rule. `BASELINE` was not moved (Q2), so a
+  regression of the fixed points is a warning there; `tools/r62_templatefix`
+  pins them.
+- **`tools/r62_templatefix`'s placements:** the fixture walks the built
+  towns at hard-coded placements (Lethariel's core shrine at x 16, z 12;
+  Sunscar's hall at x −7, z 14 with its outer stair at x 8, z 16–23; the
+  gatehouse decks); a layout change that moves one updates the fixture.
+- **The capitals' freeze report** (TEMPLATEFIX' review): `tools/building_templates/freeze_report_capitals.txt`
+  still lists Kezamba's moot house with "legend 28"; it is a freeze-time snapshot (Round 58 did not update it
+  either), so it stays unless the freeze is rerun.
+- **The item dump** (BAGS and its review): `existing.json` was stale since
+  Round 51 and BAGS regenerated it with about 450 lines of registry drift
+  (116 items added, three retired skills gone, 42 quest NPCs,
+  `legacy_quests` rebuilt); `validate.py --game` reads the same with the
+  old and the new dump. Lane D regenerated it once more on main's tree
+  (FRONTQUESTS' ids in `legacy_quests`); the war-camp foremen's `race_id`
+  follows the probe world's random seed, so every regeneration moves
+  those 20 lines without a change (a fixed probe seed would end it).
+- **`item_tiers.md`'s generated tables** (BAGS): the crown, upgrade cost,
+  income and Warpack Fang tables are stale on main, so `tools/r33_ds/
+  build_doc.py --check` fails at the base too; BAGS regenerated only the
+  progression block (the bag sizes). A regeneration of the whole doc is
+  open.
+- **The 0.48.0 step** (BAGS): its pushed comment and letter keep "half as
+  much"; a character still carrying the 0.48.0 marker now sorts into 8 /
+  12 / 16 / 20 (harmless; upgrade contract, the 0.48.0 row).
+- **Fixture sweeps** (BAGS, FRONTQUESTS): `check_lua.sh`'s sweep 5 still
+  flags `io.popen` and `os.exit` in the tool fixtures, as before the round.
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.62.0 `map_reset` entry, because unpushed 0.58.0's entry already covers
+  every change against pushed 0.57.0; the entry is declared for the
+  record.

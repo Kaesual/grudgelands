@@ -4,12 +4,7 @@ Repeatable group content in the Miner's Guild's name: a party, or one player, op
 sealed mine far beyond the map, fights through it and takes the reward at its end.
 Every run is written anew, so an Expedition can be played again and again.
 
-**Decided** by the user, 2026-11-07; the framework and The Stilled Seam (levels 20–69)
-are implemented in Round 71 (`grug_expeditions`), The Second Shift, The Last Mint, the
-traps, the Expeditions tab and the reshaped rooms in Round 72; Round 73 (0.73.0) redesigned all
-three: floors with stairs, bent passages, light from what belongs there, dark stretches, the
-ambush, lava falls, critters and particles; Round 74 (0.74.0) shortened the closing and the
-Deserter's Mark, quickened the wall traps and gave the mobs the walk grid. This file owns the game rules
+**Decided and implemented** (Rounds 71–74). This file owns the game rules
 and their numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the
 record of the rulings, the [Round 73 concept](../planning/round73-expedition-redesign-concept.md)
 as that of the redesign's; [Round 71](../planning/round71-plan.md),
@@ -20,12 +15,12 @@ as that of the redesign's; [Round 71](../planning/round71-plan.md),
 
 The word is **Expedition**, for players, in docs and in code.
 
-A few details below are the coordinator's defaults, standing until the user rules on them
-([completion](../planning/round71-plan.md#decisions-during-the-round)): sight as a pull, a list holding only who engaged, forced exits in combat, no boats, refined bars in drops, the
-black arrival, one chest roll, lost chest contents and a boss without
-ground drops. Round 72.1's (§5): Cancel counts down like Finish while someone is inside,
-Finish and Cancel are refused while a run is prepared or already closing, and a run that
-can be finished offers Finish alone.
+A few rules below began as the coordinator's defaults of Round 71
+([completion](../planning/round71-plan.md#decisions-during-the-round)). The user confirmed
+on 2026-11-08 that these stay: a boss without ground drops, lost chest contents, one chest
+roll, every mob authored, refined bars in drops, sight as a pull and a list holding only who
+engaged; forced exits in combat, no boats and the black arrival stand as defaults. Leaving
+the party and re-entering is a free wipe (open, [BACKLOG](../../BACKLOG.md)).
 
 ## 1. The set
 
@@ -393,7 +388,8 @@ Expedition is hard or impossible.
 
 Balance is for a Warrior, a Priest and the rest of the party, at **player level =
 Expedition level**. A player at the entry limit keeps the level malus
-([combat](combat_stats.md)) as their own problem: nothing is tuned for them.
+([combat](combat_stats.md)) as their own problem: nothing is tuned for them. A new
+Expedition's fight needs a real test in the game: the probes' fights are scripted.
 
 ## 10. Rewards
 
@@ -426,7 +422,7 @@ Expedition level**. A player at the entry limit keeps the level malus
 Every Expedition has a small storyline and a storyline quest whose goal is killing the boss:
 the Miner's Guild ran into trouble while mining and needs fighters. **All of these quests are
 optional, level 60 included:** free, not on the chained story path, without the `story` flag.
-So the rule for group quests below 51 holds ([quests](quests.md#group-quests-round-61)).
+So the rule for group quests below 51 holds ([quests](quests.md#group-quests)).
 
 Every character gets the **Expedition Registrar's letter** at level 20, always, or at the
 next login when already above it ([mail](mail.md) §8, Round 72).

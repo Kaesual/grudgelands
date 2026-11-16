@@ -100,7 +100,7 @@ The final integrated composed-axis check passes seeds `0`,
 `4655649881628627392`, `13191094842853985814`, `1`, `42`, `8675309`,
 `9223372036854775807`, and `18446744073709551615`. Eight independent LuaJIT
 jobs used at most seven concurrent idle-scheduled processes. Logs and hashes
-are in [integrated evidence](wp40-terrain-life-evidence/).
+are in integrated evidence (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-terrain-life-evidence/`).
 All 137 project-owned production Lua files plus 42 changed Lua files pass the
 plain-5.1 parser. SETGLOBAL and five static sweeps pass; matches are inspected
 comments/strings and intentional offline shell hashing. Fresh-server source
@@ -109,7 +109,7 @@ audit passes; all nine reference pins remain unchanged.
 One final compact PUC 5.1 process and the same LuaJIT fixture pass with
 byte-identical 219-line output, SHA-256 `7e3b294bc4f7dc9b46768126e71d352a00c15ce9a61326d888fa9580e69627c5`.
 The integrated R7 seam executes all 74 required modules. No production, fixture
-or bound design inputs changed during the pair. The [receipt](wp40-terrain-life-evidence/README.md)
+or bound design inputs changed during the pair. The receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-terrain-life-evidence/README.md`)
 records the frozen inputs and supporting focused results.
 
 ## Local runtime test plan

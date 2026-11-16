@@ -153,7 +153,7 @@ page.
 
 ## 5. Quest-ready contract (ruling 17)
 
-The Round 38 name guarantee ([quests.md](../design/quests.md#the-quest-name-guarantee-round-38),
+The Round 38 name guarantee ([quests.md](../design/quests.md#the-quest-name-guarantee),
 [biomes_mobs.md](../design/biomes_mobs.md) "Names") already makes a mob's
 shown name the exact kill target. The crabs show the pattern the water mobs
 follow: one family (`crab`, base `grug_mobs:shore_crab`) split into authored

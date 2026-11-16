@@ -409,7 +409,7 @@ stand and walk, faces −z, no images, engine attachment offsets map z to
 
 ### Open notes
 
-In the [BACKLOG](../../BACKLOG.md#round-39-carry-overs); none blocks the GUI
+In the [carry-overs](#carry-overs); none blocks the GUI
 test. Whether Luanti draws the glb is proven only by the GUI check below;
 only stand and walk are exported; the offhand is stored but not drawn in
 game (the user wants it drawn later).
@@ -430,3 +430,37 @@ Desktop client, on the synced game; an existing test world is enough
    in your skin, cloak and size and switch between stand and walk every 4
    seconds; they should look the same (body, cloak, both clips).
    `/glb_probe clear` removes them; remove the probe folder afterwards.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **An unregistered item in a hand slot** would store an empty `image`
+  (`grug_visuals.hand_image` finds no definition); release mode rules such
+  an item out (a removed item needs a migration step or a new server).
+- **Admin `/faction`** updates the stored appearance only at the
+  character's next apply.
+- **The grammar's `max_depth = 4`** is exactly the measured depth of
+  today's strings (no headroom; `tools/r39_wm` asserts the equality): a
+  composition nested deeper or shallower fails the fixture until the
+  grammar, and with it the contract, follows.
+- **The model test is not in `run_fixtures.sh`:** `check_glb.py` and
+  `build_glb.py --check` are Python (a LuaJIT wrapper would need
+  `io.popen`, which check_lua's sweep 5 flags), so a round that touches the `.b3d` or player_api's
+  animations runs them explicitly.
+- **Equippable items from another mod:** the exporter loads only
+  `grug_gear`'s registrations; a mod that starts registering equippable
+  items must be added to `tools/web_data/build.lua`.
+- **Further clips** (sit, lay, mine, walk_mine) are one entry each in
+  `build_glb.py`'s `CLIPS` plus the same name in `tools/web_data/build.lua`'s
+  animation list (the export's frame ranges).
+- **Exporter shell calls** put the repository path in single quotes
+  (`build.lua`'s directory listing, the fixture's `find`): a path with a
+  `'` in it breaks them.
+- **Square hand images:** the export's README describes a hand item as an
+  extruded square of its image; every shipped hand image is square, a
+  non-square one would need that description extended.

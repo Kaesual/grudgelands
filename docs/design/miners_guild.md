@@ -1,16 +1,16 @@
 # The Miner's Guild
 
-Spec of Round 58 (lane GUILDSPEC, 2026-10-23). The rulings are the user's
-([Round 57 plan §8](../planning/round57-plan.md#8-decided-for-round-58),
-restated in [Round 58 plan §2 and §2a](../planning/round58-plan.md#2-the-rulings));
-each appears here once, in its own words, marked **Ruling**. Everything this
-spec adds is marked **Proposal** until the user accepts it. Every number is a
-proposal until the user accepts it on the tuning page (§9); the numbers live
-in one place, `mods/PLAYER/grug_guild/catalog.lua`, and code reads them from
-there. Numbers are rough targets, not hard gates. The user accepted the
-numbers as a first version on 2026-10-23 (the tuning page saved no change,
-so the catalogue's proposals stand); the names of the cloaks and the
-achievement (§6) are still proposals.
+**Implemented** in Round 58 (the Stonewright in Round 70). The user's
+rulings ([Round 57 plan §8](../planning/round57-plan.md#8-decided-for-round-58),
+[Round 58 plan §2 and §2a](../planning/round58-plan.md#2-the-rulings))
+appear here once, in their own words, marked **Ruling**; the rest is the
+spec built on them. The user accepted the numbers as a first version
+([Round 58 plan](../planning/round58-plan.md#decisions-during-the-round),
+"The numbers"). The cloak and achievement names (§6) shipped as proposed
+(`grug_achievements/catalog.lua`) and have not changed since. The numbers
+live in one place, `mods/PLAYER/grug_guild/catalog.lua`, and code reads them
+from there (the tuning page, §9). Numbers are rough targets, not hard
+gates.
 
 ## 1. Overview
 
@@ -32,7 +32,8 @@ achievement (§6) are still proposals.
   Brodd Deeppeg of Frostbarrow Shelf's camp and Rellis Shalemark of Ossuary
   Reach's, since Round 61 Audra Wainholt of Ashenward March's and Greda
   Stonehaul of Bannerbreak Mesa's, [quests.md](quests.md) "The Miner's
-  Guild givers").
+  Guild givers"). A named foreman's name comes from `grug_quests/npcs.lua`'s
+  `FOREMAN_TITLES` (read by `tools/r28_design/r28common.py`); the ids stay.
 - The guilds are loyal allies of their faction's military. Their proper names
   appear in quest texts and on buildings, never in the interface's own labels
   (rank display, vendor page, achievements say "Miner's Guild").
@@ -125,7 +126,7 @@ one picture.
   Cobblestone or Gravel again.
 - Rank n needs the lifetime total `RANKS[n]` (catalogue `rank.<n>`). Earning
   adds the same points to both numbers; spending takes from the balance only.
-- **Proposal (the thresholds):** 200, 900, 2,700, 9,000, 23,000, 50,000,
+- **The thresholds:** 200, 900, 2,700, 9,000, 23,000, 50,000,
   90,000, 150,000, 225,000, 350,000. Built backwards from hours of mining
   (§9): rank n is earned by mining at tier min(n, 6), the tier whose goods it
   unlocks, so a player reaches rank n about when their level lets them use
@@ -133,7 +134,7 @@ one picture.
   5 h at T6 for rank 6 (16 h in all); ranks 7–10 are prestige at T6 (8, 11½,
   14½ and 24 h: about 75 h in all for the winged cloak). The steps never
   shrink, so the last ranks are the hardest.
-- **Proposal (one guild per character, by faction; built by lane REP):** the
+- **One guild per character, by faction:** the
   values are kept per faction (`grug_guild:lifetime_accord`, …), so an admin's
   `/faction` (the only way a faction changes, `grug_factions.set_faction`)
   gives the character the other guild at its own values (0 at first) and keeps
@@ -147,7 +148,7 @@ one picture.
   material, stone and sand very low; selling to vendors for copper stays
   possible. **Ruling (§2a):** bricks, blocks and other made goods are not
   exchanged.
-- **Proposal (the mechanism; built by lane REP):** like the vendor's Sell tab
+- **The mechanism:** like the vendor's Sell tab
   for lot goods: one row per exchanged item the player carries in
   `grug_inventory.consume_lists` (counts summed), "N points per L", and **1 / 5 / 10 / All**
   whole-lot choices that leave the remainder. Unavailable quantities cannot
@@ -155,7 +156,7 @@ one picture.
   ignored. Built as the vendor window's **Trade-in** mode, shown by a vendor
   whose definition (`grug_traders.vendors`) carries `guild = true`; the window
   opens on it and shows the guild, the rank and the balance.
-- **Proposal (the list):** raw mined goods only, 25 items:
+- **The list:** raw mined goods only, 25 items:
   - stone and sand, **1 point per 50**: Cobblestone, Mossy Cobblestone,
     Desert Cobblestone, Granite, Basalt, Slate, Gravel, Sand, Silver Sand
     (every tier rock drops Cobblestone, so Cobblestone is "stone");
@@ -175,13 +176,13 @@ one picture.
 ### 5.2 The camp vendor
 
 - **Ruling:** see §3 (buys, trades, repairs, the one page of six rows).
-- **Proposal (built by lane CAMPNPC):** the rows are locked by the rank of
+- **Rank locks:** the rows are locked by the rank of
   the player's own guild ("Reach Reputation Rank N"), and the rank is checked
   again at the purchase. Prices are paid from the balance. The page is not a
   shelf of `grug_traders.profession_stock`, so the ingredient source index
   never lists the consumables as copper goods. The hall's exchange counter in
   each capital trades and buys like the camp vendor but has no reputation
-  page (**proposal, built**; the plan names it "the guild's vendor" for the
+  page (the plan names it "the guild's vendor" for the
   exchange).
 - **As built:** the Camp Vendor (`grug_traders:vendor_camp`, every mining
   camp's and war camp's `vendor_camp` socket) is a guild vendor (`guild =
@@ -257,7 +258,7 @@ amounts are the user's accepted ones of 2026-11-07
 
 - **Ruling:** an achievement series "Reach Reputation Rank 3/6/10 with the
   Miner's Guild" with three cloaks (rank 10 winged; the picked art: drop-01 P1).
-- **Proposal (built by lane REP):** one achievement row `miners_guild` with
+- **The achievement:** one achievement row `miners_guild` with
   tiers at 3, 6 and 10 on the counter `guild:rank`, the highest rank the
   character reached with either guild (so an admin's `/faction` never takes a
   cloak); cloaks `miners_guild_1` … `_3` (`grug_achievements` convention: tier
@@ -265,7 +266,7 @@ amounts are the user's accepted ones of 2026-11-07
   `grug_guild.register_on_rank_change` (§10.3). No `faction` field: both
   factions earn it. Built with the counter read live
   (`grug_guild.highest_rank`, nothing copied) and the cloaks Lamp Badge
-  Workcloth, Lamp and Pick Workcloth and Lamplight Mantle (names a proposal).
+  Workcloth, Lamp and Pick Workcloth and Lamplight Mantle.
 
 ## 7. The consumables
 
@@ -280,10 +281,10 @@ amounts are the user's accepted ones of 2026-11-07
   only one of the two active at a time; the effect continues across logout
   and death (it saves its remaining time).
 - Names: **Ore Sense I … VI**, **Treasure Hunt I … VI** (Roman numerals like
-  the elixirs; **proposal**). Items `grug_guild:ore_sense_t<n>`,
+  the elixirs). Items `grug_guild:ore_sense_t<n>`,
   `grug_guild:treasure_hunt_t<n>`; use level `_grug_req_level` = 10 n − 9
   (`grug_core.can_use_item_level`); purchase rank n.
-- **Proposal (common rules):**
+- **Common rules:**
   - the effect lasts **30 minutes** (one mining session);
   - "works only in its depth": the item can be used only inside its tier's band
     (`grug_materials.tier_at(y) == tier`), and while the effect runs it marks
@@ -309,7 +310,7 @@ amounts are the user's accepted ones of 2026-11-07
   random interval of 60–120 s between marks, the marker 5 s, seen by the user
   only. One search per mark over the targets' nodes: about one per player
   every 90 s (built with `core.find_nodes_in_area`, below).
-- **Treasure Hunt (proposal):** one Miner's Remains at a time, placed
+- **Treasure Hunt:** one Miner's Remains at a time, placed
   **12–24 nodes** from the user in the tier's own rock (`TIERS[t].node`, all 26
   neighbours solid, `core.is_protected` and the hard protection false);
   marked while the user is within **32**; it removes itself when the user is
@@ -329,7 +330,7 @@ amounts are the user's accepted ones of 2026-11-07
   gone when `grug_guild`'s callback runs: CONSUME keeps the effect's own end
   time per player and saves and re-applies from that, never from the status.
 - **Built** (lane CONSUME, `grug_guild/effect.lua`, `items.lua`): the common
-  rules, both kinds and the slot as proposed above, with these choices:
+  rules, both kinds and the slot as above, with these choices:
   - the save timer writes every **30 s** (a crash costs the player at most
     that), plus at leave; the offline time does not count; the death and the
     respawn re-apply the picture;
@@ -368,7 +369,7 @@ amounts are the user's accepted ones of 2026-11-07
 - Six nodes `grug_guild:miners_remains_t<n>` ("Miner's Remains"): the tier's
   rock with the picked overlay (drop-01 P1), its dig level, no item of its
   own, `is_ground_content = false`.
-- **Proposal (the loot):** a Bag of Coins (`grug_money.make_bag`), the tier's
+- **The loot:** a Bag of Coins (`grug_money.make_bag`), the tier's
   bar and, once in 8, the tier's cut gem: a fallen miner's pack.
 
   | Tier | Copper | Bars | Cut gem (1 in 8) |
@@ -461,16 +462,14 @@ model than about the game).
 ## 10. The `grug_guild` contract
 
 The mod `mods/PLAYER/grug_guild` holds the guild's own state and logic.
-Wave-1 lanes build on this section and never change it; a problem in it stops
-that path and goes to the coordinator with the change the lane would want.
 
 ### 10.1 Files, owners, dependencies
 
-| File | Owner | Holds |
+| File | Built by | Holds |
 |---|---|---|
-| `mod.conf` | GUILDSPEC | `depends = grug_core, grug_materials, grug_money, grug_inventory, grug_mapgen, grug_factions, default` — every dependency the planned mod needs, so no lane edits it; another one goes to the coordinator |
+| `mod.conf` | GUILDSPEC | `depends = grug_core, grug_materials, grug_money, grug_inventory, grug_mapgen, grug_factions, default` |
 | `init.lua` | GUILDSPEC | the global `grug_guild`, the catalogue API, one `dofile` per file below, the load audit (every catalogue item registered once the mods have loaded) |
-| `catalog.lua` | GUILDSPEC; its `VALUES` the coordinator (the tuning page); REP deleted the two `pending` fields (no row is pending now) | every number and id as pure data, the accessors |
+| `catalog.lua` | GUILDSPEC; `VALUES` from the tuning page (§9) | every number and id as pure data, the accessors |
 | `store.lua` | REP | reputation: §10.3 |
 | `exchange.lua` | REP | the trade-in: §10.4 |
 | `effect.lua` | CONSUME | the mining effect: §10.5 |
@@ -480,16 +479,11 @@ that path and goes to the coordinator with the change the lane would want.
 | `stonewright.lua` | Round 70 GUILD | the Stonewright's rows and conversion (§5.3) |
 | `nodes.lua`, `machines_data.lua` | Round 70 GUILD | the five ornamented stones and the machines' nodes; `grug_mapgen/init.lua` runs `nodes.lua`, because the templates resolve their nodes while grug_mapgen loads, before this mod; the data file is written by `tools/r70_guild/make_machines.py` |
 
-Each lane filled its file (Round 58); while the skeleton stood alone, the
-functions were documented stubs answering as for a character of rank 0 with
-nothing to trade and no effect. The fixture checks only that the functions
-exist, so no lane had to touch it. Outside
-`grug_guild`, the lanes touch: REP `grug_traders` (the mason's shelf, the
-trade-in in the vendor window, the consumables' payout in `prices.lua` from
-`sell_copper`) and `grug_achievements` (§6); CONSUME
-`grug_core/status_icons.lua` (§7) and `economy.md` §1 (§8); CAMPNPC
-`grug_traders` (the camp vendor kind and its page) and `grug_repair` (the
-provider). REP and CAMPNPC share the vendor window: REP first (plan §7).
+Outside `grug_guild` the guild touches `grug_traders` (the mason's shelf,
+the trade-in in the vendor window, the consumables' payout in `prices.lua`
+from `sell_copper`, the camp vendor kind and its page), `grug_achievements`
+(§6), `grug_core/status_icons.lua` (§7), `economy.md` §1 (§8) and
+`grug_repair` (the provider).
 
 ### 10.2 The catalogue (`catalog.lua`)
 
@@ -543,8 +537,7 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
 | `grug_guild.register_on_rank_change(fn(player, faction, new_rank, old_rank))` | — the achievement series' hook |
 
 Both numbers clamp at 2,147,483,647 (`set_int`). An admin command for tests
-and the GUI checklist ("the winged cloak at rank 10, admin-set") is REP's:
-**proposal, built** `/guild_rep <player> <points>` (privilege `server`), through
+sets reputation: `/guild_rep <player> <points>` (privilege `server`), through
 `add(…, "admin")`.
 
 ### 10.4 The trade-in (`exchange.lua`, REP)
@@ -607,7 +600,7 @@ room before it spends (`grug_inventory.fits`) and gives through
 | `grug_mapgen:guild_lift` | the lift point (CAMPS; LIFT overrides it) |
 | `grug_mapgen:room_fill`, `room_floor`, `room_lamp`, `room_mantle_t1` … `_t6` | the room's nodes (ROOMS) |
 | status `mining_sense`, variants `ore_sense`, `treasure_hunt` | the effect slot (not `elixir`) |
-| achievement `miners_guild`, cloaks `miners_guild_1` … `_3`, counter `guild:rank` | §6 (proposal) |
+| achievement `miners_guild`, cloaks `miners_guild_1` … `_3`, counter `guild:rank` | §6 |
 
 ### 10.9 Saved state and the map reset
 

@@ -1,333 +1,140 @@
-# Cross-CLI orchestration: Claude and Codex driving each other
+# Astra lanes through the Codex CLI
 
-Decided 2026-09-17. This note records only execution mechanics: how one CLI
-launches, controls, monitors and cleans up after the other, in both
-directions. Model choice and authorization stay with
-[agent-model-policy.md](agent-model-policy.md) (the user routes per session),
-the round flow, gates and review checklist stay with
-[round-workflow.md](round-workflow.md), and read-only Claude reviews launched from
-Codex keep their own procedure in
-[claude-cli-review.md](claude-cli-review.md). An orchestrator reads this file
-when it is about to delegate across CLIs; AGENTS.md carries only the pointer
-to this procedure.
+Decided 2026-09-17, cut to the one direction in use on 2026-11-16: a Claude
+coordinator runs a GPT-6 Astra lane as a Codex CLI worker. Model choice:
+[agent model policy](agent-model-policy.md); round flow, gates and the review
+checklist: [round workflow](round-workflow.md). The Codex-to-Claude direction
+(not used since Round 24) and the Claude CLI review procedure are archived:
+[full cross-CLI note](../archive/process/cross-cli-orchestration-2026-09.md),
+[Claude CLI review](../archive/process/claude-cli-review.md).
 
-Verified against `codex-cli 0.147.0` and the Claude Code CLI on 2026-09-17;
-re-check the `--help` output when a version changes. 2026-09-19: the
-standalone Codex CLI was updated to 0.155.1 (`codex update`) because
-`gpt-6-astra` refuses older clients ("model requires a newer version of
-Codex"); `codex exec --ephemeral -s read-only --json -o` was re-verified
-for `gpt-6-astra` and `gpt-5.6-sol`, the remaining commands of §5 were not
-re-run. Model slugs come from `~/.codex/models_cache.json` (`gpt-6-astra`,
-not `gpt-astra-6`). 2026-10-01: `codex-cli 0.159.3`; the user config now
-defaults to `model = "gpt-6-astra"`; the cache also lists `gpt-6.1-sol`,
-`gpt-6-sol` and `gpt-5.6-sol`. `codex exec --ephemeral -s read-only -m
-gpt-6-astra` was re-verified from Claude's command runner (no unsandboxed
-rerun needed), and the `image_generation` feature (the built-in image tool)
-is enabled. Not yet re-run on 0.159.3: `workspace-write` with the writable
-roots, `resume`, and image generation inside `exec`; the first Astra lane of
-Round 28 re-verifies them. Never use reasoning effort `ultra`: the model
-cache describes it as automatic task delegation, which breaks "a worker never
-delegates". 2026-10-02: two pitfalls reported by another Claude orchestrator
-were added (2.1, 2.2, §5). The worktree metadata name was re-checked in this
-repository (folder `agent-a8a25333ca242e35c`, branch `r28-w1-world`, metadata
-`.git/worktrees/agent-a8a25333ca242e35c`, git 2.55); the immediate move of
-Claude Code's working directory after a `cd` is that agent's finding and was
-not re-measured here.
+Verified with `codex-cli` 0.147.0 (2026-09-17), 0.155.1 and 0.159.3
+(2026-10-01); re-check `codex --help` when the version changes.
 
-## 1. Roles and invariants
+## 1. Invariants
 
-- **CLI is exclusively cross-provider (user 2026-09-20).** Claude may run
-  Codex CLI workers; Codex may run Claude CLI workers when authorized. For its
-  own provider, a coordinator uses native subagents, including independent
-  reviewers. Never copy the Claude-to-Codex commands below into a Codex
-  coordinator's same-provider workflow, or invoke Claude CLI from Claude for
-  its own subagents. Native thread limits do not permit that workaround.
-- **One orchestrator per session**, whichever CLI the user is talking to. The
-  other CLI is a **worker**: one OS process per lane, its own worktree, port
-  block, output directory and brief. A worker never delegates further and
-  never becomes a second orchestrator unless its brief says so explicitly.
-- Every worker launch has, before the call: a written brief file, an existing
-  worktree on its own branch (`git worktree add <dir> -b <branch> main`), an
-  output directory under the orchestrator's scratchpad or a unique `/tmp`
-  directory, and a port block that no other lane uses.
-- A worker never: pushes, runs `tools/sync_to_luanti.sh`, touches the main
-  checkout or another lane's worktree, or reads/writes
-  `~/.var/app/org.luanti.luanti/.minetest` (the user's live client). Engine
-  runs go through `tools/luanti_headless.sh` with an explicit port, under `nice -n 19`, and end with
-  `pgrep -f '^luanti.bin'` showing only the user's client.
-- The worker's final report is a **hypothesis**. The orchestrator reruns the
-  lane's gates itself (`check_lua.sh`, the LuaJIT fixtures and the other
-  [round-workflow gates](round-workflow.md#3-gates)); there is no PUC
-  runtime run
-  ([interpreter strategy](../technical/luanti-lua.md#interpreter-and-test-strategy)).
+- **Cross-provider only:** Claude runs Codex as a CLI worker; Claude's own
+  models run as native subagents, never through the Claude CLI.
+- **One OS process per lane:** its own worktree and branch (from
+  `round<NN>`, [round workflow](round-workflow.md#2-a-round-step-by-step)
+  step 3), its brief file and output folder
+  `~/projects/grudgelands-orchestration/r<NN>/astra-<lane>/`. The worker
+  never delegates further: reasoning effort `xhigh`, **never `ultra`** (it
+  means automatic task delegation).
+- **The worker never** pushes, merges, runs `tools/sync_to_luanti.sh`,
+  touches the main checkout, another lane or the user's Luanti folder, or
+  launches Codex, Claude or any agent (measured 2026-09-18: a worker ran its
+  own review and reported "MERGE"). Engine runs only through
+  `tools/luanti_headless.sh` and the shared queue. The brief says all of this,
+  plus the launch sentence and that the report goes only to the `-o` path.
+- **The report is a hypothesis.** The coordinator reads the commits
+  (`git -C "$wt" log --oneline round<NN>..HEAD`) and requires
+  `git -C "$wt" status --porcelain` to be empty; the independent review is a
+  native Opus reviewer with the round's review brief, which reads the lane's
+  receipts and does not rerun its long runs.
 - Ignored coordinator state (`.claude/`, `.codex/`, `.kilo/`,
-  `tools/wp40/results/`) is not project authority for either CLI and must not
-  be searched or cited as repository content.
+  `tools/wp40/results/`) is not project authority.
 
-## 2. Claude orchestrating Codex workers
-
-### 2.1 Preflight
+## 2. Preflight and sandboxes
 
 ```bash
-codex --version                       # record in the lane's output dir
+codex --version                       # >= 0.155: gpt-6-astra refuses older clients
 grep -E '^(model|model_reasoning_effort)' ~/.codex/config.toml
 ```
 
-The user config sets `model = "gpt-6-astra"` (since 2026-10-01; earlier
-`gpt-5.6-sol`) and `model_reasoning_effort = "high"`; pass `-m`/`-c`
-explicitly anyway so the record does not depend on the config file. The repository is a trusted
-project in `~/.codex/config.toml`.
+The slug is `gpt-6-astra` (from `~/.codex/models_cache.json`); pass `-m` and
+`-c model_reasoning_effort=xhigh` explicitly anyway. Two sandboxes nest:
 
-**Sandboxes.** Two sandboxes nest here: Claude's command-runner sandbox
-around the `codex` process, and Codex's own sandbox around the commands the
-worker runs.
+- **Claude's command runner** around `codex`: if a launch fails with a
+  network or stream error, rerun the identical command through the runner's
+  unsandboxed capability (a runner setting, not a Codex flag).
+- **Codex's sandbox:** `-s workspace-write` for a lane. It needs as writable
+  roots both git directories of the worktree: the shared `.git` **and** the
+  lane's own metadata folder, which git names after the worktree folder's
+  basename, not the branch. Query both, never build or `mkdir` them:
+  `git -C "$wt" rev-parse --path-format=absolute --git-common-dir --git-dir`.
+  A lane that boots a headless server also needs
+  `-c sandbox_workspace_write.network_access=true` (`workspace-write` denies
+  every socket) and `$XDG_RUNTIME_DIR/.flatpak` as a writable root. Every
+  other writable root must exist before the launch (`mkdir -p`). Never
+  `--dangerously-bypass-approvals-and-sandbox`.
 
-- Claude's sandbox: on 2026-09-17 `codex exec` ran successfully inside it
-  (API traffic, file writes, git). If a launch fails with a network or stream
-  error, rerun the identical command through the runner's unsandboxed
-  capability; that is a runner setting, not a Codex flag. Earlier sessions
-  needed this every time.
-- Codex's sandbox: `-s read-only` for reviews, `-s workspace-write` for
-  implementation. **`workspace-write` denies `socket()` outright** (measured:
-  `PermissionError: Operation not permitted` on a local UDP bind), so any lane
-  that starts a headless Luanti server needs
-  `-c sandbox_workspace_write.network_access=true`. `/tmp` is writable under
-  `workspace-write`; other directories need `--add-dir` (or, on `resume`,
-  which has no `--add-dir`, the config form
-  `-c 'sandbox_workspace_write.writable_roots=["<dir>", ...]'`). Two roots
-  are needed for every lane that runs in a **git worktree** or boots the
-  Flatpak engine, both measured on 2026-09-17: the worktree's git metadata
-  lives under the main checkout's `.git`, so `git commit` fails with
-  `index.lock: Read-only file system` unless
-  both `/home/jan/projects/grudgelands/.git` (object store and refs are
-  shared) **and** the lane's own metadata directory under `.git/worktrees/`
-  are writable roots (measured: with `.git` alone the worktree directory
-  stays read-only and `index.lock` fails; with `.git/worktrees` alone it fails
-  too). Git names that metadata directory after the **basename of the
-  worktree folder**, not after the branch (and appends a number when the name
-  is taken), so never build either path by hand: query both from the lane
-  with `git -C "$wt" rev-parse --path-format=absolute --git-common-dir
-  --git-dir` (2.2). Both directories already exist; do not `mkdir` them;
-  and `flatpak run` fails with `Unable to allocate instance id` unless
-  `$XDG_RUNTIME_DIR/.flatpak` is writable. Never use
-  `--dangerously-bypass-approvals-and-sandbox` for a lane; the worktree plus
-  `network_access=true` is enough.
+## 3. Launch
 
-### 2.2 Implementation lane
+[templates/run_astra.sh](templates/run_astra.sh) is the practised launcher
+(`run_astra.sh <NN> <lane>`, brief at `r<NN>/astra-<lane>/brief.md`). Its
+core:
 
 ```bash
-wt=/home/jan/projects/grudgelands/.claude/worktrees/<lane>   # own branch
-out=<scratchpad>/<round>/<lane>                               # brief.md lives here
 git_common="$(git -C "$wt" rev-parse --path-format=absolute --git-common-dir)"
-git_dir="$(git -C "$wt" rev-parse --path-format=absolute --git-dir)"  # .git/worktrees/<folder>, not <branch>
-roots="[\"/run/user/1000/.flatpak\",\"$git_common\",\"$git_dir\"]"
+git_dir="$(git -C "$wt" rev-parse --path-format=absolute --git-dir)"
+roots="[\"$git_common\",\"$git_dir\"]"   # plus the Flatpak root for a booting lane
 codex exec -C "$wt" -s workspace-write \
-  -c sandbox_workspace_write.network_access=true \
   -c "sandbox_workspace_write.writable_roots=$roots" \
-  -m gpt-5.6-sol -c model_reasoning_effort=high \
+  -m gpt-6-astra -c model_reasoning_effort=xhigh \
   --json -o "$out/last.md" - \
   < "$out/brief.md" > "$out/events.jsonl" 2> "$out/stderr.log"
 ```
 
-- The prompt is passed as `-` and read from the brief file. Never launch
-  without a prompt argument and without redirected stdin: `codex exec`
-  prints "Reading additional input from stdin..." and blocks forever. When a
-  prompt is given on the command line, still add `< /dev/null`.
-- Do **not** pass `--ephemeral` for an implementation lane: the fix round
-  resumes the same session (2.4). The `thread_id` is the first JSONL event
-  (`{"type":"thread.started","thread_id":"..."}`); save it next to the brief.
-- Launch from the orchestrator's command runner **in background mode** (the
-  harness reports the exit) and never with a trailing `&` inside a
-  short-lived shell. Never `cd` into the worktree in the orchestrator's own
-  shell, not even once for a test run: Claude Code moves its primary working
-  directory there immediately (the environment then reports "This is a git
-  worktree … Do NOT cd to the original repository root"), every later
-  relative command runs in the lane instead of the main checkout, and
-  removing the worktree later leaves the orchestrator with a dead working
-  directory. Use `-C` for Codex, `git -C` for inspection, or a subshell
-  `( cd "$wt" && … )` as in 2.4. If it happened anyway, `cd` back to the main
-  checkout with an absolute path at once and check `pwd`.
-- Up to eight lanes may run in parallel (host rule); each lane's Luanti
-  server runs under `nice -n 19` on the lane's own port block.
+- The prompt is `-`, read from the brief file. Without a prompt and with
+  stdin open, `codex exec` waits forever ("Reading additional input from
+  stdin..."); with a prompt on the command line add `< /dev/null`.
+- No `--ephemeral`: the fix round resumes the session. Save the `thread_id`
+  from the first JSONL event (`thread.started`) beside the brief at once.
+- Launch in the runner's background mode, never with a trailing `&` in a
+  short-lived shell. **Never `cd` into the worktree in the coordinator's own
+  shell:** Claude Code moves its working directory there at once, later
+  relative commands run in the lane, and removing the worktree leaves a dead
+  directory. Use `-C`, `git -C` or a subshell `( cd "$wt" && … )`; if it
+  happened, `cd /home/jan/projects/grudgelands` at once and check `pwd`.
 
-### 2.3 Monitoring and stuck detection
+## 4. Monitoring and completion
 
-Watch three signals while the process lives:
+Watch the PID, the growth of `events.jsonl` (each `item.completed` carries
+`agent_message`, `command_execution` or `file_change`) and `stderr.log`
+(authentication, rate limit, network). A stream that has not grown for ten
+minutes while the process uses no CPU is stuck: kill that PID only, confirm
+no `luanti.bin --server` of the lane survives, relaunch. Wall time alone is
+never a kill criterion. The run is complete when the process exited 0, the
+stream ends with `turn.completed` and `last.md` is non-empty. A run that ends
+with `turn.failed: Selected model is at capacity` produced no report: relaunch
+it.
 
-1. the OS PID (the harness's background task, or `pgrep -f 'codex exec'`),
-2. `events.jsonl` growing; each `item.completed` carries the type
-   `agent_message`, `command_execution` or `file_change`, so the last few
-   lines show what the worker is doing,
-3. `stderr.log` for authentication, rate-limit or network failures.
+## 5. Fix round
 
-A stream that has not grown for ten minutes while the process uses no CPU is
-stuck (seen 2026-08 on a blocked stdin); kill that PID only, confirm no
-`luanti.bin --server` of that lane survives, and relaunch. Wall time alone is
-never a kill criterion for a lane that is still producing events.
-
-The run is complete when the process has exited with status 0, the JSONL
-ends with `{"type":"turn.completed",...}` and `last.md` is non-empty. Then
-read `git -C "$wt" log --oneline main..HEAD` and require
-`git -C "$wt" status --porcelain` to be empty; the report in `last.md` is
-what the worker claims, the commits are what it did.
-
-### 2.4 Review and fix round
-
-Reviews use a fresh Codex context with a review brief that names the lenses
-from the [review checklist](round-workflow.md#5-reviewing) and the required verdict (`MERGE`,
-`FIX FIRST`, `REJECT`) with findings as severity + `file:line` + defect +
-failure scenario + correction. Independence is the separate context and a
-brief the implementer never saw; the same model on both sides is allowed when
-the user routes it that way.
-
-```bash
-codex exec --ephemeral -C "$wt" -s read-only \
-  -m gpt-5.6-sol -c model_reasoning_effort=xhigh \
-  --json -o "$out/review.md" - \
-  < "$out/review-brief.md" > "$out/review.jsonl" 2> "$out/review-stderr.log"
-```
-
-`codex exec review --base main` is the quick built-in diff review; it does
-not know the project's lenses, so use it only as an extra pass, never as the
-independent review of record.
-
-The fix round goes back to the implementer's session so it keeps its
-context:
+The fix round resumes the implementer's session so it keeps its context.
+`resume` accepts neither `-C` nor `-s` and runs wherever the shell is, so it
+starts from a subshell in the worktree (resumed from the main checkout it
+edits the main checkout):
 
 ```bash
 (cd "$wt" && codex exec resume --all "$thread_id" \
   -c sandbox_mode=workspace-write \
-  -c sandbox_workspace_write.network_access=true \
   -c "sandbox_workspace_write.writable_roots=$roots" \
   --json -o "$out/fix.md" - < "$out/fix-brief.md" > "$out/fix.jsonl" 2>> "$out/stderr.log")
 ```
 
-`resume` accepts neither `-C` nor `-s` (measured 2026-09-17: "unexpected
-argument '-C'", exit 2 with an empty stream) and it does **not** restore
-the session's working directory: the resumed worker runs, and its
-`workspace-write` root is, wherever the orchestrator's shell is. Resumed
-from the main checkout, a worktree lane starts editing the main checkout
-through relative paths (measured; killed within a minute, no damage). So
-the resume is launched from a subshell that `cd`s into the worktree, which
-leaves the orchestrator's own shell where it was. The sandbox is set
-through `-c sandbox_mode=...`; `--all` disables the cwd filter on the
-session list. `$roots` is computed exactly as in 2.2; shell variables do not
-survive between the runner's calls, so recompute it before the resume.
+Recompute `$roots` before the resume (shell variables do not survive between
+runner calls). `resume --last` is only safe when one lane runs.
 
-`codex exec resume --last` picks the most recent session and is only safe
-when one lane runs at a time.
-
-### 2.5 Record and cleanup
-
-The durable package record (research note or commit message fallback) keeps:
-date, reviewed SHA, `git status --porcelain` state, Codex CLI version, exact
-model and effort, verdict and severity counts, fix-round count, and the
-independence statement. Raw JSONL streams are not committed.
-
-After the merge: `git worktree remove <dir>` (clean tree only), delete the
-branch after `git branch --contains` shows it in main, remove the lane's
-temporary directories, and confirm `pgrep -f '^luanti.bin'` shows only the
-user's client.
-
-### 2.6 Round-end validation
-
-The round-end gates (seed fleet when owed, fixtures, one boot of main, the
-sync, the user's GUI check) are in the
-[round workflow](round-workflow.md#3-gates). The former capital, six-start
-and PUC/LuaJIT micro-pair runners were retired in Round 22 (D22).
-
-## 3. Codex orchestrating Claude workers
-
-Read-only reviews: follow [claude-cli-review.md](claude-cli-review.md)
-unchanged (escalated runner, `--tools Read,Grep,Glob`, deny list, JSONL
-`result` record, PID file). Claude's own sandbox can misreport the API as
-offline, so Codex launches `claude` through the escalated command runner.
-
-Implementation by a Claude worker follows the same lane discipline as 2.2:
-
-```bash
-cd "$wt" || exit 1
-session_id="$(uuidgen)"                  # save beside the lane brief
-claude --print --model opus --effort high --verbose \
-  --output-format stream-json --session-id "$session_id" \
-  --permission-mode acceptEdits \
-  --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git *),Bash(tools/*),Bash(luajit *),Bash(python3 *)" \
-  --add-dir "$out" \
-  < "$out/brief.md" > "$out/events.jsonl" 2> "$out/stderr.log"
-```
-
-- `acceptEdits` approves file edits; shell commands need the `Bash(...)`
-  patterns listed in `--allowedTools`, so the patterns are the lane's
-  capability envelope. `--permission-mode bypassPermissions` is allowed only
-  inside a disposable worktree and must be stated in the brief.
-- Model aliases: `opus`, `sonnet`, `fable` (Fable only with the user's
-  explicit authorization for that task, per the model policy).
-- The final answer is the JSONL record with `"type":"result"`; a stream
-  without it is incomplete and the lane is rerun, not inferred.
-  `--json-schema` yields a structured verdict when the brief needs one.
-- Fix rounds: the implementation launch above keeps session persistence on
-  and uses a caller-generated UUID; resume it with
-  `claude --print --resume <uuid> < fix-brief.md`.
-
-### 3.x Questions and blockers from a worker (both directions)
-
-Codex workers have no live channel into the orchestrator. Claude workers
-launched exactly as shown above, without `--brief`, likewise have no configured
-live channel. Claude Code's `--brief` flag exists, but is untested in this
-setup and is neither documented nor enabled here. A worker that hits a
-decision the brief reserves for the orchestrator, or a blocker it cannot
-resolve inside its scope, **stops and reports** instead of guessing: the final
-message ends with a `## Blockers / questions` section listing each item with
-what it tried and which option it would pick. The orchestrator answers by
-resuming the same thread (2.4 / 3) with a brief that quotes the item and the
-ruling. Every brief states this rule explicitly, together with the
-non-negotiable invariants of §1, so a worker never "asks" by silently
-narrowing the scope. Progress is visible before the end through the JSONL
-stream; the orchestrator can kill a lane that goes off scope and resume it
-with a correction.
-
-## 4. Control loop (both directions)
-
-1. Brief file written; worktree, branch, ports, output dir created.
-2. Launch in background with redirected stdin/stdout/stderr; save PID and
-   session/thread id.
-3. Monitor PID, stream growth and stderr; kill only the lane's own PID.
-4. Collect: exit status, final message, `git log main..HEAD`, clean tree.
-5. Orchestrator reruns every gate itself.
-6. Independent review in a fresh context; fix round by resuming the
-   implementer's session; re-review when the fix is non-trivial.
-7. `git merge --no-ff`, gates again on main (all suites, not only the
-   lane's), engine validation where digests moved, then sync and the user's
-   playtest.
-8. Cleanup: worktree, branch, temp dirs, no orphaned servers.
-
-## 5. Measured pitfalls
+## 6. Pitfalls
 
 | Symptom | Cause | Fix |
 |---|---|---|
 | `codex exec` prints "Reading additional input from stdin..." and never starts | stdin left open | `< brief.md` with prompt `-`, or `< /dev/null` |
-| `PermissionError: Operation not permitted` on any socket in a Codex lane | `workspace-write` blocks sockets | `-c sandbox_workspace_write.network_access=true` |
-| Network or stream error on launch from Claude | command-runner sandbox | rerun through the unsandboxed runner capability |
-| Claude reports the API as offline when launched from Codex | Claude sandbox | escalated runner (claude-cli-review.md) |
-| Orchestrator shell reports `getcwd` failure after cleanup | it had `cd`-ed into a removed worktree | never `cd` into worktrees; `-C` / `git -C` |
-| Orchestrator's relative commands suddenly run in a lane; the environment reports "This is a git worktree … Do NOT cd to the original repository root" | a single `cd "$wt"` in the orchestrator's own shell; Claude Code moves its primary working directory at once, not only after `git worktree remove` | never `cd` into worktrees: `-C`, `git -C` or `( cd "$wt" && … )`; if it happened, `cd /home/jan/projects/grudgelands` at once and check `pwd` (reported 2026-10-02) |
-| `resume --last` picks the wrong lane | several lanes ran | resume by saved `thread_id` / `--session-id` |
-| `codex exec resume`: "unexpected argument '-C'" | `resume` has no `-C`/`-s` | `--all <thread_id>` plus `-c sandbox_mode=...` (2.4) |
-| Resumed worker edits the main checkout | `resume` runs in the orchestrator's cwd | `(cd "$wt" && codex exec resume ...)` (2.4) |
-| Orchestrator shell dies with exit 144 when stopping a worker | `pkill -f`/`pgrep -f` pattern also matches the orchestrator's own command line | match with a bracketed character (`"codex exec resum[e] --all <id>"`) or kill by a saved PID (measured 2026-09-18) |
-| Review launched on a worktree with an unfinished merge | orchestrator merged `main` into the lane and did not check for conflicts first | after `git -C "$wt" merge main` require `git -C "$wt" diff --name-only --diff-filter=U` to be empty before any launch |
-| Codex stderr: `failed to renew cache TTL: missing field supports_parallel_tool_calls` | models-cache format of this CLI build | harmless noise; the lane keeps producing events |
-| Orphaned `luanti.bin --server` after a lane | worker killed mid-run | kill by PID, then `pgrep -f '^luanti.bin'` |
-| `git commit` in a worktree: `index.lock: Read-only file system` | worktree metadata lives under the main checkout's `.git` | writable roots `<repo>/.git` AND the lane's metadata dir, both from `git -C "$wt" rev-parse --path-format=absolute --git-common-dir --git-dir` (2.1, 2.2) |
-| `bwrap: Can't write data to file …: Bad file descriptor`, or `index.lock: Read-only file system` although both git roots are listed | the second root was built by hand as `.git/worktrees/<branch>`; git names it after the worktree folder's basename, so it does not exist (or `mkdir -p` created an empty decoy) when folder and branch names differ | query both roots with `rev-parse` (2.2); never build or `mkdir` them (re-checked 2026-10-02: folder `agent-a8a25333ca242e35c`, branch `r28-w1-world`) |
-| Headless boot: `Unable to allocate instance id` | Flatpak cannot write `$XDG_RUNTIME_DIR/.flatpak` | writable root `$XDG_RUNTIME_DIR/.flatpak` (2.1) |
-| Fresh worktree has no `tools/bin/lua51` or `tools/bin/luac51` | `tools/bin/` is gitignored | immediately after `git worktree add`, copy both binaries from the main checkout into the lane's `tools/bin/` |
-| `resume` with an empty id reports "direct app-server input is not allowed for multi-agent v2 sub-agents" and does nothing | the first JSONL record's `thread_id` was not saved | extract and persist `thread_id` immediately after launch; never construct a resume before it is non-empty |
-| `tools/check_fresh_server.py` failure hidden by a later check in a combined static script | the former `tools/wp11/static.sh` (retired in Round 22) had no `set -e` | run `python3 tools/check_fresh_server.py` as its own required gate step (measured 2026-09-18) |
-| A Codex review ends with `turn.failed: Selected model is at capacity` and produces no report | the selected model had no available capacity; this is not a review verdict | relaunch the review and require a real report before continuing (measured 2026-09-18) |
-| A lane that edits `start_npcs.lua` or `AGENTS.md` conflicts when the orchestrator merges it | another concurrent lane changed the shared file first | merge `main` into that lane before its review and resolve the conflict there, so the reviewer sees the integrated result (measured 2026-09-18) |
-| `git worktree remove` refuses: "Arbeitsverzeichnisse, die Submodule enthalten, können nicht ... entfernt werden" | the worktree carries the reference_projects submodule directories | `git worktree remove --force --force <dir>` after confirming `git -C <dir> status --porcelain` is empty and the branch is merged |
-| Every command in a Codex lane fails before it runs: `bwrap: Can't write data to file /tmp/<dir>: Bad file descriptor`; the worker reports a broken environment and stops | a `sandbox_workspace_write.writable_roots` entry names a directory that does not exist yet | create every non-git writable root (`mkdir -p`) before the launch; the sandbox does not create them (measured 2026-09-18, five lanes lost their first run). The git roots already exist and come from `rev-parse` (2.2); a `mkdir -p` on a wrong git path only hides the error |
-| A lane's final commit adds its report (`last.md`) to the repository root | the worker wrote its `-o` report a second time into the worktree and committed it | the brief says explicitly that reports go to the `-o` path only; on review, remove the file from the branch (measured 2026-09-18: two of three implementation lanes did this) |
-| A worker reports "independent review … verdict MERGE" for its own lane | the worker launched a Codex review and fix round itself | the brief says explicitly "never launch Codex, Claude or any agent yourself; the orchestrator reviews"; the orchestrator's review still runs and is the review of record (measured 2026-09-18) |
-| Orchestrator gate run on one worktree fails its headless boot with `Failed to bind socket` while another gate run is alive | two `gates.sh` runs shared one `PORT` | give every concurrent gate run its own port; rerun only the boot on a free port to confirm |
+| `PermissionError: Operation not permitted` on any socket | `workspace-write` blocks sockets | `-c sandbox_workspace_write.network_access=true` |
+| Network or stream error on launch | Claude's command-runner sandbox | rerun through the unsandboxed runner capability |
+| `git commit` in the lane: `index.lock: Read-only file system` | the worktree's git metadata lives under the main checkout's `.git` | both git roots from `rev-parse` (§2) |
+| `bwrap: Can't write data to file …: Bad file descriptor`, every command fails | a writable root does not exist (a git root built by hand as `.git/worktrees/<branch>`, or a missing scratch folder) | git roots from `rev-parse`; `mkdir -p` every other root before the launch |
+| Headless boot: `Unable to allocate instance id` | Flatpak cannot write `$XDG_RUNTIME_DIR/.flatpak` | add it as a writable root |
+| Relative commands suddenly run in a lane; `getcwd` fails after cleanup | the coordinator `cd`-ed into a worktree | never `cd` there (§3) |
+| `codex exec resume`: "unexpected argument '-C'"; or the resumed worker edits the main checkout | `resume` has no `-C`/`-s` and uses the shell's directory | `( cd "$wt" && codex exec resume --all <id> -c sandbox_mode=… )` |
+| `resume` with an empty id: "direct app-server input is not allowed for multi-agent v2 sub-agents" | the `thread_id` was not saved | save it right after the launch |
+| `resume --last` picks the wrong lane | several lanes ran | resume by the saved `thread_id` |
+| The coordinator's shell dies with exit 144 when stopping a worker | a `pkill -f`/`pgrep -f` pattern matched its own command line | bracket a character (`"codex exec resum[e]"`) or kill by saved PID |
+| stderr: `failed to renew cache TTL: missing field supports_parallel_tool_calls` | models-cache format of this CLI build | harmless noise |
+| Orphaned `luanti.bin --server` after a lane | worker killed mid-run | kill by PID, then `pgrep -af '^luanti.bin'` |
+| A fresh worktree has no `tools/bin/lua51`/`luac51` | `tools/bin/` is gitignored | copy them from the main checkout after `git worktree add` |
+| The lane's last commit adds its report to the repository root | the worker wrote its `-o` report a second time | the brief says reports go to the `-o` path only; remove the file before the merge |
+| Review started on a lane with an unfinished merge | the round branch was merged into the lane and a conflict stayed | after `git -C "$wt" merge round<NN>` require `git -C "$wt" diff --name-only --diff-filter=U` to be empty |
+| `git worktree remove` refuses because the worktree holds submodule directories | the read-only reference submodules under `reference_projects/` ([reference projects](../reference_projects.md)) | `git worktree remove --force --force <dir>` after `git -C <dir> status --porcelain` is empty and the branch is merged |

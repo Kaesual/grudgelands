@@ -746,9 +746,9 @@ names it for server admins.
 - **For the user:** the GUI test below, with the violet story colour and the headland edge to judge.
 - **Round 58** plans from §8 with the picked guild art; **Round 59** builds the story arc from the picked draft
   (STORYARC draft 2, private).
-- The reviews' and reports' notes are in the [Round 57 carry-overs](../../BACKLOG.md#round-57-carry-overs); the
+- The reviews' and reports' notes are in the [Round 57 carry-overs](#carry-overs); the
   rounds decided for later (§8–§9) in the [ROADMAP](../../ROADMAP.md#next-priorities--deepening-the-playable-game)
-  and the [BACKLOG](../../BACKLOG.md#decided-for-round-58-and-later-round-57-plan-89).
+  and the [BACKLOG](../archive/backlog-through-round-79.md#decided-for-round-58-and-later-round-57-plan-89).
 
 ### GUI checklist (Round 57)
 
@@ -837,3 +837,86 @@ warnings), the `r33_ds` fixture (its money table), the full `run_fixtures.sh` (2
 trial merge 255/0, QSYS2 255/0, DETAILS 255 with one pin fixed, VENDORMAT and DYES 256 (DYES after one fixture
 update), STARTQUESTS 253 with three pins fixed, then 258/0 after its fix round); the coordinator ran the full set
 on main `a90990d5` (exit 0).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Crafting queue** (CRAFT, its review and delta review): the room check at
+  queueing counts the inventory, not the outputs of the jobs before it (the
+  overflow takes the rest); a station recipe plays its sound when queued and
+  has no end cue; a nested `update_job` from an XP or tier hook can deliver
+  a later job's stacks before the current one's (nothing is lost);
+  `start_job` returns `true, nil, nil` if `begin_job` refuses after the take
+  (needs a corrupt job and four waiting ones; as before this round);
+  `read_queue` drops an unreadable entry with its inputs; a click sent while
+  a newer page is on its way is ignored (the player clicks again); a
+  downgrade would cut a grown overflow back to four slots; the unlock walk
+  does not pass furnace steps (no Basic recipe is missed today); Help's
+  Basic line does not mention the tier unlock; at the web size ×N overlaps
+  long recipe names (as before).
+- **Recipe details** (DETAILS, its review and delta review): a pack/unpack
+  pair counts as an exact inverse both ways, so a block made from bars has
+  no "Open ▶" (blocks are almost only ingredients of their own unpack);
+  Steel Bar's "Basic recipe" line names the block unpack (loop-back recipes
+  could leave the lines too); the page stack has no cap; the Quartermasters'
+  T1 gear tab is not in the index (gear is never an ingredient); the
+  fixture could also pin `r7_content.lua`'s 174 surface rows; long source
+  lines sit close to the box's edge at the web size.
+- **Recipe chains** (CHAINDEPTH, ALLOY, their reviews): the Nightscale
+  leather line is the deepest now (7: Light → Cured → Heavy Leather →
+  Scaled Hide → Nightscale), though Heavy Leather and Scaled Hide also drop,
+  so a hunter's chain is 2–3; every weapon has a stick and a metal-rod
+  recipe, the stick one a step shallower; `unpack` shows Obsidian as made
+  from shards; White Wool is the one loop seed left (no creature drops
+  wool; vendors sell White Wool); the dump is not committed, so every
+  report run boots the engine; from T3 a wood grade costs only its
+  ingredient while the matching alloy costs Steel too (accepted); a dug
+  Steel Bars piece from a town palette sells for a fraction of a copper.
+- **Quest system** (QSYS, its review): the header-click redraw keeps the old
+  row index and pick, so if the NPC's rows changed in between the pick can
+  land on another ready choice quest (it is framed and named before
+  Complete); `texts` keyed by a role giver's NPC id is refused (`E-texts`,
+  role givers are bound after validation; from Round 58); the zone atlas's
+  quest lists are a snapshot; probe-registered quests pay 0c; at 4× the
+  map's story icon can overlap a neighbour's under the player arrow.
+- **Start zones** (STARTQUESTS, its review, the text review): Dawnmere's
+  `start_rats` names the meadows (levels 3–4) as its area and map target,
+  because `home_fields` would change the quest-named kinds and so the spawn
+  flags (the text sends players to the home fields, whose Barn Rats count);
+  Hearthpine's `start_crabs` (level 4) counts Boulder Crabs too, which
+  exist only at level 7 in the Rockpools and attack on sight (the Pebble
+  Crabs fit; kept); the finales' titles name their leaders literally and
+  go stale if `names.json` renames one; `start_stone`, `start_bars` and
+  `start_bronze` share one middle sentence in every variant; an old
+  character who did a former tool quest gets the Dual Furnace and Bronze
+  Pickaxe again (ruling 20 accepts it); `build_structure.py --check` holds
+  only until the texts land (the JSON files are the source now) and its
+  comment at line 288 still gives the old Dawnmere reason; `r56_questmap`
+  lost its positive `start_twin` test; `tools/r57_qsys`' capture probe still
+  accepts `dawnmere_hunt_01`, so its Q1 shot lacks that side quest (use
+  `start_boars`).
+- **Vendors** (VENDORMAT): the armourer's and tanner's General tab holds
+  only the three supplies; ruling 28 could join the `grug_traders` load
+  audit (today the fixture enforces it); `economy-vendor-plan.md` §2.3 still
+  lists the old shelves (a planning doc).
+- **Bays and the chin** (FIX56, its review): at a headland the no-fly edge
+  runs through the outer coast's belt up to 128 nodes from the bay, and 0–20
+  small enclosed no-fly specks remain near the bays per seed; housing claims
+  are allowed on bay shore water and the Reed Angelfish may spawn there;
+  `bay_water_at` returns the first bay whose grown body matches (one bay per
+  coast today); the legacy `compatibility.zone_at` answers core/inner/outer
+  there instead of "coast" (no caller); `tools/r54_armor/templates.py`
+  paints only the front strip of the open chin, not the underside.
+- **Tools** (lane D, QSYS, STARTQUESTS): `quest_targets.py` stopped on the
+  water-kind region stats, stale since Round 51 (**done in Round 59**:
+  BANDQUESTS regenerated the region maps with `tools/r28_regions/run.sh`,
+  `quest_targets.py` 0 missing); `item_tiers.md`'s own-material values in
+  `tools/r33_ds/money.py` are hand-measured (lane D re-measured them in the
+  engine) and `build_doc.py --check` was stale on main before lane D (the
+  start zones' quest copper moved the income table); `check_lua.sh` flags
+  two SETGLOBAL lines in the `r57_details` fixture.

@@ -639,7 +639,7 @@ and after (comparisons, never targets).
 
 ### Open notes
 
-In the [BACKLOG](../../BACKLOG.md#round-35-carry-overs); none blocks the
+In the [carry-overs](#carry-overs); none blocks the
 GUI test. Numbers are comparisons, never targets.
 
 - **Spell formulas** still round to an integer before the level scalar
@@ -744,3 +744,48 @@ Character creation (C):
     before Create** and reconnect: creation starts over with nothing
     stored; **reconnect during the arrival wait** after Create: the
     arrival resumes.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Scout crit above the cap:** a fully geared level-60 Scout still exceeds
+  the 30 % cap (about 33 % raw with the new Dexterity curve) and is held at
+  it; since Round 36 Cold Eye, Firebrand and Hard Faith say "(30 % cap
+  holds)" like Keen Edge.
+- **Recompense's internal cooldown** (6 s) is a per-session timer; a relog
+  resets it (not exploitable: a relog takes longer and leaves combat).
+- **Opening on rooted targets** works in PvP too: a Scout can root a player
+  with Pinning Shot and follow with a 280 % Opening (the user's pick; a
+  note, not a bug).
+- **Admin `/faction`** on an existing character re-enters the full creation
+  window: the player may pick another faction than the admin set, and the
+  class and look picks are ignored; on a player still drafting it stores
+  faction and starter kit before Create. Admin-only; a possible fix locks
+  the faction row and hides class and look when a class is stored.
+- **Broken capture probes:** `tools/r26_map`, `tools/r26_status_icons` and
+  `tools/r27_minimap` still drive the removed creation fields
+  (`choose_accord`, `choose_*`); broken since Round 31's look step.
+- **Music tab** (a personal playlist in the inventory; the user leans
+  towards "not now"): lane M's study estimates about 450 lines (page about
+  180, playlist storage 40, scheduler and "play now" 70, fixture 150, docs);
+  the open question is where it plays (everywhere would undo the immersion
+  ruling), plus a "loading" note, a push rate limit, up to about 29 MB of
+  downloads per player and no seeking in the engine.
+- **Long war-camp quest titles** are cut in the quest list below about 1080p
+  (at 720p about 95 % of titles fit).
+- **Aim-ray cost:** about 1–2.5 ms of server time per second per fighting
+  player in the worst case (20 rotated mobs round every ray); the
+  workaround goes once upstream fixes the engine
+  ([upstream-workarounds.md](../technical/upstream-workarounds.md)).
+  Limit: a "blocking" node or non-rotated object does not hold back rotated
+  hits behind it (none exists in the game).
+- **Night mobs by day:** a player may see one vanish in a puff 32–64 nodes
+  away; a player on a fast mount may come within 32 nodes before its first
+  check, and the mob then stays until the player leaves.
+- **Band 3 below its income target** (median 16.7c against 19c); the
+  crocodile change lowers that family further, the median does not move.

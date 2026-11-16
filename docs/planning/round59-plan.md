@@ -287,7 +287,7 @@ files, and the code in `grug_quests` (`validate.lua`, `labels.lua`, `use.lua`), 
   the quest XP is roughly today's; K16 the close names (Veko / Vek, Mordec Silt / Silt) stay.
 - **No NPCs that vanish per player:** asked by the user; nothing in the chapter does (K12 A keeps the captives in
   place). A per-player visibility of NPCs is noted as a possible later feature
-  ([carry-overs](../../BACKLOG.md#round-59-carry-overs)).
+  ([carry-overs](#carry-overs)).
 - **The questing share:** kept at BANDQUESTS' 55–61 % (no XP bump on the non-kill quests).
 - **QUESTMAP:** accepted ("Die Quests sehen gut aus"); the user's question whether the gathered items spawn in the
   quest zones was checked in `grug_gathering/catalog.lua` (yes; Sunleaf is a spice, ungated).
@@ -379,7 +379,7 @@ for the new ids (no format change); nothing new in player meta or mod storage, s
   10; from Round 58 the names never picked (the three cloaks, the achievement and its line) and from Round 57 the
   violet story colour (now on chapter 1 too) and the headland edge.
 - **Round 60** reworks the band 21–30 with chapter 2 (§9).
-- The reviews' and reports' notes are in the [Round 59 carry-overs](../../BACKLOG.md#round-59-carry-overs).
+- The reviews' and reports' notes are in the [Round 59 carry-overs](#carry-overs).
 
 ### GUI checklist (Rounds 57, 58 and 59)
 
@@ -539,3 +539,55 @@ touched file, the full `run_fixtures.sh` (**272 passed, 0 failed**), the **full 
 (`seed_fleet/run.sh full` through the queue at 8 parallel: **304 of 304 seeds build, 0 failed, 20 min 8 s**) and one
 headless boot (PASS, no ERROR line). Each code lane ran the full `run_fixtures.sh` once (QSYS3 270/0, BANDQUESTS
 271/0, STORYQUESTS 268 with three pins fixed then 272/0 after its rebase, STORYART-SHIP 272/0).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Questing share** (BANDQUESTS, its review): the solo questing share of
+  levels 10→20 fell from 91–100 % to 54–61 % (measured on main with
+  `ledger.py --game --track <race> --start-level 10`; the lanes' reports
+  read 55–62 %): reward XP stayed (−7 % … +2 %), the kills that carried
+  half of it are gone. **The user kept it** (2026-10-24, no XP bump; free
+  play is the main mode). The lane's alternative, about +1.5 KE on the
+  non-kill quests (about 75 %), stays on record for the later bands.
+- **NPCs per player** (the user asked, 2026-10-24): nothing in Round 59
+  hides an NPC per player (the chapter's captives stay in place, pick K12
+  A). A per-player visibility of NPCs (the engine's `set_observers`, as
+  the quest objects use) is a possible later feature, **not planned**.
+- **Quest system** (QSYS3, its review): `validate.py` reads the NPCs'
+  factions from the item dump `existing.json`, so a code-registered NPC
+  newer than the dump counts for both factions (stricter than the game)
+  until `tools/r28_design/dump_items.sh` runs again; town places as
+  `{name:…}` placeholder targets are not done (a text names the building
+  in words; the user can ask for them); the comment at
+  `mods/CORE/grug_core/settlement_sockets.lua:8` ("and later the quest mod
+  read it") is stale.
+- **The band** (BANDQUESTS, its review): kept ids (the departures,
+  witnesses, handoffs, five day hunts, three perpetrators) now carry the
+  new choice rewards, which characters who finished them never see (only
+  the user's world); `tools/r58_guildquests/build_structure.py` would now
+  pick Rooters for Copperfell's camp hunt while the shipped Bracken Fox
+  stays, so its `--check --ids` (ids and hubs only) is the only check of
+  those files left, and the S rows of `tools/r58_guildquests` cover the
+  rest; the camp hunt `camp_hunt_t2` and the guild reports are as Round 58
+  shipped them.
+- **Chapter 1** (STORYQUESTS, its review, CHECK1, the text review):
+  `tools/r28_design/r28common.py` gives a guild NPC its settlement key as
+  its atlas anchor, so a hub anchored at a capital fails `validate.py
+  --atlas` (`E-giver-hub`); the leaders' hubs use `"anchor": "zone"` like
+  the camps' foreman hubs; no dressing (crates) beside the town places, the
+  object marks the spot (on request); the names Veko Bluefeather / Vek
+  (Raincall) and Mordec Silt / Reed-Counter Silt (Mournfen) stay close
+  (pick K16 A); left as written: the Throng texts' "the army's suppliers",
+  Iven's "Sera's report" (a player who meets Iven without the Mournfen
+  band has not heard of it), and the place, direction and kind chain at
+  the snare ground and the name rest.
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.59.0 `map_reset` entry, because the unpushed 0.58.0 entry already
+  covers every change against pushed 0.57.0; the entry is declared for the
+  record (the production world moves 0.57.0 → 0.59.0 across one reset).

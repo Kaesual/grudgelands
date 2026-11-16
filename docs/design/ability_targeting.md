@@ -1,24 +1,15 @@
 # Ability targeting of the new class kits
 
-**Decided and implemented in Round 53 (0.53.0, round K of the class
-rework).** The user approved the first-person targeting direction on
-2026-10-12 after reviewing the four class candidates; the "maximally
-simple" rulings of 2026-10-19
-([continuation §4a](../planning/class-redesign/continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework),
-[skill inventory §3a](../planning/class-redesign/skill-inventory.md#3a-area-anchor-always-ground-user-2026-10-19))
-then removed prepared casts, previews, pulses and channels, and the
-user's ruling of 2026-10-20 (0.53.1,
-[fix plan](../planning/round53-fix-plan.md) ruling 1) removed line of sight
-from every area, cone and group. This file owns
+**Decided and implemented** (Round 53; the "maximally simple" rulings of
+2026-10-19,
+[continuation §4a](../planning/class-redesign/continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework),
+[skill inventory §3a](../planning/class-redesign/skill-inventory.md#3a-area-anchor-always-ground-user-2026-10-19);
+no line of sight for any area, cone or group since 0.53.1,
+[fix plan](../planning/round53-fix-plan.md) ruling 1). This file owns
 how the kits' skills pick their targets and places. The kits and numbers
 are [classes](classes.md) §3–§5 and [scout.md](scout.md) §2; the input
 machine (presses, holds, the held fallback) is [classes](classes.md) §2b;
 the damage, projectile and PvP rules are [combat stats](combat_stats.md).
-The 2026-10-12 version of this contract (retained heal recipients during
-preparation, area previews, Arrowfall installments) is in the git history
-of this file and in the
-[implementation design](../planning/class-redesign/implementation-design.md)
-§5, §6 and §10, which are superseded.
 
 ## 1. First-person interaction
 

@@ -198,4 +198,4 @@ about 30 % of the band on its own, the extras as "Optional:" quests;
 never "{name:X} {zone_area:X}"; every heartland hands on; the front budget
 counts two repeats per bounty (N = 2, [quests.md](../design/quests.md)).
 Open: enemy-guard and PvP quests are not expressible in the new format
-([BACKLOG](../../BACKLOG.md#round-29-carry-overs)).
+([BACKLOG](round29-plan.md#carry-overs)).

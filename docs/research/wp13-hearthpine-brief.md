@@ -54,7 +54,7 @@ reviews the combined increment under the process checklist before main.
 
 ## Verification budget and acceptance
 
-Follow [luanti-lua.md](luanti-lua.md)'s interpreter strategy: LuaJIT for
+Follow [luanti-lua.md](../technical/luanti-lua.md)'s interpreter strategy: LuaJIT for
 development and engine-backed runs; luac51 parser, SETGLOBAL and all five
 static sweeps on changed Lua, explicitly including tools. At most seven
 independent Lua processes run concurrently workstation-wide at idle priority.

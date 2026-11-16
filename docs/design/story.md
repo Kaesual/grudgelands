@@ -42,11 +42,7 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   premise: it runs through levels 41–60 (§2a), while the 11–30 debt and
   forgery chains only foreshadow it, and it progressively reveals the
   influence behind the front's troubles.
-- **Quests have minimum levels** (core mechanic, WP8): since Round 65
-  every quest is accepted from its level − 2 (at least 1); the main line's
-  chapters open at 40, 45 and 53 and its finale at 58 (its quests' levels
-  42, 47, 55 and 60 minus two, with `requires` on the step before;
-  [quests.md](quests.md) "The main line").
+- **Quests have minimum levels** (core mechanic, WP8): the acceptance rule and the main line's chapter gates: [quests.md](quests.md#acceptance), "The main line".
 - Mandatory-quest beats at the front (fight at the contested land front,
   kill enemy war-front guards, the PvP fortress quests; [quests.md](quests.md))
   get framed by this premise:

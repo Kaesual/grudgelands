@@ -987,7 +987,94 @@ From the lanes' reports, measured unless marked; comparisons, not targets.
   town, a follow-up fix after the merge), and the
   numbers only a real run gives: run lengths, Nemm's and Duewarden's HP, the coins, the
   mining share. The free wipe stays noted, not closed (§2.9).
-- **Carry-overs** are in [BACKLOG](../../BACKLOG.md#round-72--fights-placement-travel-and-two-expeditions-gui-acceptance-pending).
+- **Carry-overs** are in [carry-overs](#carry-overs).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **For the user:** the Seam's fighting chambers and cuts as separate floor (STYLE's reading,
+  default keep). Tuning from real runs: run lengths (Second Shift 10.2 minutes modelled at
+  40–60, Last Mint 10.1 at 60), Nemm's 20 × and Duewarden's 14 × an elite's HP, the chest's
+  coins (factor 10), the mining share (Shift 5–18 %, Mint 8–10 % of the same time's mining).
+- **Chat, not the feed:** the waystone window's refusals go to chat (pinned by `r29_w`,
+  `r45_pt9`), and so do `grug_home.travel`'s failure texts (`notify` in
+  `grug_home/travel.lua`, `unavailable` and timeouts, with `runs.lua`'s "could not be
+  prepared"; carried from Round 71). One line each to `grug_core.feed`, checking the pins.
+- **Traps:** a death by a trap shows the fallback death line; a "trap" category belongs in
+  `grug_core/death_messages.lua`. r71 engine probes on `test_vault` see harmless fireballs.
+- **Fights (FIGHT):** `_grug_target_veto` is not in `holds_target` (combat for at most 1 s);
+  a royal guard's one-step target gives one step of combat; `check_switch`'s own
+  `engage_mob` is now redundant; `pack_contact` still runs on every `do_attack`.
+- **Placement (PLACE):** a sand column dug from below drops the rest as items, collected
+  without mining XP; `QUERY_RADIUS` 4 assumes a mob box at most about 1.8 wide; only the
+  written cells are tested (a fence's 1.5-high box, the notice board's roof 0.19 above);
+  sapling growth into a body's cell is no placement; the 0.05 face tolerance.
+- **Kings and bosses (RANGED, BOSSRESET):** a King or General without a ready floor has no
+  range until the fill ends or during its 10 s retry (the give-up and the 15 s rule bound it);
+  a pack's jump can carry an Expedition boss out of its room for about 1 s, also after an
+  admin `/teleport` (seen again in the Seam's Round 73 probe, the boss reset where it landed:
+  the jump could skip a boss member); `test_vault` has no room envelope (its boss falls back to the give-up);
+  the castle floors' extent is counted, not mapped. A ranged mob's phase state survives a
+  reset (as the archers'); a ranged mob that loses sight at a ledge's foot searches a way to
+  its target, not a spot with sight; a ranged King may shoot during the Volley's wind-up.
+- **Guards out of reach (GUARDNAV review):** L1 the give-up veto holds one name and nothing for
+  monsters, so two players on two ladder tops (or an unreachable monster) loop a guard about
+  every 1.2 s: a small table by name and object; L2 the arrival is checked once a second and
+  the 40 s snap keeps the run velocity, so an evader can walk off a small tower top: stop after
+  the snap, test arrival every step; L3 a post guard below an unreachable post is untouchable
+  up to 40 s, then snapped home (GUI; check whether a war camp post sits on a watchtower); L4
+  the failures count over the whole chase (GUI: four guards in a narrow spot). No mob climbs
+  ladders; wildlife keeps the old give-up (about 7 s); the rift boss resets only in its melee
+  phase; a guard chasing an unreachable monster resets fast too.
+- **Nametags (TAGS):** each snapshot reads every connected player's faction meta, 8 times a
+  second (cache the faction); the foe carrier has no detach check; two red tags on one unit are
+  theoretical; fallback vendors without `_grug_start` (`grug_traders/vendors.lua`, fixed
+  offsets, only when a capital lacks vendor sockets, which none does) would show lavender:
+  `resolve_unit` could fall back to the vendor's faction. Closed in the round: the old colour
+  for about 1 s after activation (the faction is set on activation, `b7012ec2`).
+- **Bladecraft:** the skip-raise flag reaches one packet only; a swing whose transaction fails
+  has already switched the hand.
+- **Expedition mobs (EXPMOBS):** a future boss summon outside `packs.lua`'s spawn carries no
+  `_grug_expedition` and gets the truce and the shrinking radius back.
+- **Expeditions tab (WAYTAB):** after a party change the id mismatch says the Expedition "has
+  ended"; `M.leave` now serves only scripts and probes; the Belongings tab may clip with four
+  tabs (GUI).
+- **The Second Shift:** the probe logs the dodge chance before `set_xp`; Nemm sees passage cells
+  x 43–44 between rooms 3 and 4 outside his floor, one pull-and-drop (GUI; a fixture check that
+  he notices nothing beyond floor and reach); outside Nhal Veyr a raw Skeleton Raider would
+  take the world slots ("Shift Raider" at 20–30, none exists); the coverage proof uses the
+  spawn spots, idle mobs drift about 8 nodes. Closed in Round 73: the probe's evidence is
+  new (`tools/r72_shift/evidence/probe.txt`, after the redesign).
+- **The Last Mint:** the lava and water guards loop over the same transforms (one loop); the
+  Wisps of packs b and c can follow over the lake (GUI); the sneak-limit case of the shot lines
+  is not pinned (margin 0.006); the lava-cooling ABM is not guarded (no such node reaches a
+  box); a slab on a pillar's edge would fool the standing test (theoretical, §2.9 freezes it).
+- **Template proofs (PROOF):** `tools/r71_l20` `range.lua` wakes Flintback from (84, 108),
+  outside his range, without waiting out the evade (fix before the next RANGE run). Closed in
+  Round 73: one shared sight model over node boxes for every template, and `walk_round`'s
+  comment rewritten.
+- **Docs:** the frozen Round 28 mob catalogue (`docs/planning/round28/mobs/catalogue.json`,
+  `catalogue.md`) still gives the Bedrock Sentinel the guard role; history, left as it is.
+- **Later:** enemy towns on the minimap for riders (not asked; no warning band by ruling).
+
+### 0.72.1 and 0.72.2
+
+- **Decided (user, 2026-11-10):** Cancel before the boss is dead, Finish after, never both
+  (0.72.2 colours them green and red). The Deserter's Mark's icon is a texture modifier over the contested-PvP emblem; a drawn
+  `grug_status_deserter_mark.png` needs a pick page.
+- **Windows:** the Registrar's, waystones' and Claim Stone's Expeditions views show the time
+  left as of drawing (by design, user 2026-11-10: the banner counts down); since 0.72.2 they
+  are redrawn once at Finish, Cancel and the end. The waystone window's `dialogs` are not
+  cleared when another form replaces them; the redraw guards that by the stone's reach.
+- **Registrar:** `session.confirm` is not tied to a run id: a stale Confirm after the leader
+  switches runs without a redraw would cancel the new run (contrived; store `run.id`).
+- **grug_home:** `waypoints.lua` calls `expedition_tab.actions` without a guard
+  (`stone_form.lua` guards); only matters for a foreign tab without `actions`.
 
 ## 0.72.1: finish and cancel (2026-11-09)
 

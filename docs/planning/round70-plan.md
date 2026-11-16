@@ -822,3 +822,75 @@ per hour (model); selling never recovers the cost (fixture).
   coordinator's.
 - **Not run by anyone:** a real king fight, the web client, the map reset on a real
   world, audio.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **For the user at the playtest:** Rock Salt 93 / 156 and Stormkelp's production
+  seed 163 stay under the plan's counts; non-island `exclude:coast:channel_*`
+  envelopes block about 12,500 beach and 7,000 Stormkelp columns (about +12 and
+  +28 plants), deliberately per `world_zones.md`. Frostbarrow keeps 4–10 melons
+  (ruled); seed 12345 starts with 4 against the quest's 5 and leans on renewal.
+  Stormkelp inland share: option B would add each biome's main ground from some
+  distance on, with a lower density and a new digest. Seagrass and coral 24 or more
+  nodes offshore cannot be dug (protected water). Nhal Veyr's graves 114 → 529
+  trim in one line of the field list. Secondary roads only give about nine waypost
+  stacks a world; trails would add about 60. A short feed line at a costly death.
+- **SPAWN:** renewal's first test reads columns outside `VOLUME_BUDGET` (6.5 ms
+  median, 14 ms max; a walking player's worst case 18 ms median, 69 ms max per 5 s
+  service; `renewal.lua`); `SHORE_REACH` and `SHORE_HEIGHT` live in
+  `habitat_registry.lua`, which no digest covers; up to 10 written nodes per source
+  and seed lie outside renewal (`writer_bare`, harmless);
+  `census.lua --rings` is not named in `tools/README.md`.
+- **PLANTS:** a placed hanging piece stays when the block above goes, like placed
+  leaves; the tooltip "no recipe uses it" stands beside the fuel rows of fern, marram
+  and `group:leaves`; `decor_description` is written three times (the fixture pins
+  the line); `r70_plants` part G checks names only.
+- **FARMFIX:** the corn foot: an optional one-pixel touch-up closes the last optical
+  break (`corn_3_segment_0.png` col 8 row 10, `corn_4_segment_0.png` col 8 row 7);
+  one-row bottom gaps in bamboo stages 1–2 and wild onion stage 2; a hoe still
+  cannot dig or hit (no punch); sell rows carry no belt marker.
+- **DEATH:** a victim who leaves 11–30 s after a hit (no logout death), rejoins
+  inside the window and dies pays: the hit record is runtime only; no term for
+  deaths in `income.py`.
+- **LEVELS:** the King's and dragon's names keys stay as they were
+  (`tools/r38_names/inventory.py:705,712,718,722` say level 65 and `L65-65`,
+  harmless).
+- **GUILD:** a 99 stack with no free slot refuses a lot (nothing lost); `PANE_CONNECTS`
+  (`parts.lua:309`) lacks the five stones, no pane touches one today; Item source
+  pages do not list the Stonewright; the `r58` tuning page shows no fields for the
+  new keys; no Buy or Sell at the Stonewright; a `group:stone` recipe accepts the
+  stones, as it does Stone Block; the Abyssal Steel line at 1024 wide, GUI 2 (GUI 5);
+  Round 71 merge: keep both roles in `SERVICE_ROLES`, `settlements.md`,
+  `module-guide.md` and `tools/README.md`.
+- **TOWNS:** `cook_oven` is a socket with no furnace node at (4,±13) in any start
+  town (older than this round); `wayposts.lua:58` `short_label` gives "Last" for
+  Last Hedge Redoubt (the longest fitting prefix would give "Last Hedge").
+- **ENDFIX (the review's notes):** `reserved` also covers 20 fixed anchors the fleet
+  does not check, so a stack there vanishes and spacing may admit a later one (a
+  fleet failure needs two lost on a minimum of 5, floor 4; unmeasured);
+  `wayposts.lua:19` "a camp may be placed right beside one" is loose, placement
+  precedes routing; `is_seat` in `r36_w2` would ignore a future stair bench whose
+  only floor for feet is slabs (none today).
+  `tools/r70_design/data/socket-schedules.json` holds the old facings of the four
+  turned sockets (no reader).
+- **Capitals, tools:** `tools/r70_design/verify.py` fails on the stale citation
+  `CORE = 48`, so its regressions do not run; `tools/r70_design/lake_variant.lua`
+  shifts the chain twice if rerun; the shared probe
+  (`tools/r70_cap/grug_probe_r70_cap/init.lua:188`) joins as Accord, dies to guards in
+  Throng capitals and needs a fallback guard for Kezamba's one patrol guard; its leg
+  stage stands the player at the anchor, so far corners can log pending.
+  `layout.free_area` (`layout.lua:220`) counts paving as free, so a candidate list
+  can land on a new street with no error.
+- **Capitals, game:** `mere_mourning` lands far west at (−181,25) on seed 177135…,
+  an old outlier (the review); Gor Drazhak's platform takes the avenue's last column
+  at z 3..8, and the comment at `gor_drazhak.lua:504` says waypoints where they are
+  guard posts; Nhal Veyr's watch corner faces (`nhal_veyr.lua:273-275`) and a doorstep
+  lane with no door (`:126`); new unrouted street quarters on 6 seeds: Highcourt 1,
+  Lethariel 2, Kezamba 2, every required plot reached; the cache's 1–2
+  `none` legs per capital are no core patrol, not traced.

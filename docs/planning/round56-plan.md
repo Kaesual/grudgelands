@@ -655,9 +655,9 @@ so the map needs no reset. Saved state read or written differently:
   from then on `check.py` is the gate and the export check retires (by design).
 - The r54 art check reports 2 warnings on the shipped art (leather T1 and T3 head: zone B 2 < 3 after the open chin
   strip) until HOODART repaints those helms.
-- The reviews' and reports' notes are in the [Round 56 carry-overs](../../BACKLOG.md#round-56-carry-overs); the
+- The reviews' and reports' notes are in the [Round 56 carry-overs](#carry-overs); the
   rounds decided for later (§8) are in the [ROADMAP](../../ROADMAP.md#next-priorities--deepening-the-playable-game)
-  and the [BACKLOG](../../BACKLOG.md#decided-for-later-rounds-round-56-8).
+  and the [BACKLOG](../archive/backlog-through-round-79.md#decided-for-later-rounds-round-56-8).
 
 ### GUI checklist (Round 56)
 
@@ -750,3 +750,76 @@ pushed with it on 2026-10-23.
   enchanted; a bandit in cloth (`tools/r56_hood/finish_scene.lua`, private shots).
 - **GUI checklist:** item 14 above; item 10's "no hood visible anywhere" is replaced by the hood on every cloth and
   leather head piece, metal without it.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Ranged mobs** (MOBAI, its review): every 10 s a `dogshoot` archer still
+  charges into melee for 3 s (upstream `dogswitch`); ranged kings close in
+  by walking straight, without navigation or pathfinding; pure `shoot` mobs
+  (none exist) do not get the no-sight walk; camp-less kin (night families,
+  rats) still chain their `camp_swarm` (kept, the user).
+- **Mounts** (MOUNT, its review): small pools round up (`ceil`), so 11
+  nodes cost 2 of 31 HP (6.5 %) at level 1; `AIRBORNE_PAUSE` (0.5 s) now
+  pauses the gallop on jumps and falls deeper than about 2.45 nodes (the
+  comment says "about two"; a sound matter, not tuned); no fixture for a
+  lethal fall while mounted (`r45_pt6` F); the probe's STEP line could
+  release jump after the climb.
+- **Trade and food** (SMALL, its review): a single sale checks only the item
+  name at the shown list and index (since Round 50); the food status text
+  is fixed when eaten (a class change during the buff keeps it); a Caster
+  dish replaces a Warrior's current food buff;
+  `docs/audit-2026-10/docs/05-design-items.md` still describes the refusal
+  (a historical audit).
+- **Floating items** (FLOAT, its review): an item lying on land that water
+  later flows over is not lifted; a floating item does not notice water
+  rising above it (a source placed on it), nor the removal of a ceiling it
+  rests against; a falling water column lets an item climb to the pool
+  above; `force_out` while floating; no drift with the current (the user).
+- **Enchants** (AFFIX): a chest-to-inventory drag does not rebuild the
+  tooltip at once (the next refresh does); the hover warning may not show
+  on touch screens.
+- **Quest overview** (QUESTMAP): items show their short id (in-game names
+  need every item mod); PvP captains read "Captain Throng (named per
+  world)"; the flag thresholds are fixed in `flags.lua`.
+- **Template defects:** the known-defects list is empty since 0.62.0
+  (Round 62 TEMPLATEFIX fixed Kezamba's moot-house door and both Lethariel
+  mere shrines' inside point). `check.py` still warns about 11 unreachable
+  points, all checker false positives: the ten core gatehouse passage
+  posts, reached from the passage mouths and dropped by `gate_watch.lua`,
+  and Sunscar's warlord platform, reached by the town's outer stair.
+  Proposed: let the walker also start at the box edge's ground cells (11 →
+  1; [Round 62 carry-overs](round62-plan.md#carry-overs)). `tools/r62_templatefix`
+  walks them in the built towns.
+- **Template data** (FREEZE-TOWNS, FREEZE-CAPITALS, TREES, their reviews):
+  `troll_palette.lua` duplicates `kezamba.roster` (it stays for the tools);
+  near-duplicate templates are kept apart by their meta
+  (`highcourt_service_yard` = `hearthpine_workyard`, `kezamba_trade_shed` =
+  `kapok_drying_shed`, `lethariel_market_grove` =
+  `highcourt_lore_quiet_grove`); `highcourt_statue` and the well court are
+  used across capitals under Highcourt's name; Nhal Veyr's vigil copse
+  (height 7) shares the market copse's template with 6 (the tree generator
+  ignores it); the meta `trees`, `peak`, `top` and `extent` stay
+  generator-time numbers (`top` feeds the plot builders' clearance; re-measure
+  when the tree generator changes); each `templates.lua` copy loads its own
+  dressing tree pools; Hearthpine's decor stays town code (moving it needs a
+  map reset).
+- **Template tools** (VIEWER, EDITOR, FREEZE-*, their reviews): no
+  upside-down flip in the editor (needs a `shaped` predicate in
+  `palettes.lua`); no point selection by a click in 3D; a template with a
+  standing warning (Sunscar's `warlord_platform`) asks for a confirmation
+  on every save; a save takes 6–7 s (every build); `serve.check` follows
+  `check.validate`'s signature; `check.py` does not build a capital whose
+  roster was deleted; `export.py --check` fails by design after the first
+  deliberate template edit (then retire it); `check_upgrade.py` takes about
+  20 s (two town builds); the viewer's reader is not the gate (it accepts
+  what `check.py` refuses); panes settle within the template alone (a pane
+  at the edge does not see the town's cells); the town page keeps its
+  Google Fonts link; the diff and workshop tools were not rerun; the
+  gallery could not be published as an artifact (a local page);
+  `gui_run.py` needs Chromium.

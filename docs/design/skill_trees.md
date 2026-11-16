@@ -7,9 +7,7 @@ tree. A character earns 30 points by level 60; every tree holds more ranks
 than that. The trees are the eight of the
 [node list](../planning/class-redesign/node-list.md) under the user's
 decisions of 2026-10-20 ([round 53 plan](../planning/round53-plan.md) §2);
-Round 52 built the engine and the page beside the old trees (§3.12), Round
-53 made them live with one talent reset for every character (the 0.53.0
-migration step, [upgrade contract](../technical/upgrade-contract.md)).
+the engine and the page are §3.12.
 
 - The kits the talents act on are [classes.md](classes.md) §3–§5 and
   [scout.md](scout.md) §2; the numbers are the frozen balance calculator's
@@ -955,7 +953,7 @@ superseded by the graph of §1 under the user's rulings of 2026-10-19 and
 
 None in this file. The balance fix round after the user's first playtest
 of the new kits and the round's open notes are in
-[BACKLOG](../../BACKLOG.md#round-53-carry-overs) "Round 53 carry-overs";
+[BACKLOG](../planning/round53-plan.md#carry-overs) "Round 53 carry-overs";
 open questions about talents (for example the "Word" names, BACKLOG DP-06)
 under "Audit 2026-10 open questions". The closed decision record of revision 2 is in the
 [delivery record](../archive/design/skill-trees-wp11-delivery.md) §6.

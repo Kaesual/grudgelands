@@ -38,7 +38,7 @@ ordinary/runtime parity, live claims, shortfall accounting, cache reset and
 predecessor-free cache bypass. The optional stage-profiler patch is rebased
 to the current writer and reports coarse phases without obsolete heap counts.
 
-The [evidence directory](wp40-resource-sampling-integration-evidence/) contains:
+The evidence directory (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-resource-sampling-integration-evidence/`) contains:
 
 - Plain-5.1 parsing for 137 production files and 11 changed Lua files,
   SETGLOBAL inspection and all five sweeps (only benign prose/string matches).
@@ -78,7 +78,7 @@ integration: configured GPT-5.6 Sol. Independent reviewer: configured
 GPT-5.6 Sol, separate context with no implementation ownership. Initial
 review: 0 Critical / 0 High / 0 Medium / 1 Low (stale adoption wording), fixed
 in one documentation round. Final review: **0 Critical / 0 High / 0 Medium / 0 Low**, clean for adoption,
-merge and local sync; the [receipt](wp40-resource-sampling-integration-evidence/review.md)
+merge and local sync; the receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-resource-sampling-integration-evidence/review.md`)
 is retained in the evidence directory. Observed elapsed wall time: unknown.
 
 ## User runtime test

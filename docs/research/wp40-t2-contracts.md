@@ -294,7 +294,7 @@ once the runner is built. The pattern throughout is the proven
    skips), and Scan-3a. The
    geometry modules are imported read-only; the six locked surfaces are not
    touched. The runner honours `WP40_LUA_BIN` in the established pattern and
-   defaults to LuaJIT ([luanti-lua.md](luanti-lua.md), interpreter
+   defaults to LuaJIT ([luanti-lua.md](../technical/luanti-lua.md), interpreter
    principle).
 2. **Early visibility.** Fan out at full width immediately; there is no
    serial pre-validation pass (section 5). The launcher validates each
@@ -995,7 +995,7 @@ Gate 2 is the coordinator's acceptance of, in one list:
    path needs at least one end-to-end PUC exercise against its
    `pairs()`-order risk. No comprehensive PUC round (reserved for
    T2-final, per the interpreter split in the brief and
-   [luanti-lua.md](luanti-lua.md)).
+   [luanti-lua.md](../technical/luanti-lua.md)).
 3. The 8.4 reproduction diff matching its predicted set exactly.
 4. The 8.5 fleet complete: zero cross-check mismatches, v5 published and
    digested, v4 byte-untouched in git.

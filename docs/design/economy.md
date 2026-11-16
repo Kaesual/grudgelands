@@ -7,16 +7,13 @@ buy-back, the income relationship and the sinks with their prices
 values, repair math, the crown fee, culture prices) are printed in
 [item_tiers.md](item_tiers.md) §4 and §6.
 
-The price axis in §2 is live since the WP44 cutover (Round 29 lane E1,
-[economy plan](../planning/economy-vendor-plan.md) §2–§3): traders, loot and
-gathered payouts, buy-back, the anti-loop audit and repair's price source
-switched together. WP44 is a **lighter pass** (user decision 2026-09-29,
-[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) D1):
-price tables, buy-back, the audit fixes and a simple income estimate, without
-a checksummed manifest or audit DAG. Quest copper rewards use the same ×2.5
-axis (D2).
+The price axis in §2 drives traders, loot and gathered payouts, buy-back,
+the anti-loop audit and repair's price source together
+([economy plan](../planning/economy-vendor-plan.md) §2–§3). Quest copper
+rewards use the same ×2.5 axis
+([WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) D2).
 
-The Miner's Guild's reputation (Round 58) is no ledger currency: [miners_guild.md](miners_guild.md).
+The Miner's Guild's reputation is no ledger currency: [miners_guild.md](miners_guild.md).
 
 ## 1. Currency: copper / silver / gold
 
@@ -294,10 +291,10 @@ items without one:
   consumables.
 - **Repair:** broken gear is never destroyed; at zero durability its effects
   stop until repaired with ledger money at any town profession trainer or at
-  Grudge-Free Repairs (the former Cooking trainer socket). The cost is `ceil(1.00 × reference purchase price × missing
-  durability fraction)` per item (Round 33: wearing an item out once costs
-  its price), from the §2 purchase table; intact items are
-  free. Anyone may repair any eligible item, with no profession or material
+  Grudge-Free Repairs (the former Cooking trainer socket). The cost is
+  `ceil(factor × reference purchase price × missing durability fraction)`
+  per item, from the §2 purchase table, with the factor of
+  [item_tiers.md](item_tiers.md) §6.2; intact items are free. Anyone may repair any eligible item, with no profession or material
   requirement. Repair happens only in towns (Round 46 ruling 16): the
   claim-station repair (D7) is removed. The precise eligibility, price
   catalog and transaction rules are in

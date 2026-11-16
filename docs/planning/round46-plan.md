@@ -189,7 +189,7 @@ Changes are in bold.
   - the gathering-XP tables (lane XP owns the ratios, not the bands).
 - In the same pass, OR folds in the `TIERS[].ilvl` clean-up and the
   `r7_loader.lua:46-47` comment ([Round 45
-  carry-overs](../../BACKLOG.md#round-45-carry-overs)), because both
+  carry-overs](round45-plan.md#carry-overs)), because both
   re-pin the same projection.
 
 ## 4. Lanes (goals; the briefs add file facts)
@@ -429,7 +429,7 @@ measured with `tools/r24_density_xp`.
 - BACKLOG carry-overs.
 - The round-end gate list gains
   `python3 tools/r451_mc/gen_bat_ride_mesh.py --check`
-  ([0.45.1 carry-overs](../../BACKLOG.md#0451-carry-overs)).
+  ([0.45.1 carry-overs](round45-plan.md#0451-carry-overs)).
 
 ## 5. Rules
 
@@ -717,7 +717,7 @@ Comparisons, not targets.
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-46-carry-overs).
+[carry-overs](#carry-overs).
 
 ### GUI checklist (Round 46)
 
@@ -845,3 +845,84 @@ full seed fleet on main `54190e98` 304 of 304 seeds (30 min, 4 parallel);
 `check_fresh_server.py` PASS; `gen_bat_ride_mesh.py --check` OK; smoke
 boot PASS. Lane D was checked by the coordinator (CHANGELOG, declaration,
 gates) instead of a separate review.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Depth pulse** (DP): the rate runs about 7 % below the curve (the slice
+  timer resets instead of subtracting, as in `spawn_regions`); an arrival
+  can come back as an ordinary saved mob after a server crash (its static
+  copy is written before `static_save = false`); a pending wind-up still
+  spawns after the player climbed above −300 or teleported (it fades after
+  10 s); in a group each player can have one wind-up pending, so the
+  shared cap can be exceeded by up to players − 1 for a moment; flyers
+  have no route search and rely on the fade round corners; watch the
+  Emberglass income from Ember Wisp arrivals.
+- **Underground spawns** (UW): the golems' level-5 elite floor applies at
+  every depth, so the L2–4 golems that spawned at −41 … −74 under
+  low-level zones are gone (the user's answer covers it in intent;
+  `names.json` keeps their slots at L1–60, harmless); the merged
+  underground ABM now also rolls in the −1 … −40 band under every surface
+  player, unmeasured (a `POINTS=surface` census would compare); underground
+  ranged mobs (Goblin Pelter, Fire Hurler) engage from 26 nodes and the
+  pack alert reaches 26 (GUI checklist).
+- **Waiting point** (WT): a stray item dropped at the feet on join
+  (`equipment.lua:245`) may land at the waiting point; every active-block
+  cycle and send step re-queues the waiting players' missing blocks as
+  cancelled emerges, one database read each (shared, unmeasured); the
+  unreachable "complete without backlog" branch can go; with the movement
+  anticheat disabled a server would accept one stale old-position packet;
+  `tools/r41_up`'s engine probe edits were not re-run in the engine.
+- **Combat** (CB): `grug_core/combat.lua:118-119` says every class starts
+  with its caster weapon (only the Mage and the Priest do); a caster
+  talent tooltip says "with your staff or wand" with an empty slot (the
+  number is right; GUI checklist); `combat_stats.md:76` is one unwrapped
+  line; `tools/r46_cb` stubs a broken or unequippable staff instead of
+  testing it; `r35_b`/`r36_k` `numbers.py` kept the old flat rage model
+  (both retired in Round 53).
+- **Repair** (RP): `tools/r451_tr/portable_test.lua:460` still builds a
+  `{kind="station"}` repair form through its stubs; the
+  `grug_quality/init.lua:455-456` comment names "the station's repair
+  button"; `default`'s `toolrepair` craft is registered but unreachable
+  (vendored; a GRUG PATCH could clear it).
+- **XP and quests** (XP): removed quests leave dead `cooldowns` and
+  `completed` entries in saved state (only looked up by id); quest XP
+  pays its full quest level to an over-levelled player; the ledger's
+  `--repeat` and the repeatable mechanism are dormant; the fixture stubs
+  in `r28_a3:97`, `r28_b1:487`, `r28_b2:205` and `r28_s1:968` still set
+  the removed `LEVEL_OFFSET`.
+- **Crafting** (ID, CK): Craft now from a page older than the last server
+  build reads its dropdown values against the new rows (the Round 45
+  stale-page gap; nothing is lost); the enchant and upgrade boxes have no
+  dropdown; the Crafting help has no line about the dropdown; a group
+  entry takes the first matching slot (Salt-Crusted Fish can use a Storm
+  Tuna before a Raw Fish); at levels 1–3 a T1 plain and a Hearty dish
+  both heal 1 HP per tick (rounding); Dawnmere's onion grows only in its
+  5 % deep forest and Speargrass's Mushroom in 5 %; Silver Trout in every
+  11–20 zone assumes water there (GUI checklist); Spiced Skewer's icon is
+  close to Mushroom Skewer's and Pan-Fried Trout's to Corn-Crusted Fish's
+  (look and feel).
+- **Economy** (LT, XP): reprice mounts, respecs and the crown fee once
+  after this round (every price is within the 20 % corridor; the largest
+  gap is the bracket-6 respec, 12s against 14s); coin bags also roll for
+  mobs with empty drops, such as the enrage-only dragon whelps (the
+  uniform rule).
+- **Placement** (PL): the coarse zone test is lopsided when `reach` is not
+  a multiple of 16 (the + side keeps about 16 instead of 24; fixing it
+  moves every POI); the last resorts ignore `ANCHOR_GAP` and `WET_RESORT`
+  the town gaps (never reached); the Round 34 F3 guard on fixed POIs is
+  watched by the full fleet; Mournfen's bandit camp lies more than one
+  belt from its band on seed 99999 (a closer band proxy); `check_lua.sh`
+  sweep 5 flags `io.popen` in `tools/r31_q/portable_test.lua:79`
+  (pre-existing).
+- **Names** (PL): `tools/r38_names/inventory.py --check` reports stale
+  files on main (already before the round).
+- **Texts** (OR): the Frostbarrow Garnet quest text says "below the copper
+  and jade", but Jade now reaches T3 and T4 too (flavour; a quest-text
+  pass); `economy-vendor-plan.md` and `round29-plan.md` keep the old gem
+  rule as history.

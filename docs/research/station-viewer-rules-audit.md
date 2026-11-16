@@ -3,7 +3,7 @@
 Date: 2026-09-21. User explicitly requested a native GPT-6 Astra read-only
 assessment before implementation. Coordinator recorded the agent's findings;
 no game code or tests were changed. Decision state:
-[station TODO](../design/crafting_equipment_revision.md).
+[station TODO](../design/inventory_equipment.md#4-crafting-model-round-45).
 
 ## Conclusion
 

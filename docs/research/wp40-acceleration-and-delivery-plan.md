@@ -29,7 +29,7 @@ At the time, the authorities were layered as follows:
 - [wp40-t2-plan.md](wp40-t2-plan.md) owned T2 state and ordering;
 - [wp40-t2-contracts.md](wp40-t2-contracts.md) owned the detailed T2 package
   contracts; and
-- [luanti-lua.md](luanti-lua.md) owns the Lua 5.1/LuaJIT compatibility and
+- [luanti-lua.md](../technical/luanti-lua.md) owns the Lua 5.1/LuaJIT compatibility and
   test rules; while
 - [agent-model-policy.md](../process/agent-model-policy.md) independently owns
   project-wide model routing and supersedes historical WP40 model assignments

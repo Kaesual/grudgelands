@@ -392,7 +392,7 @@ first start; a seed fleet ran beside them).
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-49-carry-overs); what remains of WP48
+[carry-overs](#carry-overs); what remains of WP48
 (several emerge threads after Luanti #9357, the cold planner, the
 first-start pre-step) is in
 [WP48](../../BACKLOG.md#wp48--mapgen-writer-performance-and-parallel-emerge).
@@ -493,3 +493,83 @@ main `aea065a8` `check_upgrade.py` (0.49.0 against origin/main),
 boot (120 s) PASS, no server left.
 Lane D's own checks on its branch: `tools/r37_dc` and `check_upgrade.py`
 (0.49.0 against origin/main `1ef11b5e`) PASS.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Kings' volley** (NAV2 review; the user 2026-10-15: backlog, a balance
+  question): the kings' scripted volley signature
+  (`grug_mobs/bosses.lua` ~511) fires without a line-of-sight check
+  (unchanged by the round).
+- **Navigation** (NAV, NAV2): the repair's node reads (about 1,200–1,700 for
+  a 40-waypoint path repaired throughout, against 80 open) run outside the
+  A* time budget, bounded by the search cap; a repaired step does not check
+  head room during the step (`grug_nav.lua` ~349–361, the engine's own
+  blind spot), which may explain the zombie's repair-then-stuck loop at the
+  probe's `deep_forest_trunk1`; still failing in the probe: a blueberry
+  bush on a steep pine slope, a rat at a grove and on a bush top (out of
+  reach); elite and rare ×2 bodies are untested; padding also escalates
+  after successful re-plans, so a kiting target is searched at 16;
+  `routes.lua` ~713 overwrites a repaired last waypoint with the goal
+  (harmless); a strafing dummy lost its pursuer after about 15 s (probably
+  the leash contact timeout).
+- **Town protection** (PROT): v7 tunnels under a town can cross the
+  protected floor (as with 100); POI-envelope columns on steep ground 80–100
+  below their anchor now get ordinary surface content (accepted); the
+  research contracts `wp40-simple-map-r4-contract.md` ~114 and
+  `wp40-r7-implementation-contract.md` ~90 still say 100 (historical).
+- **Native ores** (ORE): native ores also fill the near-surface strata
+  bands; town plinths show ore that cannot be dug (GUI checklist); cave
+  plants and ores also lie inside the Round 46 underground reservations;
+  the T1 rows reach y 31000, so every sky chunk scatters them (`makeChunk`
+  +0–2 ms; SKIP found no exact bound to cap `y_max`).
+- **Fill-ore pass** (P8 review): its cube-decision arrays are allocated and
+  zero-filled per chunk (about 2.3 MB garbage, +0.2 ms on chunks with few
+  hosts; allocate once with a chunk generation stamp); the fill-ore choice
+  has no guard against a voxel outside the declared chunk (its only caller
+  stays inside; a fixture-only range check would do).
+- **Placement hash** (HASH review): the z lines are windows into one
+  sequence per stream (one-node-wide coincidences, invisible);
+  `world_content.lua`'s surface-plant hash is purely linear (runs along an
+  axis) and could use the placement hash.
+- **Deep skip** (SKIP): `air_chunks.lua` ~81 repeats −37 (pinned by the
+  fixture); a deep chunk whose planning would fail is now skipped silently
+  (same output); any later pass writing below −37 outside a fitted box must
+  extend the skip argument (the module guide says so); the seed fleet does
+  not exercise the refine path; `tools/r23_full_column/make_patch.py`'s
+  anchor is stale since Round 41.
+- **Caches and memory** (CACHE): the emerge heap swings 1–2 GB between
+  collections; the column cache's memory figure is not rerunnable from the
+  repository (lane +41 MiB, review +31 MiB).
+- **JIT** (JIT): untraceable patterns remain in `index128.lua` ~623,
+  `simple_map.lua` 622/661/794, `r6_settlement.lua` ~438,
+  `road_layout.lua` ~2450 and `habitat_registry.lua` ~130 (a note in
+  `luanti-lua.md` would help); the frozen R5 contract §6 step 6 still
+  describes two passes; `map_adapter.lua` ~1384 keeps `voxel_plan` after a
+  failure (harmless); a headless boot counts the INSECURE security notice
+  as an ERROR line.
+- **v7 flags** (V7, V7A): a closed-form v7 base height could bound high air
+  chunks without the heightmap read; `tools/r49_v7`'s flag patches no
+  longer apply (documented).
+- **Mail and selling** (UI): a Sell row's label stays the plain item name
+  (only the tooltip carries quality); the mail `item_image` with a stack
+  string and `warp_pointer.py`'s pixel formula follow engine internals.
+- **Inventory** (INV): no feed line names the item a skill moved off the
+  hotbar (the user: none wanted); the moved item may merge into a partial
+  stack; `apply_bag_resize` and `empty_inbox`'s drop-overflow fallback
+  could make a bagged stone a world item (ruled out by the allow check in
+  the same step); `place_on_hotbar` ignores the give helper's return (safe
+  while the fit check and the helper agree).
+- **Looks** (VIS): the Wild Onion source node's inventory image is the
+  half-buried stage 4 tile (creative and admin only); the realm website's
+  3-D viewer uses `wield_transform` without the block factor (hand-slot
+  equipment only, never a block).
+- **Mobs** (MOB): `docs/planning/round28/mobs/catalogue.{json,md}` keep
+  the old rare numbers (historical).
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` and
+  `os.exit` in older tool fixtures.

@@ -97,7 +97,7 @@ The final whole-quality pair passes with 259 byte-identical lines under PUC
 `3810e1d8ee545281a8eb7a5ed4a92be0aa614fdec5db76aea199e4fec1d7fb11`.
 The preceding actual manifest-constructor KAT passes; the input manifest was
 rechecked after execution. Final parity and independent-review receipts are recorded in the
-[evidence directory](wp40-planner-throughput-evidence/). Remaining R8 supply,
+evidence directory (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-planner-throughput-evidence/`). Remaining R8 supply,
 visual acceptance and real fallback-engine gates stay open. A complete 32-seed
 resource/access recertification is outside this output-preserving follow-up.
 
@@ -112,7 +112,7 @@ source snapshots. Both were fixed in two integration/evidence rounds. Final inde
 **0 Critical / 0 High / 0 Medium / 0 Low**, clean for commit, merge and authorized
 local sync. Reviewer: prior configured GPT-5.6 Sol route, reporting GPT-6 session
 identity; these are recorded separately rather than inferred from one another.
-The [review receipt](wp40-planner-throughput-evidence/review.md) is retained.
+The review receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-planner-throughput-evidence/review.md`) is retained.
 Observed elapsed wall time: unknown.
 
 ## User runtime test

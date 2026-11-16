@@ -30,7 +30,7 @@ grug_traders.POTION_HEAL_AMOUNT = 35
 --     cooldown exists to prevent;
 --   * os.time() is wall clock (whitelisted by the engine sandbox — the
 --     security layer keeps os.clock/date/difftime/getenv/time, see
---     docs/research/luanti-lua.md), so the cooldown keeps running while the
+--     docs/technical/luanti-lua.md), so the cooldown keeps running while the
 --     player is offline and across a server restart. grug_core.mono_time() is
 --     deliberately NOT used here: it restarts at every server start, which
 --     would hand every player a free potion after a restart.

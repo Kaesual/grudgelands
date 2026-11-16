@@ -736,7 +736,7 @@ use (26). The coordinator's defaults (§2) stand. The fixture-run rule of
 ### Open notes
 
 The reviews' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-42-carry-overs) (theoretical, no
+[carry-overs](#carry-overs) (theoretical, no
 severity); none blocked PT.
 
 ### GUI playtest checklist
@@ -773,3 +773,46 @@ the user's playtest PT on 2026-10-08** (accepted).
    across rough ground; it runs round on a short detour and walks home;
    only a pen snaps it after 40 s.
 8. **Server feel** with several fights at once: no hitches.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Tall mobs** (NV1): rares ×2 and kings also get the collision height
+  under 2 and clip through lintels (the playtest accepted the look).
+- **Close targets** (NV1) are searched directly only, so a bandit still
+  gives up at a 2-high gap 5 nodes aside.
+- **An evader sliding along a wall** (NV2) counts as stuck only when it
+  stops.
+- **Royal guards running to a fighting leader** (NV2) can overshoot by up
+  to about 4 nodes (cosmetic).
+- **A named rare that evades** (NV2) runs two walk owners (theoretical).
+- **A blocked walker is steered every step** (NV2); option: steer the
+  idle-leader follow only while it has a path.
+- **A fixed-walk goal over 32 nodes away** (NV2) searches every 5 s while
+  its ring fails.
+- **Cache builds skip the per-mob lockout** (NV3), bounded by the cap and
+  the budget.
+- **Gate-tower patrol loops never climb** (NV3; older than the round).
+- **A player's unlocked door** (DR) within 20 nodes of a village walker's
+  ends, outside protection, can be opened by a failed fixed walk.
+- **A door hand-over is lost** (DR) when a fight pulls the opener over 8
+  nodes away; the door stays open.
+- **Random stops come back now and then** (ST) with server steps over
+  0.5 s.
+- **A roamer pinned outside its leash** (ST) never pauses.
+- **The random turn** (ST) still applies to post guards walking back,
+  named rares, royal guards, the rift boss and the wild evade, roam-cap
+  and shore walks (a mild veer of about 0.3 m).
+- **Walkable decor named "wall"** (ST; castle wall slabs and stairs) still
+  counts as a fence.
+- **No negative-cache and lockout merge** (CL): they decide differently
+  when a mob searches again.
+- **Unused before Round 42, left untouched** (CL):
+  `grug_mobs.start_npc_activity`, the unread `mobs_disable_damage_kb`
+  setting, upstream's unused `deg`, `vmultiply`, `vsubtract`,
+  `set_pitch`, `set_roll`, and `no_path_wait_cap` (read, never reached).

@@ -29,7 +29,7 @@ independent read-only review; only the user pushes.
 ## 2. User decisions and scope
 
 The approved behavior is owned by
-[World atlas — approved icon integration](../design/world_map.md#approved-icon-integration-round-64).
+[World atlas — approved icon integration](../design/world_map.md#icons-and-markers).
 This plan implements it; it does not introduce travel, discovery or NPC rules.
 
 Approved art is the current [review page](map-icon-rework.html), backed by

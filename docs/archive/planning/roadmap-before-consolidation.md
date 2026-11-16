@@ -447,6 +447,6 @@ remain explicit coverage limits. Full tracking lives in
   owner-bound entity.
 
 Round 13 (delivered 2026-09-21) simplifies stations, enchanting and equipment;
-see [current rules](../../../docs/design/crafting_equipment_revision.md) and
+see [current rules](../../../docs/design/items_crafting.md) and
 [execution status](../../../docs/research/round13-execution.md). Its bounded delivery does
 not close the wider WP5/WP10/WP22/WP30 scope.

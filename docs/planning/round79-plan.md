@@ -628,4 +628,33 @@ Fixture numbers on the fixture's fake engine.
   ceiling, one generic refusal text).
 - The squash merge into main and the push after the round-end full run.
 - Backlog notes from the reports and reviews:
-  [BACKLOG](../../BACKLOG.md#round-79--website-accounts-phase-1-gui-acceptance-pending).
+  [carry-overs](#carry-overs).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **List validation (`grug_accounts/model.lua`):** two character rows for one name of which
+  one is malformed: the malformed one is dropped first, so the valid one is kept instead of
+  both being dropped (contract §5.2). A list version that is not a positive integer is
+  applied (the contract says only "numeric"; version 0 keeps the tab hidden); left to the
+  website (ACC Q3, coordinator).
+- **The id index:** a character whose meta holds an id the index lacks rewrites the index
+  without a log line (the log line is only for a disagreement). A tombstone is overwritten
+  by the next new id at a join; **fix this with the deletion amendment**, before anything
+  writes tombstones (contract §10).
+- **The Account card does not scroll:** more than about 9 rewards would leave the card
+  (phase 2 adds rewards; add a scroll container then).
+- **An offline character's stored appearance** (`grug_visuals:appearance`) names a revoked
+  account cloak until its next join, so the website's preview shows it until then.
+- **The Account page's edges** (`grug_accounts/page.lua`): the message `confirm_link` and
+  `cancel_link` return is ignored on a stale window (the page re-renders from `link_state`
+  instead); the `handling` guard is not reset if an API call raises (the page would then
+  miss redraws for that player until the next click); the creation view relies on
+  `can_link` giving the creation reason first among its refusals.
+- **A local refusal line** (for example the attempt limit) stays until the next request;
+  the flow could clear it at the arrival (PAGE review Q2, left as is).

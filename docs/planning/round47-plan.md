@@ -828,7 +828,7 @@ Comparisons, not targets.
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-47-carry-overs).
+[carry-overs](#carry-overs).
 
 ### GUI checklist (Round 47)
 
@@ -962,3 +962,90 @@ fixtures 181/181, the full seed fleet 304/304 (34 min 40 s),
 enchant-mask, cloak and web-data checks and a smoke boot PASS; synced. On
 lane D's branch: `tools/r37_dc` and `check_upgrade.py` (0.47.0
 against origin/main) PASS.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Trees in the world** (TC): stems on street side slopes in the
+  capitals (1–6 per capital stand on cut or embankment columns, never on
+  the street surface; `r7_settlement.lua` counts only `surface` as road);
+  fixed compositions in unused planner slots stay an option for city
+  ground (the city overlay greens it per world instead); the ±1 candidate
+  offset of `layout.green` can put a stem 3 from a socket (a needle at y 3
+  near Dur Brannoc's `watch_south_east`); a claim made after a sapling
+  was planted is not checked when the tree grows (it fills only free
+  air); root runs on hilly jungle are often dropped (slopes); kapoks are
+  still lost in the chunk height band ([MGT-03](../../BACKLOG.md#audit-2026-10-later-fix-packages));
+  the vendored default tree `.mts` files are no longer read by the game
+  (only the concept viewer's "today" reads them; lane TD's probe keeps
+  its own copies) and can go once the viewer has its own.
+- **Tree nodes and the generator** (TA, TB): `tools/wp13/node_tiles.json`
+  does not see tile overrides, so blueprint previews show the old jungle
+  bark; mesa clay is not ground, so roots there do not join; farm soil
+  also declares `connect_sides` top (harmless); `treegen.lua`'s `ORDER`,
+  `WOOD` and `ROOTS` are live tables (a caller that changes them changes
+  generation), and `generate` does not refuse a non-integer seed (TC
+  checks its derived seed).
+- **The swamp** (SW): a pool whose level is a chunk's top y and whose
+  ground is one up can leave a dry 1-deep dip, possibly with a lily on
+  the mud (cosmetic; no water hidden or flowing); the planner's
+  `ground_round`, like `water_beside`, reads columns up to 2 past the
+  world bound; many swamp trees fall away at chunk borders (4 of 27
+  candidates accepted in the probe); the pass's cost was not reported
+  (the reviewer's comparison: 0.3–0.5 s per chunk at base, 0.3–0.8 s
+  after); `r47_tc` B accepts a stem foot at y 0–2 for stilt species
+  (looser than needed); there is no swamp sapling (swamp leaves drop
+  nothing, like gravewood's; TC's sapling growth covers the eight other
+  species).
+- **Mining and Anthracite** (OR, AN): grug_quality still stores
+  capabilities on crafted tools, which carry no damage or speed (stopping
+  it would make future scale changes step-free); `audit.lua`
+  `NON_METAL_PICKS` hard-codes the Wood and Stone picks (a new non-metal
+  pick fails the start loudly); a future tool without `_grug_tool_uses`
+  or with its own `after_use` would feel the engine's changed wear factor
+  on level-0 nodes; the Anthracite torch goes out silently in a flood (the
+  vendored hiss is a raw `sound_play`); `grug_housing` `api.lua:280` falls
+  back to a lump's seconds for an unknown item (its only caller filters
+  first); Anthracite prices as a T2 raw ore, so the Steel payout rises
+  (`income.py` passes); two unused torch sheets ship, as in the vendored
+  set.
+- **Furnace sound** (FS): `grug_ambience/mod.conf` still says "forge and
+  fire loops" (stale since Round 45); no explosion in the game removes
+  nodes, so "blown up" is reachable only through `on_blast` callers; a
+  player near furnaces and camp fires can hear up to 2 + 2 fire loops
+  (GUI checklist; sharing one limit is a small change).
+- **Crafting** (CR): pickups wait for the 10 s sweep before a recipe
+  unlocks (hooking the give helper would make it instant); Max may
+  undershoot when a larger take frees a slot (the start check is exact);
+  a Stop at the moment the overflow first fills sends the page twice.
+- **NPCs and zones** (NZ): two stall keepers (Silverleaf's `work_market`,
+  Lethariel's `martial_armoury_work_counter`) face the street, not their
+  counter (ruling 20 over the
+  [socket contract §8.1](../research/wp13-npc-sockets-contract.md#81-the-work-role);
+  GUI checklist); the
+  facing check reads one composition at a time, not neighbouring plots,
+  the capital core or terrain; no "Discovered: …" text line (the banner
+  names the zone).
+- **Map window** (ML): zone labels crowd on small windows (46 overlapping
+  pairs at 1035 × 696); a ring's tooltip covers its whole square; the web
+  build's label and box rendering is unchecked; at 16:9 a gap of about
+  0.85 units stays under the map; POI tooltips repeat the kind; at 720p
+  the 2 s party refresh resets an overflowing quest text's scroll three
+  times as often (all GUI checklist); a settlement without a
+  `display_name` would show its key; `targets.lua:145` gives no
+  crosshair fallback to a role whose regions an earlier objective marked
+  (no shipped quest has one).
+- **Render cost** (TD): measured on the desktop only with software
+  rendering (llvmpipe), so only the ratios count; accepted as is by the
+  user (full leaves, `TREE_SPACING = 4`), who checks on a real GPU
+  (GUI checklist). Trimmed crowns stay an option (50 % leaves save about
+  25–30 % of the added cost, most for apple, silverwood and kapok); the
+  web client is unmeasured (it draws about 2.8× the area at its viewing
+  range of 320); the swamp tree is unmeasured (no "today" to compare).
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` in
+  `tools/r45_ms/portable_test.lua` and `tools/r45_rg/portable_test.lua:546`.

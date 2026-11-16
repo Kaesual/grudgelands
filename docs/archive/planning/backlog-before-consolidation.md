@@ -26,7 +26,7 @@ and locally synchronized. Remote push awaits renewed confirmation after an
 automatic approval-review rejection. Receipt:
 [completion](../../../docs/research/round18-completion.md),
 [execution](../../../docs/research/round18-execution.md),
-[living revision](../../../docs/design/playtest_quality_revision.md).
+[living revision](../../../docs/design/README.md).
 Equipment/trainer guidance, action icons, atlas/minimap, population eligibility,
 ordinary pursuit, XP, tools and preparation/arrival flows are implemented.
 No whole-WP count change is claimed. Held-torch moving light and friendly-guard
@@ -63,7 +63,7 @@ non-overlapping geometry. Merged, synchronized and pushed; GUI acceptance remain
 
 Round 14 is delivered: [completion](../../../docs/research/round14-completion.md).
 
-Round 13 is delivered: [completion and exact evidence](../../../docs/research/round13-completion.md), [current contract](../../../docs/design/crafting_equipment_revision.md).
+Round 13 is delivered: [completion and exact evidence](../../../docs/research/round13-completion.md), [current contract](../../../docs/design/items_crafting.md).
 
 The [first Round 13 playtest followups](../../../docs/research/round13-playtest-followups.md)
 restore skills-first character creation and non-grassing capital stable floors;
@@ -389,7 +389,7 @@ These rules are implemented and independently reviewed; GUI acceptance remains s
 ### Round 13 — stations, enchanting and equipment
 
 **Delivered and independently reviewed (2026-09-21).** The
-[current contract](../../../docs/design/crafting_equipment_revision.md) replaces the
+[current contract](../../../docs/design/items_crafting.md) replaces the
 resolved station, enchanting and tool-lifetime TODOs. Personal authored
 workspaces and shared player stations, qualified viewer previews, universal
 automatic finishing, 456 fixed-tier enchant operations, removal of refinement,

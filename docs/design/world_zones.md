@@ -1,21 +1,11 @@
 # Named World Zones & PvP Geography
 
-Decided 2026-08-10; complete named-zone pass 2026-08-11; fixed simple-map
-rebase 2026-08-25; Battlegrounds naming/protection amendment 2026-08-27; R6
-surface/resource decisions 2026-08-29, with later approved playtest revisions
-folded into the relevant sections. This is the current named-zone authority;
-the old radial "safe core + war coast" layout is retired. Catalog requirements
-for unimplemented war-front and encounter work remain binding future scope
-(housing shipped in Round 25, PvP in Round 31). Delivery history is tracked separately in BACKLOG and the WP40
-completion record.
-
-**Round 22 rewrite (2026-09-25):** §7 (world model), §8.4 (landmarks), §9
-(neighbors and roads), the capital ingress rule of §12 and §14 (acceptance)
-were rewritten for natural terrain, borders, roads and water
-(`../planning/round22-natural-world-plan.md`); §§1–3, the §8 and §11 intros
-and §13.2 were aligned. Phases 3–5 landed with the R7 production cutover:
-§7–§14 describe the running mapgen. The replaced WP40 text is in this file as
-of commit `082982da`.
+The named-zone authority: the authored macro-map, the zones and their
+levels, PvP geography, terrain, water, roads, the capital and start
+envelopes and the public zone contract. §7–§14 describe the running
+mapgen. The old radial "safe core + war coast" layout is retired. Catalog
+requirements for unimplemented war-front and encounter work (§16) remain
+binding future scope.
 
 ## 1. Authored macro-map, procedural local detail
 
@@ -95,15 +85,12 @@ of commit `082982da`.
   becomes 51–53 / 54–56 / 57–60, and 60 stays 60. How progress across the
   zone is measured is an implementation choice, as long as the level never
   leaves the zone's range, never falls toward the front and rises gradually.
-- **Gravesalt Escarpment and The Skyglass Canopy play 51–60** (the user,
-  2026-10-02, Round 28 S2c: the level cap is reached in leveling zones) and
-  **The Broken Causeway plays 41–50** beside The Shattered Line (Round 28
-  W1). Round 29 moved these bands into the mapgen zone records
-  (`wp40/source/simple_map.lua`), so the zone records `grug_zones.get` /
-  `at` serve (map, quests, spawn regions) and the analytic level field that
-  places plants, resources and P9G content use one band. In a zone with a
-  spawn recipe the gameplay surface level is the region's
-  ([spawn_regions.md](spawn_regions.md#one-level-truth)).
+- **One band per zone:** the Battlegrounds bands above (the level cap is
+  reached in leveling zones: Gravesalt Escarpment and The Skyglass Canopy
+  play 51–60) are the mapgen zone records' (`wp40/source/simple_map.lua`), so
+  the zone records `grug_zones.get` / `at` serve (map, quests, spawn regions)
+  and the analytic level field that places plants, resources and P9G content
+  use one band.
 - The Battlegrounds zones rise from both continent-facing sides toward the
   middle of the band. Wyrmglass and Stormscale are flat level 60. Capital
   zones use their published ranges (20–30). Their zone record's
@@ -135,22 +122,18 @@ of commit `082982da`.
   resources, the P9G level bracket). Its border walk is cached per 8×8 cell
   and is a pure function of the cell, so every mapgen owner and every query
   order gets the same answer. Other zones keep their gradient.
-- **Mob levels in zones with a spawn recipe (Round 28 ruling 34, Lane S1,
-  2026-10-02).** A zone is a closed unit with planned progression: where its
-  spawn data holds a recipe ([spawn_regions.md](spawn_regions.md)), each
-  surface mob takes a level in its role's range of the spawn region it came
-  from, named leaders the top of their region; the three sub-ranges toward
-  the front above no longer apply to mobs there. Gameplay asks the surface
-  level through `grug_core.mob_level_at` and `grug_core.surface_mob_level_at`,
-  which return the region's level there (the level overlay); zones without a
-  recipe keep the field. The zone field itself (`grug_zones.mob_level_at`,
+- **Mob levels in zones with a spawn recipe:** each surface mob takes a level
+  in its role's range of the spawn region it came from, named leaders the top
+  of their region, not this field (the overlay:
+  [spawn_regions.md](spawn_regions.md#one-level-truth); levels per role and
+  leader: [biomes_mobs.md](biomes_mobs.md) §4.2). The zone field itself (`grug_zones.mob_level_at`,
   `grug_zones.surface_mob_level_at`) is never overlaid: it serves the
   mapgen's level-banded content, the depth floor and guards everywhere.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
-- At **y = −501 and below** (depth tier T4 and deeper; Round 31, it was
-  −701), every non-ocean land column is contested even
+- At **y = −501 and below** (depth tier T4 and deeper), every non-ocean
+  land column is contested even
   beneath a peaceful surface zone, capital, functional anchor or active claim.
   Deep ocean and protected water (bay, belt and channel water 24 nodes or more
   off the coast, Round 51, §7.4) remain full-column exceptions.
@@ -200,20 +183,18 @@ of commit `082982da`.
 
 ## 4. PvP zones
 
-Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
-[pvp.md](pvp.md) (Round 31, WP41).
+Which ground is peaceful, contested or neither (the zones by level band,
+the capitals, the contested depth from y = −501, deep ocean and the dragon
+channels) and which zones are a faction's territory: [pvp.md](pvp.md) §1,
+the owner (`pvp_rule_at`, `faction_at`, §13.2). Each zone's PvP rule is in
+its catalog row (§8).
 
-- Every level-1–30 zone and every capital is **peaceful**; every ordinary
-  level-31–60 zone (the six contested approaches and the four Battlegrounds
-  zones) and both dragon islands are **contested** (`pvp_rule_at`).
-- Every non-ocean land column at **y = −501 and below** (depth tier T4 and
-  deeper) is contested beneath any surface zone; T1–T3 under peaceful land
-  stay peaceful (Round 31; it was −701).
-- Deep ocean and the immutable dragon channels are neither peaceful nor
-  contested; crossing them keeps a player's location flag as it was.
-- A faction's start, home and capital zones are its territory
-  (`faction_at`); for the other faction they are enemy territory, which
-  flags a visitor ([pvp.md](pvp.md) §1).
+- **Flight** follows these territories ([mounts.md](mounts.md) §4 owns the
+  rule): contested mainland and the Battlegrounds allow it for both
+  factions, a faction's home zones (capitals included) only for that
+  faction, and POIs inherit their zone; the dragon islands, the open sea and
+  the channels forbid it, and the coastal belt takes the rule of the zone it
+  lies in front of.
 
 ## 5. War-front life
 
@@ -274,7 +255,8 @@ Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
 
 Rewritten for Round 22 (2026-09-25, `../planning/round22-natural-world-plan.md`
 D1–D19). This section describes the running mapgen; git history before this
-rewrite records the WP40 model it replaced.
+rewrite (this file as of commit `082982da`) records the WP40 model it
+replaced.
 
 ### 7.1 Frame, hubs and fixed anchors
 
@@ -643,8 +625,8 @@ rewrite records the WP40 model it replaced.
   75-100: 8, 100-125: 9, 125-150: 11, 150-175: 12, 175-200: 13, 200-225: 15,
   225-250: 16, 250-275: 17, 275-300: 18, 300-325: 20, 325-350: 22, then
   25-27, 30 and 32 by d = 400. Coral depths (to about 10) reach about 140 off
-  the coast, kelp depths (to about 20) the whole belt (seabed growth: §
-  "Round 10 Cooking wild sources, field soil and shallow reefs"). **The wreck band**,
+  the coast, kelp depths (to about 20) the whole belt (seabed growth: the bullet
+  "Seabed growth" below). **The wreck band**,
   seabed 8-14 deep, lies about 90-220 off the coast: 3.9-4.1 km² of
   protected belt and bay seabed per world, in 26-28 zones. Daylight drops
   one light level per water node, so seabed deeper than about 12 is nearly
@@ -703,6 +685,69 @@ rewrite records the WP40 model it replaced.
   water surface has its terrain surface at exactly the water-surface y (§2).
   No dry shore column ends below its neighboring water surface. Bridges,
   fords and other functional crossings keep their own grade.
+- **Seabed growth** (sea plan ruling 7, `wp40/seabed.lua`, one
+  rule shared by the writer and the renewal) grows in the coastal belt, the
+  continental bays and the dragon channels, never in the open sea, and nothing
+  deeper than 20: one 16-node cell in four carries a small or large **coral
+  patch** (beds 2–10 deep); loose **kelp meadows** (soft noise-bounded areas,
+  one sand column in six in the core) grow on sand 3–20 deep, 2–6 tall plus one
+  node per two nodes of water beyond 6, at most 15 and always under the
+  surface; **seagrass meadows** (their own noise, two sand columns in three in
+  the core, the three picked variants `grug_mapgen:seagrass_1..3` mixed, one
+  node of blades) grow on sand 2–14 deep. **No meadow or patch has a sharp
+  outline**: a meadow's fill falls
+  from its core's over a band of its noise, about 3–6 nodes at the noise's usual
+  slope, and single tufts or stalks stand about as far again beyond it; a coral
+  patch keeps its ellipse (four in five) and gains a rim of the same width at
+  one in four and loose pieces round it at one in twenty, reaching across its
+  cell's side. Toward the deepest depth each grows at the fill thins too (the
+  last three nodes at ¾, ½ and ¼: coral 8–10, seagrass 12–14, kelp 18–20), so
+  no meadow ends on a depth line. Measured on the rule (production seed, 1024 × 1024 columns 6
+  deep), the seagrass fill by distance from the old outline goes from 59 %
+  inside / 0 outside to 58, 56, 48, 37 % at 4…1 nodes inside and 26, 14, 6, 3,
+  2, 1 % at 1…6 outside; kelp 16 → 15, 13, 9 % inside and 6, 2, 1 % outside;
+  seagrass 32.6 → 33.7 %, kelp 5.7 %, coral 3.4 → 4.9 % of the columns; in
+  written chunks (seed 12345, 12 per class, columns 2–20 deep) seagrass shelf
+  15.6 → 16.5 %, belt beyond 10.4 → 6.7 % (much of it 12–14 deep), bays 9.7 →
+  9.1 %, channels 13.4 → 14.7 %; coral shelf 3.3 → 4.5 %, channels 1.5 → 0.7 %
+  (9–11 deep); kelp within ±0.3 points. Coast
+  claim exclusions (bays, island and channel coasts) do not
+  keep the seabed bare; settlements, roads and POIs do. Measured on the
+  production seed and seed 42 (12 chunks per class, seabed columns 2–20 deep):
+  the shelf (the belt's first 80 nodes) coral 2.9–3.0 %, kelp 2.1–2.7 %,
+  seagrass 12.6–13.6 %; the belt beyond coral 0.6–0.8 %, kelp 2.5–2.9 %,
+  seagrass 8.9–9.5 %; bays coral 0.7–1.4 %, kelp 3.1–4.3 %, seagrass
+  11.4–17.3 %; channels coral 1.5–1.7 %, kelp 2.1–2.8 %, seagrass 11.5–13.4 %;
+  the open sea none. In the belt beyond the shelf 41–57 % of the kelp stands
+  deeper than 12 (in bays 20–81 %), where daylight is nearly gone. Seagrass and kelp regrow
+  ([farming.md](farming.md) "Wild plant renewal"); coral patches stay as
+  generated. The six default coral variants, rooted sand-with-kelp and the
+  seagrass replace eligible natural bed nodes, with their actual rooted
+  geometry/height semantics. Seagrass, kelp and the freshwater waterweed
+  **sway in drawn frames** (the user's pick B: eight
+  16 × 16 frames over 3.2 s as a tile animation every client shows, our own kelp
+  art on `default:sand_with_kelp`); the engine's optional waving stays off for
+  them. Lakes, rivers, planned freshwater and functional
+  surfaces receive no reef content (their plants: the next bullet). There is one terrain/VM writer and no competing
+  engine decoration pass (except the two native cave sources of §11's Cooking
+  wild sources) or global
+  density/census target.
+- **Lake and river plants.** Waterweed grows in lakes and in river reaches away
+  from rapids and falls; lilies only in lakes (a river holds river water).
+  **Wild lakes** (`wp40/seabed.lua` `lake_at`, shared by the writer and
+  the renewal): waterlily pads in clusters on water 1–3 deep (near the shore)
+  and waterweed clumps 1–4 tall on the sand bed 3–10 deep, both fading out like
+  the sea's meadows, one plant per column; measured over the production seed's
+  12 fullest lake chunks: a lily on one in six columns 1 deep and one in seven
+  within two of the shore, weed on one in 16–20 columns 2–12 deep (about one
+  sand bed in eight). Both regrow ([farming.md](farming.md)). A river keeps its
+  sparse weed (2–6 deep, 1/192 columns); the swamp's pools keep their own
+  plants; a capital's lake is the settlement's and keeps the town writer's
+  water. Rooted freshwater waterweed decorates safe freshwater over natural
+  sand without displacing the water column. Thin waterlilies occupy the air
+  node immediately above a similarly safe freshwater surface and remain
+  passable. The Reed Angelfish lives in lakes and bays: [biomes_mobs.md](biomes_mobs.md)
+  "Round 51 water families".
 
 ### 7.5 Roads, anchors and housing
 
@@ -1485,7 +1530,7 @@ metal/pick tiers never consume gems.
 
 ## 11. Resource, loot and POI budgets
 
-**Round 22 note (2026-09-25):** the budgets and parity rules below are
+The budgets and parity rules below are
 design targets, confirmed by spot checks on representative seeds (§14.1),
 not by multi-seed population gates, a resource census or a release
 supply/access gate. Sampling and hashing algorithms are specified by the
@@ -1668,6 +1713,8 @@ code, not by this document.
   this 2026-08-31 ruling replaces the former Mournfen row with Ossuary Reach
   to preserve paired level-21–30 supply. Stormkelp uses both endpoint island
   coasts and the Gravesalt, Skyglass and Shattered Line coasts.
+  The herbs' catalogue (`grug_gathering/catalog.lua`) is mapgen content: a change
+  moves its digest pin in `wp40/r7_manifest.lua` and needs a map reset.
 - Zone level controls gear tier. A visual biome patch never authorizes a mob,
   drop or gathering tier above the zone's content palette.
 
@@ -1729,6 +1776,72 @@ All earlier anchor, route and authored-water exclusions keep priority, every
 other coast exclusion remains blocking, and support, clearance, occupancy and
 one-cell settlement checks are unchanged.
 
+### Cooking wild sources and field soil
+
+All fifteen Cooking plant identities below have independent wild source nodes
+`grug_mapgen:<key>_source`, yielding `grug_cooking:<key>`. Their farm seed/stage
+identities remain `grug_farming:seed_<key>` and `<key>_1`…`<key>_4`.
+Those are rooted logical-stage identities. Tall cultivated families may use
+hidden, non-owning upper helper nodes; wild sources remain single-node.
+Potato and Corn keep their separate gathering sources above. Fourteen of these
+families and the four gathering crops (Potato, Corn, Melon and Mushroom) are
+farmable on legal editable ground; Salt Crust is no crop (the salt pan,
+[farming.md](farming.md)). Salt Crust is neither
+Rock Salt nor an alias, and Frost Melon is distinct from the gathering Melon.
+
+The six starts are Hearthpine, Dawnmere, Silverleaf, Stillgrave, Sunscar and
+Kapok. Their paired level-11–20 homes are Copperfell, Goldmead, Starbough,
+Mournfen, Redtusk and Raincall. "Accord" and "Throng" subsets select the first
+and last three respectively. Bands use the existing cumulative thirds: start
+bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
+
+| Key | Named zones / level or depth | Logical hosts and actual support | Shore / density |
+|---|---|---|---|
+| wild_grain | six starts 4–10; six homes 11–20 | meadow, pine, elf, savanna, blight, jungle-edge ordinary viable soil variants | none; 1/256 |
+| carrot | three Accord starts 1–6 | meadow, pine, elf viable soils | none; 1/256 |
+| cassava | three Throng starts 1–6 | savanna, blight, jungle-edge viable soils | none; 1/256 |
+| wild_onion | Accord starts and paired homes | deep forest, pine, elf viable soils | none; 1/512 |
+| fire_pepper | Throng starts and paired homes | badlands mesa clay, savanna/blight/jungle-edge viable soils | none; 1/512 |
+| pumpkin | six paired homes 11–20 | meadow, pine, elf, savanna and blight soil, swamp mud | none; 1/256 |
+| blightberry | Mournfen 11–20 | blight viable soil | none; 1/256 |
+| sunberry | Redtusk 11–20 | savanna viable soil | none; 1/256 |
+| jungle_berry | Raincall 11–20 | jungle-edge viable soil | none; 1/256 |
+| frost_melon | Frostbarrow, Whitebridge, Ossuary, Whispering Reedlands 21–30 | crags, pine hills, blight or bone forest gravel or sand, swamp mud or sand, at a freshwater margin (margins are mostly sand; Frostbarrow's rivers run through its pine hills, Ossuary's through blight and bone forest) | fresh cardinal contact; 1/16 (the margin is a thin band) |
+| sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/64 |
+| bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/32 |
+| cave_cap | cave floors at y −500…−100 (native `all_floors` decoration) | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |
+| salt_crust | Shattered Line bands 2–3, levels 44–50 | badlands mesa clay | none; 1/512 |
+| ember_moss | cave floors at y ≤ −701 (native `all_floors` decoration) | actual T5 tier rock (`grug_materials:t5_stone`) support | no surface placement; 1/1024 |
+
+A viable soil is a matching nonrock fertile patch of that logical biome;
+ordinary dirt, relevant litter, mud, dry dirt, moss soil and ash soil do not
+turn an unrelated logical biome into a host. Actual final support is checked,
+not assumed from the nominal biome. Surface sources stand above that support;
+cave sources require real preserved air above real exposed stone. No source
+may replace a functional surface, foundation, route or water.
+The two cave sources are native v7 decorations
+(`wp40/r7_native.lua`, mapgen plan §4.1 and answer 3): `deco_type =
+"simple"`, `flags = "all_floors"`, `place_on` the row's host rocks, the
+row's y range (the engine tests the floor node, one below the plant) and
+`fill_ratio` one in the initial denominator (twice the catalog density for
+renewable sources, `habitat_registry.lua`), so about one plant per 1536
+(Cave Cap) or 2048 (Ember Moss) cave-floor nodes. They follow no WORLD
+guard: they may also grow in caves under planned water and inside town
+protection. Runtime renewal keeps the purpose-specific guards: under a
+town, POI core, anchor grade or hard foundation they end at the column's
+protected floor (placement height − 80, Round 24 ruling 30), below which
+cave sources regrow normally. Every other candidate rejection does not move, retry or refill
+it.
+
+Second-soil patches use coherent existing terrain variation: meadow dirt,
+pine gravel, savanna dry/cracked earth, jungle mud, blight ash ground and elf
+moss soil. Ash ground reuses a shipped licensed texture and moss soil wears
+its own CC0 one; neither adds an ore, currency or separate farming
+progression. Mountain/rocky shore
+rules retain priority. Authored settlement fields use actual dry/wet farming
+soil, with the existing current-load timer activation and nearby-water rule.
+Capital protection remains effective; editable ground requires no housing.
+
 ## 12. Capital and start envelopes
 
 - Every capital keeps a 512×512 reserved area (D59); roads end at its edge and
@@ -1751,8 +1864,7 @@ one-cell settlement checks are unchanged.
   (`wp40/capital_protection.lua`, integer column intervals per row, a lookup
   of one row and one or two comparisons) and always lies inside
   the reserved square and the capital zone (the zone field keeps the 532-node
-  square round the reserved area in-zone on land). It replaces the former
-  532-node protected square and the 704-node claim square. Capital lookup
+  square round the reserved area in-zone on land). Capital lookup
   uses the same zone-based level rule as other land. The protected city is
   protected spawn surface: no ambient non-critter spawn stands there
   (`grug_mobs.protected_spawn_surface`), while the rest of the capital zone
@@ -1947,19 +2059,24 @@ one-cell settlement checks are unchanged.
   **The start town (Round 22, D78)** is its hard-protected POI and its claim
   and resource exclusion envelope at once: the pad and every column within
   12 nodes of it (true distance, so the corners are rounded quarter circles;
-  152 nodes across on the axes, about 23 k m² instead of the former 148
-  square plus the 256-node claim square). Spawn, waypoint, graveyard and
+  152 nodes across on the axes, about 23 k m²). Spawn, waypoint, graveyard and
   every service platform lie inside it; `world.md` §2 R1 owns the
-  protection semantics. The band grows no trees, so players see where the
-  protection ends, but the zone's one-node ground cover on a seeded share of
-  its columns, a third at the pad rising to all at its outer edge (Round 36
-  W3; `simple_map.lua` purpose "cover"), and carries the town's own ground
-  out into the natural surface: the pad's ground node reaches 2–10 nodes
+  protection semantics. The band grows no trees, bushes or resource plants,
+  so players see where the protection ends, but the zone's one-node ground
+  cover (grass, ferns, dry grass, junglegrass, dry shrubs) on a seeded share
+  of its columns, a third at the pad rising to all at its outer edge
+  (`simple_map.lua` purpose "cover"; never on the pad, a road or its
+  corridor), and carries the town's own ground out into the natural
+  surface: the pad's ground node (of its race palette) reaches 2–10 nodes
   into the band along a smooth noise outline with a dithered edge, beyond it
-  the biome's surface, so no straight edge or corner of the pad shows. The
-  pad's grading runs as a collar round it (the flat grows by 0–6 nodes along
+  the biome's surface, so no straight edge or corner of the pad shows; the
+  same world seed always gives the same outline. The pad's grading runs as
+  a collar round it (the flat grows by a seed-deterministic 0–6 nodes along
   a noise outline, then a 24-node ramp with a noisy edge and rounded
-  corners), starting in the band and running out just beyond it. Beyond the
+  corners), starting in the band and running out just beyond it; the pad
+  stays flat, every blueprint cell is unaffected, and the pad's reference
+  height (with it the spawn height and road pins) follows the same sampling
+  rule. The calm ground round the town: §7.6. Beyond the
   band the zone's ordinary rules apply (vegetation, ground cover, resources,
   caves; starting zones hold no claims). The first mandatory road beat
   reaches the race capital at level 10 and unlocks its waypoint and civic-service
@@ -2185,13 +2302,8 @@ the mapgen is finished.
 
 ## 15. PvP eligibility (WP41)
 
-Delivered in Round 31 as geographic PvP with a per-player flag:
-[pvp.md](pvp.md). The former contract of this section (the four-row
-peaceful transaction, tagging by attack, AoE snapshots, synchronous zone
-checks per hit, the forced safe-zone tail) is retired
-([pvp-plan.md](../planning/pvp-plan.md) §3); the text is in this file as of
-commit `699a2002`. The geography it reads is §4 and §13.2 (`pvp_rule_at`,
-`faction_at`).
+The PvP rules and their ground are in [pvp.md](pvp.md) (§4 here points
+there); the queries they read are §13.2 (`pvp_rule_at`, `faction_at`).
 
 ## 16. Bounded war-front life (WP42)
 
@@ -2250,6 +2362,8 @@ and quests are in [pvp.md](pvp.md) §6–§7.
   [settlements.md](settlements.md) "Round 58 mining camps and camps under
   construction".
 
+**War-front clashes (WP42, after V1):**
+
 - Twelve zones are contested. Eight of them carry the current war-activity
   budget: Ashenward March, Bannerbreak Mesa and all six §8.3 zones. Their §8
   **K** slots total 16 clash anchors; the four newly contested outer frontier
@@ -2285,174 +2399,3 @@ and quests are in [pvp.md](pvp.md) §6–§7.
   exact opposing-target filter, player-involvement loot rule and unchanged
   ordinary-guard behavior. A headless soak observes all eight zones at once
   before the user's visual battlefield test.
-
-### Round 10 Cooking wild sources, field soil and shallow reefs
-
-All fifteen Cooking plant identities below have independent wild source nodes
-`grug_mapgen:<key>_source`, yielding `grug_cooking:<key>`. Their farm seed/stage
-identities remain `grug_farming:seed_<key>` and `<key>_1`…`<key>_4`.
-Those are rooted logical-stage identities. Tall cultivated families may use
-hidden, non-owning upper helper nodes; wild sources remain single-node.
-Potato/Corn retain the exact separate WP33 sources above. Fourteen of these
-families and the four gathering crops (Potato, Corn and, since Round 48, Melon
-and Mushroom) are farmable on legal editable ground; Salt Crust is no crop
-since Round 48 (the salt pan, [farming.md](farming.md)). Salt Crust is neither
-Rock Salt nor an alias, and Frost Melon is distinct from the gathering Melon.
-
-The six starts are Hearthpine, Dawnmere, Silverleaf, Stillgrave, Sunscar and
-Kapok. Their paired level-11–20 homes are Copperfell, Goldmead, Starbough,
-Mournfen, Redtusk and Raincall. "Accord" and "Throng" subsets select the first
-and last three respectively. Bands use the existing cumulative thirds: start
-bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
-
-| Key | Named zones / level or depth | Logical hosts and actual support | Shore / density |
-|---|---|---|---|
-| wild_grain | six starts 4–10; six homes 11–20 | meadow, pine, elf, savanna, blight, jungle-edge ordinary viable soil variants | none; 1/256 |
-| carrot | three Accord starts 1–6 | meadow, pine, elf viable soils | none; 1/256 |
-| cassava | three Throng starts 1–6 | savanna, blight, jungle-edge viable soils | none; 1/256 |
-| wild_onion | Accord starts and paired homes | deep forest, pine, elf viable soils | none; 1/512 |
-| fire_pepper | Throng starts and paired homes | badlands mesa clay, savanna/blight/jungle-edge viable soils | none; 1/512 |
-| pumpkin | six paired homes 11–20 | meadow, pine, elf, savanna and blight soil, swamp mud (pine, elf and savanna since Round 60) | none; 1/256 |
-| blightberry | Mournfen 11–20 | blight viable soil | none; 1/256 |
-| sunberry | Redtusk 11–20 | savanna viable soil | none; 1/256 |
-| jungle_berry | Raincall 11–20 | jungle-edge viable soil | none; 1/256 |
-| frost_melon | Frostbarrow, Whitebridge, Ossuary, Whispering Reedlands 21–30 (the two Throng zones since Round 60) | crags, pine hills, blight or bone forest gravel or sand, swamp mud or sand, at a freshwater margin (Round 22 Phase 5: margins are mostly sand; Round 70: Frostbarrow's rivers run through its pine hills, Ossuary's through blight and bone forest) | fresh cardinal contact; 1/16 (the margin is a thin band) |
-| sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/64 (Round 70) |
-| bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/32 (Round 70) |
-| cave_cap | cave floors at y −500…−100 (native `all_floors` decoration since Round 49) | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |
-| salt_crust | Shattered Line bands 2–3, levels 44–50 | badlands mesa clay | none; 1/512 |
-| ember_moss | cave floors at y ≤ −701 (native `all_floors` decoration since Round 49) | actual T5 tier rock (`grug_materials:t5_stone`) support | no surface placement; 1/1024 |
-
-A viable soil is a matching nonrock fertile patch of that logical biome;
-ordinary dirt, relevant litter, mud, dry dirt, moss soil and ash soil do not
-turn an unrelated logical biome into a host. Actual final support is checked,
-not assumed from the nominal biome. Surface sources stand above that support;
-cave sources require real preserved air above real exposed stone. No source
-may replace a functional surface, foundation, route or water.
-The two cave sources are native v7 decorations since Round 49
-(`wp40/r7_native.lua`, mapgen plan §4.1 and answer 3): `deco_type =
-"simple"`, `flags = "all_floors"`, `place_on` the row's host rocks, the
-row's y range (the engine tests the floor node, one below the plant) and
-`fill_ratio` one in the initial denominator (twice the catalog density for
-renewable sources, `habitat_registry.lua`), so about one plant per 1536
-(Cave Cap) or 2048 (Ember Moss) cave-floor nodes. They follow no WORLD
-guard: they may also grow in caves under planned water and inside town
-protection. Runtime renewal keeps the purpose-specific guards: under a
-town, POI core, anchor grade or hard foundation they end at the column's
-protected floor (placement height − 80, Round 24 ruling 30), below which
-cave sources regrow normally. Every other candidate rejection does not move, retry or refill
-it.
-
-The accepted Mushroom set additionally includes `kragmar_speargrass_reach` on
-its swamp-mud host. Other closed WP33 rows remain unchanged.
-
-Second-soil patches use coherent existing terrain variation: meadow dirt,
-pine gravel, savanna dry/cracked earth, jungle mud, blight ash ground and elf
-moss soil. Ash ground reuses a shipped licensed texture and moss soil wears
-its own CC0 one (Round 51); neither adds an ore, currency or separate farming
-progression. Mountain/rocky shore
-rules retain priority. Authored settlement fields use actual dry/wet farming
-soil, with the existing current-load timer activation and nearby-water rule.
-Capital protection remains effective; editable ground requires no housing.
-
-Shallow reefs use deterministic 16-node reef-cell patches plus column selection.
-**Seabed growth since Round 51 T3** (sea plan ruling 7, `wp40/seabed.lua`, one
-rule shared by the writer and the renewal) grows in the coastal belt, the
-continental bays and the dragon channels, never in the open sea, and nothing
-deeper than 20: one 16-node cell in four carries a small or large **coral
-patch** (beds 2–10 deep); loose **kelp meadows** (soft noise-bounded areas,
-one sand column in six in the core) grow on sand 3–20 deep, 2–6 tall plus one
-node per two nodes of water beyond 6, at most 15 and always under the
-surface; **seagrass meadows** (their own noise, two sand columns in three in
-the core, the three picked variants `grug_mapgen:seagrass_1..3` mixed, one
-node of blades) grow on sand 2–14 deep. **No meadow or patch has a sharp
-outline** (Round 51 follow-up, the user's GUI feedback): a meadow's fill falls
-from its core's over a band of its noise, about 3–6 nodes at the noise's usual
-slope, and single tufts or stalks stand about as far again beyond it; a coral
-patch keeps its ellipse (four in five) and gains a rim of the same width at
-one in four and loose pieces round it at one in twenty, reaching across its
-cell's side. Toward the deepest depth each grows at the fill thins too (the
-last three nodes at ¾, ½ and ¼: coral 8–10, seagrass 12–14, kelp 18–20), so
-no meadow ends on a depth line. Measured on the rule (production seed, 1024 × 1024 columns 6
-deep), the seagrass fill by distance from the old outline goes from 59 %
-inside / 0 outside to 58, 56, 48, 37 % at 4…1 nodes inside and 26, 14, 6, 3,
-2, 1 % at 1…6 outside; kelp 16 → 15, 13, 9 % inside and 6, 2, 1 % outside;
-seagrass 32.6 → 33.7 %, kelp 5.7 %, coral 3.4 → 4.9 % of the columns; in
-written chunks (seed 12345, 12 per class, columns 2–20 deep) seagrass shelf
-15.6 → 16.5 %, belt beyond 10.4 → 6.7 % (much of it 12–14 deep), bays 9.7 →
-9.1 %, channels 13.4 → 14.7 %; coral shelf 3.3 → 4.5 %, channels 1.5 → 0.7 %
-(9–11 deep); kelp within ±0.3 points. Coast
-claim exclusions (bays, island and channel coasts) do not
-keep the seabed bare; settlements, roads and POIs do. Measured on the
-production seed and seed 42 (12 chunks per class, seabed columns 2–20 deep):
-the shelf (the belt's first 80 nodes) coral 2.9–3.0 %, kelp 2.1–2.7 %,
-seagrass 12.6–13.6 %; the belt beyond coral 0.6–0.8 %, kelp 2.5–2.9 %,
-seagrass 8.9–9.5 %; bays coral 0.7–1.4 %, kelp 3.1–4.3 %, seagrass
-11.4–17.3 %; channels coral 1.5–1.7 %, kelp 2.1–2.8 %, seagrass 11.5–13.4 %;
-the open sea none. In the belt beyond the shelf 41–57 % of the kelp stands
-deeper than 12 (in bays 20–81 %), where daylight is nearly gone. Seagrass and kelp regrow
-([farming.md](farming.md) "Wild plant renewal"); coral patches stay as
-generated. The six default coral variants, rooted sand-with-kelp and the
-seagrass replace eligible natural bed nodes, with their actual rooted
-geometry/height semantics. Seagrass, kelp and the freshwater waterweed
-**sway in drawn frames** (Round 51 follow-up, the user's pick B: eight
-16 × 16 frames over 3.2 s as a tile animation every client shows, our own kelp
-art on `default:sand_with_kelp`); the engine's optional waving stays off for
-them. Lakes, rivers, planned freshwater and functional
-surfaces receive no reef content. There is one terrain/VM writer and no competing
-engine decoration pass (except the two native cave sources above) or global
-density/census target.
-
-## Round 14 flight policy
-
-Decided 2026-09-21. Ordinary contested mainland and all mainland Battlegrounds
-allow flight for both factions. Safe faction home zones (including capitals)
-allow only their own faction to fly. Other POIs inherit the surrounding zone.
-Both dragon islands prohibit flight for both factions, despite their contested
-status. Existing ocean/channel no-flight rules remain. See `mounts.md` section 4.
-
-## Round 21 natural-surface iteration
-
-**Superseded in part by Round 22 (2026-09-25):** the height rules below
-(64-node lattice, 1:2:1 smoothing, 128/32 detail scales and weights,
-lowland/rolling amplitudes, "no additional noise octave") are replaced by
-§7.6. The lake-edge and beach/cliff rules are replaced by Phase 5 water
-(natural lake shores, levels from the terrain) and the shore material rule
-in §7.4. The coral rule remains. The waterweed, lily and fish rules remain
-and are hosted by Phase 5 inland water: waterweed in lakes and in river
-reaches away from rapids and falls; lilies and Reed Angelfish in lakes only (a
-river holds river water). **Wild lakes since the Round 51 follow-up** (the
-user's GUI feedback; `wp40/seabed.lua` `lake_at`, shared by the writer and
-the renewal): waterlily pads in clusters on water 1–3 deep (near the shore)
-and waterweed clumps 1–4 tall on the sand bed 3–10 deep, both fading out like
-the sea's meadows, one plant per column; measured over the production seed's
-12 fullest lake chunks: a lily on one in six columns 1 deep and one in seven
-within two of the shore, weed on one in 16–20 columns 2–12 deep (about one
-sand bed in eight). Both regrow ([farming.md](farming.md)). A river keeps its
-sparse weed (2–6 deep, 1/192 columns); the swamp's pools keep their own
-plants; a capital's lake is the settlement's and keeps the town writer's
-water.
-
-Approved 2026-09-24. Preserve continental profile roles and ranges. The broad
-64-node lattice is smoothed once with 1:2:1 weights; the two existing detail
-scales are 128/32 nodes with 3:1 weights. Lowland and rolling amplitudes are
-9 and 12 respectively. No additional noise octave is evaluated. Corals form
-varied deterministic patches at similar overall density. Rooted freshwater
-waterweed decorates safe freshwater over natural sand (since the Round 51
-follow-up: lakes as above, rivers 2–6 deep) without displacing the water
-column. Thin waterlilies occupy the air node
-immediately above a similarly safe freshwater surface and remain passable.
-Reed Angelfish use existing capped critter spawning, without XP, quality loot
-or fishing changes.
-
-The freshwater family is the Reed Angelfish, using ElCeejo's MIT-licensed
-Animalia angelfish mesh and texture at commit
-`5895f403fd43a9464e06b3675af3495f50565a3f`. It swims only in freshwater
-source columns over natural sand and never leaves the water (it cannot climb
-a bank, and shore plants and waterlilies are not water to it); stranded away
-from water it flops in place. It gives no XP, drops exactly one ordinary Raw
-Fish (like a land critter's one meat; the better fish come only from
-fishing) and uses the ambient spawn cap of two; since the Round 51
-follow-up every lake also gets a few through the region spawner's lake fish
-(`biomes_mobs.md` "Round 51 water families"). It has no school, breeding,
-pathfinding or fishing integration.

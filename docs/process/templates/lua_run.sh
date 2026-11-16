@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Template (docs/process/round-workflow.md "Templates"): copy into the round's
-# private folder, ~/projects/grudgelands-orchestration/r<NN>/; the locks live
-# beside the copy.
+# Template (docs/process/round-workflow.md "Templates"). ONE shared queue for
+# every round and session: the installed copy in use is
+# ~/projects/grudgelands-orchestration/r45/lua_run.sh (its locks are fixed to
+# r43/locks). Do not make a per-round copy: a copy with its own locks breaks
+# the workstation-wide cap. A fresh install keeps its locks beside the copy.
 #
 # Lua-process budget: at most 8 Lua processes workstation-wide (AGENTS.md).
 # Every Lua run longer than about 30 s and every engine boot goes through here:
-#   ~/projects/grudgelands-orchestration/r<NN>/lua_run.sh <label> <slots> <command> [args...]
+#   ~/projects/grudgelands-orchestration/r45/lua_run.sh <label> <slots> <command> [args...]
 # <slots> = how many Lua processes the command starts (run_fixtures.sh: its JOBS,
 # default 4; seed_fleet: its JOBS; one headless boot: 1). Requesters queue in
 # order (one gathers slots at a time, keeping the ones it has), so a large

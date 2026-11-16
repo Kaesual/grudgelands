@@ -559,7 +559,7 @@ Saved state, all without a position:
   story colour (now on the guild follow-ups) and the headland edge.
 - **Round 59** builds the story arc from the picked draft and reworks the quests of levels 11–60 (§9); the guild's
   follow-ups carry its first seeds.
-- The reviews' and reports' notes are in the [Round 58 carry-overs](../../BACKLOG.md#round-58-carry-overs).
+- The reviews' and reports' notes are in the [Round 58 carry-overs](#carry-overs).
 
 ### GUI checklist (Rounds 57 and 58)
 
@@ -707,3 +707,50 @@ s**, with the camp and room checks) and one headless boot (PASS, no ERROR line).
 2, 266/0 before its last node fix, HALLS 259 with one fixed, TOWNFIX 260/0 and 265/0 after merging main, CONSUME and
 REP 261/0, CAMPNPC 264 with one pin fixed, HALLS2 265/0, LIFT 267/0 and 268/0 after its merge rounds, GUILDQUESTS
 268/0 and 269/0); the coordinator ran the full set on main `63210975` (265/0).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Guild and camps** (GUILDSPEC, CAMPS, their reviews): the model's T1
+  hour sells for 4s 16c against 1s 72c of income (a generous model, not a
+  guild issue); Round 57's source index sees only `stock`,
+  `profession_stock` and the bracket's first stock (the §2a fixture
+  relies on it); `mining_camps.near` has no upper y limit (fine).
+- **Rooms** (ROOMS, its review): a cave may open just past an exit's plug,
+  and mobs can walk in (accepted; only spawning inside the box is
+  refused); the protection wrapper copies the session's fields once
+  (`guild_room_protection.lua`).
+- **Consumables** (CONSUME, its review): mobs that spawn on
+  `group:grug_stratum` could in theory spawn on a dug-open Remains.
+- **Reputation** (REP, its review): `/guild_rep` has no fixture of its own
+  (the harness drops `register_chatcommand`; the capture runs use it).
+- **People** (CAMPNPC): no map marker for the Exchange (`grug_map`); no
+  guild touch on the leaders (an NPC cloak seam in `grug_visuals`, with
+  the emblems later); the story arc names one foreman, Brodd Deeppeg in
+  Frostbarrow, who needs a per-camp title override (**done in Round 60**:
+  Brodd Deeppeg and Rellis Shalemark, `grug_quests/npcs.lua`
+  `FOREMAN_TITLES`).
+- **Lift** (LIFT): the minimap keeps the mine and war-camp 6 px icons (the
+  picks have no 6 × 6 version; a later art pass); `lift.lua` reads
+  `grug_home` at run time (no dependency).
+- **Houses** (HALLS, HALLS2, their reviews): the engine shots of three
+  houses show the old, higher desks; `BASELINE` was not moved (the new
+  templates count every cell as edited); the `required_of` comment in
+  `r7_capitals.lua` calls the list stable.
+- **Town fixes** (TOWNFIX, its review): `loop_reach` applies to every loop
+  (district loops' legs are longer than 8 m in practice, harmless).
+- **Guild quests** (GUILDQUESTS, its review, the text review): the quest
+  log showed a shared quest's home zone to everyone (**done in Round 59**,
+  QSYS3: the variant's zone); the ledger has no faction filter in the
+  Battlegrounds zones; the Battlegrounds files stay unflagged (Round 59's
+  per-faction `E-free-follow-ups` would now allow flagging them; their
+  own rework is a later band's); the QUESTMAP page carries no
+  commit stamp; `build_structure.py --check` holds only until the texts
+  landed (10 of 26 files differ now; not a gate); each follow-up's second
+  sentence repeats the paper's name (kept); GUILDTEXT proposed "Accord
+  Pioneer"/"Throng Pioneer" for the guards (Stakeguard kept).

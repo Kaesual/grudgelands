@@ -834,7 +834,7 @@ fixed compass words, and the cutover copper column.
 
 ### Open items
 
-In [BACKLOG](../../BACKLOG.md#round-28-carry-overs): the outpost
+In [carry-overs](#carry-overs): the outpost
 seed (item 46), elite ideas never shipped, the loot text pass, six sub-types
 no recipe uses, steep zones without generated camp cells, clustered camps in
 Mournfen and Bannerbreak, the Q0 and M1 review notes. Branches: `r28-c2`
@@ -868,3 +868,50 @@ On a fresh world:
    trainer's four tiers, the Professions tab, "N locked" in recipe books.
 8. **Classes:** Warrior shield, caster offhand, Scout bow in Ranged and a
    sword in Melee, the quiver slot (stacks of 100).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+**Future package — outpost seed** (Round 28 plan item 46, user G8): a
+player-placed seed in contested land spawns workers who build a small fort;
+killing the workers and destroying the seed stops it. Specified after the
+playtest of the front quests and bounties.
+
+**Catalogue and loot:**
+
+- Elite ideas never shipped (dropped from the catalogue ideas): Rat King,
+  Old/Giant Boar, Silver Fox, Rotting Brute, an elite Giant Scorpion.
+- Six of the 195 sub-types appear in no recipe (measured 2026-10-02): the
+  optional cap-1 elites `causeway_construct`, `siege_war_construct`,
+  `seam_mesa_golem`, `seam_stone_golem` and `crown_stone_golem` (a recipe
+  roster cannot cap a role at one) and the Salt Reef Lurker. **The Reef
+  Lurker is placed since Round 37 F** (the 51–60 shores of Gravesalt and
+  Skyglass, user ruling 2026-10-06); the War Constructs are DW-04 below.
+
+**Spawn regions:**
+
+- Steep zones get no generated camp cells. Partly addressed in Round 29
+  (M-geo): a camp with no block meeting every rule takes its flattest block
+  up to slope 0.5.
+- Camps sit in tight clusters in Mournfen and Bannerbreak.
+
+**Quest system (Lane Q0 review notes, low severity):**
+
+- The zone-band fallback of a target's level range ignores a definition's
+  own min/max levels, and for zone-filtered kills the displayed zone and the
+  zone used for the level fit can differ. Only legacy objectives reached
+  these paths. **Round 30 Lane C** removed the zone filter with the legacy
+  fields; the zone-band fallback now serves only a base mob in a zone
+  without a recipe, which no shipped zone is.
+- The game (Lua) and `tools/r28_design` (Python) disagree at edges on item
+  sources.
+
+**Zone names (Lane M1 notes):**
+
+- On very small windows the entry banner and the flight warning may lack
+  clearance.

@@ -962,8 +962,8 @@ by WP33's own reviewed contract; it is not an R6 implementation choice.
 R6 was independently accepted on 2026-08-31. Its complete 32-seed fleet,
 canonical 824,386-row artifact, durable run receipt and byte-identical
 LuaJIT/PUC 5.1 micro-KAT are recorded in the
-[artifact](wp40-simple-map-r6-artifact.tsv),
-[run receipt](wp40-simple-map-r6-run-receipt.tsv) and
+artifact (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-simple-map-r6-artifact.tsv`),
+run receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-simple-map-r6-run-receipt.tsv`) and
 [review](wp40-simple-map-r6-review.md). The payload remains disabled and
 writes no world; acceptance therefore advances the sequence to R7 without
 activating a second mapgen path.
@@ -991,8 +991,8 @@ In one reviewed cutover gate:
 
 R7 was independently accepted on 2026-09-02. Its
 [review](wp40-simple-map-r7-review.md),
-[promotion manifest](wp40-r7-promotion-manifest.tsv) and
-[run receipt](wp40-r7-run-receipt.tsv) bind the final implementation and the
+promotion manifest (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-r7-promotion-manifest.tsv`) and
+run receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-r7-run-receipt.tsv`) bind the final implementation and the
 user-approved pragmatic evidence scope: a 32-seed, 4,096-owner stratified main
 sample plus a separate seven-seed, 3,206-owner frontier-access lane. This is
 layered offline release evidence, not exhaustive spatial coverage and not a

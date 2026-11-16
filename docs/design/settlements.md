@@ -161,33 +161,9 @@ blueprints are unchanged by them.
   own `main_street` landmark, never an assumed sign. That stretch is ordinary
   road, so it keeps the road protection, the clear corridor and every other
   rule an ordinary road carries ([world.md](world.md) §2 R1b).
-- **The start town's surroundings (Round 22 D78, 2026-09-27).** Replaces the
-  blend-ring and apron rules of 2026-09-14/15. The protected band round the
-  pad (12 nodes, rounded corners) grows no trees, bushes or resource plants,
-  so players see where the protection ends; since Round 36 (W3, the user's
-  playtest: the bare ring looked odd) it grows the zone's own one-node ground
-  cover (grass, ferns, dry grass, junglegrass, dry shrubs) on a
-  seeded share of its columns that rises from a third at the pad to all at
-  the band's edge, so the cover thins toward the town; never on the pad, a
-  road or its corridor. Right beyond the band the biome's trees, plants and
-  ground cover grow normally, and resources and caves follow the zone's
-  ordinary rules (starting zones hold no claims). The band carries the
-  town's own ground (the pad's ground node of its race palette) 2–10 nodes out from the
-  pad along a smooth noise outline with a dithered edge, then the biome's
-  surface, so no straight edge or corner of the pad shows. The same world
-  seed always produces the same outline.
-- **Grading.** The flat pad grows by a seed-deterministic 0–6 nodes along a
-  noise outline, then a 24-node collar (noisy edge, rounded corners) blends
-  it into the terrain; it starts in the band and runs out just beyond it.
-  The terrain round a start is calm only through the band; natural relief
-  returns over a fade of about 60 nodes on level land and up to about 200
-  where the town sits in a hollow or on a rise ([world_zones.md](world_zones.md)
-  §7.6), so the ground rises or falls back as a hill. The pad stays flat
-  and every blueprint cell is unaffected; the pad's reference height (and
-  with it the spawn height and road pins) follows the same sampling rule on
-  the new terrain, so it can differ by a few nodes from a pre-D78 world of
-  the same seed. No authored water (a start's pond) floods, cuts or raises
-  the pad or the band.
+- **The start town's surroundings and grading** (the protected band, its
+  ground cover and town ground, the pad's collar and the calm terrain round
+  it) are terrain rules: [world_zones.md](world_zones.md) §12 and §7.6.
 
 ## Settlement NPCs and guard targeting
 
@@ -243,29 +219,12 @@ Decided 2026-09-14.
 
 ## Capitals in the world
 
-**As built: the capital planner (Round 22, plan D60, D69–D72, 2026-09-27;
-Round 26 Lane W, 2026-09-29).**
-Every capital's city is laid out once per world (on its first start; later
-boots reuse the layout from the world folder, `world_zones.md` §13.4), after
-height, water and roads, in its own landscape (`world_zones.md` §12 has the rules): an
-organic outline of about 100 k m² inside the reserved 512 square, four gates
-toward the incoming roads with connector roads to the road ends, avenues,
-two terrain-bent ring lanes loosened by cross-lanes, open arcs and small
-squares, the district plots turned to face their streets, the race's edge
-(stone curtain or palisade, each in its race's style) on the outline and,
-in Highcourt, a one-level quay canal. Since Round 26 the outline is more
-irregular (still star-shaped, still inside the 512 square at about the same
-area) and each capital has its own character: Highcourt a royal city on its
-river, Dur Brannoc an angular mountain hold with a tower on every corner, Nhal
-Veyr a walled necropolis with one round ring, Gor Drazhak a jagged war camp
-with a pinwheel of avenues, Lethariel a lakeside city with few towers,
-Kezamba a jungle city round its cenote (`world_zones.md` §12 has the
-details). The civic core is authored, the same on every seed: since Round 70
-radius 56 around a castle of one shared form (`world_zones.md` §12); start
-towns are untouched. The layout is a pure function of the
-seed and the code, so a world always rebuilds the same city.
-
-Decided 2026-09-15 with the pilot capital, Highcourt.
+Where and how a capital's city is laid out (the reserved square, the
+protected city, the outline, the gates, the streets, the plot placement
+and each capital's character) is [world_zones.md](world_zones.md) §12; a
+world builds the layout once and reuses it (`world_zones.md` §13.4). This
+section is what stands in it. The civic core is authored and the same on
+every seed: radius 56 around a castle of one shared form.
 
 A capital is not one blueprint but a civic core, the placed district plots and
 its edge, and they reach the world in three ways. The **core** is
@@ -307,7 +266,7 @@ same rule are:
 | Lethariel | Light wall on every dry edge: two courses of silver sandstone brick, a marble coping at the height of the pale gatehouses' marble band, and a low merlon (one brick under a marble slab) on every other column; the authored mere is the boundary where it reaches the north edge. |
 | Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north and north-east edges. |
 
-**Streets are roads.** Since Round 22 every capital street, lane and connector
+**Streets are roads.** Every capital street, lane and connector
 follows the road rule of `world_zones.md` §9: at most half a node between
 neighbouring columns with a slab on each half step, cut slopes and
 embankments like any road, bridges over water, flat mouths where a lane meets
@@ -360,19 +319,9 @@ its corners (`patrol.lua` `loop_reach`: a loop whose legs are all at most
 
 A capital has **four districts**: market and professions, martial and
 garrison, lore and spiritual, residential and cultural. They stay recognisable
-groups: the planner gives each the quarter between two avenues with the most
-room for its buildings, places buildings nearer the core and field dressings
-toward the edge, and lets a plot that finds no room overflow into a
-neighbouring quarter. Required plots (the inn, the eight service plots with the
-cook and the stable) always stand; on cramped ground only field and fill
-dressings may be left out (plan D70). The planner places in three tiers —
-required plots, then the other named buildings, then fill — and each tier runs
-all its passes (own quarter, the two neighbouring quarters, the opposite
-quarter, then relaxed legality anywhere; fill stops after the neighbours)
-before the next tier places anything (Round 25 Lane H, 2026-09-29), so a
-building that misses its quarter is never squeezed out by lower tiers. A named
-building is left out only when no legal spot remains anywhere (a capacity
-limit, rare). Guard posts belong to the garrison district, the two
+groups, buildings nearer the core and field dressings toward the edge; how
+the planner places them (quarters, overflow, the required plots, the three
+tiers and their passes) is [world_zones.md](world_zones.md) §12. Guard posts belong to the garrison district, the two
 traders to the core, and every district keeps two spare standing spots its
 people may walk to.
 
@@ -990,9 +939,9 @@ The guaranteed fitted cores remain 24×24 for villages/camps and 16×16 for
 outposts; all buildings, roof overhangs and supports fit those cores. Existing
 anchors, roads, protection rules and functional roots remain authoritative.
 Each village gains one quest-giver socket `quest_local`; existing quest socket
-identities remain stable. No new world anchors are part of this increment.
+identities remain stable.
 
-## Innkeepers (Round 17)
+## Innkeepers
 
 Each of the six start towns and six capitals contains one innkeeper using a
 suitable existing building/socket. The twelve-entry shared registry supplies
@@ -1059,7 +1008,7 @@ it) at its centre, in the cell of the settlement's `travel_waypoint` socket
   chapel door; Sunscar's yard −19…20, −13…18; Kapok's clearing −18…17, −15…19,
   bare mud under the boardwalk.
 
-## Housing Stewards (Round 25)
+## Housing Stewards
 
 Each capital's Housing Steward ([housing.md](housing.md) §7.2) is the gate
 resident of that capital's tailor service plot:
@@ -1076,15 +1025,15 @@ resident of that capital's tailor service plot:
 It serves only its capital's faction and shows a "+" marker on that
 faction's map.
 
-## Crownbinders and Decor Merchants (Round 33)
+## Crownbinders and Decor Merchants
 
 In every capital the **Crownbinder** ([economy.md](economy.md) §4,
 [item_tiers.md](item_tiers.md) §4) is the gate resident of the goldsmith
 service plot and the **Decor Merchant** (the culture vendor) the gate resident
 of the woodcarver service plot, taken over like the Housing Steward's; no
 blueprint or mapgen output changes. Both serve only their capital's faction
-and have a marker on that faction's minimap (Round 34; on the Map tab until
-Round 44, whose map window shows only trainers and quest NPCs).
+and have a marker on that faction's minimap (not in the map window, which
+shows only trainers and quest NPCs).
 
 | Capital | Crownbinder (goldsmith plot) | Decor Merchant (woodcarver plot) |
 |---|---|---|
@@ -1107,7 +1056,7 @@ sites have multiple structures; encounter clearings and rare pads have no
 buildings and keep their centres open (their dressing: "Decor pass" below). Villages include four to six buildings. Shared building components
 are allowed; an identical rotated town layout is not the design.
 
-Since Round 46 every composition but the starts', the capitals', the dragon
+Every composition but the starts', the capitals', the dragon
 arenas', the apex camps' and the four rift sites' stands where its world
 places its anchor ([world_zones.md](world_zones.md) §8.5): a composition is
 position-free (its rows in `r20_poi_catalog.lua`, the per-zone rows of
@@ -1118,20 +1067,18 @@ middle road.
 
 Art uses the existing settlement projection, actor-root priority and reserved
 footprints. It neither adds duplicate bosses/guards/resources nor expands
-terrain reservations. The frontier bandit camp's building core is 16 nodes
-(user decision 2026-09-29, WP audit E1: the art and code stay, the former
-24-node design value is corrected). Whitebridge and Whispering
+terrain reservations. The frontier bandit camp's building core is 16 nodes. Whitebridge and Whispering
 Reedlands keep their display hulls as plain scenery; the Shipwright who sells
 boats stands at every capital stable (above; [boats.md](boats.md) §2).
 
 Thirty peaceful regional sites (villages, outposts and mines) each provide one
 quest host. Hostile new camps do not gain friendly residents. Each starting
 town and capital has a separate cook questgiver near its oven, distinct from
-Grudge-Free Repairs on the Cooking trainer socket (since Round 45 every
-character knows Cooking; Grudge-Free Repairs only repairs). Capitals reuse existing quest shells for their
+Grudge-Free Repairs on the Cooking trainer socket (every character knows
+Cooking; Grudge-Free Repairs only repairs). Capitals reuse existing quest shells for their
 envoy. Quest identities and journey structure belong to `quests.md`.
 
-## Decor pass (Round 36)
+## Decor pass
 
 Every settlement composition carries dressing that fits its style (user
 review of 2026-10-05 on the POI review page; WP13 rework, plan §2.11). The
@@ -1252,9 +1199,9 @@ patches and gaps:
   natural sand beds 3–10 deep, the wild lakes' bands, outside the core, in the same
   patchy way.
 
-## Round 21 ground and access correction
+## Ground and access
 
-Approved 2026-09-24. Preserve anchor/reservation extents
+Preserve anchor/reservation extents
 while separating natural terrain fitting from visible masonry. POI collars
 retain biome/cultural ground. Street junctions have complete shared footprints
 and a single landing surface, with incident runs ending at their ports. Core,
@@ -1262,8 +1209,8 @@ gate and entrance approaches share consistent endpoint heights and headroom.
 Plot collars may cut/fill natural terrain before final paths; each entrance must
 connect to a nearby street within 24 nodes, or to natural terrain within its
 eight-node collar when no street is nearby. Such natural connections retain
-the same slope and headroom requirements. Retaining walls elsewhere are allowed. These rules
-replace the prior no-outside-apron policy where it prevents access.
+the same slope and headroom requirements. Retaining walls elsewhere are allowed. Where a no-outside-apron limit would
+prevent access, these rules win.
 
 ## Round 31 PvP fortresses and war camps
 
@@ -1279,14 +1226,36 @@ General and his bodyguards; a camp's captain), three protected quest givers
 and a Quartermaster in a fortress, and the fortress waystone. Garrisons,
 levels and quests: [pvp.md](pvp.md) §6–§7; positions and protection:
 [world_zones.md](world_zones.md) §16.
-Since Round 58 every war camp is a mining camp of its faction's Miner's
-Guild too: its lift, foreman and camp vendor occupy the shared mining
+Every war camp is also a mining camp of its faction's Miner's Guild: its lift, foreman and camp vendor occupy the shared mining
 outpost's markers (the sockets below); its garrison, raid role and protection
 are unchanged.
 
-## Round 63 mining outpost appearance
+## Round 58 mining camps and camps under construction
 
-All 36 completed camps use the twelve ordinary `mining_camp_<race>` and
+Anchors 119–144 add the Miner's Guild's camps (rules
+`wp40/r58_camp_catalog.lua`, compositions `wp40/r58_camp_blueprint.lua`,
+both 23 × 23 and centred like the war camps):
+
+- **20 mining camps**, one in every level-11–40 zone outside the capital
+  zones (6 T2, 8 T3, 6 T4). A camp belongs to the faction of its continent
+  half (a contested T4 camp too) and builds from its zone's race palette: a
+  fortified timber enclosure with one five-node entrance, canvas tents,
+  the capital guild house's headframe, vendor stall, ore and timber stacks.
+  Two faction guards hold the gate, two more
+  the yard in a contested camp.
+- **6 camps under construction**, one in each contested T4 zone, built by
+  the other faction (the race of the zone across the front), from ordinary
+  building templates like the mining camps (`camp_site_<race>.tpl`,
+  23 × 10 × 23, every cell written): the Wallwright design in the camps'
+  materials (Appearance, below), a finished west wall, an east working scaffold and successive
+  bays of panels, first courses, footings and survey stakes; guards and a
+  captain, and nothing an enemy could use (no lift, vendor or bed).
+- Camps carry **no activation node** (no banner, no fire): they are not in
+  the anchor activation roster, and their protection is their building core
+  box (`world_protection.lua`: kind `mining_camp`; a camp under construction
+  is a `war_camp` with the PvP margin).
+
+**Appearance.** All 36 completed camps use the twelve ordinary `mining_camp_<race>` and
 `mining_camp_<race>_large` templates, selected by `r63_camp_blueprint.lua`.
 The footprints remain 23 × 23 or 27 × 27; their headframes reach y=16.
 Stone plinths, log posts, recessed timber panels and a capped entrance
@@ -1304,32 +1273,6 @@ All gameplay socket IDs and garrison roles remain stable. Construction
 sites retain their unfinished design. New art is reproducible with
 `tools/r63_camp_art/build.py`; the templates are frozen from the approved
 browser composition by `tools/r63_camps/build_templates.py`.
-
-## Round 58 mining camps and camps under construction
-
-Anchors 119–144 add the Miner's Guild's camps (rules
-`wp40/r58_camp_catalog.lua`, compositions `wp40/r58_camp_blueprint.lua`,
-both 23 × 23 and centred like the war camps):
-
-- **20 mining camps**, one in every level-11–40 zone outside the capital
-  zones (6 T2, 8 T3, 6 T4). A camp belongs to the faction of its continent
-  half (a contested T4 camp too) and builds from its zone's race palette: a
-  fortified timber enclosure with one five-node entrance, canvas tents,
-  the capital guild house's headframe, vendor stall, ore and timber stacks.
-  Two faction guards hold the gate, two more
-  the yard in a contested camp.
-- **6 camps under construction**, one in each contested T4 zone, built by
-  the other faction (the race of the zone across the front), from ordinary
-  building templates like the mining camps (`camp_site_<race>.tpl`, Round 69,
-  23 × 10 × 23, every cell written): the Wallwright design in the Round 63
-  materials, a finished west wall, an east working scaffold and successive
-  bays of panels, first courses, footings and survey stakes; guards and a
-  captain, and nothing an enemy could use (no lift, vendor or bed). The migration 0.69.0 rewrites each existing camp's box
-  ([upgrade contract](../technical/upgrade-contract.md) §5.9).
-- Camps carry **no activation node** (no banner, no fire): they are not in
-  the anchor activation roster, and their protection is their building core
-  box (`world_protection.lua`: kind `mining_camp`; a camp under construction
-  is a `war_camp` with the PvP margin).
 
 **The camp socket contract** (every mining camp and war camp; read by lanes
 CAMPNPC, LIFT and GUILDQUESTS):

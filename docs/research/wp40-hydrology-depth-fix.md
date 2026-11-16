@@ -27,7 +27,7 @@ No generation fallback, old-world reader or migration is introduced.
 
 ## Validation and review
 
-[Real-engine reproduction](wp40-hydrology-depth-evidence/README.md) uses the
+Real-engine reproduction (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-hydrology-depth-evidence/README.md`) uses the
 actual user seed and affected area: the previous production bytes reproduce
 the reported error; the patched bytes generate it and adjacent mapchunks
 successfully. Engine logs and exact planner patch are retained. No Rehearsal

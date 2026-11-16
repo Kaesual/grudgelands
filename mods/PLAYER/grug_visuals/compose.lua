@@ -483,7 +483,7 @@ function grug_visuals.compose(spec)
 	-- The key covers every normalized input, and nothing else: two specs that
 	-- differ only in a field the composition ignores share one cache entry.
 	-- Semicolon, not a pipe: a hand-run bitwise-operator grep sweep of
-	-- docs/research/luanti-lua.md matches `"|"` even inside a string.
+	-- docs/technical/luanti-lua.md matches `"|"` even inside a string.
 	local key = (race or "-") .. ";" .. (skin or "-") .. ";" ..
 		(look and grug_visuals.look_string(look) or "-") .. ";" .. (royal or "-") ..
 		";" .. (line_default and "npc" or "-") .. ";" ..

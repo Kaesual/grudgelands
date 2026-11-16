@@ -1,7 +1,7 @@
 # Round 13 occult weapon recipe followup
 
 2026-09-21, user approved all six tiers of wands, staves and bows. The closed
-proposal was folded into [the current design](../design/crafting_equipment_revision.md#plain-caster-weapons-and-bows)
+proposal was folded into [the current design](../design/items_crafting.md#plain-caster-weapons-and-bows)
 and its TODO removed. Whole-WP completion counts are unchanged.
 
 ## Delivered scope

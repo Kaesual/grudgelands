@@ -551,4 +551,43 @@ cover.
 - The [GUI checklist](#gui-checklist-desktop-and-web), 22 items.
 - *Look* questions: the 50 % clock cover live, swing skills without it (item 17); the wall
   traps at 2 s (item 3); Blink firing late (item 19).
-- Backlog: [BACKLOG](../../BACKLOG.md#round-74--the-way-home-the-waiting-cast-the-coast-gui-acceptance-pending).
+- Backlog: [carry-overs](#carry-overs).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **For the user's GUI test:** the 50 % clock cover live and swing skills without it
+  (`CLOCK_FRAMES` is the knob for smoother steps); the wall traps at 2 s (The Last Mint's own
+  `SHOT_PERIOD` in `last_mint.py` is its knob, apart from The Second Shift); Blink firing
+  late along the look (excluding it by id is the alternative).
+- **Not engine-verified (NAV):** the flue fix (a Lava Flan overrunning a one-node point
+  between two alcoves) and the Flintback teleport in The Stilled Seam, whose cause is a
+  hypothesis (the same overrun; that run had no traces): GUI item 22; trace it if it
+  recurs. The near-point rule gives about 30 % of the guide's answers in The Last Mint
+  (simulated), each one grid search of about 10 µs.
+- **The walk grid (NAV review, theoretical):** a body exactly 1.0 wide (a normal Lava Flan,
+  a Land Guard) passes a one-node gap only centred (the engine's overlap test is strict); The
+  Last Mint has 2 such cells, neither a chokepoint; the test vault's 2.94 elite spider on
+  diagonals likewise. One class-2 move without a shared free 2 x 2 block (The Second Shift,
+  (28,111)–(28,112), no class-2 mob there): `walkgrid.problems` could refuse it, or the
+  class-2 mask require the block.
+- **The overworld evade (TRAIL):** a mob pulled off a ledge or plateau it came up by stairs
+  finds no way round with the trail or the local search and teleports home after 40 s
+  (unchanged; a later rule could search round with a larger padding). The trail walks the way
+  the mob came even where a shorter one exists (ridge: 13.1 s against 11.0 s).
+- **The waiting cast (CAST):** a block pushed further after the press (a longer lock while
+  waiting) still ends the wait with "You are still busy." (a busy time longer than the weapon
+  interval at the press is covered since the review, `cast_wait`). An inventory or another
+  form the client opens on its own sends no server event, so it does not drop the wait.
+- **The clock cover (HUD review):** `init.lua`'s `cast_block` seam reads `records[key]`
+  without the `def.cast_interval` guard of `cast_wait`: a future D8 transformation without a
+  cast interval, sharing its key with a base that has one, would show the base's cover; pass
+  the slot's interval through `ability_of` when one comes. Nothing ships such a pair.
+- **The ride at login (MOUNT):** a server crash runs no teardown, so that rider starts on
+  foot; a refused flyer over a lava lake wider than 9 x 9 is held 30 s, then released where
+  it is (falls); a set-down over ungenerated land emerges up to about 40 blocks once.

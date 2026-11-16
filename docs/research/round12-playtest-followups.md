@@ -52,8 +52,8 @@ production-code revision. Observed elapsed wall time: unknown.
 
 ## Discussion remains open
 
-[Tool lifetime figures and proposal](../design/crafting_equipment_revision.md) and
-[station inventory modes](../design/crafting_equipment_revision.md) are planning records.
+[Tool lifetime figures and proposal](../design/durability_repair.md) and
+[station inventory modes](../design/inventory_equipment.md#4-crafting-model-round-45) are planning records.
 No durability, Stone Hoe, personal-station or ownership implementation is included.
 
 ## User runtime check

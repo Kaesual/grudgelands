@@ -5,6 +5,9 @@ rulings 9–15. Rule text: `docs/design/world_zones.md` §7 ("Terrain fill",
 "Decorative nests"). Tooling and logs: `tools/r24_fill/` (portable fixture,
 `engine/` probe and scripts, `evidence/`).
 
+The renders named below (`*.png`) moved to the orchestration archive on
+2026-11-16: `~/projects/grudgelands-orchestration/archive/docs-research/round24-underground-fill/`.
+
 All runs used `tools/luanti_headless.sh` (isolated user path, `LC_ALL=C`,
 idle scheduling), one emerge thread, normal shutdown by the probe. "Before" is
 main at 7d74c3e5 (Lane A merged, no Lane B); "after" is branch

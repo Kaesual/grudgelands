@@ -75,7 +75,7 @@ tick phase; the module guide's
 "[class rework's building blocks](../../technical/module-guide.md#combat-and-classes)"
 and [skill_trees.md §3.12](../../design/skill_trees.md#312-the-graph-talents-of-round-k-round-52-live-since-round-53)
 document the APIs round K builds on. Round K's open points:
-[Round 52 carry-overs](../../../BACKLOG.md#round-52-carry-overs).
+[Round 52 carry-overs](../round52-plan.md#carry-overs).
 
 Goal: every building block exists and the new Talents page runs, while the
 shipped classes play exactly as before.
@@ -117,7 +117,7 @@ removed, `no_crit`, the held cast's catch-up); D. Before it the prep lane
 SKS put the cast-sound candidates on a listening page. The shipped rules:
 [classes](../../design/classes.md), [talents](../../design/skill_trees.md),
 [scout](../../design/scout.md), [ability targeting](../../design/ability_targeting.md);
-the open notes: [Round 53 carry-overs](../../../BACKLOG.md#round-53-carry-overs).
+the open notes: [Round 53 carry-overs](../round53-plan.md#carry-overs).
 The table below is the original draft; where it differs (LIVE and HOOKS in
 wave 1, INTEG beside them), the round 53 plan wins.
 

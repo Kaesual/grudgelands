@@ -1,22 +1,9 @@
 # Item numbers: enchant values, recipes, upgrades, the crown, potions and money
 
-**Status: approved by the user, version 2** (Round 33 lane DS, 2026-10-04;
-version 2 follows the user's rulings of the same day on Crit and Dexterity,
-profession families and two leftovers, marked "(v2)"). The user accepted every
-recommended option of the preview: Intelligence stays weak for Priest heals,
-attribute fractions count, repair factor ×1.0, crown fee 1 h of band-6 income,
-no money fee for upgrades, elixirs worth two enchants, the Weak Healing Potion
-heals a fixed 35 HP, one-faction signatures stay sell-only, the culture vendor
-price bands as proposed, Ornament Components removed, Cut Citrine is the T1
-trinket gem (the Cut Quartz recipe goes). The user's rulings are
-[round33-plan.md](../planning/round33-plan.md) §2; this file turns them into
-the numbers lanes C4 (enchant tiers, upgrades, crown) and C5 (vendors,
-potions, economy) implemented in Round 33; where the shipped game differs,
-an "As built" note says so. **Round 36 (lane K, the user's picks
-2026-10-05):** gear Intelligence now raises heals and absorbs like a Mage's
-Fireball (§1.3, Appendix A), replacing the "Intelligence stays weak" choice
-above, and the Dexterity curve's `c` fell from 0.0019 to 0.0011 so the
-Scout's full set sits at the Warrior's (§1.3, §1.4).
+**Status: decided** (approved by the user as version 2 in Round 33; later
+rulings are folded into their sections, "(v2)" marks the version-2 choices).
+The user's original rulings are [round33-plan.md](../planning/round33-plan.md)
+§2; where the shipped game differs, an "As built" note says so.
 Every table between `generated` markers is printed by a script in
 [`tools/r33_ds/`](../../tools/r33_ds/) and refreshed by
 `python3 tools/r33_ds/build_doc.py` (`--check` fails when this file is stale).
@@ -797,11 +784,10 @@ repair_cost = ceil(0.50 × P × w)
 
 `P` is the reference purchase price times the quality multiplier 1 / 3 / 6, `w`
 the missing durability fraction ([durability_repair.md](durability_repair.md#price)).
-The factor rose from 0.20 to **1.00** in Round 33 (wearing an item out once
-cost what it would cost to buy again) and halves to **0.50** in Round 78
-(ruling 3, "a good start"; death wear stays 10 %): wearing it out once costs
-half its price; the repair shares below are Round 33's. Repair then takes about 3–9 % of net income for blue
-gear and 6–18 % for gold, against 0.6–1.8 % today (§6.5).
+The factor is **0.50** (`grug_repair.FACTOR`): wearing an item out once
+costs half its price. §6.5's repair columns are still computed at the
+earlier factor 1.00 (repair then took about 3–9 % of net income for blue
+gear and 6–18 % for gold); at 0.50 they halve.
 
 ### 6.3 Upgrade and crafting costs
 
@@ -835,7 +821,9 @@ stands are inexpensive Basic crafts. Expedition paintings are reward-only.
 the Round 33 terms per band: every normal kill's gear drop sold (white 5 %,
 blue 2 %, gold 1 % at ×1/×3/×6; an upper bound, players keep what they wear)
 and repair at the new factor on the estimate's own wear (blue gear; the gold
-column shows a player in gold gear). Mount and respec prices move by less than
+column shows a player in gold gear). In the table, "today" is the factor
+0.20 before Round 33 and "new" is Round 33's 1.00, not the current 0.50
+(§6.2). Mount and respec prices move by less than
 3 %; lane C5 recalibrates them with the repaired `income.py --check`.
 
 <!-- generated: income -->

@@ -835,7 +835,7 @@ warrior (§2.11); Battlebeat gets no proc flash (below).
 
 ### Open notes
 
-In the [BACKLOG](../../BACKLOG.md#round-40-carry-overs); none blocks the
+In the [carry-overs](#carry-overs); none blocks the
 GUI test.
 
 ### GUI playtest checklist
@@ -941,3 +941,52 @@ looks wrong.
   that the crash fix and the upgrade contract (lane UP) ship together in
   0.41.0 with one map reset of the production realm (the user,
   2026-10-07).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Sounds were out of this round** (plan §2.7), Smite's included: Smite
+  keeps the shared holy cast cue and Charge its cast cue; the dash, the
+  poses and the new effects add no sound. Any new sound goes through a
+  listening page ([sound.md](../design/sound.md) §1).
+- **Particle art order:** the effects are single-colour; the V3 page named
+  optional art for later (a snowflake sprite for Ice Nova and Glacial
+  Ward, animated fire for Fireball's splash, draconis ice and fire motes
+  for the dragon breath and its bolts, a four-point holy spark for Smite,
+  a slash streak for Mighty Blow). The user has flagged none yet.
+- **Cleave's wind-up** marks the cone with the facing frozen at the cast
+  (and halfway) while the hit tracks the target: existing behaviour the
+  motes now make visible; the user decides.
+- **The Charge arrival hold** (about 0.34 s without control on the stop)
+  stays for now; the user picks at the GUI test (the forward snap per hold
+  length: `tools/r40_ch/lag_replay.py`).
+- **Not on the particle helper:** the tails of mob fireballs, embers and
+  void bolts (one particle per step) and the stun cross and root crystals
+  (sized from the object's box), so `grug_particle_scale` does not reach
+  them.
+- **`--check` of the PNG generators** (`tools/r40_cd/gen_cooldown_textures.py`,
+  `tools/r40_probe/gen_textures.py`) compares bytes that depend on the
+  installed zlib's output; another zlib build could fail it with nothing
+  changed.
+- **The Kraken's drag** can push the Charge carrier off its path until the
+  next segment starts.
+- **A Charge miss shows no notice.**
+- **A skill moved by Lua** (not by an inventory action) and cast again
+  keeps its overlay on the old slot for up to 0.5 s, until the next
+  hotbar check.
+- **The overlay assumes `gui_scaling` 1 and `hud_hotbar_max_width` 1.0**
+  (the server cannot read them): about a pixel off where 48 × density is
+  not a whole number.
+- **A stale comment** in the vendored mobs fork (`mods/ENTITIES/mobs/api.lua`,
+  the wear-free punch write) still names the cooldown wear ticker, which
+  is gone.
+- **A sneak toggle in the middle of a one-shot pose** (swing, flinch):
+  the pose's end is estimated from the current animation speed.
+- **The probe** (`tools/r40_probe`, tools only) switches its carrier's
+  segments up to one server step late (corrected by an interpolated
+  `move_to`); the shipped dash is `grug_abilities/charge.lua`.

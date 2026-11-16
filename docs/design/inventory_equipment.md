@@ -612,6 +612,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   largest therefore add 80 slots, 112 in all (the full view's scroll grid
   then has 13 rows: `main[9..]`'s three and ten of bags). The parallel cloth/leather catalog is an explicit one-item-per-concept
   exception; neither material grants stats, affixes or extra capacity.
+- A bag's size is its `bagslots` group (`grug_inventory/bags.lua`): each join sizes an
+  equipped bag's content list to it and only grows it, so a larger size needs no
+  migration step and a smaller one does (the 0.48.0 step).
 - Cloth bags are Tailor products and leather bags are Leatherworker products.
   The **small 8-slot cloth bag is the
   exception and stays vendor-sellable** (the Small Bag, 20c since Round
@@ -736,18 +739,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     and its lid closes on the new tier for every viewer. The same right as
     the label.
   - **Locked chests:** only the owner may label, sort or upgrade one.
-- **The bag change of 0.48.0** (Round 48, the migration step 0.48.0,
-  [upgrade contract](../technical/upgrade-contract.md) §5.8): at each
-  existing character's first join, `main[9..]` and the bags were sorted
-  once into the new sizes; what no longer fit arrived as "Lost and Found"
-  letters of four stacks each ([mail](mail.md)), with one feed line. The
-  bags' join callback never shrinks a content list over items (`set_size`
-  would delete them): a character whose step did not finish keeps them
-  until it runs again.
-- **The bag change of 0.62.0** (Round 62): every bag four slots larger
-  (8 / 12 / 16 / 20). No step: the bags' join callback sizes each equipped
-  bag's content list up from its bag, keeping its items, and an unequipped
-  bag is always empty.
+- **Bag content lists follow their bag:** the bags' join callback sizes
+  each equipped bag's content list up from its bag (8 / 12 / 16 / 20),
+  keeping its items, and never shrinks a list over items (`set_size` would
+  delete them); an unequipped bag is always empty. The one-time resort of
+  0.48.0 is in the [upgrade contract](../technical/upgrade-contract.md) §5.8.
 - **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
   elixirs only (group `grug_potion`), created for every player; filled here
   by hand and first of all by the give order (Round 70: crafted, picked
@@ -919,11 +915,9 @@ the Round 19 top-centre text list:
   first, then the primary slots, its tier, "Crafts: n/m toward tier N+1"
   (`professions.md` §1 counts; "Highest tier reached." at T6) and, while
   the character's ten-level band caps the tier, the note "Capped by your
-  level: reach level 10N+1, then craft once more for tier N+1") was the
-  fifth mode until Round 45 moved it into the Crafting tab's box (§1).
-  Since Round 33 "Achievements" sits after Effects, and
-  the **cloak picker** sits beside the model (the 3D mode since Round 44,
-  the Stats mode since the Round 45 playtest, which merged the two;
+  level: reach level 10N+1, then craft once more for tier N+1") lives in
+  the Crafting tab's box (§1). "Achievements" sits after Effects, and
+  the **cloak picker** sits beside the model (in the Stats mode;
   [character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list, in the Social tab's party and clan rows and on each row of its
@@ -1028,7 +1022,8 @@ catalog and the feed says "<Skill> unlocked. Drag it from Talents & Skills
 onto your hotbar." (`skill_trees.md` §3.4). For the kit, with no free hotbar
 slot a non-skill item makes room (Round 49 ruling 10): the rightmost one the rest of the
 inventory can take moves there through the give helper and the skill takes
-its slot; a skill never moves. With no room anywhere the skill waits in the
+its slot; a skill never moves. No feed line names the item that moved (the
+user: none wanted, Round 49). With no room anywhere the skill waits in the
 catalog. A
 stray skill from before Round 44 outside the hotbar may still be moved onto
 the hotbar or back onto its icon; removing the others is the 0.44.0
@@ -1078,34 +1073,27 @@ a small window on the left of the screen, four inventory-sized slots wide
   down ladders while E is held, and "Toggle Aux1 key" opens the quickbar on
   every second press.
 
-## Round 14 navigation pages
+## Navigation pages
 
-The inventory gains separate Quests, Party and Map tabs, following `quests.md`,
-`parties.md` and `world_map.md`. Quests and Party each own a saved HUD toggle,
-default on; empty quest logs and players without a party have no
-corresponding HUD.
-Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
-our own minimap, default on (`world_map.md`). Since Round 44 the quest log
-and that switch live in the map window (Z or the Map & Quests tab); the Quests tab
-is gone. Since Round 31 a PvP tab
-(since Round 44 the PvP section of the Party & PvP tab, the Social tab since
-Round 67, `grug_pvp/page.lua`) holds the "Flag me for PvP"
+The quest log and the "Show minimap" switch (our own minimap, default on,
+`world_map.md`) live in the map window (Z or the Map & Quests tab). The PvP
+section of the Social tab (`grug_pvp/page.lua`) holds the "Flag me for PvP"
 button, the current state (safe, or flagged with the reason and the seconds
 left; PvP combat) and the PvP statistics; it is re-sent only while its text
-changes, checked once a second and since Round 67 at most once per 2 s.
-Party rows show name and HP only, with explicit offline state. HUD allocation
-uses the shared layout authority so party, quest and transient notices do not
-overlap existing combat bars, target information or status effects.
+changes, checked once a second and at most once per 2 s. The quest and party
+HUDs each own a saved toggle, default on; empty quest logs and players
+without a party have no corresponding HUD. Party rows show name and HP only,
+with explicit offline state. HUD allocation uses the shared layout authority
+so party, quest and transient notices do not overlap existing combat bars,
+target information or status effects.
 
-## Round 16 readability amendments (2026-09-22)
+## Readability and interaction clarity
 
 Armor hover descriptions explicitly state Cloth, Leather or Metal, including
 named enchanted variants. The combat state is shown while the living player
-is in combat; since Round 26 it is a 32 px gold-framed crossed-swords icon
-beside the life bar (`grug_core/combat_hud.lua`), no longer a "Combat" text,
-and not part of the status row (§5).
-
-## Round 18 interaction clarity
+is in combat as a 32 px gold-framed crossed-swords icon beside the life bar
+(`grug_core/combat_hud.lua`), not a "Combat" text and not part of the status
+row (§5).
 
 Weapon-slot tooltips and contextual raw-weapon hints explain that equipped
 weapons provide combat stats while hotbar skills execute attacks. No automatic
@@ -1116,14 +1104,13 @@ than a `>` prefix. The skill catalog explains placing and removing skills
 
 ## UI modernization approved direction
 
-User ruling, 2026-10-24; merged in 0.60.1, see the
-[UI plan](../planning/ui-modernization-plan.md). Atlas 03 is the accepted
+User ruling, 2026-10-24
+([UI plan](../planning/ui-modernization-plan.md)). Atlas 03 is the accepted
 visual direction: dark translucent panels, small rounded corners, restrained
 brass accents, original game art and readable text. Window dimensions may
 change for appearance/usability. Non-map inventory tabs share one frame size;
-Map & Quests is larger and retains the shared navigation. This supersedes the
-fixed dimensions in the earlier Round 44/45 description above and ruling 10
-of the earlier crafting/UI plan. All allowed tabs stay visible, using two
+Map & Quests is larger and retains the shared navigation; this overrides
+any fixed window dimensions stated above. All allowed tabs stay visible, using two
 rows when necessary. Slot sizes/capacities, native inventory input, page
 lifecycle and permission checks remain.
 
@@ -1140,5 +1127,4 @@ buffering and change detection. No new processing percentages or second
 counters; arrival preparation keeps its existing percentage/ETA and a static
 bar. Keep coarse Effects duration labels. Map scrolling remains native and
 client-side. Reversible implementation details may be decided independently;
-fundamental changes wait for the user. Desktop and web visual acceptance are
-still required after implementation.
+fundamental changes wait for the user.

@@ -5,7 +5,7 @@ and the review fixes) and released as 0.61.1 (compatible, no saved state, no
 reset). Not pushed; its GUI points are items 97–106 of the
 [joint GUI test](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611),
 its remaining limits in the
-[BACKLOG](../../BACKLOG.md#ui-dialogs-carry-overs).** The sections below
+[BACKLOG](../archive/backlog-through-round-79.md#ui-dialogs-carry-overs).** The sections below
 record the lane's state at their time.
 
 2026-10-25. The user approved implementation of the refreshed views **18–34**

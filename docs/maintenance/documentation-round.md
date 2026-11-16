@@ -62,7 +62,7 @@ to alter game behavior is implied. Root README remains excluded even when a
 standing completion rule would normally require editing it. Current game
 delivery remains Round 19 plus its follow-ups; do not mark GUI checks passed.
 
-Findings and README-owner handoff: [reconciliation findings](findings.md).
+Findings and README-owner handoff: [reconciliation findings](../archive/maintenance/findings.md).
 The inventory records baseline classification; topic reports record actual reading coverage.
 
 ## Completion
@@ -90,7 +90,7 @@ Checks on the reviewed candidate and completion prose:
   Historical archives, the technical guide and audit evidence remain accessible;
   total repository documentation size is not the success metric.
 
-[D1–D4 findings](findings.md) remain explicitly routed: pending WP37 scope
+[D1–D4 findings](../archive/maintenance/findings.md) remain explicitly routed: pending WP37 scope
 reconciliation, profession-book code drift, specialist mastery audit coverage,
 and future boat/Kraken danger acceptance. They are not hidden behind the review
 PASS. No code fix, balance change, future-scope cancellation or GUI acceptance

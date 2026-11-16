@@ -1,11 +1,11 @@
 # World atlas
 
-Decided 2026-09-21; Round 14 user Go.
+Decided 2026-09-21; implemented (Rounds 14–67).
 
-## Approved icon integration (Round 64)
+## Icons and markers
 
-User decisions, 2026-10-27; implemented in 0.64.0. Technical receipts and
-the pending desktop/web GUI checklist: [Round 64](../planning/round64-plan.md).
+The user's decisions of 2026-10-27 ([Round 64](../planning/round64-plan.md))
+and rulings 20 and 21 of 2026-10-30 (Round 67):
 
 - Use the accepted [icon set](../planning/map-icon-rework.html) on both
   world map and minimap, one 32x32 PNG per motif/direction. Preserve the
@@ -17,38 +17,11 @@ the pending desktop/web GUI checklist: [Round 64](../planning/round64-plan.md).
   of world-map zoom. Shared UI scaling may change their common size.
   Geographic area rings retain their actual extent; exact positional
   targets and player/party arrows stay on their real anchors.
-- Avoid overlaps of nontransparent icon pixels while allowing transparent
-  areas to overlap. Initial maximum displacement is 16 display pixels at
-  standard scale, scaled with the icons. Anchor proximity takes priority
-  over complete separation: residual overlap in dense groups is accepted.
-  Do not add automatic clusters or hide markers as an overlap remedy.
-  **Superseded by Round 67** (rulings 20 and 21, 2026-10-30): no
-  displacement at all; every marker sits at its anchor and overlaps are
-  allowed (see [Markers at their anchors](#markers-at-their-anchors-round-67)).
-- Both views use separate markers; the user accepted additional minimap
-  position updates after the M0 memory comparison. Terrain resolution stays
-  unchanged; no map icons are baked into terrain. Markers remain above flight,
-  claim and other ground overlays. Keep personalized home/innkeeper,
-  discovered-waystone, Claim Stone and quest-state behavior; player/party
-  positions remain live. Preserve existing faction visibility and travel
-  discovery rules.
-- Cache layout per simultaneous marker group and projection/display scale;
-  translating the view must not rearrange its icons. Both renderers
-  use the computed positions and must preserve the common icon size and
-  readable source art. Exact cache/render mechanics and measured costs
-  belong to the implementation plan, not additional gameplay rules.
-  (The layout and its cache left with Round 67.)
-
-## Markers at their anchors (Round 67)
-
-User rulings 20 and 21 of 2026-10-30 (the playtest of 2026-10-28: markers
-moved for neighbours the player could not see), implemented in 0.67.0:
-
-- Markers are 0.8 of their Round 64 size (26 px at the reference instead
-  of 32, the floor 13 px instead of 16; the user's choice after a first
-  look at two thirds, 21 / 11 px; the size rule of Round 66 is unchanged) and overlaps are allowed: the displacement solve,
-  its reserved quest-giver slots and its cache are gone, in the map window
-  and on the minimap.
+- Markers are 26 px at the reference, the floor 13 px (the size rule:
+  "Marker size" under [Map window](#map-window)), and **every marker
+  sits at its anchor**: overlaps are allowed,
+  there is no displacement, no automatic clustering and no hiding of
+  markers as an overlap remedy, in the map window and on the minimap.
 - Markers draw by importance, bottom to top (the minimap's layers of
   before, extended by the quest states): places, bosses, trainers and
   innkeepers, then the Steward and the services, the home and waystones,
@@ -60,6 +33,12 @@ moved for neighbours the player could not see), implemented in 0.67.0:
 - The player's and the party's arrows always stand at their true position
   and on top of every marker; they keep their 32 px at the reference and
   scale with the markers.
+- Both views use separate markers. Terrain resolution stays unchanged; no
+  map icons are baked into terrain. Markers remain above flight, claim and
+  other ground overlays. Keep personalized home/innkeeper,
+  discovered-waystone, Claim Stone and quest-state behavior; player/party
+  positions remain live. Preserve existing faction visibility and travel
+  discovery rules.
 
 ## Atlas behavior
 
@@ -294,7 +273,7 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   layer's order (war camps, outposts, villages, mines, clash sites, rare
   dens, camps, fortresses, starts, capitals, kings with the rift boss,
   dragons), the NPCs and travel above them by importance (quest givers by
-  their state, [Markers at their anchors](#markers-at-their-anchors-round-67)). Settlements, places and bosses are built once at start from
+  their state, [Icons and markers](#icons-and-markers)). Settlements, places and bosses are built once at start from
   the settlement registry, the king sockets, `grug_mobs.dragon_map_markers`
   and the rift's site, never from live entities.
 - **Icons:** one approved 32×32 PNG per motif/direction, exported by
@@ -312,7 +291,7 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   same window information the window is laid out with, the client's own
   since Round 67) against the same layout on the 1920×1080 reference;
   without window information it keeps the HUD-scaled size. The arrows are
-  32 px where the markers are 21 and scale alike. Independent of GUI scale,
+  32 px where the markers are 26 and scale alike. Independent of GUI scale,
   terrain quality and world-map zoom. The world map converts that extent
   using the client's integer formspec pixel size, including window fit.
   Round 67 sizes (marker px, map px; before in brackets): 1280×720 12, 498
@@ -729,7 +708,7 @@ drawn from the base image above. The gliding version (approved in playtest,
   all givers, memoized until the quest state, held objective items or the
   level change it). A story quest's giver (Round 57) shows the story icon
   of its status (`grug_map_quest_story_<status>.png`,
-  [quests.md](quests.md) "Confirmed by the user").
+  [quests.md](quests.md#quest-markers)).
 - **Cost** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
   (LuaJIT, no engine; one player, 0.09 s server steps, about ten markers in
   the window, two party members moving along) measures about 18 HUD packets

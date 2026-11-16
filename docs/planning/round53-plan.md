@@ -880,7 +880,7 @@ meaning).
 
 The reviews' and reports' notes, the dead reads INTEG listed and the
 balance fix round after the user's playtest are in the
-[Round 53 carry-overs](../../BACKLOG.md#round-53-carry-overs). The
+[Round 53 carry-overs](#carry-overs). The
 [delivery plan](class-redesign/delivery-plan.md) marks round K done.
 
 ### GUI checklist (Round 53)
@@ -988,3 +988,80 @@ for the CHANGELOG entry), `check_upgrade.py` and `check_fresh_server.py`
 PASS, boot PASS. Lane D: `r37_dc` PASS, `check_upgrade.py` and
 `check_fresh_server.py` PASS, the docs link check (the lane report). Open:
 the user's GUI test.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **The balance fix round** after the user's first playtest of the new
+  kits, in the user's iteration style (a first version by feel, the user
+  names the fixes; delivery plan §5). Known numbers to look at: Rebuke and
+  Final Word sit 1.3 % and 0.9 % under the calculator at level 60 (Hard
+  Faith on the untalented part only); the Warrior's absorbs and Recover
+  carry the support factor where the calculator assumes 1; Charge's 0.75 s
+  is the calculator's estimate; arrows fly the shipped 40 m/s.
+- **Dead reads of keys no node carries** (INTEG): `melee_damage_add`,
+  `rage_per_hit_taken_add` and `combat_mana_regen_add`
+  (`grug_abilities/init.lua`), `crit_chance_add_window`,
+  `dodge_chance_window` and `crit_cap_override` (`stats.lua`), the
+  absorb-modifier plumbing (`absorb_modifier`, `clear_absorb_modifiers`)
+  that only Turn Aside used, `cost_for`'s `ability_id` parameter,
+  `_grug_bow_range`; also (D) the ability fields `cooldown_talent`,
+  `range_talent` and `charge_talent`, which `effective_cooldown`,
+  `get_range` and `effective_charge` still read and no definition sets,
+  `grug_abilities.clear_cooldown` without a caller, and the status
+  `move_immune` ("Unstoppable"), which no skill sets since Round 53.
+- **Stale comments in code** (D): `grug_core/area.lua`'s header says
+  nothing shipped calls the helpers (the kits do since Round 53).
+- **Tools and fixtures:** the `pt_fixes` probes (`lane_b`
+  `grug_probe_crosshair`) still call the removed draw API; the `r18_art` and
+  `r26_icons` manifests list deleted files (`r26_icons/prepare.py` the old
+  `talent_*` emblems); the crosshair generator
+  (`tools/pt_fixes/lane_b/gen_crosshair_textures.py`) still writes the
+  ring's full frame; `tools/r44_ch/harness.lua` still stubs
+  `PROTECTION_ARMOR_MULTIPLIER`; the `tools/r33_ds` models (item_tiers.md Appendix A, the
+  class check and the crit-talent table) predate round K;
+  `tools/r53_hooks/approved.txt`'s Blink and Flame Lance lines repeat the
+  title in the URL and author fields (LICENSE-media has them right).
+- **Kept on purpose:** the `cast_frost_ward` cue (a hook without a call
+  site, Glacial Ward's), the `glacial_ward` effect id (Rime Mantle plays
+  it), `PROC_COLORS` `unbroken` and `ruination` (no caller), the `bow` pose
+  clip in the player model (drop it with the next model regeneration,
+  `gen_cloak_model.py --check` holds `POSE_CLIPS` to it).
+- **Combat notes** (reviews, no severity): Haven's node text (M13,
+  `talent_graph_priest.lua`) omits its 22 % mana cost (`kits_priest.lua`); Split Shot's splinters also fly
+  when the primary hit is dodged (accepted: the node list says "on
+  impact"); Bellow's `range = 6` took the elf's +5 ability range in the
+  tooltip (0.53.1: a self skill shows no range line); the clock
+  carry is measured against the interval's due time, so a future skill
+  whose occupied time exceeds its interval by up to 0.1 s would have its
+  held cadence trimmed to the interval (no shipped skill), and a late held
+  cast lets a different cast start up to min(0.1 s, half its occupied
+  time) sooner, once; `grug_classes.talent_ranks` returns the cache
+  itself (read only; a caller that writes it corrupts it until the next
+  invalidation); granting-node texts repeat their skills' numbers, so a
+  balance change edits both; an open readiness window ends on death,
+  respec and leave (`clear_talent_windows`; the WARRIOR review's "survives
+  a respec or death" is refuted on main).
+- **Probes:** WARRIOR's "step3" and "walled" dummies were misplaced, so the
+  line of sight past a step edge or a pillar is fixture-checked only
+  (`r53_hooks`; moot since 0.53.1 removed the line of sight); Finisher is fixture-checked only; no warrior probe log is
+  kept beside the report. The step 0.53.0 ran on SQLite only (the
+  PostgreSQL path is the shared `data.py` API that `r45_ms` proves).
+- **For the GUI check** (in the checklist): the stairs riser blocks an
+  area's line of sight from the anchor (MAGE probe; superseded in 0.53.1:
+  areas have no line of sight); a tap casts a ground
+  area aimed within hand reach and a hold digs; a cast within one swing
+  interval says "You are still busy." (K9); the unit words of the node
+  texts ("a Spark hit", "a base bow hit" …) for the user to refine.
+- **Unscheduled ideas from the class handoff** (moved here from the
+  deleted `TODO-design-classes.md`; not part of the class rework, §4a item
+  11): [food on the belt](class-redesign-handoff.md#72-consumables-belt-and-eating)
+  (eat from the E quick menu's belt with a timed action) and
+  [tools](class-redesign-handoff.md#73-tools-and-everyday-layouts)
+  (remove shovels, combine axe and hoe; Hotbar A/B reduced the slot
+  pressure that motivated it).

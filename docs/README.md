@@ -5,7 +5,7 @@ reading every development round.
 
 | Question | Read |
 |---|---|
-| What is the current game delivery, push and acceptance state? | [Project status](STATUS.md) |
+| What is the current version, production and push state? | [Project status](STATUS.md) |
 | What changed for players, round by round? | [CHANGELOG](../CHANGELOG.md) (the version shows on Help → About) |
 | What has been decided? | [Design topic index](design/README.md) |
 | What is still to implement? | [BACKLOG](../BACKLOG.md) |
@@ -13,7 +13,7 @@ reading every development round.
 | What decisions remain open? | Root `TODO-*.md` files; [BACKLOG open questions](../BACKLOG.md#audit-2026-10-open-questions) |
 | Where is the class rework? | Built in Rounds 52 (round F) and 53 (round K): the shipped rules in [classes](design/classes.md), [talents](design/skill_trees.md), [scout](design/scout.md) and [ability targeting](design/ability_targeting.md); the record in the [round 53 plan](planning/round53-plan.md), the [delivery plan](planning/class-redesign/delivery-plan.md), the [continuation plan](planning/class-redesign/continuation.md) and the [earlier handoff](planning/class-redesign-handoff.md) |
 | How should work be performed? | [AGENTS](../AGENTS.md), then the [round workflow](process/round-workflow.md) (gates, review checklist, [templates](process/round-workflow.md#7-templates)) |
-| Where is the map-icon integration and its acceptance checklist? | [Round 64 plan](planning/round64-plan.md); current rules in the [atlas design](design/world_map.md#approved-icon-integration-round-64) |
+| Where is the map-icon integration and its acceptance checklist? | [Round 64 plan](planning/round64-plan.md); current rules in the [atlas design](design/world_map.md#icons-and-markers) |
 | How do the six cultures’ town facades differ? | [Ordinary town facades](design/settlements.md#ordinary-town-facades-0755) |
 | How are the town buildings stored and edited? | [Building template format](technical/building-template-format.md), the [template tools and the editor](../tools/building_templates/README.md) |
 | How are forms styled without changing their mechanisms? | [UI presentation toolkit](technical/ui-presentation.md), [implementation plan](planning/ui-modernization-plan.md) |
@@ -23,6 +23,7 @@ reading every development round.
 | How do website accounts work (linking, account rewards)? | [Accounts design](design/accounts.md), the contract with the website [web-accounts.md](technical/web-accounts.md), [module guide](technical/module-guide.md#website-accounts), later phases in the [concept](planning/accounts-concept.md) |
 | How does a world survive a version upgrade? | [Upgrade contract](technical/upgrade-contract.md) (release mode, the declaration, the map reset, migrations and the tool) |
 | Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](technical/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
+| Which plan is active, which is history, which is still cited as the rule? | [Planning index](planning/README.md) |
 | Why was something decided or how was it tested? | [Research and historical evidence](research/README.md) |
 | What changed during documentation cleanup? | [Consolidation record](maintenance/documentation-round.md) |
 

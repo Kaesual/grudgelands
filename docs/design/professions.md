@@ -1,11 +1,8 @@
 # Professions
 
-Decided 2026-08-06, roster **re-cut 2026-08-07** (crafting rework),
-material identities integrated 2026-08-12 and profession progression revised
-2026-09-18, the smith split adopted 2026-09-20, and Alchemy made a secondary
-with progression from real recipes only in Round 33 (2026-10-04), and recipe
-lists with gear made only by professions in Round 45 (2026-10-08,
-[ui-crafting-rework-plan.md](../planning/ui-crafting-rework-plan.md) §2.16–2.36).
+Decided 2026-08-06 (last structural revision Round 45,
+[ui-crafting-rework-plan.md](../planning/ui-crafting-rework-plan.md) §2.16–2.36);
+implemented.
 
 **This file owns the profession rules:** roster and ids, slots, learning,
 progression and its thresholds, the profession tier, the recipe areas,
@@ -560,10 +557,10 @@ of cloth or leather users who also want a professionally improved weapon.
   cut of all of them.
 - **The bow foundation now has the Scout consumer.** Six tier bows beginning at Bronze are active V1 equipment. The Leatherworker improves bows (Round 33).
 
-## Round 18 trainer feedback
+## Trainer feedback
 
-A successful Learn action displays explicit success and points to the profession
-recipe book in Crafting. Subsequent visits show known state/progress and guidance.
+A successful Learn action displays explicit success and points to the
+profession's area in the Crafting tab. Subsequent visits show known state/progress and guidance.
 Cooking and Alchemy have no Unlearn action. Primary professions require confirmation that
 all progression in the selected profession will be lost; cancellation preserves
 it. Failed learning never displays success. Repair access is unchanged.

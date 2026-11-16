@@ -1,0 +1,2784 @@
+# Project status through Round 79 (archive)
+
+Archived 2026-11-16 from `docs/STATUS.md` at `4f6b20b7` by step 3 of the
+[documentation cleanup](../planning/docs-cleanup-plan.md). The text below the line is
+unchanged except that its relative links gained `../` for the new folder and its
+`BACKLOG.md#…` links follow the backlog's new structure. It records
+push, acceptance and production claims as they stood when each entry was written; many
+are obsolete (for example "not pushed" for versions origin now holds, or "GUI test
+open", which the user dropped on 2026-11-16). It is history, not the current state:
+see [STATUS](../STATUS.md). Original file SHA256:
+`2564a6f01d5816dbedb56bc733e925c97d6feed0120c185827ccf8ba4e4bbddf`.
+
+## Production deploy history, as this file states it
+
+| Production ran | Where this file says so |
+|---|---|
+| 0.40.0 | until Round 41 (the Round 40 follow-up entry, 2026-10-07) |
+| 0.41.0 | Round 41's declaration moves 0.40.0 → 0.41.0 with a map reset (pushed 2026-10-08); still 0.41.0 in the Round 44 and 45 entries (2026-10-09) |
+| 0.45.0, then 0.45.1 | the 0.45.1 entry (2026-10-10) |
+| 0.45.1 | still so in the Round 47 and 48 entries (2026-10-14) |
+| 0.48.1 | the Round 50 entry (2026-10-16): it moves straight to 0.50.0 |
+| 0.50.2 | moved by the user on 2026-10-17 |
+| 0.55.1 | deployed by the user on 2026-10-21 (the 0.55.1 and Round 55 entries) |
+| 0.65.0 | the user, recorded 2026-10-31 (the 0.67.0 entry; the 0.66 entry still says 0.55.1) |
+| 0.69.0 | named by a player report in the 0.75.4 entry (2026-11-11) |
+
+After this archive: production runs 0.78.0 (the user, 2026-11-16).
+
+## Entries with no plan "Completion" to fall back on
+
+Checked 2026-11-16. For these, the entry below is the only round-end receipt; the
+player-facing summary is in [CHANGELOG](../../CHANGELOG.md) where noted.
+
+- **Round 22** (natural world): the [plan](../planning/round22-natural-world-plan.md) has
+  no Completion and this file has no entry either; CHANGELOG folds it into "Earlier
+  rounds".
+- **Round 23** (world life): the [plan](../planning/round23-world-life-plan.md) has
+  "Phase 1 status" but no Completion; entry "Round 23 delivered"; CHANGELOG "Round 23".
+- **Round 63** (0.63.0): the [plan](../planning/round63-plan.md) has "Validation" and
+  "UI merge and publication" but no Completion; CHANGELOG 0.63.0.
+- **0.60.1** and **0.61.1** (the UI modernization and the refreshed service dialogs): no
+  round plan Completion; receipts in
+  [ui-modernization-plan.md](../planning/ui-modernization-plan.md) and
+  [ui-dialog-review.md](../planning/ui-dialog-review.md); CHANGELOG has both.
+- **0.66.1, 0.75.3, 0.75.4:** no plan at all; CHANGELOG has all three.
+
+Rounds 51 and 52, named in the cleanup plan, do have a Completion
+([51](../planning/round51-plan.md#completion-2026-10-19),
+[52](../planning/round52-plan.md#completion-2026-10-20)).
+
+---
+
+# Project status
+
+Updated 2026-11-15. This is the delivery pointer, not another game specification.
+
+**0.79.0 / Round 79 (website accounts, phase 1) is on main (`b1b035c3`, tag
+`round-79`) and pushed 2026-11-15; the GUI test is open, and the end-to-end test on the
+rehearsal realm waits for the platform side.** Its planning (the
+[concept](../planning/accounts-concept.md), the [plan](../planning/round79-plan.md) and the
+contract [web-accounts.md](../technical/web-accounts.md)) was pushed on 2026-11-15
+(`origin/main` = `35f16338`). A character can be linked to an account on the realm's
+website, by a code entered on the new Account page or by its password on the website, and
+the rewards an administrator grants the account (first: the Supporter Cloak) reach every
+linked character ([accounts.md](../design/accounts.md)). Lanes: ACC (the new mod
+`grug_accounts`, the bridge side with `account.set_password`, the fake bridge's accounts
+mode), PAGE (the Account page, the cloak as an account reward), D (docs). Both had an
+independent review (ACC MERGE, PAGE MERGE AFTER FIXES) with a fix round and a delta review
+MERGE; PAGE was merged after the user's go on its screenshots. The user ruled two contract
+sentences during the round (a `linked` answer after its list is `ok`; duplicate account ids
+keep the first), the creation view (one line), the re-grant (worn again) and the tab's
+place (kept). **Compatible:** no step, no map reset; new saved keys: mod storage
+`grug_accounts` / `list` and `id:<lower-case name>`, player meta
+`grug_accounts:character_id` (an external key, [module
+guide](../technical/module-guide.md#player-meta-read-by-external-tools)) and
+`grug_accounts:seen`; `account.set_password` writes the engine's auth entry. Fixtures: the
+new `r79_acc` (362) and `r79_page` (190), `r691_bridge` (418) and its engine scenario
+(147/147); `r39_wm` updated. **Open for the user:** the 20-item desktop and web checklist
+(plan §6), the end-to-end test on the rehearsal realm (contract §9), the website's
+confirmation of the typed-password rate limits (contract §6a item 4), the round-end full
+run, the squash merge into main and the push
+([completion](../planning/round79-plan.md#completion-2026-11-15)).
+
+**0.78.0 / Round 78 (game-night fixes) is on main (`895a5d16`, tag
+`round-78`) and pushed 2026-11-12; the GUI test is open.** Fourteen items from a game night (rulings
+2026-11-12, [plan](../planning/round78-plan.md)) in six lanes: SMALL (potion cooldown 30 s and
+its status, repair factor 0.5, guards at street level, towering, Claim Stone anthracite, Ore
+Sense protection, flying mount retry), TAGS (lost nametag carriers rebuilt; the E-key study),
+EXPED (static Expedition nodes, the 10 s respawn lock), ARMOR (ratings ×10 with one decimal
+inside), BOSS (edge-to-edge stand-off, ranged or melee by distance for every mob with both
+attacks, friendly casts past hostile bodies), EMOTE (Wave, Dance, a seated Wave). Every lane
+had an independent review (all MERGE; EXPED, BOSS and EMOTE after a fix round).
+**Compatible:** no step, no map reset; no new saved key (`grug_traders:potion_cd` is now also
+read by the status source); `check_upgrade.py` against `origin/main` (0.76.2) passes. The
+round-end full run, the squash merge into main after the user's go, and the push are open.
+**Open for the user:** the 15-item desktop and web checklist (plan §6), the emotes' look,
+and the E-key decision (the study recommends a client latch: a web-fork patch now, an
+upstream proposal for desktop; `dedicated_server_step` stays 0.09)
+([completion](../planning/round78-plan.md#completion-2026-11-12)).
+
+**0.76.2 / Round 76.2** adds `/home` (the user, 2026-11-11): the chat command starts the same
+Return home as the button, with the same rules and cooldown (`grug_home/home_command.lua`);
+compatible, no step; checks in the [plan's 0.76.2 section](../planning/round76-plan.md#0762-follow-up).
+
+**0.76.1 / Round 76.1** puts the Online Players **Party** button into each online row of
+the clan card (the user's ruling 2026-11-11), shown when `grug_parties.can_invite` allows it;
+compatible, no step; GUI checklist in the [plan's 0.76.1 section](../planning/round76-plan.md#0761-follow-up).
+
+**0.76.0 / Round 76 is merged locally into main as one squash commit on top of 0.75.5
+(tag `round-76`), synced to local Luanti; not pushed; the GUI test is open.**
+Clans after player requests (rulings 2026-11-11, [plan](../planning/round76-plan.md),
+[clans.md](../design/clans.md)): a second, purely social kind of party (no name, no HUD, no
+game effect), up to 100 players of one faction with Leader, Captain and Member, the Clan
+invitations switch, `/c` clan chat with presence and membership lines and `/p` party chat
+(CLAN); the Social tab in four cards (party and clan left, Online Players and PvP right),
+one row style for all three lists, the clan card with Online/Offline tabs and pages of
+seven, party status instead of HP, party invitations as rows, Party and Clan buttons and
+the clan mark per online row (SOCIAL, after the user's look rulings and two fix rounds).
+**Compatible:** no step, no map reset; new saved keys: mod storage `grug_clans` / `clans`
+(and `clans_unreadable` on a parse failure), player meta `grug_clans:invites_off`.
+Reviews: CLAN MERGE, SOCIAL MERGE with two delta reviews MERGE. Fixtures: the new
+`r76_clan` (561) and `r76_social` (301); `r67_social`, `r44_pp`, `r26_status_icons`,
+`r31_p2` updated; the round-end full run in the completion. **Open for the user:** the
+24-item desktop and web checklist (plan §6), the clan mark's look, the party notice's
+place and offline rows without a race icon.
+
+**0.75.5 is merged locally into main as one squash commit; not pushed.**
+The detailed reviewed history is retained by tag `round-75.5`. The local Luanti
+Flatpak game is synced and verified: all 4,958 game files match main. The user
+accepted all browser comparisons. The completed round worktree/branch are removed.
+The user approved the remaining special-building proposals after the original
+145-scene framing study, moon shrine and 50 guild/service views. All 87 pending
+contexts / 72 templates are now adapted: **283 contexts / 254 templates** in
+total, with 16 green grounds and monuments retained. Camps stay outside scope.
+The [acceptance overview](../../tools/city_architecture_specials/README.md) separates
+138 completed special views, zero pending and 16 leave-as-is recommendations;
+the original 145-scene comparison is linked separately.
+
+Royal combat areas, tower galleries, open structures, ruins, treehouse access,
+planting and late-cell ordering are preserved. Twelve hidden pillar material
+variants reuse existing shapes and textures. Thirty-three additional decoration
+support names follow changed surfaces; no props move. The combined real-loader
+proof covers 1,132 rotations / 4,030,468 cells across all implemented contexts;
+all 299 city contexts are checked. Classification remains **map reset**, no
+migration. Independent final review PASS, no open findings. The final integrated main sweep passes all 345 portable fixtures without
+failures. The final isolated main server boot, browser, exact-loader, Lua,
+template, decor, upgrade and release gates pass. Native acceptance
+is still open in the
+[round plan](../planning/round75.5-plan.md#9-remaining-approved-special-buildings-2026-11-11).
+Production and saved worlds are unchanged; only the user pushes.
+
+**Character-creation adoption (2026-11-11):** the user accepted the browser
+result and requested complete game adoption and main merge. All six refreshed
+native-camera PNGs and the recommended small centered crest are now in the
+round's game files, copied byte-identically from approved sources. Cameras and
+character standing points are unchanged. The [comparison](../../tools/character_creation_preview/architecture-refresh/README.md)
+keeps its archived before images. Browser acceptance is complete; native
+desktop/web testing remains open. The merge and local game sync are complete.
+
+**0.75.4 is on main, not pushed.** Player report from production (0.69.0): Return home
+to Lethariel failed every time ("Home arrival is unavailable"). An engine probe of all
+twelve innkeeper arrivals (seed 42, on 0.69.0 and on 0.75.3) found Lethariel's and
+Kezamba's authored side inside a two-high barrel stack of the longhouse template.
+`grug_home` now tries the socket's other sides (+x, −x, +z, −z) when the authored one
+is blocked, as the waystones do; a respawn waits on the chosen side. Compatible, no
+map reset. r69_home gains section I; the home,
+waystone and Expedition fixtures pass. GUI: Return home and a death with Lethariel
+as home.
+
+**0.75.3 is on main (squash, tag `round-75.3`), not pushed.** The user's request after
+a look at Highcourt: every capital's Expedition Registrar stands outside, a few nodes
+from the great hall door (king's hall, warlord hall, mausoleum), facing the street;
+the waystone stays the arrival point. **Map reset** (joins 0.75.0's; the capitals'
+point and build digests move). r70_cap now checks the hall door distance (≤ 6)
+instead of the waystone's; r36_w, r56_freeze_capitals and the upgrade check pass.
+GUI: the Registrar beside each great hall door.
+
+**0.75.2 / Round 75.2 is merged into main (one squash, tag `round-75.2`)
+and synced to local Luanti, not pushed.**
+The decoration material fix replaces transparent inventory sprites on solid
+props; the full material audit includes player items and city copies. Larger
+homes and profession-trainer buildings receive more details; royal halls use
+only non-colliding wall accents. **Map reset**, no migration step. Independent
+reviews are MERGE; all 344 fixtures, the 194-definition material audit and
+final engine boot passed. Evidence is in [the fix plan](../planning/round75.2-plan.md).
+Desktop/web GUI acceptance remains open. Not pushed; production unchanged.
+
+**0.75.1 is on main (squash, tag `round-75.1`), not pushed.** Two look fixes after the
+user's first walk through 0.75.0: the chimney-cap slab that hung over the workbench (the
+anvil and the other races' benches) in 21 workshop templates (22 slabs) is gone, and the human
+houses' closed shutters (10 templates in Dawnmere and Highcourt) are air. **Map reset**
+(joins 0.75.0's); the Round 56 town and capital identity pins moved; check.py, the
+strict city-decor audit (24 builders) and five town fixtures pass. GUI: walk Dawnmere's
+smithy and houses and Highcourt's bakehouse.
+
+**0.75.0 / Round 75 is merged into main as one squash commit, not pushed.**
+The tag `round-75` preserves the reviewed round history. It includes
+main's completed Round 74 commit `59da1e93`. The [Round 75 plan](../planning/round75-plan.md)
+records reviews, integration checks and the open desktop/web checklist. The
+[decoration design](../design/decorations.md) owns the rules; the
+[local art gallery](../../tools/r75_art/index.html) contains the 16 original motifs.
+**Map reset**, no migration step, joining the user's planned production reset.
+Production was not changed; no game sync or reset was run. Independent reviews
+and integration checks passed (344 fixtures covered, with eight updated legacy
+fixtures passing their targeted rerun). GUI acceptance and the final art choice
+remain open.
+
+**0.74.0 / Round 74 is complete on `round74` (every lane merged, lane D done); it lands on
+main as one squash commit (tag `round-74`), not pushed; the GUI test is open.** Play fixes
+after the user's play of 0.73.1 (rulings 2026-11-10,
+[plan](../planning/round74-plan.md)): a finished or cancelled Expedition **closes after 30 s**,
+the **Deserter's Mark lasts 2 minutes**, the **wall traps fire every 2 s** (QUICK); a self or
+support skill refused only by the action clock **waits and fires** at the first moment it
+may, a heal on the ally its press aimed at (CAST); the hotbar shows the action clock's block
+on free cast skills as the **cooldown's cover without a number** (4 steps) and the waiting
+cast as a **gold frame** (HUD, added at C1); **flight over the coastal belt** in front of the
+own and contested land (the whole belt, ruled variant A) and the **ride restored at login**
+for flyers, ground mounts and boats (MOUNT); the overworld evader **walks home along its own
+trail** through a new evade seam (TRAIL); every Expedition mob path goes over a
+**precomputed walk grid** per template, and a mob the grid cannot bring home is set home at
+once (NAV). **Compatible:** no step, no map reset; one new player meta key,
+`grug_mounts:logout_ride`. Reviews: CAST, MOUNT and HUD MERGE (CAST and MOUNT after fix
+rounds), TRAIL and NAV MERGE, QUICK by the coordinator. Fixtures: the new `r74_cast`,
+`r74_mount`, `r74_trail`, `r74_nav`, `r74_hud`; engine runs: MOUNT 1, TRAIL 2, NAV 5, HUD 2
+(captures); the round-end full run in the completion. **Open for the user:** the
+[GUI checklist](../planning/round74-plan.md#gui-checklist-desktop-and-web), 22 items
+([completion, numbers and decisions](../planning/round74-plan.md#completion-2026-11-10)).
+
+**0.73.1 is complete on main as one squash commit (tag `round-73.1`), not pushed; the GUI
+test is open.** The `character-creation` work (GPT-6 Astra, implemented and independently
+reviewed on its own branch from Round 71's code, provisional version 0.72.3) integrated by
+the coordinator on top of 0.73.0: native **character creation** (extracted window and camera
+modules, seven installed backgrounds, media provenance), **six royal halls** (lower throne,
+pillar bays, 216 gable gaps closed, ridge lowered), **five core gate arches**, **thin tables**
+in six guild templates, 153 further templates and the runtime table/counter builders,
+**Dawnmere's inn beds**, and a dedicated **`expedition_registrar` socket** at each capital's
+waystone plaza approach (main's Round 72/73 Registrar dialog, run lifecycle and finish/cancel
+kept; the guild clerk an ordinary resident). **Map reset**, no migration step. Evidence,
+reviews and the GUI checklist (8 items):
+[capital-polish implementation](../../tools/capital_polish_study/implementation/README.md);
+creation: [creation report](../../tools/character_creation_preview/README.md). Integration
+checks: see the squash commit.
+
+**0.73.0 / Round 73 is complete on main as one squash commit (tag `round-73`), not pushed;
+the GUI test is open.** The Expedition redesign from the user's test (rulings 2026-11-09 and
+2026-11-10, [concept](../planning/round73-expedition-redesign-concept.md)): all three
+Expeditions reshaped with **floor relief by stairs only** (uneven height maps, some rooms
+flat on purpose, boss rooms with relief), bent passages, **light from things that belong
+there** (no grid; 4 everywhere and 6 on 75 % of the fighting floor; dark stretches with a
+light in sight), **the ambush** (two candidates per Expedition, one armed, once per run,
+never the first fight), lava falls beside the fighting floor with every Expedition mob
+immune and walking round them, moss and litter, critters and particles; the template's
+`ambush`, `critter` and `particles` lines, the authoring helpers and **one shared proof**
+(14 rules) for every template; **bosses above 65,535 HP** no longer drop to 65,535 on the
+first hit (lane HPCAP, live since 0.72.0); **dragons 100,000 HP** for five players, **Kings
+and Generals ×3** for four, Auditor Nemm ×14 (lane BOSSHP, the user's picks).
+**Compatible:** no step, no map reset, no new saved state. Reviews: GAME, SEAM, SHIFT
+MERGE; TOOLS and MINT MERGE AFTER FIXES, then MERGE on the delta; HPCAP MERGE; BOSSHP
+MERGE. Fixtures: the new `r73_game`, `r73_tools`,
+`r73_hpcap`; round-end full run 336 passed, 0 failed; one engine run each for GAME, SEAM,
+SHIFT and MINT. **Open for the user:** the
+[GUI checklist](../planning/round73-plan.md#gui-checklist-desktop-and-web), 22 items
+([completion, numbers and decisions](../planning/round73-plan.md#completion-2026-11-10)).
+
+**0.72.2 is complete on main as one squash commit (tag `round-72.2`), not pushed; GUI test
+open.** The user's answers to the 0.72.1 checklist's item 7 (2026-11-10): the leader only
+ever sees one of Finish and Cancel, Finish green and Cancel red (a new `grug_core.ui`
+button role "confirm", a texture modifier over the danger plate, no new art); open
+Registrar windows and Expeditions tabs of the owner's players are redrawn once when Finish
+or Cancel starts the countdown and once at the end, never every second (the banner counts
+down), and only at the stone, so a left window never pops back. **Compatible:** no step, no
+saved state. Delta review MERGE after one fix round; full run 333/0; details in the
+[plan](../planning/round72-plan.md#0722-the-buttons-and-the-redraw-2026-11-10).
+
+**0.72.1 is complete on main as one squash commit (tag `round-72.1`, the first round under
+the one-commit-per-round rule), not pushed; the GUI test is open.** From the user's note
+that an Expedition could not be ended (rulings 2026-11-09): the party leader or solo owner
+**finishes** a run once `rewards_open` holds, at the Registrar, the Expeditions tab of every
+outside waystone and the Claim Stone, and the two stones inside (which now show a tab with
+the run's state and the leader's actions, never Enter); a 60 s countdown banner for everyone
+inside and late entrants, entry closed 10 s before the end, unlooted chests lost. **Cancel**
+works before that, in any state but preparing, after a confirmation, with the same countdown
+and entry refused at once; the canceller gets the **Deserter's Mark** (5 minutes, real time,
+saved in player meta `grug_expeditions:deserter_until`, shown as a status that survives death
+and relog; it blocks opening and entering). A solo owner who joins a foreign party gets it
+too unless the run was finishable; a lapse (10 minutes empty) gives none. **Compatible:** no
+step, no map reset; saved: one player meta key. Review MERGE (no findings to fix). Fixtures:
+the new `r721_finish` (103 checks) and the six it touches pass; the round-end full run in
+[completion](../planning/round72-plan.md#0721-finish-and-cancel-2026-11-09); two engine probes
+(the first found the countdown ending 0.5 s early, fixed). **Open for the user:** the
+[0.72.1 GUI checklist](../planning/round72-plan.md#gui-checklist-0721), 7 items.
+
+**0.72.0 / Round 72 is complete, merged into main and pushed (2026-11-08); the GUI test is
+open.** From player reports and the user's notes: **combat starts at
+targeting**; **placement** in combat refuses everything that blocks movement (ladders and liquids
+too), and nobody places a block into a body's cell, falling nodes tested where they land; **kings
+and bosses** reset on a boss floor computed once (no way or out of range, the one-way window with
+a Taunt within 3 s, 15 s without an attack); **guards out of reach** reset about 1.2 s after the
+first hit and go home untouchable; the **ranged kings** shoot and seek sight; **Bladecraft** shows
+the weapon of its last real attack; **no mounts or boats in enemy start towns and capitals**;
+**friend and foe nametags** (green and red, light for non-combat NPCs, the foe carrier only on
+demand; the Bedrock Sentinel an aggressive mob, every NPC and guard friend or foe, the user's
+rulings during the round). **Expeditions:** the two trap types in one module, Expedition mobs
+without the Undead truce or the shrinking aggro radius, the **Expeditions tab** on every outside
+waystone and the Claim Stone, the ordinary waystone window inside, the Registrar's letter at 20;
+**The Second Shift** (40–69, 4 players, Auditor Nemm) and **The Last Mint** (60–69, 4 players, the
+lava lake, Duewarden); all three templates shaped and dressed by GPT-6 Astra with flat floors and
+rooms no pack lets you walk round, proved per floor cell. **Compatible:** no step, no map reset;
+saved: player meta `grug_mail:letter_registrar`, two quests, two boss ids, name slots. Reviews:
+EXPMOBS, MOUNTS, RANGED, GUARDNAV, SHIFT, STYLE, PROOF and both ruling changes MERGE; TAGS, FIGHT,
+WAYTAB, PLACE MERGE AFTER FIXES; BLADECRAFT, TRAPS, BOSSRESET, MINT MERGE AFTER FIXES, then MERGE on
+the delta. 332 portable fixtures (twelve new); the round-end full run on `7b37aef0`: 326 passed, 6
+failed, all six pins no lane ran (BOSSRESET's retinue, the two new quests, a stub), updated by the
+coordinator and passing, so 332/0; engine after STYLE: The Second Shift 164, The Last Mint 185, The Stilled Seam 142
+PASS, 0 FAIL. Modelled runs: Second Shift 10.2 minutes at 40–60, Last Mint 10.1 at 60, Seam 8.6
+at 20. **Open for the user:** the
+[GUI checklist](../planning/round72-plan.md#gui-checklist-desktop-and-web), 50 items (the two
+questions answered by the user on 2026-11-08: a jump over a floor trap avoids it; riding is free
+16 or more nodes below an enemy town)
+([completion, numbers and decisions](../planning/round72-plan.md#completion-2026-11-08);
+[carry-overs](../planning/round72-plan.md#carry-overs)).
+
+**0.71.0 / Round 71 is GUI-accepted by the user on 2026-11-08 together with 0.70.0 (the whole
+Round 71 checklist) and pushed (2026-11-08).** **Expeditions:** repeatable group content in 100 generic slots beyond
+the map, the server clearing and writing a box for each run. The framework and the first
+Expedition, **The Stilled Seam** (levels 20–69; ore and gem follow the tier every ten levels,
+Anthracite and Jade at T2 to Abyssal Crystal and Diamond at T6; at most 3 players; optional
+quest): the Expedition Registrar with a tier and a level dropdown on the clerk's socket of all
+six guild houses; one owner, a player or a party, with every change of owner; a hard entry gate;
+a release after 10 minutes with nobody inside; the login, logout and restart rules; both
+waystones; no mounts or building; marked ore that a reset renews; packs pulled whole that never
+give up; a per-player chest behind the boss; an owner for the rules in
+[expeditions.md](../design/expeditions.md). GPT-6 Astra wrote the story, the outline of levels
+30–60 and the build plans of The Second Shift (40–69) and The Last Mint (60–69) for Round 72,
+with the user's decisions. **Compatible:** no step, no map reset; saved: player meta
+`grug_expeditions:origin` and `:logout_death`, boss counters, one quest. Reviews: SPIKE RELY
+AFTER CORRECTIONS; FRAME, UI, FOLLOW, RANGE MERGE; GUARD, MOBS, L20 MERGE AFTER FIXES; PACK MERGE
+AFTER FIXES, then MERGE; the integration fix and RANGE's fix MERGE. Integration found one real
+bug the fixtures missed (a pack's hits killing by falls), fixed. 320 fixtures on `a085f838`, 0
+failed; engine on `7e43e00e`: `r71_l20` 141 PASS, `r71_pack` 62 PASS; RANGE's T4 and T6 runs 82
+PASS, 0 FAIL. Modelled run 8.7 minutes at 20–60, 13.5 at 69 with players capped at 60.
+**Accepted:** the [GUI checklist](../planning/round71-plan.md#gui-checklist-desktop-and-web) on
+2026-11-08; the standing defaults stay (user, 2026-11-08); the chest's coins stay at factor 10
+(user). Round 72 takes the user's notes from the test: smaller, shaped rooms and a way back in
+from any waystone
+([completion, numbers and decisions](../planning/round71-plan.md#completion-2026-11-07);
+[carry-overs](../planning/round71-plan.md#carry-overs)).
+
+**0.70.0 / Round 70 is GUI-accepted by the user on 2026-11-08 (the whole Round 70 checklist) and pushed (2026-11-08).** From
+player reports and the user's notes: **sources** that really exist (Rock Salt on
+whole beaches, measured 93 / 156 per world on two seeds; Stormkelp up to 10 nodes
+from water with height limit 4, 176 / 163; Frost Melon 89 / 49 on new river hosts;
+Cocoa, Bamboo and Cane raised; renewal reads the same rules, shore rows four
+times the chance); the **Stonewright** in all six guild houses (rank-locked
+stone recipes, five ornamented stones, grinder, an always burning furnace with
+the shipped loop; the rule "no copper route into reputation" is gone); **castles**
+in form A Crownward in all six capitals with civic radius 56 from one source,
+throne 5 × 3 × 7, Lethariel's lake 14 north with no crossing, Kezamba's cenote 18
+north with one boardwalk; six **start towns** on the study with 13 × 13 waystone
+pockets; **wayposts** at road junctions, 6–13 stacks a world; **decorative plants**
+that drop themselves and can be placed; **varied crop growth** (160–240 s), the
+hoe's pickup, corn on the ground, **potions to the belt first**; the **death
+penalty** (10% durability, nothing after an enemy hit within 30 s, two HUD hints);
+**Kings** at 70, the **crown** at top + 10 with a cap of 70, **dragons** at 70 with
+30,000 HP, the rift boss's item level 60, and the **level malus**
+`max(0.25, 1 − 0.05 × gap)`. **Map reset,** the thirteenth, no step: SPAWN, the
+GUILD templates, TOWNS and the capitals; PLANTS, FARMFIX, DEATH and LEVELS are
+compatible, ART, DESIGN and CASTLE tools only. Reviews: every lane reviewed
+independently (MERGE or MERGE AFTER FIXES, fixed; the Astra lanes checked by Opus,
+FIX FIRST and passes); the capitals split into CAP0 and five lanes; ENDFIX took what
+the round-end gates caught. Merges from `0a7acf25` to `c998ea93`, then this
+documentation lane D. **313 portable fixtures** (seven new); on main `c998ea93`
+313 of 313, boot PASS; the full seed fleet on `ed771e28` 302 of 304, both failures
+fixed by ENDFIX and those two seeds rerun OK, not repeated under the user's CPU
+rule. **Accepted:** the
+[GUI checklist](../planning/round70-plan.md#gui-checklist-desktop-and-web) on 2026-11-08
+([completion, numbers and decisions](../planning/round70-plan.md#completion-2026-11-07);
+[carry-overs](../planning/round70-plan.md#carry-overs)).
+**The joint GUI test of 0.57–0.66 is still pending.** **Production runs 0.65.0;** an
+update to 0.70.0 crosses this one map reset and runs the steps 0.67.0 and 0.69.0.
+origin/main is `5a8909a0` (0.71.0, with 0.70.0), pushed on the user's word on 2026-11-08.
+
+**0.69.0 / Round 69 is GUI-accepted by the user on 2026-11-04 (the whole Round 69 checklist) and pushed (2026-11-04).** From
+player reports and the user's notes: a **Trash box** in the Inventory tab
+(variant A: destroyed at once, Undo for the last one until the next discard
+or logout, bound items refused); **respawn goes to the home**, Claim Stone
+included and also without fuel, falling back to the innkeeper and the start
+with the hold on (Round 25 ruling 25 retired); **exact "N damage"** on every
+damage skill, Strike, Hamstring and Retort's plain swing included, and in the
+talent tree, also for unlearned skills, through the same text as the hotbar;
+**rings and a source line** for the 14 quests that name their drop; the
+**Crafting tabs** in the order Basic, Cooking, Alchemy, Primary 1, Primary 2;
+and the six **camps under construction** in GPT-6 Astra's design A Wallwright
+(the user's pick; the artist recommended B). **Migrate, no map reset:** the
+step 0.69.0 only sets a world marker; the game rewrites each camp's fixed box
+online and reads it back before the key goes, the user's documented exception
+([upgrade contract §5.9](../technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
+UI, HOME, SKILLS and QUESTMAP are compatible, CAMPART is tools only. Proof on
+a real 0.68.0 world, seed 42: 46 checks, 0 failed; 0 of 5290 box cells differ
+from a new world in all six camps (measured); ruling 6's fallback was not
+needed. Reviews: QUESTMAP, HOME, SKILLS MERGE; UI MERGE AFTER FIXES (one doc
+line); CAMP MERGE AFTER FIXES (a neighbouring chunk could undo a write, hence
+the read-back), then MERGE. Merges `81f252c7`, `410a8639`, `449ac5a1`,
+`6c79288d`, `325737b2`, `67391a4b`, then this documentation lane D. 305
+portable fixtures (five new); the round-end run on main: 304 of 305 before
+lane D (only `r37_dc`, waiting for this CHANGELOG entry), `r37_dc` passing
+after it. **Open for the user:** the
+[GUI checklist](../planning/round69-plan.md#gui-checklist-desktop-and-web), first
+**a real mouse drag into the Trash box**, which no lane or reviewer has run.
+The user keeps the straw mats in Wallwright's tents (2026-11-04). A follow-up
+folded into 0.69.0: the offer dialogue names the source and reads the giver's
+variant, and Glassroot's `border_packets` asks for the Packet "from those
+fletchers"; idle aggressive mobs walk away from an active Claim Stone's area
+([completion, numbers and decisions](../planning/round69-plan.md#completion-2026-11-04);
+[carry-overs](../planning/round69-plan.md#carry-overs)).
+**The joint GUI test of 0.57–0.66 is still pending.** **Production runs
+0.65.0;** an update to 0.69.0 crosses no map reset and runs the steps 0.67.0
+and 0.69.0. origin/main is the 0.69.0 release (pushed on the user's word,
+2026-11-04).
+
+**0.68.0 / Round 68 is GUI-accepted by the user on 2026-10-31 (the whole Round 68 checklist) and pushed (2026-10-31).** Text
+is readable in the world (the user's wish after the Round 67 acceptance):
+a new CORE mod `grug_text` turns text into one `[combine` texture of
+VoxeLibre's CC0 glyphs (431 files, credited) and shows it on one unsaved
+text entity per written surface, recreated by an LBM; the wall signs show
+4 lines of 15 characters on walls, floors and ceilings, on calm new boards
+(GPT-6 Astra's pass 2, dark ink on both), and chest labels 3 lines of 13
+on the front below the lock, every tier; the new ITEMS mod `grug_signs`
+adds the Standing Sign (turns freely, 4 × 15), the Waypost (the arrow
+along the placer's look, 14 characters on both sides, stackable) and the
+two-node Notice Board (four steps, 7 × 30), with recipes from the wooden
+wall sign and sticks (the user's art pick: standing sign A, waypost B,
+notice board B). Lanes TEXT and SIGNS each reviewed MERGE without a fix
+round, ART checked by the coordinator; merges `5c482606`, `48a23459`,
+`0fb2ab7f`, then this documentation lane D. **Compatible**, no step: the
+text is already in node meta (`text`, `grug_label`), the entities are not
+saved (two-boot LBM proof), the new nodes keep `text`. After the merges
+the user dropped the hover text of signs and chest labels (the text is on
+them now); old ones are cleared once per block by an LBM, still compatible
+([follow-up](../planning/round68-plan.md#follow-up-after-the-merges-2026-10-31)).
+Further follow-ups, all compatible and in 0.68.0: wood set B on every sign
+and the notice board drawn in two halves (cracks on both, one drop when the
+ground goes), then GPT-6 Astra's icons for the metal bars, the goldsmith
+settings and the gems with their storage blocks (the user's picks: bars A,
+settings B, gems D), the metal stairs and slabs taking the new block faces
+([follow-ups](../planning/round68-plan.md#follow-up-wood-set-b-and-the-board-in-two-halves-2026-10-31));
+300 portable fixtures after them, all passing.
+299 portable fixtures (two new); before this lane only `r37_dc` failed
+(waiting for the CHANGELOG entry); the round-end run on main: 298 of 299
+before lane D, `r37_dc` passing after it. **The
+user's answers:** chest labels stay as they are (three lines, no plate);
+the 431 glyph files stay, the web join time goes into the checklist
+([completion, numbers, decisions and GUI checklist](../planning/round68-plan.md#completion-2026-10-31);
+[carry-overs](../planning/round68-plan.md#carry-overs)).
+**The joint GUI test of 0.57–0.66 is still pending** (0.67 and 0.68 are
+accepted on their own). Production runs **0.65.0**; updating it to 0.68.0
+crosses no map reset and runs only the 0.67.0 step. origin/main is
+the 0.68.0 release (pushed on the user's word, 2026-10-31).
+
+**0.67.0 / Round 67 is GUI-accepted by the user on 2026-10-31 (the whole Round 67 checklist); pushed up to `b73086ec` (2026-10-31), the heraldry follow-up after it waits for the next push.** The group play
+session's notes (2026-10-28): the "Party & PvP" tab is now **Social** (one
+party box with the pending invitations or the current party, the PvP
+section below it, an Online Players table of both factions with faction,
+class, race and level icons, favourites and an Invite button, refreshed on
+change at most once per 2 s per viewer) and an invitation box on the HUD;
+the map window at 90 % of the screen with the markers at their true place
+and 0.8 of their size (26 px at 1080p; two thirds, 21 px, before the user's first look), flat layer buttons,
+the 1 s party check, a compact quest list and quest HUD both story first,
+then by level; flying underground with a room check and the vertical
+flight speed per tier (8 and 12); nametags only on NPCs with a function
+and on mobs that are fought (up to 1124 carriers fewer); wide mobs spawn and
+scale only where their box fits, and a stuck one is removed when nobody
+watches; one crafting row per output with a variant switch, the stairs
+and stem back-recipes and the metal rods removed (676 → 593 recipe
+records), the plain Craft button with "×N per craft", Details by the star,
+a Help → Materials page, coal 40 s and anthracite 60 s, the Creative row
+only on Creative pages; chests with Sort and a label, and chests, locked
+chests, bookshelves and vessels shelves in three tiers (32 / 64 / 96 slots,
+direct recipes and an Upgrade button, scrolling lists; shelves grow from
+16 to 32). Race icons and tier textures by GPT-6 Astra (the user's pick:
+race A, Steel A, Abyssal B; Abyssal switched from A after the merges);
+new faction heraldry after the merges (hart and boar, Astra's pass 4, H1 + K1;
+merge `6106379e`). Lanes MAP (MERGE), WORLD, SOCIAL, CRAFT and
+CONTAINERS (MERGE after one fix round each, delta reviews MERGE), ART
+checked by the coordinator; merges `adffe004`, `bf0ecde0`, `a7a0f162`,
+`502f3ef0`, `3e8f90c1`, `b1f6314e`, then this documentation lane D.
+**Migrate:** step 0.67.0 turns every metal rod a character holds
+(inventories of offline characters, craft jobs, Claim Stone belongings,
+mail) into bars, two rods to one bar rounded up; rods in chests on the map
+stay unknown items (accepted). Everything else is compatible (new keys
+`grug_parties:favorites`, `grug_label` and the mob field
+`_grug_visual_scale`; shelves grow lazily). All 297 portable fixtures
+pass. **Accepted by the user for the first look:** underground Giant
+Spiders and Giant Rats spawn on about a tenth of the floor spots they had
+([completion, numbers, decisions and GUI checklist](../planning/round67-plan.md#completion-2026-10-30);
+[carry-overs](../planning/round67-plan.md#carry-overs)).
+**The joint GUI test of 0.57–0.66 is still pending** (0.67 is accepted on its own).
+Production runs **0.65.0** (user, 2026-10-31; the older "0.55.1" lines
+below are history); updating it to 0.67.0 crosses no map reset (the last
+is 0.63.0) and runs only the 0.67.0 step. origin/main is `b73086ec` (0.67.0
+without the heraldry follow-up). Only the user pushes.
+
+**0.66.0 / Round 66 is merged locally; not pushed.** Polish from the
+user's notes after playing 0.65.0: shift-clicking a two-hander swaps both
+hands (the offhand piece goes to the bag; drag and drop still refuses, now
+naming the shift-click), the blocked offhand shows the dimmed two-hander,
+equip refusals show for 6 s on the Character page, the fishing rod is a
+Basic recipe from the start; a read-only Sent tab in the mailbox (text
+copies with attachment names, 50 kept, 30 days); the form viewport grows to
+two thirds of tall screens and form text grows with it (4K: window 45 % →
+60 % of the height, text ×1.333; 2560×1440 and below byte-identical); map
+and minimap markers sized by the drawn map (16–32 px; a 2400×1080 phone
+80 → 32–33 px); Accord war camps blue and camp-site cloth in faction colour;
+faction-coloured creation buttons; a hammer for Smite and Final Word and a
+book for Censure (GPT-6 Astra's art, the user's picks Hammer C and Book Q
+after six passes). Lanes MAIL, EQUIP, UI, MAP and FX each reviewed MERGE
+with no fix rounds, ART checked by the coordinator; merges `3ed99644`,
+`dae8ccd1`, `14f08b05`, `607545bf`, `65e74a4d`, `ef368b95`, then this
+documentation lane D. **Compatible:** one new mod storage key
+`sent:<name>` (missing reads as empty), three map and two particle
+textures, the map cache key unchanged, no step. All 291 portable fixtures
+pass. **Open for the user:** desktop HUD scaling above 1 now only caps the
+markers (1080p at HUD 2: 64 → 32 px), and the first-look defaults (notice,
+dim level, button strengths, symbol sizes and timing)
+([completion, numbers, decisions and GUI checklist](../planning/round66-plan.md#completion-2026-10-28);
+[carry-overs](../planning/round66-plan.md#carry-overs)).
+**The joint GUI test of 0.57–0.65 is still pending; 0.66 joins it.**
+Production is still **0.55.1**; origin/main is `7a68e871` (0.65.0 and its
+status note). Only the user pushes.
+
+**0.66.1 / lane PERF is merged locally** (2026-10-29, main `667b3d05`, on
+0.66.0; **compatible**, no step: nothing saved is read or written; review
+MERGE, its notes in the [BACKLOG](backlog-through-round-79.md#0661--performance-log-lines-carry-overs);
+not pushed). The hosting platform's performance
+dashboard reads the game's own numbers: the new CORE mod `grug_perf` writes
+`[GRUG-PERF]` lines (contract v1 in the [module
+guide](../technical/module-guide.md#performance-log-lines)): a `minute` line
+(step interval p50/p95/max from the globalstep `dtime`, which the engine
+leaves unclamped, spikes over 250 ms, max lag, players with round trip and
+jitter, objects, entities, the minimap's cost, the Lua heap, the profiler
+flag), `spike` lines (at most one per 10 s) and, with `profiler.load` and
+the new setting `grug_perf_profile_minutes` (0 = off), a JSON profile saved
+through the engine's own `/profiler` command every N minutes with a
+`profile_saved` line. The monitor is on by default (`grug_perf_monitor`).
+**Measured** (seed 42, Dur Brannoc forceloaded without players, 469 active
+entities, 120 s windows, 4 boots; numbers are comparisons): the recorder
+costs 2.3 ns per step (LuaJIT, the real code), timed in place with its two
+clock calls 0.5–0.8 µs per call; once a minute the summary takes about
+83 µs, the census 3–4 µs (no players) and the line 1.1 µs. The engine
+profiler: Server thread CPU 2.40 s (off) against 2.45 s and 3.17 s (on)
+per 120 s, about 1.8 ms per step off, so up to about 0.6 ms more per step;
+its own estimate is 0.5–0.9 µs per instrumented call and 8–32 µs per step
+for its sampler; step intervals unchanged (p50 90.5 ms, p95 91 ms). New
+fixture `tools/r661_perf`, probe `tools/r661_perf/run.sh`.
+**GUI/admin checklist:** the two settings in the hosting UI and the main
+menu ("Server performance"); a server log shows a `minute` line about a
+minute after the start; with `profiler.load = true` and
+`grug_perf_profile_minutes = 1`, a `profile-*.json` in the world folder and
+a `profile_saved` line each minute.
+
+**0.65.0 / Round 65 is pushed** (2026-10-27, origin/main `8609d4c2`, with 0.64.0). Quest lists without
+locked rows, one acceptance rule and a boxed quest HUD, from the user's
+first play session on the reworked quests: a quest is accepted from its
+quest level − 2 (`min_level` is gone from quest data; 317 quests open
+earlier, one later), the giver dialog lists only ready, acceptable and
+in-progress quests sorted by status with one grey hint line "More quests at
+level N." (first-visit rows 632 → 260), the silver "!" shows only when a
+giver's next quest is one or two levels away, and the quest HUD draws one
+transparent box per tracked quest (title, `[Lv N]` in the difficulty
+colour, objective), sorted by quest level. Lanes QUEST (MERGE) and HUD
+(MERGE, a Low finding fixed, delta review MERGE), merges `c0be940a` and
+`6a9db45a`, then this documentation lane D. **Compatible:** no saved state,
+map or world generation change, no step. All 286 portable fixtures pass.
+**User decision (2026-10-27):** the four level-41 fortress quests open at
+39 like every other quest (PvP ruling 15's "from 40" yields to the uniform
+rule)
+([completion, numbers, decisions and GUI checklist](../planning/round65-plan.md#completion-2026-10-27);
+[carry-overs](../planning/round65-plan.md#carry-overs)).
+**The joint GUI test of 0.57–0.64 is still pending; 0.65 joins it.**
+Production is still **0.55.1**; origin/main is 0.65.0. Only the user pushes.
+
+**0.64.0 / Round 64 is pushed** with 0.65.0 (2026-10-27).
+The shared 32px icon set, separate markers in both maps and bounded
+alpha-aware placement are implemented. Terrain resolution stays unchanged.
+Independent review: MERGE; all 284 portable fixtures pass across the full run
+and its targeted rechecks, release/art gates and the isolated smoke boot pass.
+Runtime commit `3bed24b1`, merge `4b17b639`. The main runtime is byte-identical
+to the reviewed lane. Desktop/web GUI acceptance is pending; costs, residual
+overlap and the checklist are in the [Round 64 completion](../planning/round64-plan.md#completion-2026-10-27).
+This compatible update adds no reset or migration and does not change the
+pending production deployment requirements below. Only the user pushes.
+
+**0.63.0 / Round 63 is published on main; full GUI acceptance is pending**:
+the approved mining-camp redesign and faction heraldry
+([plan and GUI checklist](../planning/round63-plan.md)), plus the
+[UI polish](../planning/ui-polish-implementation.md). The user explicitly
+authorized merging and pushing on 2026-10-27, superseding the earlier
+commit-only authorization. The reviewed UI runtime at `32379f98` was merged
+by fast-forward; the publication includes the documentation follow-up.
+Local Luanti is synced; technical gates and
+independent review pass, including the 304-seed fleet. The first GUI check
+found undersized animated meshes; the compatible scale/transparency art fix
+is implemented and locally synced (details in the Round 63 plan). GUI
+acceptance is pending.
+Map reset, no migration; joins the planned
+production reset. Production is still **0.55.1** (user, 2026-10-26).
+
+The class rework ([delivery plan](../planning/class-redesign/delivery-plan.md),
+planned 2026-10-12 to 2026-10-20 in the
+[class redesign package](../planning/class-redesign/README.md)) is built:
+round F in Round 52, round K in Round 53 below, with its fix round 0.53.1.
+Round 54 followed with the armor redesign (0.54.0), then the particle look
+pass (0.54.1); 0.53.0 to 0.54.1 were pushed together on 2026-10-21
+(origin/main `abfb30ce`); the user accepted their GUI checklists
+(2026-10-21). Round 55 (0.55.0) puts the offhand into the model; 0.55.1
+adds the admin debug command `/prof`. Both passed the user's GUI test, were
+pushed on 2026-10-21 (origin/main `52996c44`) and 0.55.1 runs in
+production. Round 56 (0.56.0) takes the fixes from the playtest of
+2026-10-21 and freezes the town buildings into editable building
+templates; 0.56.1 adds the picked hood art (its finish step). Both passed
+the user's GUI test (two small findings go to Round 57's fix lane) and were
+pushed on 2026-10-23 (origin/main `2b4a3228`). Round 57 (0.57.0) builds
+the crafting window (the queue, layout C, recipe details, favourites,
+recursive Basic unlocks), the quest foundation and the six start zones
+rebuilt on it; it was **pushed on 2026-10-23** (origin/main `69481ed1`) without
+a GUI test: the user tests 0.57 and 0.58 together after Round 58.
+Round 58 (0.58.0, a map reset) builds the Miner's Guild and the Round 56
+town fixes; Round 59 (0.59.0, a map reset) reworks the quests of levels
+11–20 and opens chapter 1 of the story arc; Round 60 (0.60.0, a map reset)
+reworks the quests of levels 21–30 and the six capitals, adds chapter 2 and
+re-places the Alchemy herbs by level band; 0.60.1 (compatible) merges the
+UI modernization, a new look for every window; Round 61 (0.61.0, a map
+reset) reworks the quests of levels 31–40 and adds chapter 3; 0.61.1
+(compatible) refreshes the vendor, quest-giver and other service windows;
+Round 62 (0.62.0, a map reset) reworks the front 41–60 and gives the main
+line its story layer, which completes the quest rework of levels 11–60,
+and makes every bag four slots larger. They are pushed since
+0.63.0 (2026-10-27) and still wait for the user's joint GUI test of 0.57 to 0.62, which covers the UI
+too ([checklist](../planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
+Next: that GUI test, then the production deploy with one map reset
+(0.57.0 → 0.62.0; its starting list in the
+[deploy plan](../planning/deploy-plan.md); [ROADMAP](../../ROADMAP.md)). The
+[Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
+private claude.ai page, Round 50 ART) shows the planning state with the
+user's notes.
+
+- **Round 62 "The front 41–60 and the main line's story layer" complete**
+  (2026-10-25, version 0.62.0, **map reset**, no migration step;
+  [plan, decisions, numbers and the classification](../planning/round62-plan.md#completion-2026-10-25);
+  its GUI items are item 9 in (A) and items 107–122 in (B) of the
+  [joint checklist](../planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 to 0.62.0 wait for the user's joint GUI test of 0.57 to 0.62; the
+  production world moves 0.57.0 → 0.62.0 across one reset in the deploy
+  that follows. From main `99d5bb73` (the plan, with the survey, the plan
+  review and the user's answers): BAGS (`548f476f`), TEMPLATEFIX
+  (`c2b4efbf`), the bag-size comment (`b1c6462d`), FRONTQUESTS
+  (`c41bfcdf`) and FRONTTEXT with TEXTREVIEW's fixes and picks
+  (`73febfda`) merged, then this documentation lane D. GPT-6 Astra drafted
+  the main line's story layer (CHAPTER4, the user's picks K1–K13 all "A",
+  checked by CHECK4) and wrote the 136 text fields (FRONTTEXT, with the
+  Opus text review's three must-fixes and six proposals, all picked).
+  BAGS (MERGE AFTER FIXES, a test-only fix), TEMPLATEFIX (MERGE) and
+  FRONTQUESTS (MERGE) independently reviewed by Opus. No art lane: no new
+  object or quest item. Main has 279 portable fixtures (2 new). The
+  declaration is
+  `{"schema": 3, "version": "0.62.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0", "0.62.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped; the bags need no step.
+  - **The front 41–60 (FRONTQUESTS, FRONTTEXT):** the fourteen files left
+    (ten `.front`, four Battlegrounds) flagged reworked, so all 48 quest
+    files are; 123 → 120 front quests (390 shipped; 45 ids went, 42 came);
+    the free front at 25 % (The Accord) and 18 % (The Throng) kill
+    objectives, 4–6 mob names per front zone and faction; ten shared
+    front quests on `border`, departures to Dorrin (45), Thorga (42),
+    Borin and Nalo (50), Eriath (51), Vaska (52) and Ossa (53), the two
+    group quests at 50 shared and optional, the Throng's island pair
+    (Krait, Last-Offering), T5/T6 rewards per faction and band with the
+    reward budget per zone and level band, eight new quest places
+    ([quests.md](../design/quests.md#the-front-4160)); the questing
+    share of 40→50 is 72–87 % and of 50→60 55–61 % solo, as the user
+    accepted.
+  - **The main line's story layer:** the r36 spine (17 / 14 steps) is the
+    story path, `story` throughout and chained only on itself, each step
+    with a completion; the opener at 41 requires nothing; The Throng's
+    Chirr follows Huskell; the finals keep their fixed last lines and give
+    a weapon choice.
+  - **Templates (TEMPLATEFIX):** Kezamba's moot-house door and the
+    Lethariel mere shrines' inside points; the known-defects list is
+    empty, `check.py` 17 → 11 warnings (all checker false positives).
+  - **Bags (BAGS):** 8 / 12 / 16 / 20 slots instead of 4 / 8 / 12 / 16,
+    prices and recipes unchanged; each join grows an equipped bag's list
+    with its items kept
+    ([inventory_equipment.md §3](../design/inventory_equipment.md#3-bags-classic-mmo-model-lott-implementation-pattern)).
+  - **Gates:** each code lane's full fixture run (BAGS 277/0, TEMPLATEFIX
+    278/0, FRONTQUESTS 279/279, FRONTTEXT 279/279) and FRONTQUESTS'
+    `quick` fleet (100/100); this lane's `r37_dc`, `check_upgrade.py`
+    (against origin/main 0.57.0, with the map reset entry),
+    `check_fresh_server.py`, `validate.py --game`, the full fixtures, a full
+    seed fleet on main and one boot (the
+    [round-end gates](../planning/round62-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round62-plan.md#carry-overs)).
+- **Refreshed service dialogs merged** (2026-10-25, version 0.61.1,
+  **compatible**, no saved state, no reset;
+  [review and receipts](../planning/ui-dialog-review.md)): the Atlas 03
+  service windows (views 18–34: vendor cards with small icons and direct
+  Buy, the quest list beside its text with a reward pane, mail, trainers,
+  services, creation and welcome) and the typography audit (crafting,
+  Map & Quests half and half, gather sources by zone band), plus the tab
+  hover correction (the user's UI lane `ui-tab-hover` by GPT-6 Astra; Opus
+  review MERGE AFTER FIXES, the fixes keep the vendor's scroll place and
+  restore one-line zone labels, delta review MERGE) merged into main
+  `e17c731d`, then this documentation lane UI-D2. **Not pushed**; its GUI
+  points are items 97–106 of the joint checklist. The declaration is
+  `{"schema": 3, "version": "0.61.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`
+  ([carry-overs](backlog-through-round-79.md#ui-dialogs-carry-overs)).
+- **Round 61 "The story arc's third chapter and the quest rework of levels
+  31–40" complete** (2026-10-25, version 0.61.0, **map reset**, no
+  migration step;
+  [plan, decisions, numbers and the classification](../planning/round61-plan.md#completion-2026-10-25);
+  its GUI items are part of the
+  [joint checklist](../planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 to 0.61.0 wait for the user's joint GUI test of 0.57 to 0.61.
+  From main `c3861491` (the plan, with the survey, the plan review and the
+  user's answers): BANDQUESTS (`309732f9`), STORYART-SHIP (`62f979cd`) and
+  BANDTEXT with TEXTREVIEW's picks (`1a5aae56`) merged, then this
+  documentation lane D. GPT-6 Astra drafted the chapter (CHAPTER3, the
+  user's picks K1–K13 all "A", checked by CHECK3), painted the storm vessel
+  and the Runner's Packet icon (drop 03, both P1 picked) and wrote the 121
+  text fields (BANDTEXT, with the Opus text review's seven proposals, all
+  picked). BANDQUESTS independently reviewed by Opus (MERGE AFTER FIXES;
+  its data-only fix, the art and the text picks checked by the
+  coordinator). Main has 277 portable fixtures (1 new). The declaration is
+  `{"schema": 3, "version": "0.61.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped. One known edge, accepted: an
+  active "Rattle's Bad Arithmetic" (`bannerbreak_ramp_03`) saved before
+  0.61.0 may read ready without Rattle's kill.
+  - **The band 31–40 (BANDQUESTS, BANDTEXT):** the six contested zones
+    flagged reworked, the two contested base files whole with their 15
+    main-line steps marked `story`; 60 → 50 quests (393 shipped), all free
+    play outside the story, five shared quests on the hosts' line
+    `border`, kill objectives 68 % → 25 % (per zone 56–65 % → 25–38 %),
+    3–5 mob names per zone, six armor pieces per faction and a weapon on
+    each zone's solo quest at item levels 31–40, six new quest places and
+    four uses at the mining camps' loading grounds, four leaders retired,
+    one optional group quest per zone
+    ([quests.md](../design/quests.md#the-band-3140)); the questing
+    share of 30→40 is 55–62 % (before 70–86 %), as the user allowed.
+  - **Chapter 3 (BANDQUESTS):** A5 at 34 (Toren Waterbarrel, the
+    Ashenward Broken Load, Audra Wainholt) and T4 at 35 (Drek Rampbinder,
+    the Bannerbreak Scattered Load, Greda Stonehaul), A6 at 39 and T5 at
+    40 after the free camp raid to Nella Hedgeward and Yarra
+    Standardmender, who point to the Warmaster; T3's outlook names Drek.
+  - **The group-quest rule** (the user, 2026-10-25): elite group quests
+    below level 51 are always optional
+    ([quests.md](../design/quests.md#group-quests)).
+  - **Gates:** BANDQUESTS' and STORYART-SHIP's full fixture runs (277/0)
+    and `quick` fleet (100/100); this lane's `r37_dc`, `check_upgrade.py`
+    (against origin/main 0.57.0, with the map reset entry),
+    `check_fresh_server.py`, `validate.py --game`, the full fixtures, a full
+    seed fleet on main and one boot (the
+    [round-end gates](../planning/round61-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round61-plan.md#carry-overs)).
+- **UI modernization merged** (2026-10-25, version 0.60.1, **compatible**,
+  no saved state, no reset; [plan and receipts](../planning/ui-modernization-plan.md)):
+  the shared theme, navigation and form layouts (the user's UI lane by GPT-6
+  Astra; the implementation review MERGE, the fidelity pass's delta review
+  MERGE AFTER FIXES, the fixes' delta review MERGE) merged into main
+  `83f1afd3`, then this documentation lane UI-D. The user picked the seven
+  theme PNGs and the ten tab icons and accepted the quiver total beside the
+  slot and the compact header. **Not pushed**; its GUI points are items
+  67–81 of the joint checklist. The declaration is
+  `{"schema": 3, "version": "0.60.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`
+  ([carry-overs](backlog-through-round-79.md#ui-modernization-carry-overs)).
+- **Round 60 "The story arc's second chapter and the quest rework of levels
+  21–30" complete** (2026-10-24, version 0.60.0, **map reset**, no
+  migration step;
+  [plan, decisions, numbers and the joint GUI checklist](../planning/round60-plan.md#completion-2026-10-24)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0, 0.59.0 and 0.60.0 wait for the user's joint GUI test of 0.57,
+  0.58, 0.59 and 0.60. From main `e3ca411e` (the plan; its rulings
+  `4a279ae4`, `f1d1f21b`, `56513c2a`, `0ab3aea0`): HERBS (`4007a7e8`),
+  BANDQUESTS (`b235da41`), CAPITALS (`7cceabee`), STORYART-SHIP
+  (`b4792a7c`) and BANDTEXT with TEXTREVIEW's picks and the flag fix
+  (`b63318dd`) merged, then this documentation lane D. HERBS came from the
+  user's Alchemy question while planning; the cooking survey added two crop
+  fixes to it; drop 02b (the Captain's Orders icons), STORYART-SHIP and the
+  flag fix were added during the round. GPT-6 Astra drafted the chapter
+  (CHAPTER2, the user's picks K1–K13 all "A", checked by CHECK2), painted
+  the four quest objects and three item icons (STORYART, all picked P2) and
+  wrote the 291 text fields (BANDTEXT, with the Opus text review's 13
+  proposals, all picked). Every code lane independently reviewed by Opus
+  (HERBS, BANDQUESTS and CAPITALS MERGE; their data- and text-only fixes,
+  CAPITALS' rebase, the text picks and the flag fix checked by the
+  coordinator). Main has 275 portable fixtures (3 new). The declaration is
+  `{"schema": 3, "version": "0.60.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped.
+  - **The band 21–30 (BANDQUESTS, BANDTEXT):** the eight zones flagged
+    reworked, 84 → 71 quests, all free play outside the story, six shared
+    quests, kill objectives 58 % → 19 % (per zone 50–62 % → 17–27 %), about
+    three mob names per zone, the reward pattern at item levels 21–30,
+    three town places and seven open quest places
+    ([quests.md](../design/quests.md#the-band-2130)); quest-only items
+    are soulbound and wait for room before they drop.
+  - **The capitals and chapter 2 (CAPITALS, BANDQUESTS):** the six capital
+    files flagged reworked, 64 → 47 quests (403 shipped), chapter 1 kept;
+    A3 and T2a at 24 from the Frostbarrow and Ossuary camps' named foremen,
+    A4 and T3 at 29 at the Miner's Guild houses of Dur Brannoc and Nhal
+    Veyr; the Alchemy quest at the first capital visit
+    ([quests.md](../design/quests.md#the-capitals)). The questing
+    share of 20→30 is 54–81 % (before 78–103 %), as the user allowed.
+  - **Herbs (HERBS):** each Alchemy tier's herbs grow in its own level band
+    (1–20 in every race's zones, 21–40 on each faction's half), Pumpkin in
+    all six home zones and Frost Melon on The Throng's half
+    ([world_zones.md §11](../design/world_zones.md#11-resource-loot-and-poi-budgets));
+    about +7–10 % mapgen CPU on herb-zone chunks, accepted by the user.
+  - **Gates:** each code lane's full fixture run (273–275/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.57.0, with the map
+    reset entry), `check_fresh_server.py`, `validate.py --game`, the full
+    fixtures, a full seed fleet on main and one boot (the
+    [round-end gates](../planning/round60-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round60-plan.md#carry-overs)).
+- **Round 59 "The story arc's first chapter and the quest rework of levels
+  11–20" complete** (2026-10-24, version 0.59.0, **map reset**, no
+  migration step;
+  [plan, decisions, numbers and the joint GUI checklist](../planning/round59-plan.md#completion-2026-10-24)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 and 0.59.0 wait for the user's joint GUI test, now of 0.57, 0.58,
+  0.59 and 0.60. From main `567669ee` (the plan): QSYS3 (`138e8e33`), BANDQUESTS
+  (`5b536a68`), STORYQUESTS (`bc415821`), BANDTEXT with TEXTREVIEW's picks
+  (`8f41fb53`) and STORYART-SHIP (`b36f9f70`, `8f84be22`) merged, then this
+  documentation lane D. STORYART-SHIP was added during the round (the
+  picked art ships from the repository). GPT-6 Astra drafted the chapter
+  (CHAPTER1, the user's picks K1–K16 all "A", checked by CHECK1), painted
+  the four quest objects (STORYART, picked) and wrote the 168 text fields
+  (BANDTEXT, with the Opus text review's 20 proposals, all picked). Every
+  code lane independently reviewed by Opus (QSYS3 and BANDQUESTS MERGE
+  AFTER FIXES, QSYS3's fix delta-reviewed, BANDQUESTS' data-only fix
+  checked by the coordinator; STORYQUESTS MERGE, its rebase checked by the
+  coordinator; the generators' `--check` step delta-reviewed). Main has
+  272 portable fixtures (3 new). The declaration is
+  `{"schema": 3, "version": "0.59.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped.
+  - **The band 11–20 (BANDQUESTS, BANDTEXT):** the six zones flagged
+    reworked, 83 → 59 quests (13 offered per zone, three shared), all free
+    play, kill objectives 60 % → 21 %, mob names per zone 8–10 → 3, the
+    reward pattern at item levels 11–20, four use objects, quest places in
+    four bandit camps and two spawn files
+    ([quests.md](../design/quests.md#the-band-1120)); the questing
+    share of 10→20 fell to 54–61 %, which the user kept.
+  - **Chapter 1 (STORYQUESTS):** four story quests (433 shipped): the
+    envoys at 19 to the Miner's Guild leader of their capital, the leaders
+    at 20 to a town place in the capital and back; six leader hubs, the
+    envoys' common line ([quests.md](../design/quests.md#chapter-1-in-the-capitals),
+    [settlements.md](../design/settlements.md#chapter-1s-town-places-round-59)).
+  - **The quest system (QSYS3):** `E-free-follow-ups` per faction, the
+    quest log's variant zone, the town place kind on settlement sockets
+    (`socket:<settlement key>/<socket id>`, role `quest_place`)
+    ([quests.md](../design/quests.md) "Town places").
+  - **Gates:** each code lane's full fixture run (270–272/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.57.0, with the map
+    reset entry), `check_fresh_server.py`, `validate.py --game`, the full
+    fixtures, a full seed fleet on main and one boot (the
+    [round-end gates](../planning/round59-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round59-plan.md#carry-overs)).
+- **Round 58 "The Miner's Guild and the town fixes" complete** (2026-10-24,
+  version 0.58.0, **map reset**, no migration step;
+  [plan, decisions, numbers and the joint GUI checklist](../planning/round58-plan.md#completion-2026-10-24)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 waits for the user's joint GUI test, now of 0.57 to 0.60.
+  From main `616112ab` (the plan) and `a9191497` (the skeleton note): GUILDSPEC
+  (`734a914e`), CAMPS (`5d2444cd`), CONSUME (`a2b8386a`, the Ore Sense
+  ruling `0edc5faa`, `a42f91b6`), REP (`e8159d96`), HALLS (`0713d49a`),
+  TOWNFIX (`63210975`), ROOMS (`1816247e`), CAMPNPC (`c25fbd58`), HALLS2
+  (`1edcd33c`), LIFT (`2a610b86`), GUILDQUESTS (`ab5846c9`) and GUILDTEXT
+  (`c85f6624`) merged, then this documentation lane D. HALLS2 was added
+  during the round (the user wanted the houses out of the civic cores).
+  Every code lane independently reviewed by Opus (HALLS, TOWNFIX, ROOMS,
+  REP, CAMPNPC and HALLS2 MERGE, TOWNFIX, ROOMS and REP with a small
+  follow-up and a delta review; GUILDSPEC, CAMPS, CONSUME, LIFT and
+  GUILDQUESTS MERGE AFTER FIXES, fixed and delta-reviewed, LIFT's merge
+  rounds checked by the coordinator); GPT-6 Astra painted guild art drop 02
+  (LIFTART, picked) and wrote the guild quests' texts (GUILDTEXT, with the
+  Opus text review's 65 proposals, all picked). Main has 269 portable
+  fixtures (10 new). The declaration is
+  `{"schema": 3, "version": "0.58.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset,
+  reputation starts at 0.
+  - **The guild** (`grug_guild`, [miners_guild.md](../design/miners_guild.md)):
+    The Charter of Stone and The Oathdelvers, "Miner's Guild" in the
+    interface; the catalogue (ranks, rates, prices, effects, loot: the
+    user accepted the numbers as a first version), reputation with ranks
+    0–10 (lifetime and balance per faction), the trade-in at the camp
+    vendors and the guild houses' exchange, no copper route into
+    reputation (§2a: the mason sells no Cobblestone or Gravel), the
+    achievement `miners_guild` with three cloaks.
+  - **Camps, lifts and rooms (CAMPS, ROOMS, LIFT):** 20 new mining camps,
+    the 16 war camps as mining camps, 6 camps under construction; 148
+    protected rooms at the tier depths from their own generation step
+    (liquid-safe, lit, no spawns, the exits plugged); the faction-only
+    teleport lift through `grug_home.travel`
+    ([settlements.md](../design/settlements.md),
+    [world_preparation.md](../design/world_preparation.md)).
+  - **People and goods (CAMPNPC, CONSUME):** 36 foremen, six named guild
+    leaders, the Exchange, the camp vendor's rank-locked page and repair;
+    Ore Sense and Treasure Hunt in the `mining_sense` slot across logout
+    and death, the Miner's Remains
+    ([durability_repair.md](../design/durability_repair.md),
+    [economy.md](../design/economy.md)).
+  - **Houses and quests (HALLS, HALLS2, GUILDQUESTS, GUILDTEXT):** the
+    guild house on a district plot with a headframe in every capital; 30
+    guild quests (453 shipped) ([quests.md](../design/quests.md)).
+  - **Town fixes (TOWNFIX):** Lethariel's bough platforms, the five core
+    gatehouses, throne-guard posts in all six capitals, the gate watch, the
+    terrace stair, the start towns' waystone pads.
+  - **Gates:** each code lane's full fixture run (258–269/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.57.0, with the map
+    reset entry), `check_fresh_server.py`, `validate.py --game`, the full
+    fixtures, a full seed fleet on main and one boot (the
+    [round-end gates](../planning/round58-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round58-plan.md#carry-overs)).
+- **Round 57 "The crafting window, the quest foundation and the new start
+  zones" complete** (2026-10-23, version 0.57.0, **compatible**, no
+  migration step;
+  [plan, decisions, numbers and GUI checklist](../planning/round57-plan.md#completion-2026-10-23)).
+  **Pushed 2026-10-23** (origin/main `69481ed1`) before its GUI test, which the user runs together with
+  Round 58's. From main
+  `08fb032b` (the plan) and `f913f17a` (the go): CHAINDEPTH (`c5f37bae`),
+  FIX56 (`fd0a58fa`), CRAFT (`aaf9edbd`), ALLOY (`5107187f`), QSYS
+  (`a90990d5`), QSYS2 (`6562f395`), DETAILS (`60adda34`), VENDORMAT
+  (`f4991ea3`, `073ef842`), DYES (`feddd5c2`), STARTQUESTS (`b1c6259c`,
+  `31c8b94c`) and STARTTEXT (`a1582d57`) merged, then this documentation
+  lane D. ALLOY, VENDORMAT, DYES and QSYS2 were added during the round
+  (rulings 25–29 and the user's wish to read the choice rewards' enchants
+  without hovering). Every code lane independently reviewed by Opus
+  (FIX56 and ALLOY MERGE; CHAINDEPTH, CRAFT and DETAILS MERGE with
+  findings fixed and delta-reviewed; QSYS and STARTQUESTS MERGE AFTER
+  FIXES, fixed and delta-reviewed; VENDORMAT and DYES MERGE AFTER FIXES,
+  their fixture seams fixed and checked by the coordinator; QSYS2 checked
+  by the coordinator); GPT-6 Astra wrote the story arc draft
+  (STORYARC, private, in German, Opus review and check), the start-zone
+  texts (STARTTEXT, with the Opus text review's 36 proposals, all picked)
+  and the Round 58 guild art (GUILDART, picked, waiting for Round 58). Main
+  has 259 portable fixtures (9 new). The declaration is
+  `{"schema": 3, "version": "0.57.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.56.1 moves on without a step (old start-quest ids are
+  dropped as unknown ids; a world created with full preparation stops at
+  load until a map reset, best effort per the
+  [upgrade contract §1](../technical/upgrade-contract.md#1-four-outcomes)).
+  - **Crafting (CRAFT, DETAILS):** a queue of five jobs (crafts, enchants
+    and upgrades alike, inputs taken when queued, offline too) with the
+    running job in its old key, layout C under every box, an overflow that
+    grows, favourites, Basic recipes unlocked with a profession tier; the
+    recipe details pages over a generated ingredient source index (815
+    items, 1,450 sources)
+    ([professions.md](../design/professions.md),
+    [inventory_equipment.md](../design/inventory_equipment.md)).
+  - **Recipes (CHAINDEPTH, ALLOY, DYES):** the chain-depth report
+    `tools/r57_chains`; Embersteel and Abyssal Steel from Steel, the graded
+    woods from planks plus the tier's ingredient, Steel Bars craftable (the
+    deepest metal recipe 7 → 5); every dye from Bone, Sunleaf, Apple,
+    Marshbloom and the mixes ([items_crafting.md](../design/items_crafting.md)).
+  - **Vendors (VENDORMAT):** no shelf sells leather, cloth, ores or bars;
+    the Bronze Bar buys back at its inputs (2c) ([economy.md](../design/economy.md)).
+  - **Quests (QSYS, QSYS2, STARTQUESTS, STARTTEXT):** shared quests with a
+    variant per giver zone and role givers, choice rewards with fixed
+    enchants (`grug_items.make_stack`, `tooltip_text`), story marking,
+    completion texts, the free-play rules under the rework flag,
+    `repeatable` removed; the six start zones 92 → 30 quests (423 shipped)
+    ([quests.md](../design/quests.md)).
+  - **Fixes of 0.56 (FIX56):** bay shore water flies under its zone's rule;
+    the chin strip open underneath on cloth T1–T6 and leather T1–T5
+    ([mounts.md §4.1](../design/mounts.md#41-ocean-warned-edge-then-forced-flight-dismount),
+    [armor-format.md](../technical/armor-format.md)).
+  - **Gates:** each code lane's full fixture run (251–258/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.56.1),
+    `check_fresh_server.py`, `validate.py --game`, the full fixtures and one
+    boot (the lane report). The round end on main (full fixtures, one boot,
+    the sync) is the coordinator's; its GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round57-plan.md#carry-overs)).
+- **0.56.1 "The hood"** (2026-10-22, **compatible**, no migration step;
+  [plan addendum](../planning/round56-plan.md#addendum-0561-the-hood-art-2026-10-22)):
+  the user picked HOODART drop-02 proposal P2 "Turned edge" (GPT-6 Astra,
+  CC0) for cloth and leather T1–T6. Lane HOODFINISH (Opus) brought the
+  drop's painter into `tools/r54_art` (whole tiers from `hood-drop-02` p2,
+  with two one-pixel leather helm repairs) and baked it: only the 12 cloth
+  and leather head layers and their masks change, `check.py` 0 violations
+  and 0 warnings. **Pushed** with 0.56.0 on 2026-10-23 after the user's GUI
+  test (origin/main `2b4a3228`).
+- **Round 56 "Playtest fixes, clear enchants, the hood and the quest
+  survey" complete** (2026-10-22, version 0.56.0, **compatible**, no
+  migration step;
+  [plan, decisions, numbers and GUI checklist](../planning/round56-plan.md#completion-2026-10-22)).
+  **Pushed** with 0.56.1 on 2026-10-23 after the user's GUI test (origin/main
+  `2b4a3228`); two small findings (bay no-fly columns, the chin strip's
+  underside) go to Round 57's fix lane. The hood shipped
+  invisible in 0.56.0 (the models carry it, every head layer left it
+  transparent; drop-01 not taken; a painting tool, HOODPAINT, then Astra's
+  drop-02); its art came with 0.56.1 (above). Seed
+  fleet `full` on main `2ef55861`: 304 of 304 seeds build. From main `74053146` (the plan):
+  SMALL (`4547c186`), QUESTMAP (`a42f8df6`), the coordinator's HOODPAGE
+  (`ea1ecd43`) and TPLFORMAT (`1ac0688b`, with seven answer commits), MOUNT
+  (`23355acb`), VIEWER (`e6342420`, `b5031847`, `e3e2f8b0`), AFFIX
+  (`cc51536d`, wording `9ed29396`), FLOAT (`3e7422b3`), MOBAI (`cfbea1bb`,
+  fliers `a356f392`), HOOD (`b32f236a`), FREEZE-TOWNS (`7254f854`), EDITOR
+  (`0a2f9d2d`, build gate `0d0ed329`), FREEZE-CAPITALS (`8516145b`) and
+  TREES (`0c64e084`) merged, then this documentation lane D. Every code
+  lane independently reviewed by Opus (SMALL, QUESTMAP, MOUNT, AFFIX,
+  FREEZE-TOWNS, FREEZE-CAPITALS MERGE; FLOAT, MOBAI, HOOD, EDITOR, TREES
+  MERGE with findings fixed and delta-reviewed or checked; VIEWER MERGE
+  AFTER FIXES); GPT-6 Astra wrote the quest idea report (QUESTIDEAS,
+  private, in German) and paints the hood (HOODART). Main has 250 portable
+  fixtures (10 new). The declaration is
+  `{"schema": 3, "version": "0.56.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.55.1 moves on without a step (its layout cache rebuilds
+  once).
+  - **Mobs (MOBAI):** the aggro radius shrinks by 20 % per level from a
+    gap of 6 (none from 10; at least 1 m), tested before the sight ray (12
+    → 6 rays on the probe); the hit alert centred on the hit mob, without
+    cascade; ranged mobs close in beyond their shot range (`view_range +
+    4`), fliers also without sight, and their arrows lock with the sight
+    geometry; the Bandit Archer's shoot clip
+    ([combat_stats.md §3](../design/combat_stats.md)).
+  - **Mounts (MOUNT):** land mounts at the player's gravity (19.62), a
+    jump of 9.3 (2.2 nodes), +5 nodes of fall tolerance, a fall never
+    dismounts ([mounts.md](../design/mounts.md)).
+  - **Trade, food, items (SMALL, FLOAT):** the sell list over the inactive
+    hotbar; Quartermasters serve the whole faction (the 10 % stays per
+    race); every class eats mana food; items in water rise at 2 nodes/s and
+    hold at the surface.
+  - **Enchants (AFFIX):** `Prefix:`/`Suffix:` in tooltips, prefix first;
+    the station's "Replaces prefix: …" line, orange with the warning as its
+    tooltip for a higher tier it replaces
+    ([items_crafting.md §6b](../design/items_crafting.md#6b-enchantments)).
+  - **The hood (HOODPAGE, HOOD):** polygon parts in the armor pipeline
+    ([armor-format.md §1a](../technical/armor-format.md#1a-polygon-parts-round-56)),
+    the hood on the head slot in both models and the `.glb` (player model
+    1,240 → 1,272 vertices), the chin strip open on cloth T1–T6 and leather
+    T1–T5.
+  - **Building templates (TPLFORMAT, FREEZE-TOWNS, FREEZE-CAPITALS, TREES,
+    VIEWER, EDITOR):** 260 templates (50 start-town, 210 capital; 13
+    planted, whose trees grow at load), 6 layouts and 6 rosters, frozen
+    byte-identically; the building generators are gone; the gate
+    `tools/building_templates/check.py`, `check_upgrade.py` wanting a map
+    reset when what the towns build changes, the gallery and the local
+    editor ([format](../technical/building-template-format.md)).
+  - **Quests (QUESTMAP):** `tools/r56_questmap/` writes an overview page of
+    all 485 quests and their chains with the rework's flags.
+  - **Gates:** each code lane's full fixture run (241–250/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.55.1),
+    `check_fresh_server.py`, the template topic checks and the full
+    fixtures (the lane report). The round end on main (full fixtures, the
+    seed fleet `full` owed by the freeze, one boot, the sync) is the
+    coordinator's. Its GUI test (desktop and web build) is open
+    ([carry-overs](../planning/round56-plan.md#carry-overs)).
+- **0.55.1 "The profession debug command" complete** (2026-10-21,
+  **compatible**, no migration step; the user's request; branch
+  `prof-admin`, one coordinator-built lane, independently reviewed by Opus,
+  no blocker). **Pushed** together on 2026-10-21 after the user's GUI test (origin/main
+  `52996c44`); 0.55.1 deployed to production by the user (2026-10-21). New
+  `grug_jobs/admin.lua`: `/prof show|set|learn|unlearn|clear <player> ...`
+  (`server` privilege, online players only, the name always given;
+  [professions.md §1.6](../design/professions.md#16-the-prof-debug-command)).
+  `state.lua` gains `admin_set` (the tier capped at `character_tier`, the
+  answer names the cap; the tier's crafts start at 0; a replaced primary
+  dropped as by unlearn, named in both lines) and `admin_unlearn`
+  (secondaries too; Cooking returns at the next join); both share
+  `unlearn`'s new `drop_progression`, which leaves the trainer's unlearn
+  unchanged. Each change sends the target one chat line and writes an
+  action log line; `show` neither. New fixture `tools/r551_prof`; the
+  learn/unlearn fixtures `r33_c2`, `r45_eu`, `r45_jb` and `r45_st` pass
+  unchanged. One review (one minor finding and two nits, all fixed) and two
+  delta reviews (the fixes; `/prof show` replacing `/prof <player>` at the
+  user's request): nothing left.
+  **GUI checklist:** `/prof show` on yourself; `/prof set <you> 1
+  weaponsmith T6` at a level below 51 (the capped tier and the note), the
+  Crafting tab updates at once; set slot 1 to another primary while a
+  Weaponsmith job runs (the job ends without XP, the replaced note);
+  `/prof set <you> cooking 3`; `/prof unlearn <you> cooking`, relog
+  (Cooking T1 again); a second player gets the chat line; a player without
+  `server` is refused.
+- **Round 55 "The offhand look" complete** (2026-10-21, version 0.55.0,
+  **compatible**, no migration step;
+  [plan, decisions, numbers and GUI checklist](../planning/round55-plan.md#completion-2026-10-21);
+  the contract in [offhand-format.md](../technical/offhand-format.md)).
+  **Pushed** together on 2026-10-21 after the user's GUI test (origin/main
+  `52996c44`); 0.55.1 deployed to production by the user (2026-10-21). After the round end
+  gates, two small fixes by the user's word: the Character tab's weapon card
+  mirrored across its long axis (`985d3e19`) and the Scout's back card turned
+  180 degrees, grip up (`29ced647`, exported as `back_card.rotate`), with an
+  independent delta review (OK). From main `cf7c6ce3` (the plan and CONTRACT, ten contract
+  fixes up to `dbd05bd3`): BAKE (`8568017d`, `b99c0b3a`), MODEL
+  (`283e8a43`), the user's params (`b88245aa`, `4fa0ab2e`, `93e6aad8`), GAME
+  (`6532a1c7`), SUPPORTER (`a0b77cf9`), WEB (`cd218892`), VIEWER
+  (`78547e04`), FINISH (`c23d8ceb`) and STACKS (`47e1c98f`) merged, then
+  this documentation lane D, which also turned the setting on, and ICONS
+  (the redrawn armor icons, branch `r55-icons`). Each code
+  lane independently reviewed by Opus (MODEL, GAME, SUPPORTER, WEB, FINISH,
+  STACKS MERGE; BAKE and VIEWER MERGE AFTER FIXES, delta-reviewed MERGE);
+  the art painted by GPT-6 Astra in one drop and picked by the user, the
+  armor icons in two more drops. Main
+  has 239 portable fixtures (5 new); `mods/` against 0.54.1 +679 −140 lines
+  in 16 text files, 38 PNGs added, 160 replaced, both models replaced. The
+  declaration is
+  `{"schema": 3, "version": "0.55.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.54.1 moves on without a step.
+  - **The model (MODEL, params):** the bones `Offhand_Shield` and
+    `Offhand_Book` under `Arm_Left`, keyed per pose clip from
+    `tools/r55_offhand/params.json` (the user's tuning on the
+    Offhand-Werkstatt); three shield copies (85 / 92 / 100 % by tier), the
+    open book, two back cards (cloak and body) and cloak wings; the player
+    model 872 → 1,240 vertices, the NPC model 848 → 1,180, the `.glb`
+    88,900 → 120,440 B with 7 primitives
+    ([character_visuals.md §4](../design/character_visuals.md#4-the-weapon-in-hand)).
+  - **The game (GAME, STACKS):** the offhand layer with enchant colours and
+    cracks, the Scout's back card (the equipped weapon the hand does not
+    show, via the wield poll, never stored), the wings, appearance version
+    3, the setting `grug_offhand_visuals` (on by default since lane D, the
+    off switch); old enchanted or broken shields and spellbooks take the
+    new art at their next refresh.
+  - **The art (BAKE, VIEWER, FINISH):** `tools/r55_offhand/bake.py` and
+    `render.py`, the painter's templates; the picked art in `tools/r55_art/`
+    baked into 24 offhand layers and 24 icons with their masks (one
+    spellbook icon per tier, untinted shields).
+  - **The armor icons (ICONS):** all 72 redrawn simpler by GPT-6 Astra in
+    two drops and picked per line and slot by the user (2026-10-21), laid
+    over `tools/r54_art/art/` under the same names and baked with their
+    masks and the four slot ghosts; the armor sheets are unchanged.
+  - **Achievements (SUPPORTER, FINISH):** manual rows,
+    `/achievement grant|revoke <player> <id>` (privilege `server`, offline
+    queue), the Supporter achievement and the Supporter Cloak with wings
+    ([character_visuals.md §5b](../design/character_visuals.md#5b-cloaks-and-achievements-round-33)).
+  - **The web (WEB):** `offhand_look` in `web_data.json` (`enabled` true),
+    the version 2 rule, the back card rule; the kaesual addendum (outside
+    the repo) to pass on.
+  - **Gates:** each code lane's full fixture run (234–239/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.54.1),
+    `check_fresh_server.py`, the offhand topic checks and the full fixtures
+    (the lane report). The round end on main (full fixtures, one boot, the
+    sync) is the coordinator's. Its GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round55-plan.md#carry-overs)).
+- **0.54.1 "The particle look" complete** (2026-10-21, **compatible**, no
+  migration step; the user's pick on the
+  [R52 particle page](https://claude.ai/artifact/AwJAjkrb2eiu26m1LsYsXa), a
+  private claude.ai page, "glowing and vivid"; branch `pfx-glow`, one
+  coordinator-built lane, independently reviewed by Opus, no blocker).
+  **Pushed** on the user's word with 0.53.0 to 0.54.0 (origin/main
+  `abfb30ce`, 2026-10-21). `grug_core/particles.lua` gains the emitter fields `mote` (the
+  tint on the new white `grug_core_mote.png`; the grey smoke puff darkened
+  every tint to about 56 %), `blend` (`"add"`) and `after` (a deferred
+  emitter); every catalogue effect follows one rule
+  ([combat_stats.md](../design/combat_stats.md#skill-particle-effects)):
+  lights, sparks, magic and fire add with glow 14 in vivid tints (colours
+  mob code passes stay), dust, smoke, mist, wind, webs, leaves and splashes
+  stay plain, material textures (blood, rock, bubbles, opaque snow, the rift
+  spawn's smoke, wind and dust) keep their look. Smite is a small Final
+  Word (13 single particles), Meteor and Censure fall at 14 and 12 m/s from
+  late in the delay. `tools/r52_pfx/effects.py` carries the look pass, so
+  `r53_hooks` and `check_limits.lua` still compare every card with the
+  catalogue; new fixture `tools/r541_glow`. Budget at 50 players
+  (effects.py): 20.3 → 20.6 KB/s per receiver, alive peak 527 → 537; Smite
+  becomes the largest byte card (1.3 → 2.4 KB/s). Not converted: the direct
+  engine calls outside the catalogue (stun cross, root crystals, food
+  crumbs, the rift's stretches and pulse, the mob projectile tails, the
+  mobs API's and `default`'s own particles). Two independent Opus reviews
+  (the skills, then the delta for bosses and mobs): no blocker; after the
+  second, the frost breath, the rime patch and the rift spawn's smoke went
+  back to plain.
+  **GUI checklist:** skills by day, at night and in a cave; added particles
+  against a bright sky, snow, over water and behind glass or leaves (the
+  engine adds with the target's alpha); Smite on a dummy; Meteor and Censure
+  under open sky and under a low ceiling (they land with the impact);
+  bosses (kings' wind-ups, especially Bone Call and Volley, whose pale kit
+  colours now add; dragons' breath, lightning, dive, enrage) and
+  mob specials (wisp, Oerkki, depth pulse, hex bottle, rift spawn); the web
+  build.
+- **Round 54 "The armor redesign in the game" complete** (2026-10-21,
+  version 0.54.0, **compatible**, no migration step;
+  [plan, decisions, numbers and GUI checklist](../planning/round54-plan.md#completion-2026-10-21);
+  background in the [armor redesign plan](../planning/armor-redesign-plan.md),
+  the contract in [armor-format.md](../technical/armor-format.md)).
+  **Pushed** with 0.53.0, 0.53.1 and 0.54.1 (origin/main `abfb30ce`,
+  2026-10-21). From main `8bc91967`
+  (CONTRACT: the plan, the box catalog, the atlas, the render/check tool,
+  four addenda up to `b3fa6eb2`): BAKE (`62100720`), MODEL (`6a8b4028`),
+  GAME (`a278cc34`, shots `5722b8fd`, the royals' no-tint `7ed8ffce`), VIEW
+  (`0a4fb774`), WEB (`a14d4420`) and INTEG (`8fbf9c09`) merged, then this
+  documentation lane D; the WEB2 follow-up (`9ab1b40c`: README and fixture
+  notes, the handoff renders with the final art) merged before it. Each code lane
+  independently reviewed by Opus (BAKE, VIEW, WEB, INTEG MERGE; MODEL and
+  GAME MERGE AFTER FIXES, fixed and re-reviewed); the art painted by GPT-6
+  Astra in three drops and picked by the user. Main has 233 portable
+  fixtures (4 new); `mods/` against 0.53.1 (at `8fbf9c09`) +480 −220 lines in 18 text
+  files, 252 PNGs added, 161 removed and 148 replaced, the player model
+  replaced and the NPC model added. The declaration is
+  `{"schema": 3, "version": "0.54.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.53.1 moves on without a step.
+  - **The model (MODEL):** 28 armour boxes (17 shapes) in one buffer with
+    one 128 × 64 atlas, front and back panels on swing bones, a weapon card
+    in the right hand; the player model 192 → 872 vertices, the NPC model
+    848; the cloak rests at 8.5° behind the back panel
+    ([character_visuals.md §3, §5b](../design/character_visuals.md#3-visible-armor)).
+  - **The art (ART, BAKE, INTEG):** metal "Bastion" T1–T5 and "Processional
+    guard" T6, leather "Trail coat", cloth "Cantor"; opaque pieces with the
+    helm's face window; `tools/r54_armor/bake.py` bakes the layers, icons
+    and masks from `tools/r54_art/`; the old armour overlays are gone.
+  - **The game (GAME, VIEW):** players wear skin, cloak, armour atlas and
+    weapon card, armoured NPCs the NPC model; the royal armour for kings
+    (no helmet), royal guards and Generals, untinted; the War Commanders in
+    faction colours; appearance version 2; leather T4 Hardened with its ids
+    kept ([items_crafting.md](../design/items_crafting.md)); the Character
+    tab shows the armour and the held weapon.
+  - **The web (WEB):** the four-primitive `.glb`, version 1 appearances
+    shown without armour, the kaesual handoff (outside the repo).
+  - **Gates:** each code lane's full fixture run (229–232/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.52.1 and against
+    0.53.1), `check_fresh_server.py` PASS and the full fixtures 233/0. The round end on main (full
+    fixtures, one boot, the sync) is the coordinator's. Its GUI test
+    (desktop and web build, after the 0.53.x checklists) is open
+    ([carry-overs](../planning/round54-plan.md#carry-overs)).
+- **Round 53 "The new classes" complete** (2026-10-20, version 0.53.0,
+  **migrate**, one step 0.53.0;
+  [plan, decisions, numbers and GUI checklist](../planning/round53-plan.md#completion-2026-10-20)).
+  Pushed with 0.53.1, 0.54.0 and 0.54.1 (origin/main `abfb30ce`,
+  2026-10-21). Round K of the class rework: the four new class kits and the
+  eight talent graphs go live with one talent reset. From main `84ea20f0`
+  (the plan): the prep lane SKS (`681913a9`, round 2 `357683f3`), LIVE
+  (`927e2ae3`), HOOKS (`937a1df0`), PRIEST (`cfdfc25f`), MAGE (`20abd7bc`),
+  WARRIOR (`b3b1fb92`), SCOUT (`f14b69b5`) and INTEG (`73b5ca40`, part 1
+  and part 2) merged, then this documentation lane D. Each code lane
+  independently reviewed by Opus (all MERGE; HOOKS' and WARRIOR's review
+  findings fixed and delta-reviewed); the cast sounds picked by the user
+  on two pages. Main has 225 portable fixtures (7 new, 3 retired);
+  `mods/` against 0.52.1 +3,960 −3,678 lines in 48 text files, 4 new and 5
+  removed Lua files, 45 media files added and 19 removed. The declaration
+  is
+  `{"schema": 3, "version": "0.53.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.52.1 runs `tools/migrate.py` before its first start.
+  - **The talents (LIVE):** the graph talents are the live talents, one
+    data file per class, `<tree>_<name>` ids, the store, the accessors,
+    spend and respec, the level-drop reset, `/talents` and the Talents
+    page ([skill_trees.md](../design/skill_trees.md)); `/talent_preview`
+    is gone.
+  - **The kits (MAGE, WARRIOR, PRIEST, SCOUT):** two or three starters per
+    class (the Mage's Fiery Spark and the Priest's Smite in Strike's
+    place), the rest from the trees; ground areas on the ground anchor,
+    cones, group heals, readiness windows; the Scout without the bow draw
+    ([classes.md](../design/classes.md), [scout.md](../design/scout.md),
+    [ability_targeting.md](../design/ability_targeting.md)).
+  - **The seams and the content (HOOKS):** family keys on the cast and
+    swing paths, the swing callback, clock seams, the held fallback (K8),
+    the swing's hold on casts (K9), the cone; 25 skill icons, 34 new and 7
+    retinted particle effects, 20 new sound events from the user's picks
+    ([module guide](../technical/module-guide.md#combat-and-classes)).
+  - **The step and the clean-up (INTEG):** the step 0.53.0 (talents,
+    stored windows and the retired Cinderfall, Glacial Ward and Pinning
+    Shot cleared; one chat line), HP factors Warrior 1.2, Scout 1.0,
+    Priest 0.8, Mage 0.8, the old talent engine removed, `opts.no_crit` for
+    areas, the held cast's catch-up, Help
+    ([upgrade contract](../technical/upgrade-contract.md)).
+  - **Round-end gates** on main `7c314b1d`: full fixtures 225/0,
+    `check_fresh_server.py` and `check_upgrade.py` PASS, the step test's
+    e2e 29/29, one boot PASS (150 s), synced; this lane's `check_upgrade.py`,
+    `check_fresh_server.py` and `r37_dc` PASS. Its GUI test (desktop and
+    web build, the migration first) is open
+    ([carry-overs](../planning/round53-plan.md#carry-overs)).
+  - **0.53.1, the fix round** (2026-10-20, **compatible**, no step of its
+    own, the 0.53.0 step stays declared;
+    [fix plan, decisions, numbers and GUI checklist](../planning/round53-fix-plan.md#completion-2026-10-20)),
+    from the user's first look at 0.53.0. From main `4e8a177d`: ART
+    (`272cf9e6`, the 36 picked icons), FLIGHT (`ad1157eb`, the 40-node band,
+    one shared flight rule, the minimap's no-fly overlay on a flyer), SKILLS
+    (`144a7cc9`, areas, cones and groups without line of sight, the
+    "Range: N m" tooltip line), GEAR (`8e146dfe`, hand tooltips from the
+    equip rule, the same trinket twice) and RACE (`2c5ecbc2`, the undead
+    truce day and night with husks, Elf +3 m, Dwarf +5 % armor rating,
+    skeleton bows, right-click picking) merged, then this lane D. Each lane
+    independently reviewed by Opus (all MERGE; SKILLS' text finding fixed
+    in a delta). Main has 229 portable fixtures (4 new); `mods/` against
+    0.53.0 +645 −334 lines in 35 text files, 2 new Lua files, 36 PNGs
+    replaced. The declaration is
+    `{"schema": 3, "version": "0.53.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+    Lane D: `r37_dc`, `check_upgrade.py` and `check_fresh_server.py` PASS.
+    **Built, awaiting the user's GUI test** (one test on 0.53.1, the 0.53.0
+    migration and the Round 53 checklist first); pushed with 0.54.1
+    (`abfb30ce`, 2026-10-21). Open for the user: fruit picking
+    in towns ([0.53.1 carry-overs](../planning/round53-fix-plan.md#carry-overs)).
+- **Round 52 "Ambience and the class rework foundation" complete**
+  (2026-10-20, version 0.52.0, **compatible**, no migration step;
+  [plan, decisions, numbers and GUI checklist](../planning/round52-plan.md#completion-2026-10-20);
+  partial plans [ambience](../planning/round52-ambience-plan.md) and
+  [class foundation](../planning/round52-class-plan.md)). Pushed
+  (`67941764`); the user's GUI check passed on 2026-10-20. **0.52.1**
+  (compatible, the [completion's addendum](../planning/round52-plan.md#addendum-0521-2026-10-20)):
+  surf at the coast by the map, an underwater bed, start towns by their
+  look; lanes COAST and UW, COAST independently reviewed (two delta
+  reviews). Pushed (`e4d5c9d5`, 2026-10-20); its GUI check is open. From main `7813165e` (the three plans): SPLIT (`e2ab497f`),
+  SND (`07c7c1bc`), CORE-B (`78895157`), GRAPH (`0fd6d6f5`), AMB
+  (`a0d3c032`), CORE-A (`13b579b3`), AMB's file step (`87a4970c`), WFX
+  (`890b977e`), the staged art of ARTA (`f18b2db2`) and ARTB (`a23cf211`),
+  PFX (`120dd0b3`, added during the round), WFX's data step (`d0ad6c7d`)
+  and GRAPH's art step (`260402b9`) merged, then this documentation lane D.
+  Each code lane independently reviewed by Opus (all MERGE; PFX MERGE
+  AFTER FIXES, its fix checked by the coordinator); the sounds, the art
+  and the particle cards picked by the user. Main has 221 portable
+  fixtures (6 new); `mods/` +4,509 −1,566 lines in 31 text files, 11 new
+  Lua files, 160 media files. The declaration is
+  `{"schema": 3, "version": "0.52.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.51.0 moves on without a step. Round-end gates on main
+  `fc37636d`: full fixtures 221/0, `check_upgrade.py` and
+  `check_fresh_server.py` PASS, one headless boot PASS; synced. Open: the
+  user's GUI check.
+  - **Ambience (SND, AMB):** beds by biome group instead of the race
+    zone, new beds for the badlands, the swamp, the crags, the snowy crags
+    and the Battlegrounds, night beds, three layers (surface, cave, wind)
+    by the height relative to the terrain or the water surface, real caves
+    told from dug tunnels by a sampled probe, the underground sky relative
+    to the terrain (in > 20, out < 16), animal calls, `/ambience debug`;
+    23 new cuts, six beds dropped
+    ([sound.md §4](../design/sound.md#4-ambience-beds-grug_ambience),
+    [module guide](../technical/module-guide.md#sound)).
+  - **Class rework, round F (SPLIT, CORE-A, CORE-B, GRAPH, WFX):** the
+    shipped classes play as before except Mend's tick (3, 6, 9 and 12 s
+    after the cast); the action clock, the transformation field, the
+    readiness windows, the area and group helpers, the graph talents as an
+    admin preview (`/talent_preview`), the scrolling skill row and the
+    animated weapon overlay per talent tree and weapon type
+    ([module guide](../technical/module-guide.md#combat-and-classes),
+    [skill_trees.md §3.12](../design/skill_trees.md#312-the-graph-talents-of-round-k-round-52-live-since-round-53)).
+  - **Art and design (ARTA, ARTB, PFX):** 8 tree backgrounds, 74 talent
+    icons, 19 redrawn skill icons and 30 overlay strips ship; 25 skill
+    icons and the 65 particle cards wait for round K.
+  - **Round-end gates** on main `260402b9` (coordinator): full fixtures
+    221/221, `check_fresh_server` PASS, synced; this lane's
+    `check_upgrade.py` PASS (against origin/main `dea1d163`); *to be
+    recorded:* the boot of main. Its GUI test (desktop and web build) is
+    open ([carry-overs](../planning/round52-plan.md#carry-overs)).
+- **Round 51 "Land zones and the sea" complete and pushed**
+  (2026-10-19, version 0.51.0, **map reset**, no migration step;
+  [plan, decisions, numbers and GUI checklist](../planning/round51-plan.md#completion-2026-10-19);
+  partial plans [land](../planning/round51-land-plan.md) and
+  [sea](../planning/round51-sea-plan.md)). Pushed on the user's word on
+  2026-10-19 (origin/main `75ea1b4c`; production still runs 0.50.2 until the
+  host updates with the map reset). From main `6c1b6139`
+  (the plans): the art lanes SWART, ARTS and ARTL (three passes), the
+  design and page lanes NAMES, VIEW and WRECK's design (each picked by the
+  user), then T1 (`fe540a38`), LG (`f4b1322c`), MOBS M1 (`cb93b631`), T2
+  (`5c8ac48e`), MAP (`89bc91e3`), LK (`a2dccc54`), LP (`1d28d889`), T4
+  (`d7cebe4f`), T3 (`c3ee3922`), WRECK's build (`08df9bc9`) and MOBS M2
+  (`08163c89`) merged, then this documentation lane D. After the user's
+  first GUI look, four follow-up lanes inside 0.51.0: FA's sway strips
+  (`c6fa76ff`), FW water plants (`107124cd`), FT towns (`ef02ae36`) and FM
+  water mobs (`898f64e1`), each reviewed
+  ([follow-up](../planning/round51-plan.md#follow-up-lanes-after-the-users-first-gui-look-2026-10-19)). Each code lane
+  independently reviewed by Opus (T2 and LK MERGE AFTER FIXES, WRECK with
+  a coordinator-ordered fix round and a merge delta MERGE AFTER FIXES,
+  every fix delta reviewed again; MOBS M2's rate fix checked by the
+  coordinator). Main has 213 portable fixtures (8 new); `mods/` +6,892
+  −606 lines in 118 text files, 14 new Lua files. The declaration is
+  `{"schema": 3, "version": "0.51.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`;
+  a host on 0.50.x moves with this one map reset, and the pre-reset pass
+  packs the claims' containers.
+  - **The sea (T1, T2, T3, MAP, WRECK):** the world bounds ±4190 × ±3740
+    (the land unchanged), bays without open-sea specks and with a natural
+    mouth, a coastal belt to 250–350 nodes off the coast that belongs to
+    the zone on land, organic dragon channels 9–11 deep at their island's
+    level, bay, belt and channel water 24+ off the coast protected like the
+    open sea, `grug_zones.water_query_at`, coral, kelp and seagrass with
+    underwater regrowth, the map coloured by depth on an atlas of ±4050 ×
+    ±3600 (1215 × 1080 / 3600 × 3200), about 55 shipwrecks per world
+    ([world_zones.md §7.4](../design/world_zones.md#74-water-coast-and-islands),
+    [world_map.md](../design/world_map.md#map-quality-and-relief)).
+  - **Water creatures (NAMES, MOBS):** tortoise, frog, stingray, Bay
+    Shark, Abyssal Shark and Tide Goby by water band, at the zone's level,
+    silent; a swimmer resets when its target leaves the water; fish loot;
+    zone slots and names so quests can use them
+    ([biomes_mobs.md](../design/biomes_mobs.md#round-51-water-families)).
+  - **The land zones (VIEW, ARTL, LG, LP, LK, T4):** calm world-aligned
+    2 × 2 grounds and the 32 px sand, the swamp moss, the hanging-moss and
+    liana strands, orc clay bands, ice and pebble patches, flowers, alpine
+    plants, lichen, bushes, papyrus on the sand, marram, regrowth; the
+    kit: ruins, wild and town graveyards, cairns, statues, logs, boulders,
+    varied bones in place of one bone pile, driftwood
+    ([biomes_mobs.md §2.1](../design/biomes_mobs.md#21-wp40-surface-and-deterministic-decoration-projection),
+    [farming.md](../design/farming.md), [settlements.md](../design/settlements.md)).
+  - **Round-end gates** (coordinator): *to be recorded* (full fixtures,
+    full seed fleet, `check_upgrade.py`, `check_fresh_server.py`, smoke
+    boot from an empty cache). Its GUI test (desktop and web build, a new
+    world after the map reset) is open
+    ([carry-overs](../planning/round51-plan.md#carry-overs)).
+- **Fix round 0.50.2 "Claim Stone placement preview, claims on the minimap"
+  complete and pushed (origin/main `5e50b456`)** (2026-10-17, **compatible**, no migration
+  step; [plan, rulings, numbers and GUI checklist](../planning/fix-0.50.2-plan.md#completion-2026-10-17)).
+  While a Claim Stone is held the minimap shows forbidden ground and every
+  claim in red and the player's 101 × 101 square in green (CMAP, merged
+  `7a592e05`; lane `1106d60d`, fix delta `9275f319`). At all times claims
+  are named in the location line and banner ("Your Home", "<name>'s Home",
+  exact in 3D), a new location replaces a running banner at once, and the
+  minimap frames the own claim green and others yellow (HOME, merged
+  `8583a850`; lane `bab51dd5`). Each lane reviewed by Opus (MERGE; CMAP's
+  delta MERGE). Round-end gates on `436945b3`: full fixtures 205/205,
+  `check_lua` PASS, `check_fresh_server` PASS, `check_upgrade` PASS (0.50.2
+  compatible, compared with origin/main), smoke boot 120 s from an empty
+  cache PASS.
+- **0.50.1, a compatible tool-only follow-up, pushed**
+  (2026-10-17, [follow-up](../planning/round50-plan.md#follow-up-0501-2026-10-17)):
+  at the platform's request `--check --map-reset` is a complete dry run of
+  the pre-reset pass (every claim block decoded, the same refusals, the
+  pass's counts, nothing written), and the pack baseline is 0.48.0.
+  Reviewed by Opus (MERGE).
+- **Round 50 "Hotbar A/B, claim containers across map resets, the
+  class-redesign page" complete and pushed (origin/main `12cd9822`)** (2026-10-16, version
+  0.50.0, **compatible**, no migration step;
+  [plan, rulings, numbers and GUI checklist](../planning/round50-plan.md#completion-2026-10-16)).
+  From main `af9d6f06` (the version bump): PGAME (`819bd253`, delta
+  `dfbcffae`), PTOOL (`398c8f1e`, delta `be339ee3`), HOTBAR (`bd212678`)
+  and PACCEPT (`ef646f83`) merged; ART outside the repository. Each code
+  lane and each fix delta independently reviewed by Opus. The migration
+  tool now packs every container in every housing claim before a map
+  reset, reading the map read-only; the game restores them through the
+  Claim Stone's Belongings tab. The declaration is
+  `{"schema": 3, "version": "0.50.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`.
+  On main `f2a65fee`: full fixtures 203/203, `check_upgrade.py` (against
+  origin/main `bc1e6016`), `check_fresh_server.py`, `export.lua --check`
+  and a 120 s smoke boot PASS; PACCEPT 122/122 on a world built by 0.48.1,
+  on SQLite and PostgreSQL. Production (0.48.1) moves straight to 0.50.0,
+  and 0.49.0's map reset on that move packs its claims.
+- **0.49.1, a compatible fix round after the first 0.49.0 feedback, on
+  main, not pushed** (2026-10-16,
+  [plan, rulings and GUI checklist](../planning/fix-0.49.1-plan.md#completion-2026-10-16)).
+  The coordinator committed WHEEL (`1d99075b`, the floating wagon wheel out
+  of the fortress blueprint) and GAIT (`acfd84d4`, the humanoid walk clip
+  paced to the walking speed) on main; then the lanes MLEN (mail limit
+  4,000, refusal instead of a cut, draft cap 10,000, quote 500), VIEW (the
+  combined bag in every station form), DOOR (the engine's pointing ranks an
+  object one node² nearer than a node, so a dialog NPC right behind a door
+  panel took the click; a shared helper hands it to the door), DROP (the
+  engine sends an entity's stop once and unreliably; a client that lost it
+  drew the drop sliding, and the server ray missed the picture; the item
+  re-sends its rest position, and a click on a drop in reach picks it up),
+  ANIM (fire and arrow as animated images, the form re-sent only at a
+  change of state: 60 re-sends and 156 KB per minute down to 6 and 15 KB)
+  and the study HKEEP
+  ([keeping player housing at a map reset](../research/housing-keep-reset-study.md):
+  possible with conditions; the user decides) merged. Each code lane
+  independently reviewed by Opus (all MERGE; DOOR with a
+  coordinator-ordered fix round for touch clients, delta reviewed; ANIM's
+  arrow strip under 2048 px); HKEEP checked by the coordinator against the
+  engine and the code. Main has 201 portable fixtures (4 new); `mods/`
+  +672 −203 lines in 32 files. The declaration is
+  `{"schema": 2, "version": "0.49.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"]}`.
+  On main `96bd48f2`: full fixtures 201/201, `check_upgrade.py` (0.49.1
+  against origin/main `bc1e6016`), `check_fresh_server.py` and a 120 s
+  smoke boot PASS. A world updated from 0.48.x passes 0.49.0's map reset
+  and gets its fortresses without the wheel; only a world already on
+  0.49.0 needs the two wheels dug by hand.
+- **Round 49 "Mapgen performance (native first) and gameplay polish"
+  complete and pushed** (origin/main `bc1e6016`; 2026-10-16, version 0.49.0, **map reset**, no
+  migration step,
+  [plan, decisions, numbers and GUI checklist](../planning/round49-plan.md#completion-2026-10-16));
+  From main `f8f2d134` (the version bump):
+  MEAS, MOB, UI, NAV, VIS, INV, ORE, PROT, NAV2, SKIP, JIT, V7, CACHE,
+  HASH, V7A, the P8 follow-up and MEAS2 merged up to `aea065a8`, then this
+  documentation lane D. Each code lane independently reviewed by Opus
+  (NAV2 MERGE AFTER FIXES, the kings drifting off their seat, fixed; HASH
+  MERGE with a coordinator-ordered fix round, the mix's periods and
+  mirrors; V7A MERGE AFTER FIXES, a High: the old flags in `map_meta.txt`
+  would have stopped the production world after the reset, fixed by the
+  user's option (a), the game forcing the flag; every fix delta reviewed
+  again); MEAS, NAV, V7 and MEAS2 (measurement only) checked by the
+  coordinator against their evidence. Main has 197 portable fixtures (8
+  new); `mods/` +1,716 −1,353 lines in 47 files, no new Lua file. The
+  declaration is
+  `{"schema": 2, "version": "0.49.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"]}`.
+  - **World generation (ORE, PROT, SKIP, JIT, HASH, CACHE, V7A, P8):**
+    ores, gems and cave plants native in v7 with a flat integer-hash pass
+    for the fill ores; no ore exclusion under towns or deep water; the
+    protection depth under towns 80 (was 100) and the preparation bottom at
+    the fill floor; no Lua for chunks below every writer; compilable R5
+    adapter and zones lookup; an integer placement hash instead of SHA-256;
+    P9G per column and the mapgen column cache 3×; the v7 flag
+    `nomountains`, forced over `map_meta.txt`
+    ([world_zones.md](../design/world_zones.md),
+    [world_preparation.md](../design/world_preparation.md),
+    [module guide](../technical/module-guide.md#mapgen-and-biomes)).
+    MEAS2: surface chunks about half the Lua, wholly underground chunks
+    none (about 40 chunks per second instead of 1.3–2.3), the first start
+    ready at 66 s instead of 79 s
+    ([before/after](../research/mapgen-chunk-profile-2026-10.md#round-49-beforeafter-lane-meas2)).
+  - **Gameplay (UI, INV, MOB, NAV, NAV2, VIS):** postage at Send and Sell
+    tooltips ([mail.md](../design/mail.md), [economy.md](../design/economy.md));
+    the Claim Stone in any carried list, the Steward's button, the starter
+    kit on hotbar 7/8 and skills making room
+    ([housing.md](../design/housing.md), [classes.md](../design/classes.md));
+    kill XP −10 % per level below with gray at 10 below, the rare tier
+    ([progression.md](../design/progression.md),
+    [combat_stats.md](../design/combat_stats.md)); path repair, padding
+    escalation 6/12/16 and ranged ground mobs regaining sight (Round 42
+    rulings 18 and 19 changed by the user); blocks at 70 % in the
+    third-person hand and the half-buried onion
+    ([character_visuals.md](../design/character_visuals.md)).
+  - **Round-end gates** (coordinator, 2026-10-16): full fixtures 197/197,
+    full seed fleet 304/304, `check_upgrade.py`, `check_fresh_server.py`,
+    the data checks and a smoke boot PASS (see the
+    [completion](../planning/round49-plan.md#round-end-gates)). Its GUI test
+    (desktop and web build, a new world after the map reset) is open
+    ([carry-overs](../planning/round49-plan.md#carry-overs)).
+- **0.48.1, a compatible fix after the user's first 0.48.0 playtest,
+  pushed** (origin/main `1ef11b5e`, 2026-10-14): fix lane INV
+  (`2386eadf`, review MERGE) lets the bags' slots flow on in 8-wide rows
+  instead of each bag starting a row (a 4- or 12-slot bag left half a row
+  empty). On main: full fixtures 189/189, smoke boot, `check_upgrade.py`
+  (0.48.1 against origin/main `f915d777`) PASS.
+- **Round 48 "Mail, plants and light, selling, smaller bags" complete and
+  pushed** (origin/main `f915d777`; GUI test open)
+  (2026-10-14, version 0.48.0, **map reset** plus the migration step
+  0.48.0,
+  [plan, decisions, numbers and GUI checklist](../planning/round48-plan.md#completion-2026-10-14)).
+  Follow-up lane HUD2 (`2ad1a1b8`, after the round's documentation; review
+  MERGE): the mail icon and the daytime band in one row left of the
+  minimap, the band at 75 %, the icon at the same height (the user's
+  variant A). Production on 0.45.1
+  moves to 0.48.0 in one update that crosses the map resets 0.46.0, 0.47.0
+  and 0.48.0 and the steps 0.47.0 and 0.48.0. From main `c4a0a729` (the
+  version bump): WORLD, HUD, FARM, MAIL (and its follow-up), ARTP, ARTM,
+  SELL, QUEST, BAGS and ADMIN merged up to `a5b280e9`, then this
+  documentation lane D. Each code lane independently reviewed by Opus
+  (FARM MERGE AFTER FIXES with a Medium, a crop losing a stage's progress
+  when its light went out, fixed; MAIL MERGE AFTER FIXES, a double-click
+  Send and the shift-click ring, fixed; SELL MERGE AFTER FIXES, wording
+  only, fixed by the coordinator; ADMIN two Lows fixed before the merge;
+  every fix delta with game logic reviewed again), ARTP and ARTM on the
+  user's picks, the letter and quest texts by GPT-6 Astra with an Opus
+  text review and the user's picks. Main has 189 portable fixtures (8
+  new). Lanes' gates: every lane's full fixture run green, FARM's `quick`
+  seed fleet 100/100, the price comparison 0 of 393 old payouts changed
+  (306 new), BAGS's step test 25/25 (16 letters, nothing lost), smoke
+  boots PASS; on lane D's branch `tools/r37_dc` and `check_upgrade.py`
+  (0.48.0 against origin/main) PASS. **Round-end gates (coordinator,
+  2026-10-14, on main `a5b280e9`):** full fixtures 189/189, the full seed
+  fleet 304/304 (on `3d76ceaf`, whose world generation is final),
+  `check_upgrade.py`, `check_fresh_server.py`, `validate.py --game` (0
+  errors), `income.py --check`, the data, names, model, texture and
+  web-data checks, every declared step's test in the container and a smoke
+  boot PASS. The declaration is
+  `{"schema": 2, "version": "0.48.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"]}`:
+  the fourth map reset and the fourth step (bags at half size, leftovers
+  by mail).
+  - **Mail (MAIL, WORLD, HUD, ADMIN, QUEST, ARTM):** `grug_mail` with the
+    mailbox window, letters with up to four attached stacks, postage, 30-day
+    expiry, messages to the admin as tickets and announcements; a mailbox on
+    each of the twelve waystone pads; the unread icon beside the minimap;
+    the privilege `mail_admin` and the Admin Mail tab; the system quest kind
+    with the starter quest, the welcome letter and two level letters
+    ([mail.md](../design/mail.md)).
+  - **Plants (FARM, ARTP):** plant light 8 for crops, papyrus and cactus,
+    saplings only by daylight, Melon and Mushroom crops, spores, the Salt
+    Pan, salts regrowing in the wild, plant tooltips, wild crops as grown
+    plants, nine plant textures ([farming.md](../design/farming.md)).
+  - **Selling and fuel (SELL, FARM):** today's payouts unchanged by
+    construction, a milli-copper second pass for 306 new payouts, lots,
+    crafted goods at half value, storage blocks nine times; cactus and
+    leaves as fuel ([economy.md §2](../design/economy.md)).
+  - **HUD (HUD, ARTM):** the daytime band and the corner stack with the
+    minimap hidden ([world_map.md](../design/world_map.md)).
+  - **Bags (BAGS):** 4 / 8 / 12 / 16 slots (8 / 12 / 16 / 20 since
+    0.62.0), the Small Bag 20c, the step
+    0.48.0 with "Lost and Found" letters
+    ([inventory_equipment.md §3](../design/inventory_equipment.md#3-bags-classic-mmo-model-lott-implementation-pattern)).
+  - Its GUI test (desktop and web build, a new world after the map reset
+    and an existing 0.47.0 character) is open
+    ([carry-overs](../planning/round48-plan.md#carry-overs)).
+- **Round 47 "Trees, mining progression and crafting feedback" complete,
+  GUI-accepted and pushed** (the user worked through the GUI checklist of
+  0.46.0 and 0.47.0, everything works, and pushed main at `6a8afb9f`)
+  (2026-10-14, version 0.47.0, **map reset** plus the
+  migration step 0.47.0,
+  [plan, decisions, numbers and GUI checklist](../planning/round47-plan.md#completion-2026-10-14)).
+  The user pushed main at `b3a30ab0` (every build lane merged) as a
+  backup; production runs 0.45.1 and moves to 0.47.0 in one update that
+  crosses both map resets (0.46.0 was never deployed on its own). From
+  main `18befb9b`: FS, TB, ART, TA (three follow-ups), SW step 1, NZ, CR,
+  OR (with the 0.47.0 declaration), AN, ML, TC (with the groves and
+  density follow-up, the capital greening and a fix round) and SW step 2
+  merged up to `00d0c13b`, then lane TD's desktop measurement
+  (`5493c37c`; llvmpipe, so only the ratios count: a forest's frame time
+  over an empty view about 1.3–1.8× → 2.0–2.3×, draw calls +0–50 %,
+  Highcourt with the capital greening +83 % vertices and about +35 %
+  frame time; accepted as is by the user, full leaves and
+  `TREE_SPACING = 4` stay, the user checks on a real GPU) and this
+  documentation lane D close it. Each code lane
+  independently reviewed by Opus (NZ MERGE AFTER FIXES, a doc line and no
+  chime at the level cap, fixed; every follow-up delta with game logic
+  reviewed again, the display deltas checked by the coordinator; ART on
+  the user's picks). Main has 181 portable fixtures (10 new). Lanes'
+  gates: every lane's full fixture run green, `quick` seed fleets 100/100
+  for OR, AN, TC (each step) and SW, and 100/100 on main `6cb71e25`;
+  `check_fresh_server.py` PASS, smoke boots PASS; on lane D's branch
+  `tools/r37_dc` and `check_upgrade.py` (0.47.0 against origin/main) PASS.
+  **Round-end gates (coordinator, 2026-10-14, on main `c8e1ca12`):** full
+  fixtures 181/181, the full seed fleet 304/304, `check_upgrade.py`,
+  `check_fresh_server.py`, the data, names, model and web-data checks and a
+  smoke boot PASS.
+  The declaration is
+  `{"schema": 2, "version": "0.47.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0"]}`:
+  the third map reset and the third step (stored tool capabilities rebuilt
+  at each character's next join).
+  - **Trees (TA, TB, TC, TD):** 28 shape nodes for seven woods (octagon
+    quarter mesh, limbs, twigs, roots, jungle bark M); the generator in
+    Lua, 32 variants per species (kapok 16) from the world seed at every
+    start; wild forests 321 → 339 and 281 → 322 trees in 22 chunks on two
+    seeds; saplings grow generated trees; town trees 801 → 1,095 in the
+    compositions plus about 1,560 city trees in the capitals (seed 12345).
+  - **The swamp (SW, ART):** the ground mix, pools that never flow, reeds,
+    cattails, moss carpets, swamp trees on stilts with olive leaves and
+    hanging moss, the swamp mobs on the new grounds.
+  - **Mining (OR, AN):** next-tier ores only in the lower half of the band
+    before, Iron behind a Bronze pick with every dig time kept;
+    Anthracite from T2's lower half, no Coal below −300, Steel only from
+    Anthracite, the Anthracite torch (light 14), fuel 120 s, the claim
+    stone's cap in time; all alloys 10 s.
+  - **Furnaces, crafting (FS, CR):** both furnaces at 60 % and silent on
+    dig, the Dual Furnace sounds; crafts into the inventory item by item
+    with a self-draining Overflow; Basic recipes unlock by held
+    ingredients.
+  - **NPCs, zones, map (NZ, ML):** 230 sockets facing walls → 0, the
+    banner 4 s, first-entry zone XP; the map window's eight marker layers,
+    quest mode, named markers and party names.
+  - GUI test of 0.46.0 and 0.47.0 together passed (2026-10-14); pushed
+    at `6a8afb9f` ([carry-overs](../planning/round47-plan.md#carry-overs)).
+
+- **Round 46 "World generation and player feedback" complete; 0.46.0
+  never deployed on its own** (2026-10-13, version
+  0.46.0, **map reset**,
+  [plan, decisions, numbers and GUI checklist](../planning/round46-plan.md#completion-2026-10-13)).
+  At its close origin/main was `0e6b3061` (0.45.1); the user pushed it
+  with Round 47's main (`b3a30ab0`, 2026-10-14), and production moves
+  from 0.45.1 to 0.47.0 in one update (Round 47). From main `31f16c11`: OR, XP, WT, XPC, ART, CB, XPC2,
+  CK, RP, LT, CKF, UW, ID, LTF, DP and PL merged up to `54190e98`, then
+  this documentation lane D; each code lane independently reviewed by
+  Opus (OR, CB, CK, DP and PL MERGE AFTER FIXES, PL twice with a Medium,
+  the quest targets, then the fallback's breadth; every fix made before
+  the merge), the follow-up deltas XPC, XPC2, CKF and LTF checked by the
+  coordinator, ART on the user's picks. Main has 171 portable fixtures (10
+  new). Lanes' gates: every lane's full fixture run green, `quick` seed
+  fleets 100/100 for OR and PL, quest targets on six seeds 1060 ok and 0
+  missing, `check_fresh_server.py` PASS, smoke boots PASS; on lane D's
+  branch `tools/r37_dc`, `check_upgrade.py` (0.46.0 against origin/main
+  `0e6b3061`) PASS. **Round-end gates (coordinator, 2026-10-13):** full
+  fixtures 171/171, the full seed fleet 304/304, `check_upgrade.py`,
+  `check_fresh_server.py`, `gen_bat_ride_mesh.py --check` and a smoke boot
+  PASS.
+  OR and PL change world generation (**map reset**), every other lane is
+  compatible; the declaration is
+  `{"schema": 2, "version": "0.46.0", "map_reset": ["0.40.1", "0.46.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`:
+  the second declared map reset, no migration step.
+  - **World generation (OR, PL):** the §3 resource table with gems one
+    and two tiers deeper (census T1–T6 5.40 / 3.75 / 3.66 / 4.05 / 3.86
+    / 3.47 %); villages, outposts, camps, mines, clash sites, rare dens
+    and the PvP sites placed per seed by rules per kind (98 rows), the
+    fixed kinds unchanged, the failing seed loads, quest-named region
+    kinds always form a region; first start about +1 s.
+  - **XP and quests (XP, XPC, XPC2):** kill XP by level difference with
+    gray at −7 and for every no-XP mob, the con gradient, gathering XP
+    halved without the +5, the 55 repeatables removed, Ruling 33 retired.
+  - **Underground (UW, DP):** spawns from y −1 up to light 7 (a torch
+    keeps 4 nodes clear), sight 26, 4 % elites from level 5, 10 torches
+    per coal or charcoal; the depth pulse below −300 on the user's curve
+    with the Riftwing below −1000 (12.5 µs per step).
+  - **Combat (CB):** the same rage per second for every weapon; caster
+    spells half from the staff or wand, caster talents on the spell base.
+  - **Loot, cooking, crafting, repair (LT, LTF, CK, CKF, ID, RP, ART):**
+    coin bags with the Auto box instead of the 23 sell-only drops (income
+    +2 … +14 % by band), cloth 1/1, spiders at 41–50; the plain role and
+    six plain dishes (every start zone cooks); the ×N count by halving;
+    the ingredient dropdown and one torch recipe; repair only in towns,
+    the mender's icon A1c.
+  - **The waiting point (WT):** (0, 31000, 0) for every player whose wait
+    ends in a teleport; 0 chunks generated around them.
+  - Its GUI test (desktop and web build, new worlds) is still open and
+    runs with Round 47's ([BACKLOG](../planning/round46-plan.md#carry-overs)).
+
+- **0.45.1, the fix round after the 0.45.0 playtest, complete and
+  pushed; production runs it** (2026-10-10, version
+  0.45.1, **compatible**,
+  [lanes, decisions, numbers and GUI checklist](../planning/round45-plan.md#0451-fix-round-2026-10-10)).
+  0.45.0 is on origin/main (`d4a1e645`) and production runs it. The
+  user's playtest became fourteen decided fixes in nine code lanes and
+  GPT-6 Astra's proposal lane TX, all from `d4a1e645`, merged up to
+  `bf639556` with their follow-ups; each code lane independently
+  reviewed by Opus (MERGE; MC MERGE AFTER FIXES with a Medium, riders
+  suffocating in 2-high passages, fixed before the merge), the follow-ups
+  on the user's answers delta-reviewed or checked by the coordinator;
+  then this documentation lane D. Main has 161 portable fixtures (9 new).
+  Lanes' gates: every lane's full fixture run green, `check_fresh_server.py`
+  PASS, smoke boots PASS; on lane D's branch `tools/r37_dc`,
+  `check_upgrade.py` (0.45.1 against origin/main) PASS. **Round-end gates
+  (coordinator, on `r451-d` at `421c1b41`):** full fixtures 161/161 (lane
+  D's run, the same state), `check_upgrade.py` PASS (0.45.1 against
+  origin/main `d4a1e645`), `check_fresh_server.py` and the release-mode
+  audit PASS, smoke boot PASS; lane D's review MERGE AFTER FIXES, fixed. No world generation changed (no seed fleet).
+  The declaration only raises the version:
+  `{"schema": 2, "version": "0.45.1", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`;
+  a 0.45.0 world plays on, no migration step, no map reset; town NPCs
+  that sank into the floor are re-seated the next time their area loads.
+  - **Riding (MC):** a camera per mount (first and third person) tuned by
+    the user with the never-shipped `/mountcam` probe, sizes and seats,
+    eagles centred, a ride-only bat mesh without the body bob, a still
+    ground frame for flyers, Dismount in the quickbar, the first-mount
+    banner, boats only at the water surface.
+  - **Combat (CH, SC):** Charge runs down and up stairs to its target
+    without a camera dip; self and support skills cast on every click
+    (350 ms tap window), self skills also at allies and non-target
+    actors; the right-click food tap.
+  - **Crafting and windows (CU, KF, MZ):** group ingredient labels and
+    the owned icon, − and +, the search clear, the tab order with Map &
+    Quests before Help; the inventory key closes every window; the map
+    zoom's soft lock on the player.
+  - **Towns and music (NQ, TR, MU):** quest giver preselection, town NPCs
+    waiting for their floor and re-seated; the trainer window and the
+    picked greetings, "Grudge-Free Repairs" as the mender's title; the
+    "Now playing" box under the minimap.
+  - Pushed on the user's word (origin/main `0e6b3061` carries it);
+    production runs 0.45.1. Next: the user's GUI test (desktop and web
+    build) ([BACKLOG](../planning/round45-plan.md#0451-carry-overs)).
+
+- **Round 45 "Crafting rework" complete; 0.45.0 pushed on the user's
+  word after the round-end gates** (2026-10-09, version 0.45.0,
+  [plan, completion and GUI checklist](../planning/round45-plan.md#completion-2026-10-09)).
+  Round B of the [UI and crafting rework](../planning/ui-crafting-rework-plan.md).
+  On main from Round 44 with hotfix 0.43.1 (`c913dbbe`): IL (`73a5806f`),
+  RG (`a86098ad`), JB (`0b7b1331`), ST (`0dd375b8`), UI (`ca9cd103`), EU
+  (`2f918739`); then the user's playtest, which became nine fix lanes
+  (PT1–PT9, PT4 research only) and the art lane ART on the user's
+  findings and picks, merged up to `bff2d5b9`; then MS (`4a892fd6`) and
+  this documentation lane D. Each code lane independently reviewed by
+  Opus (MERGE; UI and PT5 MERGE AFTER FIXES with a Medium each, PT6's
+  first follow-up too, PT2's delta with a Low, ST with a Medium for the
+  user; every fix made by
+  the lane before its merge; PT1 and ART without a separate review); main
+  has 152 portable fixtures. MS's full run 151/152 (`r37_dc` waited for
+  this lane), its step test 64/64 (SQLite and PostgreSQL), the chain
+  0.41.0/0.43.0 → 0.45.0 in `r44_ms` 32/32; `tools/r37_dc`,
+  `check_upgrade.py` and `check_fresh_server.py` PASS on lane D's branch.
+  **Round-end gates (coordinator, on `r45-d` at `5d175be6`):** full
+  fixtures 152/152, `check_upgrade.py` and `check_fresh_server.py` PASS,
+  smoke boot PASS; lane D's review MERGE AFTER FIXES, fixed. No world generation changed (no seed fleet). IL, RG, ST
+  and MS are this release's **migrate** step, everything else
+  compatible; the declaration is
+  `{"schema": 2, "version": "0.45.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`:
+  the second release with a declared step — a 0.44.0 world is migrated
+  offline with `python3 tools/migrate.py --world <dir>`, and the
+  production world (0.41.0) gets 0.44.0 and 0.45.0 in the same run; no
+  map reset. **Push:** origin/main is `2f918739` (Round 45 up to EU,
+  still labelled 0.44.0, pushed by the user on 2026-10-09; no realm runs
+  it, the production server is on 0.41.0); 0.45.0 is pushed on the
+  user's word (2026-10-09) after the round-end gates, as the merge commit
+  of lane D. The GUI
+  check (the completion's checklist) is open.
+  - **Crafting (RG, JB, UI):** one recipe registry (662 records, every grid
+    route converted, gear moved to its profession), the grid, books and
+    discovery removed; timed jobs with consumption, catch-up at login,
+    cancel and the 4-slot output area; the Crafting tab with areas, the
+    paged list, the crafting box and the progress bar (Basic page 1
+    4,215 B, 1 send at a job's start, end and cancel).
+  - **Item levels, enchants and upgrades (IL, EU):** the ladder
+    1/11/21/31/41/51 with the requirement = item level; enchants and
+    +N upgrades as jobs in a target slot, upgrades without XP.
+  - **Stations, cooking, alchemy (ST, PT8, ART):** proximity stations
+    without dialogs, Cooking from the start, finished potions at the
+    brewing stand, mixtures inert, Grudge-Free Repairs on the former
+    Cooking sockets, claim repair only at furnaces; station sounds at a
+    job's start, the idle forge loop removed; the user's new station looks
+    and jewellery icons.
+  - **Playtest fixes (PT1–PT3, PT5–PT7, PT9):** the boxed Inventory tab
+    with the money row and 7 rows, one Character Stats mode, the crafting
+    box in three areas with descriptions, recipes above the profession
+    tier hidden, the shift-click inbox; mounts in first person, ride
+    sounds, rider fall damage, liquids end a ride; fliers' wing clip,
+    crabs on steps, night mobs at dawn within 64 nodes; the Claim Stone
+    as a waypoint both ways.
+  - **The step (MS):** 0.45.0 deletes mixtures, empties the craft grid and
+    `craftresult` into the inventory, pins the 0.44 item level of
+    unmodified gear; at the next join leftovers, the T1 weapon damage and
+    the tooltips.
+  - Next: the sync and the user's GUI test (desktop and web build);
+    Round 46 (the waiting point for
+    players in creation stasis, the Grudge-Free Repairs icon, POI
+    placement for the random-seed load failures;
+    [BACKLOG](../planning/round45-plan.md#carry-overs)).
+
+- **Round 44 "Inventory, map and quickbar" complete and pushed**
+  (2026-10-09, version 0.44.0,
+  [plan, completion and GUI checklist](../planning/round44-plan.md#completion-2026-10-09)).
+  Round A of the [UI and crafting rework](../planning/ui-crafting-rework-plan.md),
+  on the accepted wireframe. Wave 1 started from `332c5e79` in parallel
+  with Round 43; on main from 0.43.0 (`9dc2fad5`), after its push: the
+  integration branch `r44-w1` (IH, FR, AR, MB; `93f1536f`), then CH
+  (`fe5cc31b`), TS (`999c490a`), PP (`f45a9bec`), MQ (`c48eb681`), QB
+  (`36019071`), then MS and this documentation lane D back to back; each
+  lane independently reviewed by Opus (MERGE; MQ MERGE AFTER FIXES twice,
+  the re-review with a Medium; every fix made by the lane before its
+  merge); main has 138 portable fixtures. MS's step test 27/27 and lane
+  IT's suite 59/59 on `1770300d`; `tools/r37_dc`, `check_upgrade.py` and
+  `check_fresh_server.py` PASS on lane D's branch. **Round-end gates
+  (coordinator):** fixtures 138/138, `check_upgrade.py` and
+  `check_fresh_server.py` PASS, smoke boot PASS. No world
+  generation changed (no seed fleet). Every lane compatible except MS
+  (**migrate**); the declaration is
+  `{"schema": 2, "version": "0.44.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0"]}`:
+  **the first release with a declared migration step** — a 0.43.0 world
+  is migrated offline with `python3 tools/migrate.py --world <dir>`
+  (unmigrated, the start guard refuses it), no map reset. **Push:**
+  0.44.0 (with hotfix 0.43.1, `c913dbbe`) reached origin/main inside
+  `2f918739`, pushed by the user on 2026-10-09 together with Round 45 up
+  to EU (still labelled 0.44.0); no realm runs it, the production server
+  is on 0.41.0. The platform
+  adopts a version with a real step only once its runner is in production
+  (contract revision 2). The GUI
+  check (plan §6, the completion's checklist) is open.
+  - **The window (FR, PP):** formspec_version 6 at the old size, one tab
+    table (Inventory, Character, Talents & Skills, Crafting, Party & PvP,
+    Help, Map), full and short inventory views; the Bags, Skills, Quests
+    and PvP tabs gone; Party & PvP on one page; Help and every text naming
+    an old tab or key rewritten.
+  - **Inventory (IH, FR):** one give helper for every item source
+    (`main[9..]`, the bags, the hotbar last), bags in bags with checked
+    swaps and removals, the sort, the potion belt, ammo from every list;
+    the Inventory tab with one scrolling grid (Inventory tab 1,405 →
+    2,007 B with four 32-slot bags).
+  - **Character (CH) and Talents & Skills (TS):** the five-mode box with
+    3D as the default, the gear box with the quiver and Return home,
+    shift-click routing; both trees side by side on a tree framework, the
+    skill row, skills only on the hotbar, grants to a free hotbar slot.
+  - **Map (AR, MB, MQ):** the user's art picks (A, font C) baked into the
+    world-map and minimap images, every settlement for everyone; the map
+    window on Z and the Map tab (85 % of the screen, `grug_keys`) with the
+    quest log, quest targets (crosshairs, rings) and event-driven refresh
+    (map form 34,065 → 5,013 B; 0 sends a minute alone, 12 in a moving
+    party).
+  - **Quickbar (QB) and the step (MS):** `grug_quickbar` on E (mounts and
+    boats per owned tier, the belt, Return home), mount items inert; step
+    0.44.0 removes mount items and skills outside the hotbar offline.
+  - Next: the user's GUI test (desktop and web build); Round 45
+    ([plan](../planning/round45-plan.md)) followed on top of it.
+
+- **Round 43 "World migrations" complete and pushed; hotfix 0.43.1 pushed**
+  (2026-10-08, version 0.43.0,
+  [plan, completion, GUI checklist and the platform summary](../planning/round43-plan.md#completion-2026-10-08)).
+  Started from main `332c5e79` (0.42.0); every lane is merged on main
+  (GS `422d4879`, MT `e2b749bb`, IT `328010b5`, the coordinator's HUD fix
+  `d10018a7`, then this documentation lane D); GS, MT and IT each
+  independently reviewed by Opus (MERGE AFTER FIXES each; every fix made by
+  the lane before the merge); main has 130 portable fixtures. Round end on
+  main `d10018a7`: fixtures 130/130, `check_fresh_server.py` PASS,
+  `check_upgrade.py` PASS, smoke boot PASS; lane IT's integration suite
+  59/59 (`tools/r43_it/run.sh`, SQLite and PostgreSQL); the tool's unit
+  tests 38 OK, 2 skipped in the `debian:trixie` container. No world
+  generation changed (no seed fleet). Every lane compatible; the
+  declaration is
+  `{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}`:
+  a 0.42.0 world plays on, its missing record counts as 0.41.0 and is
+  stamped 0.43.0. **Push:** 0.43.0 pushed on 2026-10-09 by the coordinator
+  on the user's request (`9dc2fad5`). 0.43.1 (hotfix on 0.43.0: an empty
+  villager route crashed the server, `tools/hf_0431`; compatible) pushed
+  the same day (`f49eac8d`). The GUI check (plan §6) is open.
+  - **Game side (GS):** the world version record (`grug_core`
+    `world_version`), the start guard at the top of `grug_core` (a newer
+    world, or one with a step between, refuses to start with a message
+    naming the versions or the tool's command), conservative new-world
+    recognition, the online-work runner (world markers at load, character
+    markers at the first join callback), the schema-2 declaration and
+    `check_upgrade.py`'s `migrate` rules.
+  - **The tool (MT):** `python3 tools/migrate.py --world <dir> [--check]`,
+    SQLite and PostgreSQL from `world.mt`, exit codes 0/2/1, one JSON
+    event per line, the data API (characters, meta, inventories,
+    positions, auth, mod storage, markers, raw connections) and the codecs.
+  - **Integration (IT):** test-only steps end to end through real joins
+    and headless boots, the guard cases, a map reset combined with a step,
+    and PostgreSQL seeded from an engine-written world.
+  - **Also:** the HUD text elements give their size a y, ending the
+    engine's deprecation warning on every join (coordinator, found by IT);
+    `tools/r41_up` part F, which pinned the 0.41.0 declaration and failed on
+    main after the 0.42.0 bump, fixed by GS.
+  - Next: the GUI check; Round 44 (UI rework,
+    [plan](../planning/round44-plan.md)) merged to main after the push.
+
+- **Round 42 "Mob navigation" complete, playtest accepted and pushed**
+  (2026-10-08, version 0.42.0,
+  [plan, completion and GUI checklist](../planning/round42-plan.md#completion-2026-10-08)).
+  Started from main `71612d19` (0.41.0); every lane is merged on main
+  (NV0, NV1, NV2, NV3, DR, the user's extra lane ST, last CL `f8265d60`,
+  then this documentation lane D), each independently reviewed by Opus
+  (MERGE; NV1 and NV3 MERGE AFTER FIXES, NV3 with a High and a re-review;
+  every fix made before the merge) and ended with a smoke boot; main has
+  129 portable fixtures. Round end on main: fixtures 129/129,
+  `check_fresh_server.py` PASS, smoke boot of main PASS,
+  `check_upgrade.py` PASS. No world generation changed (no seed fleet).
+  **The user's playtest PT** (NV1–ST) **accepted on 2026-10-08**; CL
+  changes no behaviour. Every lane compatible; the declaration is
+  `{"schema": 1, "version": "0.42.0", "map_reset": ["0.40.1"], "new_server": []}`:
+  a 0.41.0 world plays on. **Push:** the user pushed every Round 42 lane
+  up to ST under the version 0.41.0 (`71f777e2`), then 0.42.0 (origin/main
+  `332c5e79`), both on 2026-10-08.
+  - **Combat (NV1):** one navigation module on the engine's pathfinder,
+    used locally and rarely: a stuck detector, short detours round trees,
+    walls and corners, a give-up also in sight with a veto of 8 nodes or
+    15 s; the old stuck timer, sidestep and crawl are gone; mobs taller
+    than 2 nodes pass 2-high doorways.
+  - **Fixed walks (NV2):** patrols, posts, seats, the royal follow, the
+    evade run home, the rift boss and named rares on the same follower;
+    royal guards run after a fighting leader.
+  - **Settlements (NV3, DR):** a route cache in start towns and capitals,
+    capital patrols along the streets, villager walkers on the follower
+    with at least three spots; NPCs open, pass and close doors on their
+    routes (the second exception to the terrain-damage guard).
+  - **No random stops (ST):** mobs_redo's random stop no longer applies
+    while our navigation drives a mob; the fence stop only for nodes that
+    block.
+  - Numbers (the completion has them all): Dur Brannoc 16 searches a
+    minute before, 7 with a full cache; its legs without a route 41 → 11
+    of 180 through doors (DR); 40 blocked chasers' largest search 357 →
+    193 µs; `mods/` net +1,962 lines.
+
+- **Round 41 "Playtest fixes, the production crash and the upgrade
+  contract" complete and pushed** (2026-10-07, version 0.41.0,
+  [plan, completion and GUI checklist](../planning/round41-plan.md#completion-2026-10-07)).
+  Started from main `7d8b79d9` (0.40.1, pushed on 2026-10-07);
+  every lane is merged on main (last UP, `a3790e65`, then this
+  documentation lane D), each code lane independently reviewed by Opus
+  (MERGE, SC MERGE AFTER FIXES; every fix made before the merge) and ended
+  with a smoke boot, except the coordinator's one-line lane WW (no review;
+  covered by main's fixtures and smoke boot after its merge); main has 123 portable fixtures. Round end on main:
+  fixtures 123/123, smoke boots PASS, `check_upgrade.py` PASS. Seed fleet
+  `full` 304/304.
+  **First release under the upgrade contract** (release mode, AGENTS.md):
+  the declaration is
+  `{"schema": 1, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": []}`;
+  every lane compatible except CR (map reset). **Pushed** by the user on
+  2026-10-08 (origin/main `71612d19`, the Round 42 start); the declaration
+  asks the hosting platform to move the production server (0.40.0) to
+  0.41.0 **with a map reset**.
+  - **Fixes from the Round 40 playtest:** mobs on scripted walks move
+    their legs at once, royal guards too; kings and Generals hold their
+    seat (MOB); the recipe book's Close and the station's Repair form
+    return to the station, slots that accept several items show them as
+    small icons (UI); the waterweed bed is no glass sand (WW); a new
+    right-click while the bow is drawn fires and draws again, the quiver
+    shows its true total (SC); world-map tiles of the other quality are
+    removed and a render crash leaves no mixed tiles (MAP).
+  - **The production crash (CR):** most likely a water-guard barrier in a
+    layer saved before its chunk was generated stopped the server in a loop
+    (reproduced with placed barriers; not proven without the production
+    map); the writer now reads it as air, and any mapgen failure keeps the engine's
+    terrain for that chunk and is reported as `[GRUG-SEVERE]` in the log
+    and a red chat line instead of stopping the server.
+  - **The upgrade contract (UP):** `tools/web_data/upgrade.json` and
+    `tools/check_upgrade.py`, the map reset through `grug_reset_world`,
+    unknown quest ids in saved state dropped; the platform summary is in
+    the completion.
+  - Next: the sync and the user's GUI test (desktop and web build), the
+    push, then the production migration; Round 42 (mob navigation,
+    [plan](../planning/round42-plan.md)) waits for the user's "go".
+
+- **Round 40 follow-up lane ORE merged and pushed** (2026-10-07, main
+  `3251158c`, version 0.40.1,
+  [plan, follow-up lanes](../planning/round40-plan.md#follow-up-lanes)):
+  ores, coal and gems wherever digging is allowed (only the start towns'
+  and capitals' protected footprints keep them out; graded rock round
+  every anchor and the coastal shelf host them), and gatherable plants
+  grow round villages, camps and POIs like trees (user rulings
+  2026-10-07). World generation changed: **new world** for GUI item 7.
+  Fixtures 119/119, seed fleet quick 100/100, smoke boot of main, engine
+  probe `tools/r40_ore` PASS; independent review (Opus) merge after
+  fixes, fixed. Pushed on 2026-10-07 (origin/main
+  `7d8b79d9`); the production server stays on 0.40.0 until Round 41.
+
+- **Round 40 "Combat feel" complete and pushed**
+  (2026-10-06, [plan, completion and GUI checklist](../planning/round40-plan.md#completion-2026-10-06)).
+  Pushed on 2026-10-06 by the coordinator on the user's request (origin/main
+  `94605188`), before the user's GUI test; a fix round follows it.
+  Started from origin/main `d018d866`; wave 1 built the acceptance pages
+  and a GUI probe, wave 2 the user's picks. Every lane is merged on main
+  (last AN2, `bd52bbf4`, then this documentation lane D), each code lane
+  independently reviewed by Opus (MERGE or MERGE AFTER FIXES, the fixes
+  made before the merge) and ended with a smoke boot; main has 119
+  portable fixtures. No world generation changed (no seed fleet): an
+  existing world is enough for the GUI test, a new character for the
+  check that skill items show no wear bar.
+  - **Cooldown overlay (CD):** a 50 % black cover clearing clockwise and
+    the time left as image digits on hotbar slots, replacing the wear bar;
+    a 0.1 s pass over players with a running timer, writing only visible
+    changes and no inventory.
+  - **Poses and head look (AN1, AN2):** seven poses baked into the player
+    model, standing and walking, blended over 0.12 s; the head follows the
+    look pitch in 5° steps (at most about four writes a second per
+    player, none standing still).
+  - **Charge (CH):** a dash at 24 m/s on a path planned at the cast, with
+    the user's hole rule; the hit, stun and rage on arrival, a miss spends
+    only the cooldown; the arrival hold of about 0.34 s stays until the
+    user's GUI pick.
+  - **Particles (PX, PM):** one helper and `grug_particle_scale` for every
+    effect; every player skill but Strike, the bosses and the mob
+    specials; a busy fight about 20 KB/s into each nearby player and about
+    2.6 ms/s of main thread at scale 1.0 (model estimates).
+  - Next: the round-end gates on main, the sync, and the user's GUI test
+    (desktop and web build); the overlay is accepted only provisionally
+    until then.
+
+- **Round 39 "Web data for the realm website" complete and pushed**
+  (2026-10-06, [plan, completion and GUI checklist](../planning/round39-web-data-plan.md#completion-2026-10-06)).
+  No gameplay change: data for websites that host managed realms. Every
+  lane is merged on main (WG `8953178d`, then WM and WE together
+  `03a76229`, then this documentation lane D), each independently reviewed
+  by Opus (all MERGE, their Lows fixed before the merge); 112 fixtures, the
+  exporter's `--check`, `check_glb.py` and `build_glb.py --check` pass.
+  **`grug_xp:level` lands on main with `03a76229`**, the first commit with
+  `tools/web_data/web_data.json` (the website's support rule). No world
+  generation changed: an existing world is enough for the GUI test.
+  - **Player meta (WM):** `grug_xp:level` on every XP change and join;
+    `grug_visuals:appearance` (slot items only, the composed body and
+    cloak textures, hand images and poses), written only on a real change;
+    texture strings at most 2,048 bytes (measured 1,382), the value at most
+    10,240 (measured 2,964), a closed texture grammar; the five keys the
+    website reads in the
+    [module guide](../technical/module-guide.md#player-meta-read-by-external-tools).
+  - **Export (WE):** `tools/web_data/web_data.json` (117 KB; ids and
+    names, levels, the model's frames, the wield geometry, 526 texture
+    files, 48 hand and 156 equippable items), LuaJIT over the real
+    registration files, `--check` as a fixture.
+  - **Model (WG):** `grug_visuals_character.glb`, animated stand and walk
+    (own converter after `assimp` failed the clips and materials), tested
+    against the `.b3d` within about 1e-6; a probe mod for the GUI check.
+  - Round end on main: every gate passed, synced. **GUI-accepted by the
+    user on 2026-10-06** (the look unchanged, the glTF probe); pushed by
+    the user on 2026-10-06 together with Rounds 37 and 38, after Round 36 on
+    2026-10-05 (origin/main `d018d866`, the Round 40 start), whose GUI tests are still open. The
+    coordinator's report to the website names the level-key commit.
+
+- **Round 38 "Mob names" complete and pushed**
+  (2026-10-06, [plan, completion and GUI checklist](../planning/round38-mob-names-plan.md#completion-2026-10-06)).
+  Pushed by the user on 2026-10-06 with Round 39 (origin/main `d018d866`).
+  Every lane is merged on main (last lane PR, `ec2e874c`, then this
+  documentation lane D); each code lane independently reviewed by Opus
+  (lane C, a checker option, without its own review), the naming lanes'
+  proposals by a taste review and the user's page; 108 fixtures pass,
+  `validate.py --game` 0 errors (the same 7 warnings), `check_rules.py
+  --shipped` 0 problems, `guarantee.py --check` passes. No world
+  generation changed (no seed fleet), but the GUI test wants **a fresh
+  world**: garrison guards and named rares carry their name key from their
+  placement. Round end (main 3607e9ae): 108/108 fixtures, the checks above,
+  one headless boot of main, synced. Follow-up lane WC (the user's second
+  agent, merged after lane D, `f21aea6d`): a welcome window once per new
+  character after its arrival; independently reviewed twice (its overflow
+  fix measured against the engine's font metrics); 109 fixtures pass;
+  boot of main and resync after the merge.
+  - **Names (I, V, Z1–Z7, C, T, the page, B2):** new names for every mob
+    slot in the user's picks from the
+    [preview page](https://claude.ai/artifact/BaT3x8SHz3PiRduScz39aG):
+    536 of 950 slots renamed, 356 → 513 distinct names, the plan's hard
+    name rules broken 374 → 0 times (at most two words for normal mobs,
+    no signal words, Piglet only for the start pigs, one level stretch
+    within one drop tier); kings, royal guards, dragons, whelps and the
+    rift boss read the names file; the dragon whelps at level 60
+    ([biomes_mobs.md](../design/biomes_mobs.md#round-28-sub-types-and-loot-by-band)
+    "Names").
+  - **The quest-name guarantee (M/B1):** a kill counts by the name the mob
+    shows, wherever it spawned; objectives leaving same-named mobs
+    uncounted 268 → 0, captain labels naming another mob 21 → 0
+    ([quests.md](../design/quests.md#the-quest-name-guarantee)); the
+    kill path 0.73 → 0.30 µs per kill that credits nothing.
+  - **Texts and terms (B3, IB, PR):** 242 quest text fields on the new
+    names (texts that never say a counted name 216 → 0), the Kraken,
+    twelve shorter item names, Group becomes Party (the tab, the invite,
+    20 "Party: …" quest titles).
+  - Next: the user's GUI test (desktop and web build, a fresh world),
+    together with Rounds 36 and 37, which are still open.
+
+- **Round 37 "Audit fixes" complete and pushed**
+  (2026-10-06, [plan, completion and GUI checklist](../planning/round37-plan.md#completion-2026-10-06)).
+  Pushed on 2026-10-06 with the Round 38 plan (`db848931`; origin/main
+  is now `0ba677fe`, Round 38's start). Every lane is merged on main (last
+  lane F, `27e5db87`, then this
+  documentation lane D), each code lane and each non-trivial docs lane
+  independently reviewed by Opus; 106 fixtures pass, `validate.py --game`
+  0 errors, `income.py --check` passes. The round fixes the
+  [October 2026 audit](../audit-2026-10/README.md)'s code packages P1–P5, the
+  mapgen win MGT-02 with P7, the sound question P9 and the documentation
+  packages A–F. Lane MG changed the generator's code but not its output
+  (`seed_fleet quick` 100 of 100, every roster hash unchanged), so **no
+  fresh world is needed beyond Round 36's**. Round end
+  ([completion](../planning/round37-plan.md#completion-2026-10-06)):
+  `seed_fleet full` on `27e5db87` **303 of 303 seeds build**, 0 failed
+  (16 min 31 s), every roster hash equal to the opening baseline; one boot
+  of main PASS; synced to the user's game after lane D's merge.
+  - **Combat (CB, MB):** durability as its own cheap event (weapon wear
+    217 → 14 µs, a taken hit with armour 296 → 31 µs), the max-HP clamp
+    is not damage (mounts, the quest use-hold, shields), one knockback
+    rule, the dead WP38 path removed; a hit retargets a mob only through
+    threat, the full swing animation, the elite wind-up freezes its facing
+    and pauses its attacks ([combat_stats.md](../design/combat_stats.md)).
+  - **Mobs and bosses (MP, F):** one liveness rule for named rares and
+    dragons, authored actors outside the mob cap, a restart keeps the
+    world's mobs, Bone Call capped, royal guards return, the side shots of
+    the breath fan and the King's volley fly straight; start zones fight
+    alone, the Salt Reef Lurker on the 51–60 coasts.
+  - **Interaction and polling (IX, PO, F):** right-click with seeds, a
+    bucket or the rod, tall crops, the furnace form, grass and moss on
+    authored ground, the water-guard loop (1560 reverts in 120 s → 0);
+    the minimap and quest markers update only on change, the tracker,
+    discovery and Claim Stone scan do less (all Lua at 100 stand-ins
+    98.9 → 82.5 ms/s); the minimap always at normal quality.
+  - **Mapgen (MG):** no decoration halo (planner −8 %, byte-identical),
+    one shared world assembly, tracebacks kept, the seed fleet plans and
+    writes five real chunks per seed (about 25 s per seed).
+  - **Sound (SN):** the user's picks for the dragon's return and the Rift
+    Spawn's fuse and burst.
+  - **Documentation (DA–DF):** status synced, AGENTS.md slimmed to working
+    rules with the [round workflow](../process/round-workflow.md) and one
+    owner per fact, a player README with [CHANGELOG.md](../../CHANGELOG.md)
+    and version 0.37.0, the world, player and item design docs against the
+    code.
+  - Next: the user's GUI test (desktop and web build, two clients for the
+    party fight, knockback, the breath fan's bystander and Bone Call's
+    raiders), together with Round 36's, which is still
+    open; Round 38 "Mob names" followed and fixed the quest kill-credit
+    bug the user met.
+
+- **Round 36 "The main questline" (WP9) delivered and pushed**
+  (2026-10-05, [plan, completion and GUI checklist](../planning/round36-plan.md#completion-2026-10-05)).
+  Every lane is merged on main (last the text pass T, `5069b5a5`, then the
+  follow-up lanes below, last RD `fef94a6a`), each code and data lane
+  independently reviewed by Opus (W2, which only turns blocks, without a
+  separate review); 96 fixtures pass, `validate.py --game` 0
+  errors; pushed by the user on 2026-10-05 (`1e8a975d`, then `0f169898`
+  with the follow-up lanes). GUI test open. **A fresh world is required**,
+  made on `fef94a6a` or later (the decor pass, the dragon arenas and the
+  follow-up lanes' benches, ground cover and roads are world generation).
+  Seed fleet: `quick` 100 of 100 for lanes G, W, W3 and RD; the round-end
+  `full` owed after W3 and RD ran at the start of Round 37 on `0f169898`:
+  **303 of 303 seeds build**, 0 failed ([Round 37 plan](../planning/round37-plan.md)
+  §7). WP9 delivered, and WP13's POI review.
+  - **The main line (S, E, Q0, Q-A, Q-T, T):** each faction's three
+    chapters from its fortress Warmaster at 41, 46 and 53 and a party
+    finale at 60, on the approved
+    [story bible](../planning/round36/story-bible.md) (the Undertithe and its
+    branded coin): the front climaxes folded in, a solo captain's orders
+    from an enemy war camp on The Shattered Line, a traitor in each
+    fortress's own pay line, ten corrupted sub-types with one ember tint,
+    the "use at a place" objective with twelve quest objects seen only by
+    their quest's holders, a turn-in hook and three achievements with
+    cloaks (a faction's row hidden from the other faction); 540 quests
+    (+25). Texts by GPT-6 Astra, reviewed by Opus with the user's picks
+    ([quests.md](../design/quests.md), [story.md](../design/story.md)).
+  - **The rift (R):** a void crack at Tombroad Ambush (11 % of the maximum
+    HP per second, swim out) and Isquarre the Tithe-Eater, a level-60
+    elite at twice an elite's health for two or three players, back after
+    5 minutes, two blue or gold items once per 24 hours; war commanders
+    Greyvow and Stonegrudge in two enemy war camps
+    ([world.md](../design/world.md) §4b, [pvp.md](../design/pvp.md) §6.2).
+  - **Fixes (F) and classes (K):** crosshair and click share one target
+    predicate with an "Evading" notice; free mobs run home only from
+    outside their 32-node wander radius; the level-up banner names talent
+    points; Priest heals and absorbs grow with gear Intelligence, the
+    Scout's damage set matches the Warrior's, spells floor once after the
+    level scalar ([combat_stats.md](../design/combat_stats.md)).
+  - **Dragons (G):** wider ember fissures, larger ice fields, ice water
+    back after 2 minutes and a telegraphed wing gust that pushes players
+    about 6 nodes.
+  - **Decor pass (P, W; WP13):** every POI rendered on a review page for
+    the user's verdicts, then a theme per POI kind instead of the old block
+    formations, small touches on every house of the POIs, start towns and
+    capitals, benches turned the right way, no window blocked
+    ([settlements.md](../design/settlements.md) "Decor pass").
+  - Prices re-derived after the new quest copper (Expert Riding 1g29s,
+    Master Riding 7g38s, the 41–50 respec 5s25c, the crown 1g48s). A second
+    text review of the other quest texts landed as `6794af6e` (136 Opus
+    suggestions, all accepted by the user; catalogue regenerated in
+    `1e8a975d`).
+  - **Follow-up lanes from the user's first look** (merged 2026-10-05
+    evening, [completion](../planning/round36-plan.md#follow-up-lanes-2026-10-05-evening)):
+    an LMB held across a hotbar switch goes on with the new skill after it
+    stayed selected 0.2 s, and digging goes on across a switch (F2); every
+    bench keeps its back to the wall beside it and looks out (W2); the
+    protected band round start towns and capitals grows low ground cover,
+    still no trees (W3); roads no longer trace the ground's one-node dither
+    (`C_STEP` 0.05 → 0.5, no lone half-step bumps or holes; RD).
+  - Next: the user's GUI test (desktop and web build, two clients for the
+    rift), still open; Round 37's lane F took the user's rulings of
+    2026-10-06 instead. The main-menu background waits for the user's
+    screenshot.
+
+- **Round 35 "Fixes and character creation" delivered**
+  (2026-10-05, [plan, completion and GUI checklist](../planning/round35-plan.md#completion-2026-10-05)).
+  Every code lane is merged on main (last lane B, `a15bd0ae`), each
+  independently reviewed by Opus; 84 fixtures pass; pushed by the user on
+  2026-10-05 (`7c4cad0a`). No mapgen change. The fixes come from the user's
+  Round 34 GUI test.
+  - **Aiming (T):** the server's aiming rays test rotated selection boxes
+    in Lua (an engine bug since Luanti 5.12 misreads them), so held casts
+    and swings no longer miss zombies, crocodiles and other turned mobs
+    (zombie 62 of 288 probe rays → 0, crocodile 32 of 192 → 0); about
+    +22–45 µs per ray. The new
+    [upstream-workaround list](../technical/upstream-workarounds.md) records it
+    with the emerge-thread pin.
+  - **Music (M):** only in the six capitals, one rotation each, either music
+    or the ambience bed (a 3 s crossfade), 5 s between tracks, 35 % by
+    default; no music in start towns or elsewhere
+    ([sound.md](../design/sound.md)).
+  - **Small fixes (F):** a break sound when gear breaks (the user's pick),
+    a clearly broken look, the bare hand for a skill without a weapon, dig
+    sounds for ores, coal, gems and sand, flint removed, quest lists
+    coloured by status with "(R)" and read-only quest text.
+  - **Character creation (C):** faction, race, class and look in one window;
+    nothing is stored before "Create character" ([world.md](../design/world.md) §7).
+  - **Mobs and economy (E):** night mobs leave at dawn unless fighting or
+    within 32 nodes of a player; the rat, crab, fox, crocodile, zombie and
+    outlaw drop outliers lowered, band medians unchanged.
+  - **Talents (B):** 13 flat talent values became level-proof percentages,
+    and the user's picks from a review of all 64 talents
+    ([skill_trees.md](../design/skill_trees.md) §2.10).
+  - Next was the user's GUI test (desktop and web build); its first
+    findings joined Round 36 (lane F).
+
+- **Round 34 "Sound" delivered**
+  (2026-10-04, [plan, completion and GUI checklist](../planning/round34-plan.md#completion-2026-10-04)).
+  Every lane is merged on main (last lane S1b, `b0d648f5`), each code
+  lane independently reviewed by Opus; every shipped sound was picked by the
+  user on a listening page; 77 fixtures pass; pushed by the user on
+  2026-10-05 (`86d7c4c5`). No mapgen change.
+  Rules: [sound.md](../design/sound.md); credits: [CREDITS.md](../../CREDITS.md).
+  - **Effects (S1a, S1b):** `grug_sounds` with a one-line play helper and
+    the formspec click; cues for NPC roles, quests, trade, progression,
+    crafting, items, mounts, travel, fishing and the Enable PvP button; hits
+    by weapon kind, dodge, block, death, one cue per ability theme, mob
+    voices in 22 families, dragon and King cues. Many events stay silent by
+    the user's choice (quest accept, drops, crit and others). 118 files,
+    1.49 MB.
+  - **Ambience and music (S2):** `grug_ambience`: a quiet bed per region,
+    night, cave, deep underground and sea (towns at half gain), distant
+    thunder on the dragon islands, loops at forges (removed in Round 45),
+    hearths and flowing water; four music pools (Land, Front and sea,
+    Underground, Town; since Round 35 music plays only in the capitals)
+    whose 16 tracks are pushed
+    to a player only while music is on; a main-menu theme; Help → Sound,
+    `/music`, `/ambience`. First-join media 14.10 →
+    20.82 MB; the music (30 MB) is never part of it.
+  - **Fixes (F1, F2):** mobs follow their target through water in combat and
+    swim back to land; text boxes sized to their text; each tier's Caster
+    dish costs the most; the Bag of Coins (withdraw and deposit, money
+    between players); map markers for the Crownbinder and the Decor
+    Merchant; the damage fit keeps attribute fractions; encounter adds drop
+    no gear; Wyrmglass thin ice breaks 1 s behind a runner.
+  - Late fixes: rivers never cover a POI core (about 1 % of random seeds
+    failed to load since Round 29), a reusable seed fleet
+    (`tools/seed_fleet/run.sh`), the Wisp's blink never lands in water.
+  - Next was the user's GUI test (desktop and web build); its findings
+    became Round 35.
+
+- **Round 33 "Items, professions and achievements" delivered**
+  (2026-10-04, [plan, completion and GUI checklist](../planning/round33-plan.md#completion-2026-10-04)).
+  Every lane is merged on main (last lane C5, `16c498b9`), each code
+  lane independently reviewed by Opus; the data lane DS approved by the user
+  through its preview; 72 fixtures pass, `income.py --check` passes again;
+  pushed by the user on 2026-10-04, after Rounds 30–32. **A fresh world is
+  required** (the cultural materials leave the mapgen). Numbers in [item_tiers.md](../design/item_tiers.md).
+  - **Drops (C1):** at most one item per kill, normal 5/2/1 % white/blue/gold,
+    named, elite, zone leaders and war-camp captains 10/10/5 %; Kings,
+    dragons and the General two blue or gold items at item level 65/70 with
+    T7 enchants; bags as 0.1 % world drops; shields, spellbooks and trinkets
+    in the pool; every equipment slot requires min(item level, 60); blue
+    sells ×3, gold ×6; the Kraken Guard a level-70 elite without XP or drops.
+  - **Professions (C2, C4):** Alchemy is a secondary beside Cooking with its
+    own book slot; progress only from real recipes; enchant values grow with
+    item level up to the tier's cap, the tier shows in the tooltip, T7 from
+    boss drops and the crown; a weaker overwrite is warned; each profession
+    upgrades its families to the tier's top; bows go to the Leatherworker,
+    spellbooks to the Tailor; removed: cultural materials and finishes, the
+    PvP counter, the Warding Draught, grips, reagents, apothecary gear,
+    Ornament Components ([professions.md](../design/professions.md)).
+  - **Vendors, combat and capitals (C5):** vendors sell T1 bases only and buy
+    back all gear; repair ×1.00; Healing and Mana Potions I–VI with one 60 s
+    cooldown; crit ×2 with 0.05 % per Dexterity point; the Crownbinder (crown
+    1g 48s plus a Fallen Crown) and the Decor Merchant in every capital
+    ([economy.md](../design/economy.md), [combat_stats.md](../design/combat_stats.md)).
+  - **Cloaks and achievements (C3):** 17 per-character achievements unlock
+    41 cosmetic cloaks painted by GPT-6 Astra; an Achievements tab and a
+    cloak dropdown on the Character page; the cloak swings on the player
+    model ([character_visuals.md](../design/character_visuals.md) §5b).
+  - Next was the user's GUI test (with Rounds 30–32); its findings and the
+    Bag of Coins became Round 34's fix lanes beside sound.
+
+- **Round 32 "Fixes, preparation and research" delivered**
+  (2026-10-03, [plan, completion and GUI checklist](../planning/round32-plan.md#completion-2026-10-03)).
+  Every code lane is merged on main (last lane F4, `2f709fbc`), each
+  independently reviewed by Opus (F3's third pass and F2's last small
+  commit checked by the coordinator); 66 fixtures pass; pushed 2026-10-04. No
+  mapgen change: the Round 31 fresh world serves the GUI test.
+  - **Map and HUD (F1):** the minimap zoomed ×2 (a 440-node window; the base
+    map unchanged); hostile camps (bandit and Mirefolk) as a red "X" on the
+    Map tab instead of the quest giver's "!"; the zone banner and the
+    minimap line coloured by the territory at the player's position (green
+    friendly, yellow contested, red enemy, y ≤ −501 contested) with the
+    line "Friendly Territory" / "Contested Territory (PvP)" / "Enemy
+    Territory (PvP)" in place of Round 31's subtitle
+    ([world_map.md](../design/world_map.md)).
+  - **LMB hold and quest labels (F2):** one gather/combat state machine: a
+    gather hold turns into combat when a hostile (neutral mobs too, players
+    only when both are flagged) comes into the crosshair and reach, and
+    back once that foe is gone; self and support skills fire only on a
+    fresh press ([classes.md](../design/classes.md#left-click-and-held-input));
+    kill objectives name the mob as its zone shows it, kept by two new
+    validator rules ([quests.md](../design/quests.md)).
+  - **Playtest fixes (F3):** combat notices and the personal notices
+    (item-use and equip refusals, mount and talent notices, boss loot) in
+    the message feed instead of chat; the quest log in one text field with
+    Track on HUD and Abandon in one row.
+  - **Performance (F4):** the Map tab builds at most two forms per 0.1 s
+    pass, the party HUD polls in five slots, camps and leaders tick in zone
+    slices (100 stand-ins: Map tab step maximum 34.5 → 13.4 ms, party HUD
+    16.2 → 4.3 ms).
+  - **Studies (R1–R3, read-only):**
+    [performance review](../research/perf-review-2026-10-r32.md) (50/100
+    stand-ins; memory and first-join media notes for a playtest server),
+    [sound research](../research/sound-research-2026-10.md) (sound is V1; seven
+    decisions open), [items and professions analysis](../research/items-professions-analysis-2026-10.md)
+    (16 questions for a design session).
+  - The user tested it with Rounds 30, 31 and 33 (the findings fed Round
+    34); the round counts as GUI-accepted (the user, 2026-10-05). The
+    items design session became Round 33, sound Round 34.
+
+- **Round 31 "PvP, appearance and clean-up" delivered** (2026-10-03,
+  [plan, completion and two-client GUI checklist](../planning/round31-plan.md#completion-2026-10-03)).
+  Every lane is merged on main (last lane Q, `699a2002`), each
+  independently reviewed by Opus except the small follow-ups M2 and G2
+  (checked by the coordinator); pushed 2026-10-03. WP41 delivered and WP42's
+  PvP-POI part; rules in [pvp.md](../design/pvp.md). A fresh world is required.
+  - **Geographic PvP (P1, P2, P1b, P1c; WP41):** PvP only between two
+    flagged enemy players; the flag comes from contested ground or enemy
+    territory, the "Flag me for PvP" button (60 s) and PvP contact (60 s);
+    only own peaceful land clears it; an unflagged enemy is no target; one-way
+    support whose refusal costs nothing; 10 s PvP combat; logout in PvP
+    combat is death with kill credit; contested depth from T4 (y ≤ −501).
+    A PvP tab with the button, the state and statistics, two status icons,
+    a banner subtitle and the target-frame marker. PvE combat unchanged
+    (within noise); location tick 53 µs per second for 50 fake players.
+  - **Faction filter (N):** NPC services, quest givers and waystones serve
+    only their own faction; map and minimap show own-faction NPC markers
+    plus every king and both dragons, and hide the enemy's settlement icons
+    (war camps stay).
+  - **PvP POIs (S, M, M2, G, G2, Q; WP42 part):** Ashenward Bastion and
+    Bannerbreak Warhold (49 × 49, one gate, 12 elite guards, a level-65
+    General with two bodyguards, three quest givers, a Quartermaster, the
+    seventh waystone, a trail to the middle road) and 16 Battlegrounds camps
+    with garrisons in the camp's race and band and named captains (leaders,
+    not elites); protection + 10 nodes, no hostile spawns; 24 fortress
+    quests from level 40 (8 solo camp raids, 3 ordinary, 1 entry per
+    faction; 515 quests in total). Several secondary roads and trails
+    re-route round the new POIs (0–6 per seed); the middle road keeps its
+    course. Quest share: the user chose lower raid weights (3/4).
+  - **Appearance (A, B):** body features chosen once at creation (skin tone,
+    hair colour, hairstyle, eyes, a race feature), NPC looks rolled once,
+    helmets with a face window, equal hitboxes for every race and for the
+    mounts of each tier; enchant colours as thin stripes at 50 % on items,
+    held and dropped stacks, worn armour and the kings' weapons, with a
+    legend at the enchanting stations
+    ([character_visuals.md](../design/character_visuals.md)).
+  - **Dragon arenas (DA2):** round arenas of radius 40 on local ground; the
+    edge is the leash (reset, full heal, flight home); ice water 250/s and
+    frost terraces on Wyrmglass, ember fissures 350/s and trunks on
+    Stormscale; the dragon's wrath 500/s for participants outside
+    ([world.md](../design/world.md) §4b).
+  - **Clean-up (C) and names:** the query caches dropped after a first
+    start's build (heap at the first step 149 → 110 MiB), held objective
+    counts capped, the turn-in refresh, the zone-grid encode in the pcall,
+    `tools/run_fixtures.sh` (63 fixtures pass); Heal, Shield, Mend and Ice
+    Nova replace another game's spell names; neutral wording instead of a
+    commercial MMO's terms; captain and General names by GPT-6 Astra.
+  - Final engine check (2026-10-03, main 699a2002, seed 42): PASS 7/7 — boot clean (cold 38.3 s to listening, heap 111 MiB; second boot 7.3 s, 67 MiB); both fortresses 19/19 NPCs with mixed faction races, camps with leader-captains (×1.5 HP, ×1.15 size), gate trails, protection margin, 7th waystone, no hostile spawns inside; flag logic 9/9 incl. y −500/−501 under a capital; faction filter (enemy settlement icons hidden, 8/8 enemy war camps shown, enemy givers/vendors refuse); looks persist and vary (13/13); enchant colours on dropped, wielded and worn gear; Wyrmglass arena floor of local ground, hazards and protection to ±40; 515 quests load. Cosmetic: frost terraces merge into the floor where the ground reaches their height (57 of 409 columns); fortress quest givers' nametags fixed after the check.
+  - The user tested it with Rounds 30, 32 and 33 (the findings fed Round
+    34); the round counts as GUI-accepted (the user, 2026-10-05).
+    Seed-dependent POI placement was set aside (2026-10-03); Round 32
+    followed.
+
+- **Round 30 "Performance and clean-up" delivered** (2026-10-02,
+  [plan, completion and playtest checklist](../planning/round30-plan.md#completion-2026-10-02)).
+  Every lane is merged on main (last lane P2, `b64709d7`), each
+  independently reviewed by Opus; pushed 2026-10-03. Numbers are each lane's
+  before/after comparison on its own probe, never targets.
+  - **Quest state and map UI (P1, P1b):** a decoded quest-state cache and one
+    marker pass for all givers (minimap 55.8 → 9.3 ms/s, quest HUD 17.1 →
+    6.5 ms/s at 40 stand-ins); the Map tab sends at most every 2 s and only
+    on a change (17.2 → 0.93 ms/s, 179 → 33 KB/s); **Return home** moved to
+    the Character page (user ruling); quest markers and NPC tags follow held
+    objective items and level-ups within about 1.5 s
+    ([world_map.md](../design/world_map.md), [home_travel.md](../design/home_travel.md)).
+  - **Region-map cache and boot memory (P3):** the region maps and the Map
+    tab's zone grid are read from the world folder on a later start (warm
+    boot 15.3 → 7.2 s), only the compact maps stay in memory (Lua heap
+    127.6 → 70.5 MiB), boot peak memory 2.12 → 1.76 GB
+    ([spawn_regions.md](../design/spawn_regions.md#cache-and-memory)).
+  - **Mob pathing and spawning (P2):** A* inside about 3 ms per server step
+    with waits after a failed search, and **mobs give up a target they cannot
+    reach** after three failed searches (dragons only wait, kings only drop
+    the target; 40 blocked chasers 6.83 → 0.68 ms per step); no per-step
+    `get_properties()` (garbage 7.75 → 4.93 MiB/s); 56 of 88 spawn rows
+    retired and the rest in three merged ABMs (block scans 404 → 104 per
+    second); the `general_attack` eye-height bug fixed
+    ([combat_stats.md](../design/combat_stats.md), [biomes_mobs.md](../design/biomes_mobs.md) §4).
+  - **Per-player ticks (P4):** a crafting lookup index (200 → 5 µs), the
+    crosshair state every 0.15 s (14 → 7.7 ms/s standing), tag carriers in
+    eight slots, the flight-border sweep 268 → 43 µs, fewer crop-soil timers.
+  - **Island landings (L):** a sand beach and a wooden pier at each of the
+    four dragon-island landings; the islands get no paths or roads by design
+    ([boats.md](../design/boats.md) §7.1).
+  - **Clean-up (C):** the legacy quest fields removed (unknown fields stop the
+    load), the stale fixtures repaired, the riding-tier purchase fixture, no
+    craft warnings at boot; the **Dawnmere NPC duplication** found and fixed
+    (start NPCs could come back twice after an early block unload).
+  - **Band smoothing (E):** band-4/5 loot medians 39.0 → 43.6c and 147.6 →
+    119.5c; Expert Riding 1g37s, respec 31–40 2s and 41–50 6s
+    ([economy.md](../design/economy.md)).
+  - **Final engine check PASS** (seed 42, 2026-10-03): cold boot stores
+    both caches (region hook 8.8 s, "listening" 40.0 s); the second boot
+    hits them (3.3 ms, "listening" 6.9 s, heap 71 MiB after GC); log free
+    of ERROR and craft warnings; four landings with pier and beach
+    (Stormscale south also has a natural walkable slope up); surface,
+    cave and bay spawns with at most one mob per merged trigger;
+    Dawnmere 13 NPCs, no duplicates after reloads; boxed-in target given
+    up and searches drop to 0, a target on a bottom slab is chased.
+    The user tested it with Rounds 31–33 (the findings fed Round 34); the
+    round counts as GUI-accepted (the user, 2026-10-05).
+
+- **Round 29 "Economy and travel" complete and pushed** (2026-10-02,
+  [plan, completion and playtest checklist](../planning/round29-plan.md#completion-2026-10-02)).
+  Every lane is merged on main (last lane D, `e512bb5c`), each
+  independently reviewed by Opus; the user tested it on a fresh world and
+  pushed it. The quest lanes were merged
+  together after the user approved a sample per track.
+  - **Quests (Q1–Q9, T):** 491 quests in 42 zone files replace the 240
+    legacy quests: one track per race from the start zone to its heartland
+    (Human 54, Dwarf 58, Elf 71, Undead 53, Orc 48, Troll 63), the contested
+    31–40 zones (35 / 30) and the 41–60 front with repeatable and island
+    bounties (40 / 39). Seed-dependent directions are placeholders filled
+    from the spawn regions; fixed compass words fail the load; copper comes
+    from the quest's weight; the front budget counts two repeats per bounty.
+    Every target forms on six seeds
+    ([quests.md](../design/quests.md)).
+  - **Economy (E1, E4; WP44 delivered):** one price module for every
+    payout (loot and gathered goods by class and tier, processed goods by
+    their inputs, 5 % buy-back on vendor goods), shelves by the vendor
+    rule, the Common gear axis 25c … 25s, repair at crafting stations in an
+    active claim; riding 1s10c / 7s / 1g37s / 7g33s, boats 1s10c / 7s,
+    respec 15c … 12s from a per-band income estimate
+    ([economy.md](../design/economy.md)).
+  - **Travel (B, W, A; WP17 delivered):** boats as water mounts from the
+    Shipwright in every capital (L15 and L30), waystones in all six capitals
+    and starts with instant free travel between discovered stones, the
+    Kraken Guard at 10 nodes/s in deep ocean
+    ([boats.md](../design/boats.md), [world.md](../design/world.md) §6).
+  - **Mapgen bundle (M-res, M-geo):** gems by depth (T1 Citrine … T6
+    Diamond), `apex_sockets` removed, mapgen band data (Causeway 41–50,
+    Gravesalt and Skyglass 51–60), the Battlegrounds about 50 % larger with
+    a middle road from Highcourt to Gor Drazhak. A fresh world is required.
+  - **Spawn playtest fixes (P):** no spawn puff, leader HP 1.5×, the Basics
+    book's tiers (T6 shows 36 recipes).
+  - **Performance review** (read-only):
+    [perf-review-2026-10.md](../research/perf-review-2026-10.md); its lanes
+    P1–P4 and the user's rulings became Round 30.
+  - **Final engine check PASS** (seeds 42 and 20261002): middle road,
+    Battlegrounds borders, bands, moved sites, channel, waystones and
+    Shipwrights, gems by band, clean load. Finding: the dragon-island boat
+    landings were mostly a one-node shore strip below high cliffs (piers
+    and beaches in Round 30).
+
+- **Round 28 complete and pushed** (2026-10-02,
+  [plan, completion and playtest checklist](../planning/round28-questing-leveling-plan.md#completion-2026-10-02)).
+  Every lane is merged on main (last lane W1 `f35998d5`), synchronized to
+  Luanti and pushed. Each lane was independently reviewed by Opus.
+  - **Track A (playtest fixes):** road protection half width + 1 and idle
+    aggressive mobs walk away from roads and towns; mob environmental damage
+    in percent of max HP, melee knockback as a small displacement, hits never
+    stall a mob's attack clock, simple separation; elites at scale 1.4,
+    kings at size 1.6, world-sized HP bars, rotated selection boxes; Charge
+    checks its landing
+    room, failure messages are back, the LMB lock decides combat or gather at
+    key-down; one respawn teleport without launch, death messages name the
+    shooter, stations drop their contents when dug; the message feed above
+    the bars, riding trainer states, "Damage reduction", the Professions tab
+    and "N locked" recipe books; per-class offhand (shield, caster offhand,
+    Scout melee), Scout ranged and melee slots and the Scout-only quiver.
+  - **Track B (framework):** data-driven mob sub-types and loot by level band
+    with a participant drop hook; kill XP `M(L) = 25 + 5L` and the curve
+    `M(L) × (8 + 0.29(L − 1))` (4,200 XP to L10, 194,220 to L60), quest and
+    gathering XP in kill equivalents; quests as per-zone JSON with item-group,
+    multi-objective, area and quest-drop objectives, repeatables, travel
+    credit on accept and load-time validation; self-contained professions
+    (no metal fittings, data-driven enchant inputs, six duplicate cooking
+    routes removed) ([progression.md](../design/progression.md),
+    [quests.md](../design/quests.md), [biomes_mobs.md](../design/biomes_mobs.md)).
+  - **Catalogue:** 195 sub-types (49 named leaders, 18 elites), 119 loot
+    items with 89 new icons, drops and enchant inputs per band; signal words
+    (Small, Large, Braindead …) only in start zones, a unique name everywhere
+    else.
+  - **Spawn regions:** every one of the 38 zones spawns its surface mobs
+    from a rule recipe built on the seed's own terrain (32-node cells, belts,
+    terrain kinds, camps and leaders by rule; leaders 1.15× size and 2× HP,
+    1.5× HP since Round 29), with
+    the border rule across zones ([spawn_regions.md](../design/spawn_regions.md)).
+    The Broken Causeway plays 41–50, Gravesalt Escarpment and The Skyglass
+    Canopy 51–60 (gameplay band; the mapgen is unchanged).
+  - **Players see:** each objective's target level range in the quest log
+    and offer; the zone or town name under the minimap, zone markers on the
+    Map tab and a short entry banner ([world_map.md](../design/world_map.md)).
+  - **Interim (resolved in Round 29):** the 240 legacy quests stayed until
+    new quest files replaced them; the Causeway's plants and ores followed
+    31–40 until the mapgen band data. The quest content per race track, the
+    front and island quests moved to Round 29
+    ([quests plan](../planning/round29-quests-plan.md#1-why-this-is-its-own-step))
+    with the [economy](../planning/economy-vendor-plan.md),
+    [boats and waypoints](../planning/travel-boats-waypoints-plan.md) and a
+    mapgen bundle.
+  - The spawn playtest (2026-10-02) fed Round 29 (findings P1–P4).
+
+- **Round 27 delivered and pushed** (2026-09-30, WP50,
+  [plan, completion and playtest checklist](../planning/round27-minimap-plan.md#completion-2026-09-30)).
+  Lanes M (`cda93c90`) and D merged on main; fully pushed (in `9dd85b6e`).
+  The Round 26 playtest fix for capital walls (no gaps at gatehouses, fewer
+  walls in rivers) is merged as `1ff541e4`; follow-ups in the BACKLOG.
+  - **M:** our own round, north-up minimap in the native minimap's box
+    (about 900 nodes, snapped to a coarse grid so the client texture cache
+    grows only per cell) with quest givers by state, the Housing Steward,
+    trainers, innkeepers, home and party members with rim arrows; native
+    minimap off; a "Show minimap" switch on the Map tab. `grug_map_quality`
+    normal (1080×960, about 10 s, 0.92 MB) or high (3600×3200, about 56 s,
+    6.93 MB), sent as 512 px tiles; hillshade, 16/64-node contours and a
+    stone tint; region-label scrollbar fix
+    ([world_map.md](../design/world_map.md)).
+  - **D:** documentation of the Lane M facts and WP50 closure.
+  - **Glide follow-up** (merged as `9c8ece8c`,
+    [follow-up](../planning/round27-minimap-plan.md#follow-up-gliding-minimap-2026-09-30)):
+    the arrow stays centred and the map glides under it every server step
+    inside a pewter bezel; about 880 nodes, one texture per 6 (normal) or 16
+    (high) base-pixel cell, high at half resolution; about 3.7–3.9 times the
+    snapped HUD traffic.
+  - The user's playtest led to the glide follow-up; the round counts as
+    GUI-accepted (the user, 2026-10-05).
+
+- **Round 26 delivered** (2026-09-29,
+  [plan, completion and playtest checklist](../planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)).
+  All lanes are merged on main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). Pushed.
+  - **S:** a placed Claim Stone is a half-transparent draft that protects
+    nothing and crumbles after 5 minutes unless activated with 5 lumps; the
+    only lock is 12 hours without pick-up after activation; the Housing
+    Manager is now the Housing Steward; `/claim_remove`; snow in the arrival
+    cube can be dug ([housing.md](../design/housing.md) §§2a, 3, 5).
+  - **R:** mobs_redo utility items and silver-sandstone recipes removed, all
+    tier tools under `grug_materials:` with 12 aliases, the two surface
+    critters at 0.75 density (WP28 delivered); Trolls also get +50% food
+    healing.
+  - **I:** the status icon row above the skill bar (green/red/gold frames,
+    at most 10, no cooldowns), a combat icon right of the health bar instead
+    of the "Combat" text, Character page Stats/Effects tabs and class icons
+    in the party HUD and Group page (audit D10;
+    [inventory_equipment.md](../design/inventory_equipment.md) §5).
+  - **W:** more irregular, still star-shaped capital outlines at about the
+    same area, a character per capital, towers at bends and gatehouses, and
+    a replan when a named building is dropped (2 → 0 of 200 seeds; planning
+    5.7 → 6.2 s per seed, preparation 14.5 → 14.9 CPU s; engine check seed
+    42 PASS 36/36) ([world_zones.md](../design/world_zones.md) §12).
+  - **D:** documentation after the
+    [work-package audit](../planning/wp-audit-2026-09-29.md) and its
+    [user decisions](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29),
+    then the lane facts.
+  - Playtested 2026-09-29; the round counts as GUI-accepted (the user,
+    2026-10-05).
+
+- **Round 25 delivered:** Claim Stone housing (WP24,
+  [housing.md](../design/housing.md)): one free, soulbound stone from the
+  Housing Steward in each capital from level 20; a 101 × 101 claim column from
+  y = −100 up in the own L11–30 home zones, 16 nodes clear of settlement cores
+  and hard footprints; coal or charcoal fuel as a "paid until" time (a full
+  slot lasts about a month); Interact/Everything permissions with a
+  right-click and node-inventory guard; stone form, Character-page status;
+  the stone as travel home with an arrival cube; no hostile spawns in active
+  claims; housing masks removed. Roads, bridges and POI, village and camp
+  cores are protected for everyone, with hint reasons ("Road – protected").
+  The capital planner places required and named buildings before fill: load
+  failures 1.3 % of seeds → 0 of 200, capital layouts changed. All nine lanes
+  merged on main (`7ca48666`), independently reviewed and synchronized
+  to Luanti on 2026-09-29. Pushed.
+  [Plan, completion and playtest checklist](../planning/round25-housing-plan.md#completion-2026-09-29).
+  Its first playtest's follow-up rulings 30–33 fed Round 26; the round
+  counts as GUI-accepted (the user, 2026-10-05).
+
+- **Round 24 delivered, pushed and accepted:** tier rocks with engine-native pick gating
+  replace depth bounds and shatter (loose ground by hand or shovel, axe and
+  shovel tiers, protection and pick hints on punch, tool level requirements);
+  the terrain fill hosts ores and bands (coal near the Orc start 0.10–0.37 →
+  0.90–1.05 of target at 5–16 depth), with mountain and cliff layers,
+  decorative nests and output-identical P8 speedups (about 20 % less Lua
+  mapgen time); start-zone level gradient, 32-node idle wander leash, calm
+  roaming pace, filled thin spawn cells and a per-zone mob density budget
+  (about 1.5×); gathering XP; ten one-line tracked quests; lava and drowning
+  scaled to max HP; hard protection from 100 below each footprint's placement
+  height instead of y ≥ −700; housing areas as ordinary terrain; pausable
+  character creation. All 13 lanes reviewed and merged (`1e338503`) and
+  synchronized to Luanti on 2026-09-29. Pushed with the playtest
+  protection-hint fix and the Round 25 plan as `d4eaffff`; accepted by the
+  user.
+  [Plan, completion and playtest checklist](../planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
+
+- **Round 23 delivered:** full-column world preparation (a finished
+  full-world preparation leaves nothing to generate for walking, diving or
+  flying; fast path for air chunks), habitat-driven vegetation renewal
+  replacing the exact-baseline ecology (saplings behind `grug_tree_regrowth`),
+  and capital walls (Highcourt core wall, Lethariel curtain, Kezamba palisade,
+  taller cores, closed Nhal Veyr bars, walls end at lake shores). All lanes
+  independently reviewed, merged and synchronized to Luanti.
+  [Completion and GUI checklist](../research/round23-completion.md),
+  [plan](../planning/round23-world-life-plan.md). Phase 2 (tree line
+  with shrub band and snow caps, forests and clearings) and the lake-wall
+  playtest fix are merged (`f54c299d`) and synchronized. Pushed 2026-09-28.
+
+- **Playtest fixes 2026-09-28 delivered:** food click/hold input,
+  server-side node UIs, crosshair range feedback with own crosshair, 2.5 s bow
+  draw with damage curve and power ring, eating visual, movement stances,
+  swimmers stay in water, fish drop, first-person rod, recipe-book ingredient
+  navigation, Blink targeting; follow-up bow tuning, eating ring and immediate
+  combat exit. Eight lanes independently reviewed, all probes and a headless
+  boot passed on merged main `fede63db`; synchronized to Luanti.
+  [Receipt and GUI checklist](../research/playtest-fixes-2026-09-28.md). Pushed
+  2026-09-28.
+
+- **Round 21 startup correction:** fixed the missing fish disposition and native
+  arrow recipe catalog binding; real isolated server startup and 200-arrow craft
+  passed. Merged as `f00433c7` and synchronized.
+  [Receipt](../research/round21-startup-fix.md). Pushed 2026-09-24.
+- **Round 21 delivered:** terrain/POI access, resource calibration,
+  furnaces, aquatic detail and feedback fixes. Independently reviewed, final
+  gates passed, merged as `96c40fa3` and synchronized to Luanti on 2026-09-24.
+  [Receipt](../research/round21-completion.md), [playtest](../research/round21-playtest.md),
+  [execution state](../planning/round21-state.md). Pushed 2026-09-24.
+- **Round 20 delivered:** 240 quests, all 100 anchor art slots, contextual
+  input and equipment/UX fixes. Independently reviewed, final gates passed,
+  merged as `8308229f` and synchronized to Luanti on 2026-09-24. Pushed
+  2026-09-24.
+  [Completion receipt](../research/round20-completion.md),
+  [playtest checklist](../research/round20-playtest.md),
+  schematic POI gallery (`tools/r20/evidence/pois/`, retired in Round 22;
+  git history keeps it).
+- **Documentation consolidation:** complete with independent Astra PASS;
+  [receipt and coverage](../maintenance/documentation-round.md). Its findings
+  list is [archived](../archive/maintenance/findings.md) (its open items are
+  fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
+  ([Audit 2026-10 open questions](../../BACKLOG.md#audit-2026-10-open-questions)).
+- **Latest game:** main carries 0.51.0 (Round 51, a map reset,
+  pushed at `75ea1b4c`) on 0.50.2, 0.50.1 and 0.50.0 (Round 50, compatible, pushed at
+  origin/main `fae056c5`; the user moved production to 0.50.2 on
+  2026-10-17) on 0.49.1 (a compatible fix) on
+  0.49.0 (Round 49, a map reset, pushed at origin/main `bc1e6016`)
+  on 0.48.1 (a compatible fix, pushed at origin/main `1ef11b5e`) on
+  0.48.0 (Round 48, a map reset plus the step 0.48.0, pushed at
+  origin/main `f915d777`) on 0.47.0 (Round 47, a map reset plus the step
+  0.47.0) and 0.46.0 (Round 46, a map reset, never deployed on its own;
+  both GUI-accepted and pushed at origin/main `6a8afb9f`) on
+  0.45.1 (pushed) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+  2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
+  (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
+  0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
+  Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
+  2026-10-06), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 29
+  was tested by the user on a fresh world (2026-10-02), the user's Round 33
+  findings became Round 34's fix lanes, the Round 34 findings Round 35 and
+  the first Round 35 findings Round 36's lane F; Rounds 25–35 count as
+  GUI-accepted (below). The 2026-09-30 playtest with friends fed Round 28,
+  the 2026-10-02 spawn playtest Round 29, the Round 40 playtest and the
+  production crash Round 41. Fresh-world development ended with 0.41.0:
+  release mode (AGENTS.md) and the
+  [upgrade contract](../technical/upgrade-contract.md).
+- **Technical reviews/gates:** recorded PASS for those delivered candidates;
+  not a fresh certification of arbitrary later changes.
+- **Preparation performance follow-up:** the bounded two-request pipeline
+  completed the same measured prefix in a further 24% less time than the prior
+  40 ms scheduler. Its native emerge worker reached 99.43% of one core over the
+  matched steady interval. Completed preparation remains inactive during later
+  on-demand cave generation; engine tick/thread settings are unchanged.
+  Independent review, native comparison, two-pending stop/resume and final
+  interpreter parity passed. Merged to main and synchronized; pushed
+  2026-09-23. Receipt:
+  [full-speed follow-up](../research/pregen-fullspeed.md). Prior measurement: [scan-budget follow-up](../research/pregen-scan-budget.md).
+- **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user's
+  ruling of 2026-10-05, [Round 37 plan](../planning/round37-plan.md) §2.3.5);
+  Round 24 was accepted earlier, and its build contains Rounds 20–23 and
+  the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06,
+  Round 42 by the user's playtest on 2026-10-08, Rounds 46 and 47 together
+  on 2026-10-14.
+  **Rounds 36–38, 40, 41, 43–45, 48, 49 and 51 and 0.45.1 are open**
+  (Round 51's [checklist](../planning/round51-plan.md#gui-checklist-round-51),
+  Round 49's
+  [checklist](../planning/round49-plan.md#gui-checklist-round-49), Round 48's
+  [checklist](../planning/round48-plan.md#gui-checklist-round-48), 0.45.1's
+  [checklist](../planning/round45-plan.md#gui-checklist-0451), Round 45's
+  [checklist](../planning/round45-plan.md#gui-checklist), Round 44's
+  [checklist](../planning/round44-plan.md#gui-checklist); Round 43's
+  [checklist](../planning/round43-plan.md#gui-checklist) is short: a 0.42.0
+  world plays on under 0.43.0, a fresh world, the tool's `--check` on a
+  copy; Round 41's
+  [checklist](../planning/round41-plan.md#gui-playtest-checklist) covers the
+  walk animation, kings and Generals at their seat, the recipe book's
+  Close and multi-item slots, the bow, the quiver total, map quality, the
+  map reset and a forced mapgen failure; Round 40's
+  [checklist](../planning/round40-plan.md#gui-playtest-checklist) covers the
+  cooldown overlay, the poses and head look, the Charge dash and every
+  particle effect at two scales, desktop and web build). The
+  [Round 37 checklist](../planning/round37-plan.md#gui-playtest-checklist)
+  covers group fights and taunts, the elite wind-up, the swing animation,
+  mounts and shields when a buff runs out, durability, knockback, the
+  breath fan and volley, Bone Call and royal guards, a server restart,
+  right-click with seeds, buckets and the rod, the furnace book, ground
+  growth, the minimap and Claim Stone, the New World dialog and Help →
+  About, the new sounds, the start zones, the Reef Lurker and the
+  minimap at high quality (desktop and web build, two clients). Round 36
+  with its follow-up lanes F2, W2, W3 and RD (the user's test is still
+  open): the
+  [Round 36 checklist](../planning/round36-plan.md#gui-playtest-checklist)
+  covers both main lines from 41 to the finale, quest objects and places,
+  the corrupted sub-types, the commanders, the rift and Isquarre (two
+  clients), achievements and cloaks, the evading mobs and the talent-point
+  banner, Priest heals, the dragon arenas, the decor pass, the new
+  prices, and the follow-up lanes' held button across a hotbar switch,
+  benches, ground cover and roads (desktop and web build, a world made on
+  `fef94a6a` or later). The accepted rounds' checklists: the
+  [Round 35 checklist](../planning/round35-plan.md#gui-playtest-checklist)
+  covers aiming at turned mobs, gear breaking, the empty hand, dig sounds,
+  the quest dialog, night mobs at dawn, loot, talent tooltips, capital
+  music and the new character creation (desktop and web build); the
+  [Round 34 checklist](../planning/round34-plan.md#gui-playtest-checklist)
+  covers sound (desktop and web build), mobs in water, the text boxes, the
+  Bag of Coins, the service markers and the thin ice; the Round 31–33
+  checklists are linked from their entries above; the
+  [Round 30 checklist](../planning/round30-plan.md#playtest-checklist)
+  covers the Map tab rate, quest markers, Return home on the Character page,
+  mobs giving up, spawns, crafting, the crosshair, island landings, prices
+  and the faster second start; the
+  [Round 29 checklist](../planning/round29-plan.md#playtest-checklist)
+  covers quests, economy, gems, prices, the Battlegrounds, boats and
+  waystones (tested by the user 2026-10-02), the
+  [Round 28 checklist](../planning/round28-questing-leveling-plan.md#playtest-checklist)
+  covers the spawn regions, fixes, slots, feed and zone names, the
+  [Round 27 checklist](../planning/round27-minimap-plan.md#playtest-checklist)
+  covers the minimap and map quality, the
+  [Round 26 checklist](../planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
+  the capitals and Claim Stone activation, the
+  [Round 25 checklist](../planning/round25-housing-plan.md#playtest-checklist-fresh-world)
+  the rest of housing; earlier rounds keep their own checklists. The walk
+  of the Round 20 POI art (audit E2) became Round 36's review page and
+  decor pass; the reworked places are in its checklist.
+- **Remote observation:** origin/main is `fae056c5` (0.50.2 with its
+  status line); production runs 0.50.2; the top entry has the current push
+  line.
+- **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
+  production server, upgrades through the
+  [upgrade contract](../technical/upgrade-contract.md) (compatible, map
+  reset, migrate since 0.43.0, new server); no public release
+  yet. The Nether is expansion
+  content. [First-public-release gates](../../BACKLOG.md#first-public-release-gates)
+  remain open.
+
+Older deliveries: [R18](../research/round18-completion.md),
+[R17](../research/round17-completion.md), [R16](../research/round16-completion.md),
+[R15](../research/round15-completion.md), [R14](../research/round14-completion.md),
+[R13](../research/round13-completion.md), [R12](../research/round12-completion.md),
+[R11](../research/round11-completion.md). Read these for evidence or provenance,
+not to reconstruct the current rules from successive overrides.

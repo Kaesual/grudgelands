@@ -1,35 +1,10 @@
 # Items, Crafting & Loot — Full Design Spec
 
-**Decided spec** (authored + approved 2026-08-06; the surviving four flagged
-points P1–P4 are recorded in §10).
-
-**Reworked 2026-08-07** (crafting rework session): the material ladder is
-now six tiers (§3.0), the tome chain is replaced by one UI recipe book per
-profession (professions.md §1.2), professions **enchant** instead of owning
-the item catalog (§3.3–§3.6b, §6b), and there is **exactly one item per
-concept** — the vendor bracket catalog and the base craft ladder are the
-same, material-named items (§3.0.3). Resolutions in §10.
-
-**Recipe lists, Round 45 (2026-10-08).** The 3×3 crafting grid and the
-recipe books are gone: every craft is an ingredient-list recipe of one
-crafting area, and gear is made only by the profession that owns its family
-([professions.md](professions.md) §1.2,
-[ui-crafting-rework-plan.md](../planning/ui-crafting-rework-plan.md) §2.23,
-§4.1).
-
-**World-zone revision 2026-08-10.** Surface progression is keyed by the
-stable named zones and level bands in `world_zones.md`, not by WP18's radial
-ring names.
-
-**Material-system integration 2026-08-12.** Six universal metals now form a
-non-circular pick/depth spine. Since Round 24 (2026-09-29) the pick tier is
-checked against the tier of the rock or resource, not against y (§3.0.4). Emberglass and Abyssal Steel replace the old
-Emberstone/Mese and Grudgesteel targets. Six depth-tiered gems (Round 29),
-the final Goldsmith/trinket model and the rebased 25c→25s Common-price axis
-are authoritative below; cultural finishes, the cultural materials and the
-PvP-special channel were removed in Round 33. Private housing
-isles, guild systems, finder items and the Amplifier are absent from the target
-design. Historical decisions in §10 remain design history only.
+**Decided.** Private housing isles, finder items and the Amplifier are not
+part of the design. §1 (reference research), §2 (profession progression,
+now [professions.md](professions.md) §1) and §10 (the decision log) are
+retired; their history is in the
+[items history archive](../archive/design/items-history.md).
 
 **This file owns the item rules:** the material ladder, tier rock and
 harvest tiers, one item per concept, the armor and weapon curves, the
@@ -92,35 +67,6 @@ Expert, Master — never as "T4". The ladders are independent;
   enchant and upgrade them and hold a few exclusive recipes (bags,
   spellbooks, trinkets, settings and cut gems, potions, dishes; §3.3–§3.7,
   §6b).
-
-## 1. Reference research (2026-08-06)
-
-Reference-study history moved to
-[the items history archive](../archive/design/items-history.md#1-reference-research-2026-08-06).
-Current source-derived rules remain in the topical sections below.
-
-### 1.1 Lord of the Test: the crafting-book chain (studied in source)
-
-See [archived §1.1](../archive/design/items-history.md#11-lord-of-the-test-the-crafting-book-chain-studied-in-source).
-
-### 1.2 VoxeLibre: harvestable item-family templates (verified per mod)
-
-See [archived §1.2](../archive/design/items-history.md#12-voxelibre-harvestable-item-family-templates-verified-per-mod).
-
-## 2. Profession progression and the recipe book
-
-Moved to [professions.md](professions.md) in Round 37, which owns the
-profession rules:
-
-- §2.1 the two ladders (profession tier and mastery band) →
-  [professions.md §1.1](professions.md#11-profession-tier-and-mastery-band);
-- §2.2 the recipe areas (the recipe books, Basics visibility and ingredient
-  navigation until Round 45) and the craft gate →
-  [professions.md §1.2](professions.md#12-recipe-areas-round-45);
-- §2.3 profession level and tier ingredients →
-  [professions.md §1](professions.md#1-structure) and
-  [§1.3](professions.md#13-tier-ingredients-revised-2026-09-18);
-- §2.4 pacing → [professions.md §1.4](professions.md#14-pacing-check-1020-h-to-level-60-revised-2026-09-18).
 
 ## 3. Materials, curves and the profession catalogs
 
@@ -212,7 +158,7 @@ they fill the whole band (densities: `world_zones.md` §11).
 
 Quartz is a universal T1 mineral at every depth and a raw T1 enchant input;
 it has no cut form (Round 33: Cut Citrine is the T1 trinket gem). Gems use
-**Rough <Gem> → Cut <Gem>**. Emberglass and Abyssal Crystal are universal fantastic
+**Rough <Gem> → Cut <Gem>**, with no gem grades. Emberglass and Abyssal Crystal are universal fantastic
 progression resources and are never called gems.
 
 **Gems are depth-tiered, not regional** (Round 29, economy plan §6). Each of
@@ -828,7 +774,7 @@ overlap-free (professions.md §2).
 **Silversteel** → T5 **Embersteel** → T6 **Abyssal Steel** (§3.0.1/§3.0.2).
 *Revised 2026-08-07*: the old four-step chain
 (bronze / iron / steel / gem-tempered steel) is superseded by the
-six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
+six-tier ladder, and **the archived [decision P1](../archive/design/items-history.md#101-2026-08-06)'s "gem-tempered steel" is retired with it**
 — the T4 metal is Silversteel from a real new ore, which is exactly the
 "new ore post-MVP" option P1 held open.
 
@@ -1907,21 +1853,3 @@ consumer are active:
   (Round 33, [item_tiers.md](item_tiers.md) §3.3; the recipe since Round 45). The
   Scout consumes the family in V1. Shots draw from the Scout's quiver slot
   first, then `main` and the bags.
-
-## 10. Historical decision log (non-authoritative)
-
-Decision history moved to
-[the items history archive](../archive/design/items-history.md#10-historical-decision-log-non-authoritative).
-Sections §0–§9 and their topical links remain the only living authority.
-
-### 10.1 2026-08-06
-
-See [archived §10.1](../archive/design/items-history.md#101-2026-08-06).
-
-### 10.2 2026-08-07 (crafting rework)
-
-See [archived §10.2](../archive/design/items-history.md#102-2026-08-07-crafting-rework).
-
-### 10.3 2026-08-08
-
-See [archived §10.3](../archive/design/items-history.md#103-2026-08-08).

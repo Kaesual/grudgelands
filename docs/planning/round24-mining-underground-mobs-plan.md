@@ -478,3 +478,15 @@ on their branches.
 
 The user prepares a fresh production world and runs the playtest above. The
 next planned project is Housing (WP24).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- WP45: a one-time waiting-screen race when an Esc crosses a progress update.
+- The "Requires level N" tooltip line does not relabel tool stacks from older
+  worlds. This does not matter for fresh worlds.

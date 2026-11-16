@@ -345,7 +345,7 @@ Numbers are each lane's own probe before and after, same seed and area
 
 ### Open items
 
-In the [BACKLOG](../../BACKLOG.md#round-32-carry-overs): the minimap bezel
+In the [carry-overs](#carry-overs): the minimap bezel
 size at normal quality and the high-quality detail (`REDUCE.high` stays 2)
 for the GUI test; F1's location sample could reuse `grug_pvp`'s zone
 queries; standing exactly at y −501 can flicker the banner (the rule
@@ -441,3 +441,40 @@ Performance fixes (F4):
 17. **Map tab and party HUD look unchanged:** with the Map tab open, your
     arrow and party markers still move about every 2 s; zoom and marker
     clicks answer at once; the party health bars update as before.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Location sample** (F1 review): 34.7 → 53.9 µs per player and second;
+  the territory status repeats two zone queries `grug_pvp`'s own location
+  tick already makes (could share them). Standing exactly at y −501 can
+  flicker the banner, which is the rule itself.
+- **F4 fixture gap:** the party HUD's `slot_of` clean-up on leave is not
+  covered by `tools/r32_f4/portable_test.lua`.
+- **Performance review "later" list**
+  ([R6–R13](../research/perf-review-2026-10-r32.md#later)): R6 ability
+  input and crosshair every step (20–34 ms/s at 100) and R7 the minimap
+  glide (13–25 ms/s) — re-measure both first, F2 and F1 changed those files;
+  R8 the quest-marker memo's 1 s expiry; R9 the tracker's bag scan; R10
+  vegetation renewal bursts; R11 the discovery scan; R12 tag carriers in
+  crowded places; R13 royal and garrison NPC steps. **R7, R8, R9 and R11
+  done in Round 37 PO** (audit CORE-04, PLY-06, PLY-05): the minimap places
+  only on change (21.0 → 9.9 ms/s at 100 stand-ins), the marker memo lives
+  until something changes, the tracker reads no bags without an item
+  objective, discovery scans in slots; R6, R10, R12 and R13 stay.
+- **Playtest server operations** (R4, R5): serve media through
+  `remote_media` (about 13.8 MB per first join); give the server at least
+  4 GB of RAM and swap (2.9–3.3 GB after the first mapgen). Later: the two
+  dragon models (2.3 MB together) and the 405 KB quiver texture.
+- **Mapgen-environment memory** (R5, investigation): the emerge thread's
+  mapgen Lua environment holds 630–745 MiB live after a collection and
+  grows with generated chunks; find what it keeps (a heap walk there) and
+  whether its world-query caches are bounded.
+- **Real-client performance test:** stand-ins do not cover the engine's
+  block and object sending, physics or client work; a short test with a
+  handful of real clients, perhaps at the end of the next round.

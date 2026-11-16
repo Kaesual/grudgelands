@@ -138,7 +138,7 @@ replacement final PUC 5.1/LuaJIT pair and a fresh pilot remain pending.
 
 The targeted LuaJIT owner-VM integration KAT passed with manifest
 `9ff0e78818e842c578ecacbf9d5be4426ca72f6c3230f6184b0e8b23f69f369d`.
-Its durable [R8 projection receipt](wp40-r8-projection-integration-receipt.tsv)
+Its durable R8 projection receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-r8-projection-integration-receipt.tsv`)
 differs from the accepted R7 integration receipt in exactly that manifest row;
 all content, anchor, 512,000 private-tuple, run, replay, multi-y and case rows
 are byte-identical. The R8 receipt SHA-256 is

@@ -614,7 +614,7 @@ Comparisons on one machine, not targets; measured unless marked.
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-51-carry-overs). MOBS M2's final smoke
+[carry-overs](#carry-overs). MOBS M2's final smoke
 boot logged two warnings specific to that random seed from the land part
 (a kind fallback in Frostbarrow; Mournfen's bandit camp belt more than one
 belt from the land beside its POI); the round-end gates look at them.
@@ -781,3 +781,101 @@ production seed; they are a carry-over. After the follow-up lanes (main
 `r37_dc` PASS, a smoke boot from an empty cache on the production seed PASS.
 Lane D's own checks on its branch: `tools/r37_dc` and `check_upgrade.py`
 (0.51.0 against origin/main `fae056c5`) PASS.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Follow-up notes** (FW, FT, FM reviews): capital-lake plants do not grow
+  back (the regrowth skips excluded ground); a lily at a chunk's top water
+  layer waits for regrowth; a few trees now fit where a halved start tree's
+  crown used to block them; the amphibian float hold has a 0.1 bank margin
+  and wobbles on lag spikes over 0.5 s; the crocodile's swim clip stays
+  unused; the Reed Angelfish's old row still spawns it in bays.
+- **Seed-specific land warnings** (MOBS M2's smoke boot, a random seed): a
+  spawn-kind fallback in Frostbarrow Shelf and Mournfen's bandit camp belt
+  more than one belt from the land beside its POI; not on the production
+  seed. Find the seed and check whether they predate Round 51.
+- **World bounds** (T1, T4): the seabed steps up to −23 at the world bound
+  (as before); the land-only clamps at the old bounds stay
+  (`wp40/habitat_registry.lua` ~72, `r6_content.lua` ~857 and ~1001,
+  `steep_at` and the outcrop rise ~872 and ~1080), so dry land past ±3736
+  would get no steep classes, bands or outcrops; research tools still
+  sample the old extents (`tools/r23_tree_line/shares.lua`, `survey.lua`,
+  `tools/r25_road_poi/bench.lua`); the first start's preparation over 25 %
+  more tiles is unmeasured.
+- **The sea's shape** (T2, MOBS M2): the protected border lies within about
+  ±8 nodes of 24 (16-node coast cells); an islet smaller than a coast cell
+  could drop out of the coast grid (the fleet's rim check would catch it);
+  the pocket rule probes only four axis directions, and a neighbouring
+  zone's lake or river within 12 nodes also refuses a sea column.
+- **Seabed growth** (T3): kelp deeper than 12 is dark by day (GUI
+  checklist); kelp inside a coral patch does not regrow; the seabed renewal
+  uses a flat 0.5 chance, not L18's deficit-scaled one; the water-plant
+  exception has no effect in normal play (protected water cannot be dug);
+  a few plants grow under the island-landing piers.
+- **Surfaces** (T4, LG): a cactus placed on a clay band does not grow
+  (`default.cactus_ground` knows mesa clay only); band tops host no dry
+  shrub, cactus, salt crust or fire pepper; a gravel-filled band row may
+  take a native gravel blob (cosmetic, documented); in claim-excluded or
+  transition columns a band top can stand without its face; `default:ice`
+  is not in `NATURAL_GROUND_NODES` (no dig hint, no spawns on ice);
+  pebbles take about 10 % of the dry-sand hosts (crab, papyrus, marram);
+  `dirt_with_moss` stays harmlessly in the gathering catalog and the bog
+  mobs' lists; `world_zones.md`'s fertile-palette table says "forest
+  litter" for the elf forest (predates the round).
+- **Hanging plants** (LG, LP): the strand above a dug piece becomes the
+  end without a protection check (`grug_trees/hanging.lua` ~39); a dig
+  without a player swaps the strand above but leaves the pieces below; the
+  writer can skip a tree's end cell and leave a run untapered; interleaved
+  crowns and slopes cut about 6 % of the lianas; lianas are not climbable.
+- **Plants and regrowth** (LP): renewal may place papyrus at a few
+  cell-edge shore columns the generator would not; shore and patch
+  categories count against every cover plant (marram could over-fill a
+  sparse biome; count the category's own species); withered bushes use the
+  acacia bush stem, the savanna bush's renewal marker; default's fern and
+  marram fuel recipes are unreachable.
+- **The kit** (LK): `default:cobble`, stonebrick, stone block, the silver
+  sandstones and the junglewood fence now count as natural to the writer
+  (dungeon cobble can be filled over or replaced; `r7_anchor_activation.lua`
+  ~141 would refuse an anchor on untouched dungeon cobble, theoretical;
+  stair nodes stay foreign; a narrow explicit set is an option); the kit
+  places `moss_carpet`, which drops itself; kit rows ignore the snow factor
+  (a structure replaces snow dust); rugged undead and jungle terrain
+  rejects level cores often; `r14_poi_blueprint.lua` ~63's accent bone
+  pile is dead code; the old bone-pile texture stays for the viewer's
+  "today".
+- **Wrecks** (WRECK): the writer's `REPLACE` lists the seabed nodes by name
+  (a new seabed material would leave holes); `air_chunks.lua`'s header does
+  not name the wreck pass (still true: its writes are at y ≥ −15); a
+  query error inside `lay_out` would leave a partial cache in that state
+  (an error already fails the emerge); the kind-filter test catches an
+  under-flagged town or POI only if a site lands in its box.
+- **The map** (MAP): the odd normal width (1215) leaves the minimap's last
+  cell column half a cell (covered by the sea disc); an edge cell with no
+  pixel centre counts as open sea (offline crops only); `r502_home`,
+  `r30_p1` and `r37_po` still build a synthetic 1080 × 960 geometry (valid,
+  same nodes per pixel); swamp pools stay land on the map; no water relief
+  shading.
+- **Water mobs** (MOBS M1, M2): swimmers have no wander leash (a shark may
+  drift out of its band); a shore guard hitting a swimmer from the bank
+  would reset it every second (harmless); the merged water ABM runs about
+  3 × the Lua (20 → 62 µs per second over 7 areas); the `W-no-mob-catalogue`
+  warning names only the first base; a quest area text on a water kind has
+  no region to describe; `tools/r33_ds/availability.py` gives the water
+  kinds a whole extra belt share and its command line fails with
+  `KeyError 'family'` (also before); `tools/r24_mobs/wander_fixture.lua` is
+  broken and the runner never picks it up.
+- **Tools and pages** (NAMES, VIEW, LG): the names survey JSON records its
+  run times (a rerun changes the bytes); the land viewer does not
+  quarter-turn generated trees, draws dry shrubs without meshoptions and
+  uses noise relief; `tools/r47_sw/build.py --check` reports `swamp.html`
+  and `land.html` stale (kept as the record of the picks);
+  `tools/wp13/node_tiles.json` draws a 32 px ground once per node and lacks
+  the props.
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` in
+  `tools/r49_hash/portable_test.lua` and `os.exit` in older fixtures.

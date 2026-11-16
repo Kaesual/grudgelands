@@ -2,7 +2,7 @@
 
 User Go: 2026-09-21, with preference for native Astra subagents. No Claude or
 same-provider CLI execution. All work is fresh-world development. Approved
-contract: [current design](../design/crafting_equipment_revision.md).
+contract: [current design](../design/items_crafting.md).
 
 ## Ownership and state
 

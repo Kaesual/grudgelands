@@ -9,7 +9,7 @@ gate trails, enemy settlement icons hidden, the General's drops, PvP in the
 depths from T4, camp captains as leaders and solo camp raids). Written
 2026-10-03 from the design session with the user. Implementation is Round 31, orchestrated by the coordinator
 session; this file is its PvP part. Other Round 31 items (the
-[clean-up lane](../../BACKLOG.md#round-30-carry-overs), the dragon arena
+[clean-up lane](round30-plan.md#carry-overs), the dragon arena
 iteration, the NPC appearance package of §6) are coordinated alongside.
 
 The rulings below **replace** the PvP transaction of `world_zones.md` §4 and

@@ -117,7 +117,7 @@ SETGLOBAL, and all five sweeps have no changed-file hits. The broader sweep
 contains only existing comments, strings and manifest data. The R8 performance
 static gate and fresh-server audit pass.
 
-[Evidence and final input/output receipts](wp40-biome-cover-evidence/SHA256SUMS)
+Evidence and final input/output receipts (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-biome-cover-evidence/SHA256SUMS`)
 include surface and cover populations, actual tree-writer results, integrated
 junction checks, static logs and the diagnosed historical fixture failures.
 No real-engine or performance-speedup claim is made for this package: the

@@ -11,14 +11,13 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   enemy home. The UI offers **Set home here** or **This is your home**.
 - Persist the location ID per character, not player-selected coordinates.
   Binding is authenticated by the nearby innkeeper interaction.
-- The Character page (the gear box, in every mode since Round 44) offers
+- The Character page (the gear box, in every mode) offers
   **Return home**: the line "Home: <destination>" and the button with the
   remaining cooldown in whole minutes, rounded up ("Preparing
   arrival" during a return, "Ready" when it may be used); while that page is
   the selected inventory page the button is re-sent when the text changes
-  (once a minute, Round 33: a per-second re-send closed the cloak dropdown),
-  and once when it becomes Ready (Round 30 ruling; it was on the Map tab
-  before). The quickbar (E, Round 44, `inventory_equipment.md`) carries the
+  (once a minute; a per-second re-send would close the cloak dropdown),
+  and once when it becomes Ready. The quickbar (E, Round 44, `inventory_equipment.md`) carries the
   same line and button with the same gates; it is sent once per opening and
   closes on the click. The chat command `/home` (Round 76.2,
   `home_command.lua`) starts the same return with the same gates and the
@@ -49,9 +48,7 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   blocked cube.
 - **An innkeeper's arrival** (0.75.4) is its authored side of the socket first,
   then the first other free side of the same socket (+x, −x, +z, −z), the rule a
-  waystone already follows. A town's dressing may block one side: Lethariel's and
-  Kezamba's longhouse barrel stacks stood on it, and every return there failed
-  ("Home arrival is unavailable"). A respawn reads the socket's blocks before its
+  waystone already follows, since a town's dressing may block one side. A respawn reads the socket's blocks before its
   teleport and waits on the side it will land on; only with all four sides blocked
   does the arrival fail.
 - A death inside a running Expedition respawns at its start waystone, held like any

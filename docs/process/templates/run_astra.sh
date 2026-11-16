@@ -9,7 +9,7 @@
 #   output:   last.md, events.jsonl, stderr.log in that astra-<lane> folder
 # Reasoning effort xhigh (never "ultra", user rule). The two git roots come
 # from rev-parse, never built by hand (docs/process/cross-cli-orchestration.md
-# 2.2). Add -c sandbox_workspace_write.network_access=true for a lane that
+# §2). Add -c sandbox_workspace_write.network_access=true for a lane that
 # boots a headless server.
 r=$1; l=$2
 M="${GRUG_REPO:-$HOME/projects/grudgelands}"

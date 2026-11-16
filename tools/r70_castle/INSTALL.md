@@ -66,7 +66,7 @@ against `tools/building_templates/check.py`, are:
   insufficient.
 
 Then run `python3 tools/building_templates/check.py`, `--self-test`, and the
-viewer/editor topic checks required by AGENTS.md. CASTLE's builder/verifier
+viewer/editor topic checks in [checks.md](../../docs/process/checks.md). CASTLE's builder/verifier
 pass on the standalone candidates; they do not certify installed layouts,
 runtime paths or combat. The [report](REPORT.md) retains the GUI checklist.
 

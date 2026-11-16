@@ -498,4 +498,40 @@ OK, `check_upgrade --base 2a0cfca8` PASS.
 - *Look* questions from the lanes: the ambush dust is faint (glow 2, alpha 0.55; tune after
   the look); The Last Mint's emberglass in the low vaults, too many?; The Second Shift's
   lanterns still the bulk of its light?
-- Backlog: [BACKLOG](../../BACKLOG.md#round-73--the-expedition-redesign-gui-acceptance-pending).
+- Backlog: [carry-overs](#carry-overs).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **For the user's look:** the ambush's dust is faint (glow 2, alpha 0.55); The Last Mint's
+  emberglass in the low vaults; The Second Shift's lanterns still the bulk of its light.
+- **Probes not run again:** the engine probes' own bugs were fixed by reading only
+  (The Stilled Seam's `r73.lua`: vetoed punches, the trailing packs, the chest spot; The
+  Second Shift's pit, Nemm's reset spot and critter count; The Last Mint's pit exit and
+  ambush count, which need a filter per entity; GAME's critter hit and player push). Their
+  questions are GUI checklist items; the next engine run of each should use the fixed probe.
+- **Authoring helpers (TOOLS):** `hazards.alcove` asks a depth of the mob's width (3), the
+  proof's alcove sight exemption passes only 2 (the Seam built 2): align them;
+  `light.candle` writes param2 0, a ceiling candle (the Seam sets 1 itself); the relief's
+  two solid rows over the template's bottom are not proved.
+- **`preview.py`:** an unreachable ledge drawn as floor, rails drawn as rock, ambush and
+  particle overlays outside a sheet's bounds, light 4 and up in one colour (no gradient).
+- **The shared proof:** an ambush's light 0 is checked at the eye row and the markers' cells
+  only; the fixtures' mouth lists can go stale (the Seam passes room-box mouths only, The
+  Last Mint's `PASSAGE_MOUTHS` is printed from the source by hand): a `build.py --check`
+  comparison with `build.mouths`, or mouths in the format; `r73_tools`'s vault golem boss
+  eye is 2.4 where boss scale 1 gives 2.0; `r71_l20` section G's eye offset 1.
+- **Fixtures:** `r72_shift` dropped "digging the two ore places adds only their own cells"
+  without a reason; `r72_mint` no longer pins the arrival on the floor (the route covers it).
+- **Game side (GAME):** a Charge during a stall of more than about 0.7 s moves more than 16
+  nodes between two passes and skips the ambush; the critter roster is refused at server
+  load, not by `build.py`; a critter's static copy survives a restart in its box until the
+  next preparation (harmless); stale "10 XP" comments in `cave_bat.lua`, `cave_crawler.lua`
+  and `bone_weevil.lua` (the critter tier pays none).
+- **Balance models:** The Second Shift's leaves the ambush's 3 kills out of run time and XP
+  (+8.5 s, +3 kill equivalents).

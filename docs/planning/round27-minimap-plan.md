@@ -126,7 +126,7 @@ WP50 is delivered. Pushed up to `96bcab41` on 2026-09-30; later commits local.
   `[Combat]` section in `combat_stats.md`, BACKLOG, the WP scopes, ROADMAP,
   README, AGENTS and STATUS.
 
-Open notes (in [BACKLOG](../../BACKLOG.md#round-27-carry-overs)):
+Open notes (in [carry-overs](#carry-overs)):
 - Region labels are sized for a 1280×720 window at the default font; a
   larger client font can bring the scrollbar back.
 - Markers stack in start towns, where quest givers, trainers and the
@@ -156,6 +156,20 @@ Open notes (in [BACKLOG](../../BACKLOG.md#round-27-carry-overs)):
    start takes about a minute longer and the map is sharper at 8x; the
    minimap (half resolution at high) still looks sharp enough at your
    window size.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- In start towns several minimap markers (quest givers, trainers, innkeeper)
+  stack on top of each other; like the Map tab they are not clustered. The
+  playtest decides whether this needs handling.
+- A new home (innkeeper binding or Claim Stone) appears on the minimap up to
+  5 s later: static markers refresh on quest changes and every 5 s.
 
 ## Follow-up: gliding minimap (2026-09-30)
 

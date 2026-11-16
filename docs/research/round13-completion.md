@@ -1,7 +1,7 @@
 # Round 13 technical delivery
 
 2026-09-21. Approved scope:
-[crafting/equipment contract](../design/crafting_equipment_revision.md).
+[crafting/equipment contract](../design/items_crafting.md).
 Implementation, code review and the final independent documentation drift audit
 are complete. Main integration, local synchronization and publication are complete;
 GUI acceptance is user-owned.

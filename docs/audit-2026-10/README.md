@@ -170,6 +170,6 @@ what each lane fixed, its numbers and its re-check are in the
 [Round 37 completion](../planning/round37-plan.md#completion-2026-10-06).
 Not done: P6 beyond MGT-02, P8, the MGT-03 tree fix and most Lows (BACKLOG
 [later fix packages](../../BACKLOG.md#audit-2026-10-later-fix-packages)),
-PLY-11 ([carry-overs](../../BACKLOG.md#round-37-carry-overs)); the design
+PLY-11 ([carry-overs](../planning/round37-plan.md#carry-overs)); the design
 questions that block no fix are the BACKLOG
 [open questions](../../BACKLOG.md#audit-2026-10-open-questions).

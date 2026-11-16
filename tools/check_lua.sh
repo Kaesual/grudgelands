@@ -18,7 +18,7 @@ for file in "$@"; do
       # strings cannot match: POW with the constant exponent 2 (also 2.0,
       # (2), 1 + 1) and any math.pow. LuaJIT's JIT folds x ^ 2 into x * x,
       # its interpreter calls pow(): the last bit then depends on JIT
-      # history. See docs/research/luanti-lua.md "Floating point: LuaJIT
+      # history. See docs/technical/luanti-lua.md "Floating point: LuaJIT
       # interpreter vs compiled code".
       # The exponent is either an RK constant (`POW a b -k ; - 2`) or, in a
       # function with more than 256 constants (or `local k = 2`), a
@@ -107,7 +107,7 @@ for index in "${!patterns[@]}"; do
   fi
 done
 if [ "$pow_findings" -ne 0 ]; then
-  printf 'sweep 6 FAIL: x ^ 2 / math.pow in mapgen code differs between the LuaJIT interpreter and compiled code; write x * x (docs/research/luanti-lua.md, "Floating point: LuaJIT interpreter vs compiled code")\n' >&2
+  printf 'sweep 6 FAIL: x ^ 2 / math.pow in mapgen code differs between the LuaJIT interpreter and compiled code; write x * x (docs/technical/luanti-lua.md, "Floating point: LuaJIT interpreter vs compiled code")\n' >&2
   findings=1
 elif [ "$pow_checked" -ne 0 ]; then
   printf 'sweep 6 PASS\n'

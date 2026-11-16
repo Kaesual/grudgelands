@@ -1,66 +1,75 @@
 ## Independent review of a Round <NN> lane (read first)
 
-<!-- Template (docs/process/round-workflow.md "Templates"). Copy to
-~/projects/grudgelands-orchestration/r<NN>/review-common.md, replace <NN>
-and the inputs, and delete this comment. -->
+<!-- Template (docs/process/round-workflow.md "Templates"), resynced with the
+practised Round 79 brief. Copy to
+~/projects/grudgelands-orchestration/r<NN>/review-common.md, replace <NN> and
+the inputs, delete the bullets the round does not use and this comment. -->
 
 You review another agent's branch; you did not write it. Repository:
-`~/projects/grudgelands`. Review the branch diff against its base
-(`git merge-base main <branch>`) in the lane's worktree
-`~/projects/grudgelands/.claude/worktrees/r<NN>-<lane>` — **read-only**: do
-not edit, commit, reset or checkout anything there. Scratch work goes to a
-temp dir of your own (e.g. `mktemp -d`); never `rm` anything you did not
-create yourself (no globs under `/tmp`).
+`/home/jan/projects/grudgelands`. Review the branch diff against its base
+(`git merge-base round<NN> <branch>`) in the lane's worktree
+`/home/jan/projects/grudgelands/.claude/worktrees/r<NN>-<lane>`: **read-only**:
+do not edit, commit, reset or checkout anything there. Scratch work goes to a
+temp dir of your own (`mktemp -d`); never `rm` anything you did not create (no
+globs under `/tmp`).
 
-Read AGENTS.md, `docs/process/round-workflow.md` (its review checklist),
-`docs/planning/round<NN>-plan.md`,
-`~/projects/grudgelands-orchestration/r<NN>/common-brief.md`, the lane's
-brief (path given), the lane's final report (given), and the inputs it
-implements (for an audit round: the finding IDs in the brief).
+Read AGENTS.md, the "Reviewing" section of `docs/process/round-workflow.md`,
+`docs/planning/round<NN>-plan.md` (all of it), <the contract or design files
+the lane builds on>, `~/projects/grudgelands-orchestration/r<NN>/common-brief.md`,
+the lane's brief and the lane's report (paths given).
 
-Goal: find what would break the game or a user rule, not style nits.
-- Correctness: logic bugs, nil indexes, wrong edge cases, the seams the
-  brief names. Verify each claim of the lane's report you rely on; "X is
-  missing in Y" claims especially need proof. Check the lane's re-check
-  list: a finding marked refuted must really be refuted, a confirmed one
-  must really be fixed.
-- Rules: the plan's rulings (§2, number by number where the lane implements
-  them) and the brief; release mode (data migrations only through a
-  declared step of `tools/migrate.py` with its test, no placeholders,
-  stable item, achievement and waypoint ids (a reworked quest takes a new
-  id); the lane's upgrade classification — compatible, map reset,
-  migrate or new server — is right, new map-bound state has its clear and a
-  step keeps the baseline rule); docs updated where the change makes them
-  wrong; no edits to
-  files the brief forbids; vendored patches marked `-- GRUG PATCH` with a
-  VENDOR.md entry; no scope creep beyond the brief's items and the size-S
-  Lows the report lists.
-- Tests: run the lane's portable fixture, `bash tools/check_lua.sh` on
-  changed Lua, `python3 tools/check_fresh_server.py`, and
-  `python3 tools/r28_design/validate.py --game` where quest or mob data
-  changed, `python3 tools/check_upgrade.py` where the declaration or
-  `game.conf`'s version changed; the fixtures that test the changed behaviour (not every fixture that merely loads a changed file)
-  through the Lua queue:
-  `~/projects/grudgelands-orchestration/r<NN>/lua_run.sh review-<lane> 4
-  tools/run_fixtures.sh <fixtures...>` (waiting is normal); the full
-  `tools/run_fixtures.sh` only if you doubt the lane's full-run receipt or
-  main was merged into the lane after it. A headless boot only if you
-  doubt the lane's boot claim (through
-  `~/projects/grudgelands-orchestration/r<NN>/lua_run.sh <label> 1 env
-  LC_ALL=C tools/luanti_headless.sh` from the worktree, own run root,
-  ≤ 5 min, pgrep clean afterwards, never touch other servers, never the
-  user's Luanti folder). Measuring runs of your own go through
-  `~/projects/grudgelands-orchestration/r<NN>/engine_run.sh`. Do not repeat
-  a lane's long runs; read its receipts. No PUC runtime runs.
-- Docs lanes: check every rule and number the lane writes against the code
+Goal: find what would break the game, a player's state, <a contract,> a ruling
+of the plan or a user rule; not style nits.
+- <**The contract:** the lane's side matches <the contract> exactly (field
+  names, types and limits, states, result codes, order of events). Any
+  deviation is a finding, even if it looks better: the other side builds on
+  the text.>
+- **Correctness:** logic bugs, nil indexes, edge cases (offline players, a
+  player leaving or dying mid-action, a relog, a reload with saved data, the
+  seams the brief names). Verify each report claim you rely on; "X is missing
+  in Y" claims need proof (grep the whole tree). Engine claims are checked in
+  `/home/jan/projects/grudgelands/reference_projects/luanti`. Check the lane's
+  re-check list: a fact marked refuted must really be refuted, a confirmed
+  finding must really be fixed.
+- **The rulings met exactly** (not more, not less): the plan's §2 and the
+  coordinator defaults as written; open points listed as questions rather
+  than decided silently; no file outside the brief and the plan's shared-file
+  list edited.
+- **Rules:** release mode (the lane's classification, compatible, map reset,
+  migrate or new server, is right; saved data keeps its format; the saved-key
+  list checked against the diff; new map-bound state has its clear; a
+  migration step has its test and keeps the baseline rule); docs updated
+  where the change makes them wrong; no edits to forbidden files; vendored
+  patches marked `-- GRUG PATCH` with a VENDOR.md entry; no scope creep; no new
+  per-tick work over all players; no new globals.
+- **Tests:** `bash tools/check_lua.sh` on changed Lua,
+  `python3 tools/check_fresh_server.py`, `python3 tools/r28_design/validate.py
+  --game` where quest or mob data changed, `python3 tools/check_upgrade.py`
+  where the declaration or `game.conf`'s version changed, and the lane's own
+  fixture(s) once, through the queue
+  `~/projects/grudgelands-orchestration/r45/lua_run.sh review-<lane> 2 env
+  JOBS=2 tools/run_fixtures.sh <fixtures...>`.
+  **Fixtures: run only the fixtures that are strictly needed, your own and
+  those that really test the behaviour you change, as few times as possible;
+  no full run (the coordinator runs it once at the round's end); name what you
+  ran and why.** For a reviewer that means: the lane's own fixtures once, plus
+  another one only if you have a concrete doubt it names; nothing else. No
+  engine run unless you doubt the lane's claim (then one, through
+  `lua_run.sh <label> 1 ...` from the worktree with `LC_ALL=C`, ≤ 5 min,
+  never generating the whole world, pgrep clean afterwards, never the user's
+  Luanti folder). Never repeat a lane's long runs; read its receipts. No PUC
+  runtime runs.
+- **Docs lanes:** check every rule and number the lane writes against the code
   (no rule or number change without a code source or a user ruling) and the
   links it touches.
-- Proportion (user ruling): report theoretical issues (hypothetical foreign
-  mods, impossible states, load-order constructions) as "Backlog notes"
-  without severity, never as blockers.
+- **Proportion (user ruling):** theoretical issues (foreign mods, impossible
+  states, load-order constructions) are "Backlog notes" without severity,
+  never blockers. A question only a person in the game can answer goes to the
+  coordinator as a proposed human test.
 
-Final message (≤ 500 words): verdict `MERGE` / `MERGE AFTER FIXES` /
-`REJECT`; findings ranked by severity, each with file:line, a concrete
-failure scenario, and a suggested fix; checks you ran with results. Never
-launch other agents or CLIs. No references to existing games in anything
-you write.
+Final message (≤ 600 words; the coordinator saves it as
+`~/projects/grudgelands-orchestration/r<NN>/reports/<lane>-review.md`): verdict
+`MERGE` / `MERGE AFTER FIXES` / `REJECT`; findings ranked by severity, each
+with file:line, a concrete failure scenario and a suggested fix; checks you ran
+with results. Never launch other agents or CLIs. No references to existing
+games in anything you write.

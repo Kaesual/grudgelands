@@ -992,7 +992,7 @@ abilities' `valid_target`, so the PvP flag decides who an area may touch.
   [scout.md](scout.md) §8; the Veil ultimate is Close Dance.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.
 
-### Round 16 control execution
+### Control execution
 
 Stun prevents voluntary movement and all new or pending skills, native melee,
 held swings and held casts. Pending input is discarded without catch-up bursts;

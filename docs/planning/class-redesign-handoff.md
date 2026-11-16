@@ -677,8 +677,8 @@ Mage example.
 
 Only after those discussions should the coordinator turn the chosen scope
 into a round plan. The existing next-round carry-overs remain in
-[BACKLOG](../../BACKLOG.md#round-45-carry-overs) and
-[the fix-round carry-overs](../../BACKLOG.md#0451-carry-overs); this handoff does
+[BACKLOG](round45-plan.md#carry-overs) and
+[the fix-round carry-overs](round45-plan.md#0451-carry-overs); this handoff does
 not silently cancel the waiting point, POI placement work or repair icon.
 
 Expected upgrade implications, to verify when scope is frozen:

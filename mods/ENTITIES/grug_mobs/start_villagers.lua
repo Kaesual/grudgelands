@@ -1182,7 +1182,7 @@ end
 -- item, so what the audit has to resolve is the family at its bracket -- and it
 -- does that through the global rather than a dependency, because `grug_mobs`
 -- has none on `grug_gear` and `core.global_exists` is the only way to probe a
--- global without tripping `strict.lua` (docs/research/luanti-lua.md). A missing
+-- global without tripping `strict.lua` (docs/technical/luanti-lua.md). A missing
 -- `grug_gear` is reported like an unregistered item: it is the same failure for
 -- the player, an empty hand.
 core.register_on_mods_loaded(function()

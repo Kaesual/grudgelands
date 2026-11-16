@@ -283,7 +283,7 @@ combat may follow its target in).
 - Per faction 12 fortress quests: one **solo** raid per enemy camp (8: the
   camp's guards and captain), three ordinary fortress quests and one entry
   quest from an outpost of the fortress's zone
-  ([quests.md](quests.md#pvp-fortress-quests-round-31)).
+  ([quests.md](quests.md#pvp-fortress-quests)).
 
 ## 8. Not built
 

@@ -302,7 +302,7 @@ their `LICENSE-media.md` rows, the camp blueprint's comment and the title rows i
 - **§2a points 5–7** (the plan review, on the coordinator's recommendations): A6/T5 follow the free camp raid at ~39,
   no A7/T6; Scrip and Rattle stay solo and carry their zone's weapon; the zone's weapon on a solo quest.
 - **The group-quest rule** (§2 point 8): elite group quests below level 51 are always optional; from 51 they may stand
-  on the story path ([quests.md](../design/quests.md#group-quests-round-61)).
+  on the story path ([quests.md](../design/quests.md#group-quests)).
 - **The chapter-3 picks K1–K13: all "A"** (no notes): among them T5 at 40 (K1), the Broken Load and the Scattered Load
   (K4–K6), the storm vessel (K9), the Runner's Packet (K10), Audra Wainholt and Greda Stonehaul (K12, K13).
 - **QUESTMAP:** accepted ("passt so").
@@ -413,7 +413,7 @@ production world, and only a character in the middle of that quest.
 - **Round 62** reworks the front 41–60 (14 files, 108 quests, the Round 36 main line, the fortresses) and decides
   whether the main line at 41 requires A6/T5; the four group quests at 50 still follow their front chains and become
   standalone there (the group-quest rule).
-- The reviews' and reports' notes are in the [Round 61 carry-overs](../../BACKLOG.md#round-61-carry-overs).
+- The reviews' and reports' notes are in the [Round 61 carry-overs](#carry-overs).
 
 ### Round-end gates
 
@@ -432,3 +432,49 @@ link and anchor check of every touched file (1,145 links), the full `run_fixture
 check: **304 of 304 seeds build, 0 failed, 22 min 34 s**; Round 60's took 21 min 25 s) and one headless boot (PASS,
 listening, no ERROR line). Each code lane ran the full `run_fixtures.sh` once (BANDQUESTS 277/277 after its fix round,
 STORYART-SHIP 277/0; BANDTEXT 277/0 per Astra).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Rattle's kept id** (BANDQUESTS' review, finding 2, accepted by the
+  coordinator): `bannerbreak_ramp_03` kept its id while its objectives
+  went from [Sappers/Slingers ×4, Rattle] to [Rattle]; progress is stored
+  per objective position (`grug_quests/state.lua` ~195-197), so an active
+  copy saved before 0.61.0 with the old count reads "ready" without
+  Rattle's kill (its weapon and T4's prerequisite with it). Declared in
+  the 0.61.0 entry of the upgrade contract; only the one production world.
+- **The Recovery Rest** (BANDQUESTS' review): where the Deadmarch forms no
+  region the place falls back to the belt's woods, and on 3 of 6 rendered
+  seeds that fallback lies in Hollowbell's region (91–385 nodes from the
+  elite leader); the fleet's place check tests that it is placed, not
+  where it fell back.
+- **The validator's warnings** (BANDQUESTS' review): five new
+  `W-night-count` warnings, on content whose counts are fixed (the
+  shipped main line and `camp_hunt_t4_night`); `validate.py --game` has
+  11 warnings, 0 errors.
+- **T3's completion** (TEXTREVIEW): four sentences, one more than the
+  completion rule's 1–3, because the appended outlook sentence was
+  mandated wording (plan §2 point 3).
+- **The Runner's Packet's second source** (BANDQUESTS' Q1, accepted):
+  Blackwind's `bandit_hideout` archers (Shroud Archer, L36–37) carry the
+  same name as the camp's, and drops count by the name (`state.lua`
+  ~621), so they drop the Packet too; the quest opens at 38, so they are
+  only an easier source (`guarantee.py` reports it as I-now-counts). A
+  distinct name would close it.
+- **Identity strings** (BANDQUESTS): the six band files' `identity` once
+  named the four dropped leaders; BANDTEXT rewrote them (TEXTREVIEW: none
+  names a dropped leader now; the string is not shown to the player).
+- **Generators** (BANDQUESTS): the r58 camp hunt generator
+  (`tools/r58_guildquests/build_structure.py`) re-picks every T4 hunt when
+  a band changes its kinds; the shipped ones are pinned in `KEPT_HUNTS`
+  (Rounds 60 and 61), and its plain `--check` reports 10 differences on
+  main as on the base (the gate is `--check --ids`).
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.61.0 `map_reset` entry, because the unpushed 0.58.0 entry already
+  covers every change against pushed 0.57.0; the entry is declared for the
+  record (the production world moves 0.57.0 → 0.61.0 across one reset).

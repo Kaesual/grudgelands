@@ -1,3 +1,0 @@
-parse ok
-242:			"\ntrace=", table.concat(snapshot.trace, "|"), "\n"})
-static inspected

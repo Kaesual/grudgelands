@@ -305,7 +305,7 @@ differently:
 
 - **For the user:** the Character tab's figure size and angle, the cloak's new angle and the look of every line in
   the GUI test (below); the kaesual site after the kaesual agent's update.
-- The reviews' and reports' notes are in the [Round 54 carry-overs](../../BACKLOG.md#round-54-carry-overs).
+- The reviews' and reports' notes are in the [Round 54 carry-overs](#carry-overs).
 
 ### GUI checklist (Round 54)
 
@@ -355,3 +355,53 @@ and against `d18840a6`, 0.53.1), `check_fresh_server.py` PASS, `export.lua --che
 PASS, the docs link check (the lane report), the full `run_fixtures.sh` 233/0 (once). Each code lane ran the full `run_fixtures.sh` once (BAKE 229/0, MODEL
 230/0, GAME 231/0, VIEW 232/0, WEB 232/0, INTEG 231/0). The round end on main (full fixtures, `check_upgrade.py`,
 `check_fresh_server.py`, one boot, the sync) is the coordinator's.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Contract z-fighting** (MODEL, accepted, `KNOWN_ZFIGHT` in
+  `gen_cloak_model.py`): the chest shell's sides lie 0.13 px from the hat
+  layer over a 0.88 px strip at the neck (the catalog's `body.hat` is
+  ±4.5 px, y 23.5–32.5; the real hat ±4.38, 23.62–32.38), and the tasset's
+  top corner is coplanar with the arm's front and back for 0.19 px. If the
+  GUI test shows flicker: the catalog's hat to the real size and the chest
+  top ≤ 23.5, the tasset z ±1.75 (a contract change).
+- **Clearance outside the checks** (MODEL): the pauldron, the shoulder
+  reinforcement and the helm rim pass through the cloak's top (up to 0.9
+  model units); swinging bracers and sleeves pass through the panels (up
+  to 0.48); the generator checks only legs and body. Accepted overlaps:
+  the front panel seated, and its top corner in the thigh in the twisting
+  walk poses (`charge_walk` −0.44, `swing_walk` −0.11, `bow_walk` −0.10).
+- **Version 1 on the web** (WEB): a character who wore a helmet and has not
+  logged in since 0.54.0 shows bald until the next login (the hair would
+  need the per-race look tables in the export); pre-0.53.1 version 1
+  bodies were not sampled (they fall back to the bare race look).
+- **Tools:** `tools/gen_mob_item_textures.py` would rewrite five
+  `grug_mobs` icons that `42a43917` replaced (pre-existing; INTEG review);
+  `tools/wp13/gen_character_visuals.py` has no `--check` (gate: rerun,
+  clean `git status`); the Round 31 preview tools (`r31_a/preview.py`,
+  `r31_b/build_preview.py`) show only the skin now; `bake.py --check`
+  checks the icons only with `--icons-out` (the documented gate);
+  `tools/r54_armor/catalog.py` keeps the prototype's German area and
+  palette labels (`AREAS`, `PALETTES` names; the contract, coordinator
+  only); `check_lua.sh` sweep 5 flags `os.exit` in the WEB tool scripts as
+  in `tools/web_data/export.lua` (pre-existing).
+- **Kept on purpose:** the slot ghosts are copies of the metal T3 icons
+  (`ghosts.py`; `pages.lua` could name the T3 icons directly); the ember
+  zone tint of the Coal-Purse Factor and the Ash-Writ Bowman reaches the
+  skin only; the weapon card stays hidden on the website, and the NPC
+  model is not exported (the site shows players only); the `.glb` is
+  compared with the `.b3d` in shots only at stand frame 0 (its clips by
+  `check_glb.py`).
+- **State notes** (no action): a royal NPC keeps its composed texture list
+  in its staticdata (about 1.8 KB, GAME review); an enchanted silversteel metal armour stack
+  shows its icon slightly greyer until its next refresh (any equipment
+  change or level-up).
+- **History naming removed files:** `docs/research/r10-visuals/*` and the
+  parity evidence name the removed armour overlays (records, left as they
+  are).

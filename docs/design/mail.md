@@ -4,11 +4,10 @@ Mailboxes, letters between players, letters from the admin and from the
 people of the realm, messages to the admin and announcements to all
 players. Decided by the user on 2026-10-14
 ([mail plan](../planning/mail-plan.md) §2, with the round's changes in
-[Round 48](../planning/round48-plan.md) §2); built in Round 48 (0.48.0):
-the mod `grug_mail` with the mailbox window (lane MAIL), the mailbox on the
-waystone pads (lane WORLD), the mail icon beside the minimap (lane HUD), the
-Admin Mail tab (lane ADMIN) and the starter quest with the welcome and level
-letters (lane QUEST). Seams and storage: the
+[Round 48](../planning/round48-plan.md) §2); implemented in Round 48:
+the mod `grug_mail` with the mailbox window, the mailbox on the waystone
+pads, the mail icon beside the minimap, the Admin Mail tab and the starter
+quest with the welcome and level letters. Seams and storage: the
 [module guide](../technical/module-guide.md#mail).
 
 ## 1. Mailboxes

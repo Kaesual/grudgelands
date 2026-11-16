@@ -162,7 +162,7 @@ random numbers, no dependence on table order.
    of its kind's chain (the same chain and cell order as a kind leader) at
    least 64 nodes from every leader, camp and earlier place, so a place never
    moves a leader and a "use at a place" step is no leader fight
-   ([quests.md](quests.md#objectives-round-28)). A place without such a cell
+   ([quests.md](quests.md#objectives)). A place without such a cell
    is a logged problem; `quest_targets.py` fails a used place that is
    missing on a seed.
 
@@ -428,13 +428,13 @@ creates is neutral. `tools/r28_world/border_rule.py` derives every zone's
 A quest's kill objective or quest drop with an area names `<zone>/<kind id>`
 (or a camp id): the area selects the names the objective counts (its roles'
 slot names there), and every mob of those names counts, wherever it spawned
-(Round 38, [quests.md](quests.md#the-quest-name-guarantee-round-38)). The
+(Round 38, [quests.md](quests.md#the-quest-name-guarantee)). The
 mob's `_grug_area` tag stays for the dawn, density and camp head counts and
 names the zone its name is read in. Its levels for the quest checks are the
 kind's (the union over its roles). A leader is
 named by its role, without an area. A "use at a place" objective names a
 quest place of a recipe (`<zone>/<place id>`) or a clash site by its
-settlement key (Round 36, [quests.md](quests.md#objectives-round-28)).
+settlement key (Round 36, [quests.md](quests.md#objectives)).
 
 ## Directions
 

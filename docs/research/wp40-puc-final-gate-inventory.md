@@ -49,7 +49,7 @@ which pre-ruling owners were protected by the standstill:
 
 - `AGENTS.md`:136-140 and :144-150 stayed binding exactly as written;
 - `docs/process/wp-workflow.md`:46-55 and :62-70 stayed binding;
-- [luanti-lua.md](luanti-lua.md):336-342 and :359-362 stayed binding;
+- [luanti-lua.md](../technical/luanti-lua.md):336-342 and :359-362 stayed binding;
 - `tools/wp40/README.md`:111-115 and :126-135 stayed binding; and
 - [wp40-t2-contracts.md](wp40-t2-contracts.md):1582-1584 stayed binding in its
   then-ambiguous wording.
@@ -516,7 +516,7 @@ is the gate-1.5 condition (2026-08-18): the synthetic KATs drive only the
 comparator under PUC, and the new R19 enumeration path needs at least one
 end-to-end PUC exercise against its `pairs()`-order risk. No comprehensive PUC
 round (reserved for T2-final, per the interpreter split in the brief and
-[luanti-lua.md](luanti-lua.md))."
+[luanti-lua.md](../technical/luanti-lua.md))."
 
 **The driver exists.** `tools/wp40/t2_correction_repro.lua` is written for
 exactly this; its header at `:1-13` says the interpreter split "byte-compares

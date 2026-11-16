@@ -580,7 +580,7 @@ Comparisons, not targets.
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-48-carry-overs).
+[carry-overs](#carry-overs).
 
 ### GUI checklist (Round 48)
 
@@ -760,3 +760,78 @@ errors, 5 warnings in untouched files), `income.py --check`, `build_doc.py
 web-data checks, every declared step's test in the `debian:trixie`
 container and a smoke boot (90 s) PASS. On lane D's branch:
 `tools/r37_dc` and `check_upgrade.py` (0.48.0 against origin/main) PASS.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Mail** (MAIL): names that differ only in letter case share one index
+  entry (the engine normally forbids such names); an offline player's
+  unread count leaves out announcements (their read set is player meta);
+  if another mod's window replaces the mailbox window, the session never
+  finishes and the stacks wait in `grug_mail_out` until the next mailbox
+  close or join (nothing is lost).
+- **Admin Mail** (ADMIN): the answer text is not stored in the ticket (it
+  is in the server log only); typed text is lost when the admin switches
+  tabs or the window is resent before an event; an answer to a character
+  the server no longer knows is refused (Close remains); no notice for
+  online admins when a ticket arrives, no count in the tab caption and no
+  unread mark per ticket (the wireframe shows them, the plan does not);
+  each inbox draw deserializes the ticket store two or three times; a
+  forged far-future draw serial (admins only) blocks that admin's own sends
+  until a rejoin.
+- **Starter quest and letters** (QUEST): abandoning the starter quest is
+  final (its flag stays set); a character created and disconnected before
+  its arrival gets the quest and the welcome letter early at its next
+  join; on a veteran's first join the level letters arrive before the
+  welcome letter (`grug_xp`'s join hook runs first; only the order in the
+  mailbox changes); `income.py` and `ledger.py` read only the zone files,
+  so the starter quest's one-time 25c and 30 XP are not counted;
+  `turnin_text` lives in `grug_mail/quest.lua`, not in `texts.lua` (it is
+  the plan's sentence, not a picked text).
+- **HUD** (HUD): `set_mail_count` keeps a count for a name that is not
+  online until that player joins and leaves (`minimap.lua` "per online
+  player" is slightly wrong; storing only for known players is a small
+  fix); the corner stack can end a few px below the minimap's box at small
+  heights with large GUI scaling (a 1024 × 600 window at GUI 2 fills it
+  exactly; GUI 2.5 or more at 720p overflows), which matters only with ten
+  tracked quests; with the minimap hidden a wide "Now playing" box grows
+  to the left of the minimap's box.
+- **The mailbox** (WORLD): a capital offset passed without `facedir` would
+  write param2 0 (none exists); the offline render banks of `tools/r36_p`
+  and `tools/r31_s` do not know the mailbox.
+- **Plants** (FARM): the badlands cactus's `NOT_RENEWED` reason in
+  `vegetation_density.lua` ("cannot grow on mesa clay") is stale, so its
+  renewal could now be enabled; the Large Cactus Seedling has no tooltip
+  line; papyrus and cactus may grow in village ground (only the terrain
+  guard's towns, capitals and landmarks refuse, as for saplings); a
+  player-built cactus stack now digs up as a whole, as papyrus does; held
+  Salt Crust Seeds become one Salt Crust each (the alias doubles their
+  negligible value).
+- **Prices** (SELL): the Salt Pan stays unsellable because its recipe's
+  Water Bucket has no value (a filled bucket could count as its empty
+  one); the meat blocks have no unpack recipe and stay crafted goods (4c,
+  one-way); the second pass settles in at most `MAX_PASSES = 100` lowering
+  passes, so a future slow loss cycle would stop settling quietly (the
+  CRAFT LOOP audit would then log at start); lot goods that are tools
+  (Wooden and Stone Hoe, Iron Shovel) merge regardless of wear, and
+  `remove_item` picks which one stays; some bag values look odd but follow
+  their recipes (Large Bag 136c against Great Cloth Bag 17c, the Leather Pack
+  8c against the Rucksack 3s20c); tree shape nodes (not held normally) get the log
+  value; the new set is larger than planned (306 against about 220).
+- **Bags and the step** (BAGS): if guarded stacks ever outnumbered the
+  target cells, the sort would leave them over and the step would mail
+  them (cannot happen today: `main[9..]` alone has 24 cells; the handler
+  could refuse instead); the letters reach mod storage before the player's
+  inventory is saved, so an engine crash in that window could duplicate
+  or lose items (engine-level, theoretical); the `bags.lua` header
+  "Recipes deliberately do not exist yet" is stale; at a migration join
+  each "Lost and Found" letter also raises MAIL's (self-replacing) "New
+  letter" notice and a recount.
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` or
+  `io.popen` in `tools/r35_f`, `tools/r44_ih`, `tools/r33_c1` and
+  `tools/r37_po`.

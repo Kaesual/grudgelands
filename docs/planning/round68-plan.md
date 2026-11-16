@@ -466,3 +466,37 @@ Follow-up STAIRS: the 20 Iron, Tin, Copper, Bronze and Gold stairs, inner
 and outer stairs and slabs take their faces from their canonical block
 (`tiles_from` in `STORAGE_DERIVATIVES`), keeping the vendored tile settings;
 fixture `r68_install` section S, capture scene `stairs`; compatible.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **First-look defaults** to tune after the GUI test: floor and ceiling
+  wall signs read upright only for a reader facing +z (the vendored sign
+  has no vertical wallmounted rotation); the waypost's arrow follows the
+  placer's look; the notice board turns in four steps; the web join with
+  the 431 glyph files (an atlas would roughly triple the texture string).
+- **TEXT:** the wall sign form stays single-line; a chest label's entity
+  lies in the node in front of the chest, so on a mapblock edge it can
+  vanish while only that block is unloaded and returns when the chest's
+  block is activated again; a word longer than a line always starts its
+  own line (fits ruling 4); `grug_text.register` wraps `after_destruct` at
+  call time, so a node's callbacks must be defined before it.
+- **SIGNS:** nothing reserves the notice board's roof space after
+  placement; a
+  board can straddle a claim border, as a bed can (digging either half
+  removes both); the `notice_board_part` item can be placed through
+  `/give` (a no-op `on_place` would close it); `placer:get_look_dir()` has
+  no non-player guard; the Help line sits under "Bags, food and repair"
+  (Help has no building section).
+- **No-hover-text follow-up:** three engine probes outside the portable run
+  still expect the old hover text and need updating the next time they run
+  (`tools/r67_containers/grug_probe_r67_containers/init.lua` ~83,
+  `tools/pt_fixes/lane_f/grug_probe_node_formspec/init.lua` ~295,
+  `tools/r68_signs/grug_probe_r68_signs/init.lua` ~46-50); the one-time
+  LBMs that clear old hover text were checked against the engine code, not
+  booted on an old world (GUI checklist item 13).

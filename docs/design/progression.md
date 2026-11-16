@@ -1,23 +1,11 @@
 # Progression — Pacing, Death, Reward Cadence
 
-Decided rules (established 2026-08-06; housing milestone revised in Round 25,
-2026-09-29).
-The game ships 391 quests, one data file per zone plus a front file per
-front host and the two guild files (`quests.md`, "Quest data"): Round 29's quests — one track per race
-from the start zone to its heartland, the contested 31–40 zones and the 41–60
-front with its island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
-Round 31's 24 PvP fortress quests (§4) and Round 36's 25 for the main line
-of levels 41–60 (WP9, `story.md` §2a). Round 46 removed Round 29's 55
-repeatable quests (ruling 8; 436 of its 491 remain), Round 57 rebuilt
-the six start zones' 92 quests as 30 (`quests.md`, "The start zones"), and
-Round 58 adds the Miner's Guild's 30 ([miners_guild.md](miners_guild.md) §11), and
-Round 59 rebuilt the band 11–20's 83 zone quests as 59 (`quests.md`, "The band 11–20") and
-added chapter 1's four story quests in the capitals (`quests.md`, "Chapter 1 in the capitals"), and
-Round 60 rebuilt the band 21–30's 84 as 71 (`quests.md`, "The band 21–30") and the six capitals'
-64 as 47 (`quests.md`, "The capitals"), and
-Round 61 rebuilt the band 31–40's 60 as 50 (`quests.md`, "The band 31–40"), and
-Round 62 rebuilt the front 41–60's 123 as 120 (`quests.md`, "The front 41–60"), and
-Round 71 adds the level 20 Expedition's optional group quest (`quests.md`, "The capitals").
+Decided rules. The quests: one data file per zone plus a front file per
+front host and the two guild files; their number and structure are owned by
+[quests.md](quests.md) ("Scope", "Quest data (per
+zone)"), the PvP fortress quests by §4, the main line of levels 41–60 by
+[story.md](story.md) §2a and the guild quests by
+[miners_guild.md](miners_guild.md) §11.
 
 ## 1. Leveling pace
 
@@ -164,25 +152,18 @@ Revised 2026-09-23, Round 18:
 
 ## 4. Quest structure & level gates
 
-- One acceptance rule (Round 65): a quest is accepted from its level − 2,
-  at least 1; the quest data names only the level. The main line's
-  chapters open at 40, 45 and 53 and the finale at 58 (their quests'
-  levels minus two; 41, 46, 53 and 60 before), each chapter after the
-  previous one's last turn-in (Round 36, [quests.md](quests.md) "The main
-  line").
-- Quest descriptions show their minimum level (the level − 2) and named
-  prerequisite quests.
+- The acceptance rule (a quest opens at its level − 2) and the main line's
+  chapter gates: [quests.md](quests.md#acceptance), "The main line".
 - Quest XP uses the authored reward level rather than the receiver's level
   and does not scale at hand-in. Every quest authors a weight in kill
   equivalents ("XP units and level curve").
 - The final quest at each starting settlement is handed in to the next
   regional giver, so completion and the following regional quest meet at the
   same NPC.
-- PvP quests start at level 40 (Round 31, PvP ruling 15; since Round 65
-  the level-41 entry and supply quests open at 39, the user, 2026-10-27): each faction's
+- PvP quests (PvP ruling 15) start at level 41, open from 39: each faction's
   fortress gives them (one raid per enemy Battlegrounds camp plus a few
-  ordinary fortress quests), and an outpost of the fortress's zone sends a
-  level-40 player there ([quests.md](quests.md#pvp-fortress-quests-round-31)).
+  ordinary fortress quests), and an outpost of the fortress's zone sends
+  the player there ([quests.md](quests.md#pvp-fortress-quests)).
 - Gather and kill objectives use stable named-zone ids and authored biome/
   resource palettes so progression teaches exploration rather than old radial
   ring coordinates.

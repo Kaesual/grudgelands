@@ -300,10 +300,10 @@ before fill ([settlements.md](../design/settlements.md)).
   (capital layouts changed).
 - Rare named-building drops remain where a capital quarter runs out of
   capacity (2 in 200 seeds). The lever is the organic wall line in the
-  [BACKLOG](../../BACKLOG.md#round-25-carry-overs).
+  [carry-overs](#carry-overs).
 - Further carry-overs (admin removal of claims, snow in the arrival cube,
   touching claims and rare routes, dyadic road profiles) are in
-  [BACKLOG](../../BACKLOG.md#round-25-carry-overs).
+  [carry-overs](#carry-overs).
 
 ### Playtest checklist (fresh world)
 
@@ -360,3 +360,17 @@ before fill ([settlements.md](../design/settlements.md)).
     changed this round.
 14. **Dragons** (optional, late game): dragon breath patches (scorch, rime)
     still appear in the dragon arenas.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- WP24: two touching claims can cover all three route points of one named
+  rare and suppress its spawn (consequence of ruling 24). Accepted by the user
+  (E12); no work.
+- The per-run early-out in `world_protection` (Lane E) relies on dyadic road
+  profiles (multiples of 1/16). Revisit if road profiles change.

@@ -16,10 +16,8 @@ kind of group (Round 76), have their own rules: [clans.md](clans.md).
   leaders keep leadership indefinitely; disconnects never elect a new leader.
 - Only the leader invites and kicks while a party exists. Players without a
   party can invite to form one. Everyone may leave voluntarily.
-- A Party tab manages invitations, accept/decline, leave and leader actions
-  (since Round 44 the top section of the Party & PvP tab, with the PvP
-  section and no inventory; since Round 67 the **Social** tab, below;
-  [pvp.md](pvp.md) §5).
+- The **Social** tab (below; [pvp.md](pvp.md) §5) manages invitations,
+  accept/decline, leave and leader actions.
 - Each player can disable incoming invitations. Rate limit is one invitation
   per second **per sender**. No ten-per-minute limiter or additional rate tiers.
 - A saved per-player HUD switch defaults on. Without a party it is hidden.

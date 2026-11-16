@@ -174,7 +174,7 @@ All lanes are merged on local main: S `377e7cd4`, R `4e88234c` with the Troll fo
   BACKLOG, the WP scopes, ROADMAP, README, AGENTS, STATUS and the design
   docs.
 
-Carry-overs are in [BACKLOG](../../BACKLOG.md#round-26-carry-overs).
+Carry-overs are in [carry-overs](#carry-overs).
 
 ### Playtest checklist (fresh world)
 
@@ -198,3 +198,45 @@ Carry-overs are in [BACKLOG](../../BACKLOG.md#round-26-carry-overs).
    repellent in the recipe book; tools are `grug_materials:` items; old
    quests and traders still work.
 5. **Troll:** food heals a Troll half as much again.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- Capitals: Lethariel's south gatehouse sits slightly further over the civic
+  lake (up to about 0.8 node); check it in the playtest.
+- Capital planner hardening (optional): clamp to `rmax` after the partial
+  smoothing, assert `POLY` ≥ 4, and guard a plaza that has no avenue.
+- `tools/wp13/node_tiles.json` (generated) still lists `mobs:mob_repellent`;
+  regenerate it. The Round 25 engine probes `tools/r25_claim_core/run.sh`
+  and `tools/r25_interfaces/run.sh` assume the pre-draft Claim Stone; the
+  current probe is `tools/r26_claim_activation/`.
+
+### Capital wall follow-ups
+
+**Noted 2026-09-30** after the playtest fix `1ff541e4` (wall–gatehouse gaps
+10336 → 0 and leaking gates 2287 → 0 over 200 seeds; river dips 271 → 86 by
+`tools/r26_capitals/gate_gaps.lua`, whose merged dip metric undercounts a
+crossing plus a bend clip). Lethariel leaves more of its crown lake shore
+unwalled; the user accepted this.
+
+- River V-dips still occur where a whole run of rays sits on the far bank:
+  the bank-run pass moves rays one at a time and never the whole run back to
+  its neighbours' bank (for example seed 9469376632389957802, Lethariel and
+  Kezamba). Same as before the fix, not a regression against main.
+- Streets on the wall line: after the Round 27 playtest fix (lanes, squares,
+  junctions and the plaza keep off the wall band; every gatehouse's outermost
+  column is a tower) capital plans with a wall opening away from a gate fell
+  from 58 to 6 of 1200 over 200 seeds. The remaining 6 (Lethariel seeds
+  10977656699485584087, 10086036900283954633, 17175927337665330950,
+  13094141985803758170; Kezamba 14402018182688909832; Gor Drazhak
+  17608184500408850831) are outline geometry: where the gate-line pass stops
+  at water, the wall leaves a gatehouse through its inner face and the avenue
+  covers the wall line beside the box. Options: let the wall win over avenue
+  columns beside a gatehouse (cheap, may narrow the approach), or make the
+  wall leave the box sideways (cleaner, touches the river-dip tuning and needs
+  a new dip run). Deferred by the user 2026-09-30.

@@ -81,7 +81,7 @@ runtime world-migration check.
 ## Real engine measurements
 
 Raw logs, harness/source hashes, environment and summaries are in
-[wp40-quality-evidence/](wp40-quality-evidence/). Every successful run used
+wp40-quality-evidence/ (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-quality-evidence/`). Every successful run used
 Luanti 5.17.0 with LuaJIT in the same isolated Rehearsal container image
 `afec763ab3efa150171f4a024b036145bab419cf9ee6921a3cd0c76432c1f780`,
 3 GiB memory and 2.5 CPU limit. No managed service or existing world was changed.
@@ -125,8 +125,8 @@ is identical. The corpus is selected reproducibly through
 
 ## Geometry and remaining limits
 
-[Before/after relief](wp40-quality-evidence/terrain-before-after.png) and
-[cross-sections](wp40-quality-evidence/terrain-cross-sections.png) use the real
+Before/after relief (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-quality-evidence/terrain-before-after.png`) and
+cross-sections (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-quality-evidence/terrain-cross-sections.png`) use the real
 height authority at 84,211 identical four-node sample positions for full seed
 string `13191094842853985814`. Their compressed TSV inputs, hashes and
 sampling/plotting scripts are retained. These are authoritative terrain
@@ -172,7 +172,7 @@ unchanged from `5a61b63`): PUC 5.1 and LuaJIT 2.1.1767980792 each produce
 8,828 byte-identical bytes, SHA-256
 `c577859417107480fdbdab8d3fec25fafa5e486a1775df05030a21a4f0cb63dd`.
 All 1,753 bound inputs pass the post-run unchanged-hash check. The
-[final parity receipts](wp40-quality-evidence/final-parity/output.sha256),
+final parity receipts (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-quality-evidence/final-parity/output.sha256`),
 interpreter hashes/logs and original failed test attempt are retained alongside
 the engine evidence. The independent reviewer inspected these immutable
 artifacts and issued unconditional ACCEPT with zero open findings. No further

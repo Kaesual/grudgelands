@@ -647,7 +647,7 @@ The user (2026-10-08 and 2026-10-09), on the lanes' questions:
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-44-carry-overs) (theoretical, no
+[carry-overs](#carry-overs) (theoretical, no
 severity). The overlapping map icons (58 pairs at normal quality, 44 at
 high) and the names over icons are tuned at the GUI test. The stale comment
 in `grug_mapgen/wp40/r7_loader.lua:46-47` waits for the next real mapgen
@@ -790,3 +790,43 @@ only the inventories of characters that held a mount item or a skill
 outside the hotbar, plus the record; no online work, no map part. Tested
 end to end on SQLite; on PostgreSQL the step runs in IT's suite on a world
 without skills or mounts (it uses only the shared data API).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Window frame** (FR): reopening the inventory shows the scrollbar
+  position of the last send, not where the player left it; a page with no
+  view and an empty tab row would turn `size` into a legacy size (none
+  exists); a pure scrollbar event stops at sfinv, so `""` handlers
+  registered after it never see one (none acts on it).
+- **Bags** (IH): a cross-inventory bag swap (a chest's bag onto an equipped
+  bag) is checked as a full removal, stricter than needed.
+- **Character** (CH): a future allow rule on gear or arrow moves must also
+  cover `route_shift`, which skips the allow callbacks registered after
+  `equipment.lua`; a quiver change, a Scout's shot included, resends the
+  cached Character page in every mode.
+- **Talents & Skills** (TS): no message when a class change finds a full
+  hotbar (the base skills wait silently in the row).
+- **Texts** (PP): the removed-tab scan in `tools/r44_pp` misses
+  concatenations across lines, words split by hypertext tags and `[[...]]`
+  strings (no hits by hand today).
+- **Map window** (MQ): `zoom_fov` 72 replaces the 15° zoom creative mode
+  gives; while Charge's field of view is active, Z shows "Zoom currently
+  disabled"; the old probe `tools/r27_quest_item_names` still reads the
+  Quests page (outside `run_fixtures.sh`).
+- **Quickbar** (QB): an open quickbar is never refreshed; `grug_mounts`
+  still depends on `grug_inventory`, which it no longer uses;
+  `grug_mounts.register_on_owned_tiers_changed` has no listener.
+- **The step** (MS): the station grids are gone since Round 45 (RG, ST),
+  so nothing new can enter one; what remains is an old player-placed
+  station's dead node meta, which may still hold a skill or mount item
+  from before 0.44 and hands it out when the station is dug (the dig refund;
+  nothing is lost). The e2e row dump cuts rows over
+  90 characters (byte identity checked separately); on PostgreSQL the step
+  runs only on a world without skills or mounts (it uses only the shared
+  data API).

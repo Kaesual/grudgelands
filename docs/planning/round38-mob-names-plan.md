@@ -245,7 +245,7 @@ Numbers come from the lanes' tools, run the same way before and after;
   (size, age, temper, look), a modifier sheet and a style guide; the fire
   and coin words reserved for the ten Undertithe-corrupted sub-types.
 - **M mechanism, then B1** (merge `f7c2e794`; [quests.md "The quest-name
-  guarantee"](../design/quests.md#the-quest-name-guarantee-round-38)):
+  guarantee"](../design/quests.md#the-quest-name-guarantee)):
   of the options in §2.1, **a kill counts by the name the mob shows**.
   `grug_mobs/data/names.json` holds one name per slot key
   (`<scope>/<source>/L<lo>-<hi>`, written by `tools/r38_b1/gen_names.py`);
@@ -365,7 +365,7 @@ Besides §6 items 1–6 (before the start), all on 2026-10-06:
 
 ### Open notes
 
-In the [BACKLOG](../../BACKLOG.md#round-38-carry-overs); none blocks the GUI
+In the [carry-overs](#carry-overs); none blocks the GUI
 test.
 
 - The dragons' broadcast puts "The " before the names file's name in code;
@@ -428,3 +428,32 @@ this lane. Helpers: `/xp give`, `/teleport`, `/giveme`, `/time`
     arriving in the start town; no scrollbars at your resolution; each link
     button asks before opening the browser; "Got it" and Esc close it; it
     does not appear again after a reconnect.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Dragon broadcasts** put "The " before the names file's dragon name in
+  code (`bosses.lua`): a dragon renamed to a proper name would read
+  "The <Name>".
+- **Achievement short forms:** "Kill the Wyrmglass Dragon" and "Kill the
+  Stormscale Wyvern" (`grug_achievements/catalog.lua`) keep the short
+  forms from before Round 38; the mobs show "Wyrmglass Ice Dragon" and
+  "Stormscale Jungle Wyvern".
+- **Entity descriptions in Lua are fallbacks** (text review): a family's
+  registered description shows only where `names.json` names no slot for
+  the mob; reading one as the shown name misleads.
+- **The level-60 whelps** make a dragon's enrage phase clearly harder than
+  before (HP 384 → 2696 each); watch it in playtests.
+- **The Rift Spawn's gap exemption** in `check_rules.py` (rule 4) holds
+  only while its name stays on the one story role.
+- **`guarantee.py` information:** `I-now-counts` (205 objectives now count
+  same-named mobs beyond their area: the fix) and `W-level-fit` (135
+  objectives whose counted name reaches beyond the quest level ±3) are
+  reported, not errors.
+- **Eight three-word family items** keep their names (the user, plan §6
+  item 16): the family word tells which mobs drop them.

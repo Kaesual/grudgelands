@@ -198,7 +198,7 @@ tiles and are rebuilt from the cache key.
 - **For the user:** fruit picking in towns. Today a pick is protected like a dig, so town and village orchards
   (Dawnmere, the human capital green) cannot be picked, by either click. Recommended: keep. The alternative is a
   fruit-only exception to world-feature protection inside `pick.lua`.
-- The reviews' and reports' notes are in the [0.53.1 carry-overs](../../BACKLOG.md#0531-carry-overs).
+- The reviews' and reports' notes are in the [0.53.1 carry-overs](#carry-overs).
 
 ### GUI checklist (0.53.1)
 
@@ -242,3 +242,42 @@ Lane D on its branch from `2c5ecbc2`: `r37_dc` PASS, `check_upgrade.py` (0.53.1 
 ran the full `run_fixtures.sh` once (226/0 for SKILLS, GEAR's reviewer and RACE; ART 225/0; FLIGHT 224/2, both fixed and
 rerun). The round end on main (full fixtures, `check_upgrade.py`, `check_fresh_server.py`, one boot, the sync) is the
 coordinator's.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Open, for the user:** fruit picking in towns. A right-click pick is
+  protected exactly like a dig, so town and village orchards (Dawnmere,
+  the human capital green) cannot be picked. Recommended: keep; the
+  alternative is a fruit-only exception inside `grug_gathering/pick.lua`.
+- **Picking side effects** (RACE review): ripe fruit within 4 m counts as
+  an interactive node for right-click, so a Scout's Loose aimed at it picks
+  instead of shooting, and a held block + right-click picks (Shift +
+  right-click places). The picker hears no dig sound (the engine's
+  `node_dig` leaves the digger out, its client predicts the sound); no new
+  sound without the sound gate.
+- **Flight overlay** (FLIGHT review and report): `grug_map/minimap.lua`
+  `flight_mode` reads the faction from player meta every step while flying
+  (cache it on the mount record; `world_map.md` "one table read per
+  player" understates it); `grug_mounts.column_flight_state` reads the
+  zone id before the rule checks the faction; `r29_b` and `r44_qb` load
+  `entity.lua` without `flight.lua` (they pass and never call the rule);
+  no red on the sea disc beyond the atlas edge; the Map tab has no flight
+  layer. The map source's channel records still carry
+  `warning_width=48` (`wp40/source/simple_map.lua`), which no game code
+  reads (the band is `grug_mounts.WARNING_WIDTH`, 40).
+- **Areas** (SKILLS): Fireball's splash keeps its ±2 band (radius 2)
+  while every other area uses ±3; one number if wanted.
+- **Trinkets and gear** (GEAR): the legacy meta `grug_trinket_special` is
+  still only read, never written (before 0.53.1 too); the `r33_c5` and
+  `r45_eu` stubs of `grug_inventory.hand_accepts` always return true (they
+  only build tooltips).
+- **Tools** (ART): `tools/r52_art/artb/build_drop.py --check` has failed
+  since Round 52 shipped the Fireball and Smite icons ("Shipped comparison
+  assets differ"; true on main before 0.53.1); `tools/r53_art` has no
+  `tools/README.md` line.

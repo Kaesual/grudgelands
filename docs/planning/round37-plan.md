@@ -420,7 +420,7 @@ then (origin/main was `211229e2`, the plan); the user pushed it later on
 non-trivial docs lane was independently reviewed by Opus once: DA, MB, IX,
 PO, DC, DD, SN and CB (both parts) said MERGE with notes, DB, DF, MG, MP,
 DE and F MERGE AFTER FIXES; every required fix was made before the merge,
-the notes went to the [BACKLOG](../../BACKLOG.md#round-37-carry-overs). Each
+the notes went to the [carry-overs](#carry-overs). Each
 code lane re-checked its findings first (no audit finding was refuted; a few
 changed: X-02 also needs the road and POI layer, PLY-04's cube check cannot
 spare the scan, MGT-07 had eight copies, not six). After each merge the
@@ -652,7 +652,7 @@ Besides §2 (2026-10-05):
 
 ### Open notes
 
-In the [BACKLOG](../../BACKLOG.md#round-37-carry-overs); none blocks the GUI
+In the [carry-overs](#carry-overs); none blocks the GUI
 test.
 
 - The quest kill-credit bug (Round 38); PLY-11 (a Scout shot rebuilds the
@@ -718,3 +718,62 @@ and 8 (raiders ignore Throng players). Helpers:
       Lurker (elite, neutral);
     - a server set to high map quality: the Map tab is sharp, the minimap
       looks like normal quality.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **PLY-11** (CB): a Scout shot still rebuilds the Character page (its
+  arrow total); a poll would save little, the fix takes the total off the
+  cached page, which is a UI change for the user.
+- **Cave mobs under the start zones** still call each other (open
+  question): the base Giant Rats, Zombies, Spiders, Spiderlings and Goblin
+  Miners of the cave rows (about y −40 to −175, depth level 10 or below)
+  are no recipe roles, so the start-zone rule does not reach them; lane F
+  would leave them (caves are the depth domain).
+- **Start-zone camps fight alone** too (lane F's reading of the ruling:
+  bandits, poachers and their chiefs; every member still attacks on
+  sight); to confirm with the user.
+- **`minimap_view.lua` keeps its high-quality rows** (8-pixel grid, halved
+  texture), unused since Round 37 F; the `tools/r27_minimap` geometry
+  fixture still tests them.
+- **Mob behaviour notes** (MB review): after a wind-up a dogshoot elite in
+  shooting range can fire at once (the cone resets `punch_timer`, not the
+  shot timer `self.timer`); a zero-damage hit on a mob fighting an NPC no
+  longer pulls it; long punch clips (Shore Crab 2.0 s, some start-zone
+  families 1.4–1.7 s) hold the punch pose while the mob chases (GUI
+  check); a shot from beyond 40 m no longer pulls a bound actor that
+  already fights. A dodged PvP swing still pushes (CB review).
+- **Interaction notes** (IX and its review): a tall-crop top lost on its
+  own leaves the root undiggable until the next block load; mobs with
+  `fly_in = "air"` fail their flight check inside a water barrier; the
+  right-click forwarding of `grug_core.node_rightclick` is repeated in
+  `grug_abilities/init.lua` and `grug_housing/stone.lua`; inside a Claim
+  Stone's arrival cube a flow can still loop (no barrier there).
+- **Polling notes** (PO and its review): a player with an active item
+  objective still reads the inventory every 0.5 s; `raw_weapon_controls`
+  is never cleared on leave (a rejoin with dig held skips one hint).
+- **Sound notes** (SN review): mobs_redo's `tnt_explode` fallback in
+  `mobs:boom` stays unreachable (no such file ships); `mobs_spell` is still
+  called by the vendored protector rune and `lucky_block.lua`, neither of
+  which loads.
+- **Mob persistence notes** (MP review): if mod storage lags the map after a
+  crash, a newer-generation copy removes itself (healed by the next spawn);
+  an object finishing deactivation into a block that just turned active
+  again can read as lost (a reset, never a duplicate); a royal guard killed
+  early in a King attempt longer than 15 minutes returns mid-fight; with
+  the King's faction the raiders' loot follows the faction-NPC rule.
+- **Shore kind** (F review): the new shore regions reshape the coasts a
+  little; Gravesalt `whitewall`, a target of two front quests, shrinks from
+  7.9 % to 6.4 % of land (seed 7) and from 5.7 % to 4.2 % (seed 2026) but
+  exists on every seed; two `item_tiers.md` availability grades moved from
+  common to regular by the formula only (Last-Pay Talisman, Unbroken
+  Weapon Strap).
+- **Tools** (MG review): the harnesses that compare a branch with an older
+  tree now load `world_assembly.lua` from that tree, so they cannot run
+  against trees before Round 37 (`r25_capital_plots`, `r26`,
+  `r28_zone_atlas` and `r28_world --before`).

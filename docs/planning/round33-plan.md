@@ -384,7 +384,7 @@ and after (comparisons, never targets).
   `grug_mobs.register_on_boss_kill`, `grug_pvp.register_on_stat`,
   `grug_jobs.register_on_award_progress`. Fixture 366 checks.
 - **C4 enchant tiers and upgrades** (merge `d2dcec62`; item_tiers §1–§4,
-  [crafting_equipment_revision.md](../design/crafting_equipment_revision.md)):
+  [items_crafting.md §6b](../design/items_crafting.md#6b-enchantments)):
   `grug_items.enchant_value(stat, ilvl, tier)` replaces the four flat
   bands; every enchant stores its tier, found enchants take the item's tier
   without a roll, values are written by one store path; tooltips read
@@ -460,7 +460,7 @@ and after (comparisons, never targets).
 
 ### Open items
 
-In the [BACKLOG](../../BACKLOG.md#round-33-carry-overs): map and minimap
+In the [carry-overs](#carry-overs): map and minimap
 markers for the Crownbinder and the Decor Merchant; the Scout's full damage
 set above the +50–60 % ceiling (+55 % at item level 60, +82 % at 70);
 Priest heals barely use Intelligence (a heal-formula change, 2B, would be a
@@ -554,3 +554,25 @@ Combat (C1, C5):
     page's crit chance follows 5 % + 0.05 % per Dexterity point.
 19. **Ruination** (Warrior capstone): during its 10 s window crits come
     often and hit hard; say whether the burst feels too strong.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Ruination under ×2 crits:** the capstone's window rises from +9 % to
+  +18 % damage, a hit at its 50 % cap averages ×1.5 instead of ×1.25; a
+  playtest number. Round 35 made the window 15 s every 60 s (about +4 %
+  damage overall). Whitehot fires a little later (less crit from
+  Dexterity).
+- **Decor Merchant's light bands** hold one item each (lantern, hanging
+  lantern); no Candle, which the Embalmer sells at 4c (C5 review).
+- **Sell-only loot:** the 20 one-faction signatures stay sell-only (user
+  choice); Slime Gel, Crocodile Tooth (one faction) and Stone Core (no
+  placed source) have no recipe use (item_tiers §2.4, §3.4).
+- **C3 review notes (theoretical, not measured):** one small table per
+  kill on the achievement path; noted for a later performance pass, no
+  action now.

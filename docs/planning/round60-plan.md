@@ -478,7 +478,7 @@ clear.
   steward; from Round 58 the names never picked (the three cloaks, the achievement and its line) and from Round 57 the
   violet story colour (now on chapter 2 too) and the headland edge.
 - **Round 61** reworks the band 31–40 with the arc's next chapter (A5 at Ashenward 34, §9).
-- The reviews' and reports' notes are in the [Round 60 carry-overs](../../BACKLOG.md#round-60-carry-overs).
+- The reviews' and reports' notes are in the [Round 60 carry-overs](#carry-overs).
 
 ### GUI checklist (Rounds 57, 58, 59, 60, 61, 62, the UI and 0.61.1)
 
@@ -976,3 +976,64 @@ through the queue at 8 parallel, with the quest-place check: **304 of 304 seeds 
 Round 59's took 20 min 8 s) and one headless boot (PASS, no ERROR line). Each code lane ran the full `run_fixtures.sh`
 once (HERBS 273/0, BANDQUESTS 273 of 274, `r30_p1`'s stub then fixed and passing, CAPITALS 275/0 after its rebase,
 STORYART-SHIP 275/0).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Questing share** (BANDQUESTS, CAPITALS): the solo questing share of
+  levels 20→30 is 54–81 % (human 60, dwarf 65, elf 78, orc 61, troll 81,
+  undead 54; before 78–103 %), within the user's 55–60 % yardstick except
+  undead, one point under, and elf and troll, who walk two band zones. A
+  2 KE raise of a Nhal Veyr quest (for example `nhal_veyr_vigil_03` 5 → 7)
+  would add about one point for undead (estimated, not applied).
+- **Mob loot for Alchemy T2** (HERBS, the user: a later loot lane):
+  `venom_gland` (Antivenom) drops only in bands 3–6 (spiders), so no race
+  reaches it at 11–20 (drop it at band 2, or move Antivenom to T3);
+  `tough_sinew` (Vigor II) is out of reach for humans, elves and undead,
+  `fang` (Swiftness Draught) for undead and trolls. T3 and T4 have no loot
+  gaps on the faction halves.
+- **Herb supply** (HERBS, its review; rough targets): Dragonweed in 11–20
+  is uneven between the factions (estimated 988/479, the review 1974/950;
+  **the user: not equalised**, there is plenty); other balances (review,
+  estimated): Lotus T4 986/840, Gravemoss T3 554/700, Lotus T3 381/375;
+  the 21–40 herbs grow in one zone per faction and band; the new hosts
+  also raise the yield where the herbs already grew (Lotus in Skyglass and
+  Stormscale, Dragonweed in Frostbarrow and Ossuary); Ossuary adds almost
+  no Frost Melon on seed 42 (the Reedlands have some); the `item_tiers.md`
+  economy tables are stale (`tools/r33_ds/build_doc.py --check` STALE
+  before and after the round, from economy numbers).
+- **Cooking gaps left** (the cooking survey, `r60/reports/cooking-survey.md`;
+  farming closes them after one trip to a neighbouring zone of the same
+  faction): Corn in four start zones, and berries for humans and elves at
+  11–20. The two real gaps were fixed in HERBS (Frost Melon on The
+  Throng's half, Pumpkin in all six home zones).
+- **Quest items** (BANDQUESTS, its review): `grug_quests/state.lua`'s
+  `give` now drops a leftover silently, which cannot happen after the
+  `fits` check (no warning logged); a Captain's Orders an old world kept in
+  a chest can still be taken out, and once carried it stays carried.
+- **Places and flags** (BANDQUESTS, its review): a place kind stays
+  flagged `quest_target` only while a text names it (`{name:berrywoods}`
+  and the like), so a text edit that drops such a placeholder needs
+  `quest_kinds.py` again (the flag fix of this round); the seed fleet's
+  place check tests that each place is placed, not whether it fell back to
+  another kind; `held_load` stands unused in 19 of the 20 mining camps.
+- **Capitals** (CAPITALS): Kezamba and Nhal Veyr have no day hunt, so the
+  night task's count has no day count to compare against there
+  (`W-night-count`).
+- **Tools** (STORYART-SHIP): the engine probe `tools/r28_e1` is stale on
+  zone variant names from later rounds (61 unrelated failures; not part of
+  `run_fixtures.sh`); the quest item icons show through `item_image()`'s
+  per-item file, and the tinted placeholder stays for a future quest item
+  without art.
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.60.0 `map_reset` entry, because the unpushed 0.58.0 entry already
+  covers every change against pushed 0.57.0; the entry is declared for the
+  record (the production world moves 0.57.0 → 0.60.0 across one reset).
+- **The recipe card's "Grows in …" line** is clipped on the card
+  (`grug_jobs/details.lua` ~463-465) while the tooltip is full (HERBS' review; kept
+  from the round's GUI judgements).

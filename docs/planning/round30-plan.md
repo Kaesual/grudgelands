@@ -9,8 +9,8 @@ This plan schedules agreed inputs; it does not repeat their findings:
 | Input | What it decides |
 |---|---|
 | [perf-review-2026-10.md](../research/perf-review-2026-10.md) | 22 findings with evidence, the region-map cache design (§3), the lane split P1–P4 (§5) |
-| BACKLOG [Round 30 — performance](../../BACKLOG.md#round-30--performance) | the user's rulings of 2026-10-02 (#4, #3, #11, cache) and the additions beside the performance lanes |
-| BACKLOG [Round 29 carry-overs](../../BACKLOG.md#round-29-carry-overs) | details of the island landings, legacy quest fields, stale fixtures, possible bugs, band-5 smoothing |
+| BACKLOG [Round 30 — performance](../archive/backlog-through-round-79.md#round-30--performance) | the user's rulings of 2026-10-02 (#4, #3, #11, cache) and the additions beside the performance lanes |
+| BACKLOG [Round 29 carry-overs](round29-plan.md#carry-overs) | details of the island landings, legacy quest fields, stale fixtures, possible bugs, band-5 smoothing |
 
 Routing (user, per session): Claude orchestrates; **Opus implements and
 reviews** (independent Opus review per lane, never the implementer);
@@ -277,7 +277,7 @@ Numbers are each lane's own probe before and after, same seed and area
 
 ### Open items
 
-In the [BACKLOG](../../BACKLOG.md#round-30-carry-overs): the grug_mapgen
+In the [carry-overs](#carry-overs): the grug_mapgen
 warm-load proposal (#22: store `prepared_handover()` in the world-layout
 cache, warm load 4.6 → about 1.2 s, size M, risk medium), the cold-build
 heap (about 150 MiB from kept query caches), the cache keys that omit the
@@ -337,3 +337,47 @@ On a fresh world (Round 30 changes the island landings and the caches):
     world folder.
 12. **Dawnmere:** each start-town NPC stands there once, also after a
     restart.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+**Round 31 clean-up lane** (user, 2026-10-03): the small code follow-ups
+below go into one clean-up lane of Round 31: the cold-build heap (drop the
+zone-query caches after a build), the held objective counts capped at
+`min(count, needed)`, `changed()` also after a failed turn-in reward, the
+zone-grid encode assert inside the pcall, and one runner script that starts
+every `tools/*` fixture with its right arguments (several `fixture.lua`
+files need the repository path). The #22 proposal stays the user's call; the
+Map tab strip and the crosshair timing wait for the GUI test. **Done in
+Round 31 Lane C** (all five: first-start heap 149 → 110 MiB at the first
+step, `tools/run_fixtures.sh`); the cache keys that omit the mapgen data
+files and the engine version stay as noted.
+
+- **grug_mapgen warm load (perf review #22, proposal; the user decides):** on
+  a cache hit grug_mapgen still spends about 6.35 s loading (settlement
+  preparation 4.09 s, the capitals about 3.5 s). Storing
+  `prepared_handover()` as a fifth section of the world-layout cache (D71)
+  would cut that part 4.6 → about 1.2 s; size M, risk medium (the manifest
+  SHA must stay covered).
+- **Region-map cache (P3 review notes):** a cold build still peaks at about
+  150 MiB of Lua heap, because the zone-query caches are kept for the session;
+  the zone-grid encode assert (more than 255 zones) sits outside the pcall
+  that turns a cache failure into a rebuild, while the rehydrate asserts sit
+  inside the build pcall; the mapgen data files and the engine version are
+  not part of the cache keys (the same holds for the D71 world-layout cache).
+- **Economy:** band 6 pays 0.80 of its target axis (239.3c against about
+  300c), so Master Riding stays 7g33s against about 8g76s on the axis; the
+  band-3 outliers (Crocodile Tooth, Shiny Scale; T4 items in bands 2–3) stay
+  because no T3 replacement exists
+  ([economy plan](economy-vendor-plan.md#band-smoothing-round-30-2026-10-02)).
+- **Mob give-up (P2 notes, for the GUI test):** a player who keeps
+  re-aggroing a mob from a closed house or other hidden spot gets it fully healed at
+  each give-up (about every 7 s; since Round 42 the veto lasts until the
+  player moved 8 nodes or 15 s passed); P2's one-seed count run showed +55 % spawn
+  attempts in a shallow cave, judged run noise (the merged dispatcher keeps
+  every row's rate by construction).

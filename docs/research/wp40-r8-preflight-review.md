@@ -190,7 +190,7 @@ projection digest. This model-drift correction requires focused review before
 another pilot.
 
 A targeted LuaJIT owner-VM integration rerun passed. Its durable
-[receipt](wp40-r8-projection-integration-receipt.tsv) differs from R7's
+receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-r8-projection-integration-receipt.tsv`) differs from R7's
 accepted receipt only in the manifest SHA-256 row; every placement/content/VM
 evidence row is byte-identical. This is direct evidence that the correction
 changes the authenticated projection envelope, not generated semantics.
@@ -425,7 +425,7 @@ No production Lua, probe byte or final-micro input changed between the
 accepted G2 candidate and this interpreter pair. The one required final
 compact PUC 5.1/LuaJIT micro-KAT pair ran on that frozen input set and produced
 byte-identical canonical output. Its
-[versioned evidence directory](wp40-r8-final-micro-evidence/) contains the
+versioned evidence directory (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-r8-final-micro-evidence/`) contains the
 receipt, canonical output and both interpreter logs.
 
 - Receipt SHA-256:

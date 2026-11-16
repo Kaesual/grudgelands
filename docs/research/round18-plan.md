@@ -4,7 +4,7 @@ Date: 2026-09-23. **Approved; implementation authorized by explicit user Go on 2
 Baseline inspected: `7460c49d227a3f66673ad1bf4b7ed429e4b62321` on main.
 The original user feedback is preserved verbatim in
 [round18-playtest-input.txt](round18-playtest-input.txt), items 1–19 in order.
-All planning decisions are closed; living authority: [Round 18 revision](../design/playtest_quality_revision.md).
+All planning decisions are closed; living authority: [Round 18 revision](../design/README.md).
 Resume/status: [round18-execution.md](round18-execution.md).
 
 This is the approved implementation contract, not a claim that these features

@@ -448,3 +448,55 @@ planned for Round 72 (`round72-second-shift.md`, `round72-last-mint.md`).
   has no Expedition term. Both for the coins' decision.
 - Every smaller note is a BACKLOG row in the merge notes, one being that open-world mobs keep
   the fall mechanism fixed here for packs.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **The standing defaults stay** (user, 2026-11-08): boss drops nothing on the ground, chest
+  contents lost at the end, one roll, every mob authored, bars stay, sight as a pull, a list
+  holding only who engaged; leaving the party and re-entering is a free wipe (noted, not closed).
+- **Open-world mobs keep the fall mechanism** fixed for packs: mob hits push along the line
+  from the mob's origin to the feet, so two mobs on a player's cell in one step pass the fall
+  tolerance. Packs push level since `7e43e00e`
+  ([deviations](#deviations-from-the-plan)); the integration
+  review (private `r71/reports/integration-review.md`) noted that other mobs keep it.
+- **Coins:** factor 10 stays (user, 2026-11-07). `income.py --check` has no Expedition term and
+  `loot.lua`'s comment still calls a quarter hour a run's length.
+- **Run length:** modelled 8.7 minutes (8.6 after Round 72's smaller rooms, 9.3 with Round 73's ambush; packs 3.6 against 8), under the concept's 10–20. An HP
+  factor per pack if the test agrees. A pack on one target reads 4 raw pools at c and d.
+- **The pack's shove** on a still player (about 39 nodes in 30 s): drop pack pushes or vary
+  landing sides if it reads badly. A jump is a plain teleport, no visual.
+- **Registrar:** no map marker (needs an icon pick); `registrar.lua`'s `refresh` shows the
+  window without `permitted`, so a session under another formspec reopens at the ready notice;
+  warning and refusal share y 8.8, overlapping only if `can_create` flips between draw and click;
+  `CLERK` is hard-coded while `GUILD_HALL.residents` still lists it, unread; a role change
+  shifts the every-fifth walker rule, so a saved `_grug_walker` can disagree with its ring (read,
+  looks harmless).
+- **Slots:** only slot 1 ran in the engine; 2–100 rest on arithmetic and the fixture. PostgreSQL
+  unmeasured (delete slices, disk). A preparation has no timeout if an emerge never answers
+  (theoretical). A second player at sea could lead a Kraken over a box (the lure, theoretical).
+  An admin `/teleport` out is not noticed.
+- **Run end:** a new run within 0.5 s of an end in the same slot can log one `ERROR` per mob
+  ("Failed to emerge block"), coincidence only; `encounters.lua`'s comment "a step before"
+  overclaims. `rewards_open` is also false
+  for an ended run.
+- **Packs:** `packs.lua`'s `hunt` resets the clock on each re-target (invisibility, same-faction rows);
+  a refused boss body leaves the door shut; a leftover DoT can relist a player; `can_strike`'s
+  ray differs from the strike's (unmeasured); a kited spider 3 to 4 off jumps at the 8 s check;
+  own-cell landing remains `beside`'s last resort; the stuck-mob cleanup can take a wedged
+  normal mob out of sight, as everywhere.
+- **Later Expeditions:** `on_spawn` families skip it through `add_entity` (bear, ape, zombie,
+  weevil); rotating members through freed places gives more chests than `max_players`, within the
+  ruling; a template's arrival beyond a pack's view range + 8.
+- **Tools:** `tools/building_templates/nodes.json` lacks `grug_expeditions:waystone` (refresh
+  once; `expedition_templates`' `OWN_NODES` covers it for the templates); `r71_pack`'s comment "lifts them" is stale, actors do not collide; `r71_frame`'s party
+  seam is a stub (real `remove_member`: `r67_social`); GUARD's `rules/headless.txt` reads FAIL
+  from a probe bug, its fixed form has no clean rerun, the integration runs cover it.
+- **Range (RANGE review):** `written()` has no guard for a missing variant (only
+  before the mods load); a high-level player alone takes all eight nodes; no load check that a
+  loot row's item is registered (fixture J covers the Seam). Mining share estimated, not measured.

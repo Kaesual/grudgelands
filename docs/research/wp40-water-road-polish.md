@@ -96,7 +96,7 @@ the pinned engine UV source in addition to the shipped texture.
 
 ## Validation, evidence and remaining limits
 
-The [evidence directory](wp40-water-road-polish-evidence/) retains the actual
+The evidence directory (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-water-road-polish-evidence/`) retains the actual
 engine failure/success, source patch, shore rows, isolated road measurements,
 static gates and final interpreter parity. Plain-5.1 parsing covers all own
 production Lua and changed tool Lua; SETGLOBAL has no new global writes and the
@@ -131,7 +131,7 @@ implementation: inherited agent session identities. Independent reviewer:
 `/root/gravewood_review`, visible GPT-6 session identity, no implementation
 ownership in this package. Final independent review: 0 Critical / 0 High /
 0 Medium / 0 Low, zero review fix rounds; elapsed wall time is unknown. The
-[evidence receipt](wp40-water-road-polish-evidence/review.md) records the verified
+evidence receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-water-road-polish-evidence/review.md`) records the verified
 inputs and acceptance limits.
 
 After syncing main, create a fresh world with seed `531802985935182545`.

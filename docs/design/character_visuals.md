@@ -661,7 +661,7 @@ camera, so there is no head yaw and no lagging body; NPCs have no head look.
   follows the mouse (axis and clamp: `tools/web_data/model/README.md`);
   nothing is stored for it.
 
-## 6. Round 11 item and station presentation
+## 6. Item and station presentation
 
 Decided 2026-09-20. Silversteel reads as bright neutral silver with subtle cold
 shadows across inventory icons, worn armor and the metal parts of weapons and
@@ -671,7 +671,7 @@ arc/string crossing and the long arc stands upright facing forward, rather than
 using the diagonal tool convention's lower-left grip.
 
 Use individually licensed and visually inspected pinned-reference media for
-seed silhouettes, hoes and the shared smith anvil. Since Round 45 the tanning
+seed silhouettes, hoes and the shared smith anvil. The tanning
 rack, tailor bench, carving bench, jeweller's bench and brewing stand are
 original one-node designs the user picked from three proposals each
 (`tools/r45_a2/README.md`), and each trinket identity has its own jewellery
@@ -685,7 +685,7 @@ professions, following [settlements.md](settlements.md). Fixed display items
 are scenery, with no removable inventory or collectible drop. The open stable
 and its living mount displays follow [mounts.md](mounts.md).
 
-### Round 12 inventory-art families
+### Inventory-art families
 
 Cooking results use recipe-specific silhouettes at native 16x16 scale rather
 than role-colourized ingredient placeholders. Bowls, pots, platters, jars,

@@ -366,7 +366,34 @@ logout, login, joining and shutdown. Rules in [clans.md](../design/clans.md).
 ### Open for the user
 
 - The GUI test (§6, 24 items, desktop and web), the clan mark's look among them.
-- Backlog notes from the reports and reviews: [BACKLOG](../../BACKLOG.md#round-76--clans-party-chat-and-clan-chat-gui-acceptance-pending).
+- Backlog notes from the reports and reviews: [carry-overs](#carry-overs).
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Load repairs are not saved** until the next clan change, so their warnings repeat at
+  every boot (`grug_clans/init.lua` load validation). Persist once after a repair if the
+  log noise matters.
+- **`last_online` after a crash:** it is also stamped at login, so after a crash (no leave
+  or shutdown hook) an offline row shows the member's last login, not the logout.
+- **The whole clan store is serialized** at every clan member's login and logout and at
+  every change. Fine at the design size; watch it if clans become many.
+- **The clan list moves under a click:** a presence event re-sends the card and the
+  order shifts; the pick button names its player (fix round 1), but the row under the
+  cursor may then be another member. The highlight shows before Kick acts (GUI item 22).
+- **Clan button cost:** `can_invite` per Online Players row is linear in the viewer's
+  clan size (`record_of`); event-driven and capped at 100, so not measured as a problem.
+- **Offline clan (and party) rows show no race icon:** neither stores the race. Storing it
+  with the class is one field, compatible; only if the user's GUI test asks for it.
+- **Invitation seconds** (party and clan rows) count down only when the page is re-sent.
+- **API caveats** for a future caller: `grug_clans.invitations_enabled` needs a player
+  object (a name errors); the `can_kick`, `can_promote`, `can_demote` and `can_transfer`
+  target must be a name (an object answers false).
 
 ## 0.76.1 follow-up
 

@@ -455,7 +455,7 @@ The user (2026-10-08), on the lanes' questions:
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-43-carry-overs) (theoretical, no
+[carry-overs](#carry-overs) (theoretical, no
 severity). The first real step (with the UI rework, a later version) adds
 map blocks only if it needs them (ruling 4) and adapts IT's suite, which
 assumes an empty `migrate` list.
@@ -672,3 +672,29 @@ reset.
   PostgreSQL, mod storage in SQLite) ran too, with rows equal to the SQLite
   result the engine loaded.
 
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **A held character** (GS; a failed character handler) still meets the
+  other join callbacks of that join; handlers must be safe to rerun.
+- **One contrived registry layout** (GS) passes `check_upgrade`'s parser: a
+  block-commented literal `versions` table plus a non-literal real one.
+- **The PostgreSQL schema guard** (MT) compares columns only.
+- **A step could commit through `raw(...)` itself** (MT), outside the
+  tool's rollback.
+- **A missing `mod_storage.sqlite` with no characters** (MT) is exit 2
+  rather than "new world".
+- **Strings that are not valid UTF-8** (MT) cannot be written to
+  PostgreSQL: the step fails, exit 1.
+- **PostgreSQL migrate mode takes no lock at `begin()`** (IT), so a lock
+  timeout during a step's first write is exit 1 `step`, not exit 2 `lock`
+  (the operator stops the server first).
+- **Open for a later step** (from the round's delivery note): map blocks (format v29,
+  both SQLite `blocks` layouts, the round-trip test) only when a step needs them
+  (ruling 4); the first real step, 0.44.0, did without them (its station-grid gap is a
+  [Round 44 carry-over](round44-plan.md#carry-overs)).

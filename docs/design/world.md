@@ -452,7 +452,7 @@ location; the "Flag me for PvP" button and PvP contact flag for 60 s; only
 own peaceful land clears the location flag; death clears every flag. No
 attack, heal or area effect changes anyone's flag, and an unflagged enemy is
 no valid target. Rules, numbers, interface and the PvP fortresses and camps:
-[pvp.md](pvp.md); geography: `world_zones.md` §4.
+[pvp.md](pvp.md) (its §1 is the geography).
 
 ## 3. Capitals
 
@@ -1013,8 +1013,8 @@ WP17).
   waypoint on the map never unlocks waypoint travel; only visiting the
   waystone does. There is no `/unstuck`.
 - Phase 2 extension: **Nether crossings** link authored, level-equivalent
-  named-zone portal pairs into enemy territory
-  (`TODO-design-nether.md` until specced).
+  named-zone portal pairs into enemy territory (§10; open questions in
+  `TODO-design-nether.md`).
 
 **Home stone** (Round 25, `housing.md` §8): the player's own Claim Stone can
 be the "travel home" target of the innkeeper return, with the same 30-minute
@@ -1222,3 +1222,45 @@ separate fixed level 70.
 loot ONLY when a player was involved — details in combat_stats.md §3
 (player-tag flag). Faction NPCs drop only to ENEMY players (PvP kills);
 a wolf slain by a guard drops nothing.
+
+## 10. The Nether (V2, a future system; not built)
+
+Decided with the user on 2026-08-06 (direction and design review) for V2; nothing of it
+exists in V1 or in code. Moved here from `TODO-design-nether.md` on 2026-11-16; the
+questions still open live there. Story framing: [story.md](story.md) (a demonic evil
+opened the connections from the other side; the Nether's world bosses are its lords).
+
+- **A deadly place** where "the magic of the world created connections between places":
+  a story layer and a travel layer in one.
+- **Island crossings:** portals in own territory (the first in a level-10+ named home or
+  heartland zone) lead to a Nether island surrounded by lava with two exit portals, one
+  per faction, far apart; the Nether mobs match the connected areas. Pairing is
+  deterministic by authored zone ids and equivalent level access, not by mirrored
+  overworld coordinates.
+- **Portals are two-way**, so a crossed island is a persistent raid route; camping an
+  exit is PvP content, kept fair by several islands across the x-width and exit scatter.
+- **A farmable, active game zone with its own rules** (not pure transit): its own
+  materials (tied into the material tier system), its own mobs, and later **world bosses
+  gated behind challenges**; the Nether dragon lord is the V2 capstone boss (§4b).
+- **A shared-world zone, not an instancing mechanism:** Nether lairs are shared, with
+  respawn timers. Expeditions in the Nether are likely when it is built (the user,
+  2026-11-16).
+- **Technical route:** its own layer in a deep y-band through our mapgen; portal pairing
+  deterministic from the authored portal registry; portal frames protected. No external
+  mod is needed.
+- **No global distance ratio:** Luanti has no built-in Nether, so the overworld-to-Nether
+  ratio is ours; islands live on their own internal grid, indexed by portal pair. A
+  freely walkable shortcut dimension is deliberately not planned: it would undercut
+  waypoints and mounts.
+- **Portals are world-placed only**, never craftable; the Nether y-band cannot be reached
+  by digging. Every crossing is one of the designed island pairs; there are no free
+  crossing portals.
+- **Zone rules:** no waypoints inside; travel home works as everywhere (innkeeper or Claim
+  Stone target, [home_travel.md](home_travel.md), the 30-minute cooldown as the escape
+  valve); no building at all; heat damage only in specific lava fields, never globally.
+- **Portal activation:** the first portal is unlocked by a quest (a story beat), the rest
+  are always on.
+- **The gating requirement:** two-way portals must not become a safe bypass around the
+  authored land fronts or the PvP eligibility rules. An enemy-side exit lands in a
+  contested zone, forces a visible PvP state, or uses another explicitly authored
+  interception rule; which one is open (`TODO-design-nether.md`).

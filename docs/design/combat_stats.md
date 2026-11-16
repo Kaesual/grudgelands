@@ -13,12 +13,9 @@ Core principles:
 - We think in **skills + items**: skills are acquired and improved through
   the class skill tree (**1 talent point every 2 levels, the first at level 2
   — 30 points at level 60**, user ruling 2026-09-16); items carry
-  stats/enchantments. The former "1 skill point per level" in this line was
-  superseded by that ruling, together with `progression.md` §2's earlier "1
-  point every 3 levels"; the trees the points are spent in are
-  [skill_trees.md](skill_trees.md) (the graph talents since Round 53). No
-  talent raises a stat cap or multiplies the armor rating since Round 53;
-  every cap below holds for everyone.
+  stats/enchantments. The trees the points are spent in are
+  [skill_trees.md](skill_trees.md). No talent raises a stat cap or
+  multiplies the armor rating; every cap below holds for everyone.
 - **One readable level curve**: player pools and normal-mob HP share the
   rounded `20 + 5L + 0.66L²` base. Class factors, percentages and gear form
   visible secondary axes; level itself does not hide inside attributes.
@@ -653,7 +650,8 @@ Normal tier at level L:
   `scout.md` §2) — which puts a sprinting player at **6.0** against 4.6 for
   ten seconds in every five minutes. Nothing permanent or cheap is covered:
   the Swiftness Draught stays at **+10 % for 5 s**
-  (4.0 × 1.10 = 4.4 < 4.6, `items_crafting.md` §3.6/§10 P4) and a
+  (4.0 × 1.10 = 4.4 < 4.6, `items_crafting.md` §3.6, archived
+  [decision P4](../archive/design/items-history.md#101-2026-08-06)) and a
   mount pays for its permanent 6.4–12 nodes/s with the damage dismount
   (`mounts.md` §3.1).
 - **View range follows the attack type** (decided 2026-09-16, user ruling 3):
@@ -1298,7 +1296,9 @@ user ruling 2026-10-22): a mob that is hit calls mobs within its view range
 not fighting yet. It does not cascade: only the mob that was really hit
 calls; an alerted mob only takes the hitter as its target and calls nobody,
 not even its own camp's swarm (`grug_mobs.mark_alerted`). The hit mob's own
-camp swarm runs as before, its chain inside one camp. The callees are the
+camp swarm runs as before, its chain inside one camp; kin without a camp
+(the night families, rats) keep chaining their `camp_swarm` (kept by the user,
+Round 56). The callees are the
 same entity name (as before) and mobs of the same family when the hit mob has
 `group_attack` too. The pack call (a fleeing pack hunter) and the camp swarm
 use the same rule. A neutral mob never answers or calls anyone, not even a
@@ -1578,7 +1578,7 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   torches are not offhand items and nothing carried gives a moving light
   radius.
 
-### Round 16 control and threat expiry
+### Control and threat expiry
 
 Taunt retains three seconds of forced targeting and top threat times 1.1. Threat
 accumulates without time decay; valid rivals need more than 120% of a valid

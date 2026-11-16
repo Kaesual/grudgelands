@@ -9,7 +9,7 @@ This plan schedules agreed inputs; it does not repeat their rulings:
 | Input | What it decides |
 |---|---|
 | [pvp-plan.md](pvp-plan.md) | geographic PvP (WP41) rulings 1–24, coordinator defaults, `grug_pvp` API, lanes 31a (P1, P2, N) and 31b (S, M, G, Q), tests, GUI list; §6 asks for NPC appearance randomization |
-| BACKLOG [Round 31 clean-up lane](../../BACKLOG.md#round-30-carry-overs) | the Round 30 code follow-ups |
+| BACKLOG [Round 31 clean-up lane](round30-plan.md#carry-overs) | the Round 30 code follow-ups |
 | BACKLOG "Dragon arena design iteration" | a small design step for the two dragon arenas |
 | Appearance package (user, 2026-10-03, this document §2) | character customization at creation, NPC look randomization, enchant colours on gear |
 
@@ -526,7 +526,7 @@ placement is an open decision before the next round (BACKLOG).
 
 ### Open items
 
-In the [BACKLOG](../../BACKLOG.md#round-31-carry-overs): seed-dependent POI
+In the [carry-overs](#carry-overs): seed-dependent POI
 placement (a decision before the next round); the enchantment and
 item-level revision; the quest XP share above 100 % in several bands; the
 remaining first-start heap (about 45 MiB above a later start, the
@@ -642,3 +642,34 @@ Interface:
     sits below the subtitle.
 
 The Round 31 clean-up items (lane C) need no GUI check.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Quest XP share above 100 % in several bands** (human 30→40 134 %,
+  50→60 119 %; orc 30→40 120 %; `ledger.py --game --track <race> --repeat 2`,
+  solo): whether a ledger/balance pass follows is the user's call. The human 50→60 overshoot
+  predates Round 31 (103 %); most of the PvP raids' share is their targets'
+  kill XP, not the reward weights (lowered to 3/4 by the user's option (b)).
+- **First-start heap:** after Lane C a first start still holds about 45 MiB
+  more Lua heap at the first step than a later start (110 against 65 MiB);
+  it is grug_mapgen's first-start load, not caches (a possible later item;
+  the #22 warm-load proposal above stays the user's call).
+- **Mounts:** the tier-3/4 flyers share one selection box per tier, sized
+  for the highest seat (taller than a smaller race's flyer); the riderless
+  capital displays keep each model's own box (`display_box`) — check their
+  name tags in the GUI test.
+- **Dragon arenas (DA2 review notes):** Dragon Rime from the breath can lie
+  on thin ice; the refreeze radius of broken ice; a breath splash just
+  outside the rim damages without a fight flag. Watch in the GUI test.
+- **UI headroom:** the flight warning has 4 px of headroom under the banner
+  subtitle at 720p and GUI scale 1.
+- **Small notes:** a profession vendor outside a settlement would serve
+  everyone (none exists); Mend ticks continue after the helper's flag ends
+  (allowed by ruling 6); the enchant masks keep their source texture's
+  licence (CC BY-SA derivatives); Smite keeps its name for now.

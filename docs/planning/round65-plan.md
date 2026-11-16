@@ -13,7 +13,7 @@ load). Delivery state: [STATUS](../STATUS.md).
 
 The quest rework (Round 57 ruling 10) made every free quest independent: it
 requires nothing but a level, and "a place offers its free quests at once".
-The older rule ([quests.md](../design/quests.md#accepted-defaults): "once
+The older rule ([quests.md](../design/quests.md#acceptance): "once
 its prerequisites pass, a level-locked quest is visible with its required
 level") was written for chains, where at most one successor per chain was
 grey. Without chains every free quest of a giver passes at once, so every
@@ -175,7 +175,7 @@ and updated with `hud_change` only where a value changed; the per-player poll
 stays. The report names the element count at ten tracked quests and the
 refresh work before and after (a comparison, not a target).
 
-**Docs.** The HUD rules in [quests.md](../design/quests.md#accepted-defaults)
+**Docs.** The HUD rules in [quests.md](../design/quests.md#the-hud-tracker)
 and wherever the HUD layout is owned.
 
 ## 5. Rules
@@ -424,3 +424,32 @@ by this lane over the quest files at `91c128cd`.
   and `r43_gs` (they pin the version, the changelog, the README and
   CHANGELOG links and the declaration), the link check of the touched
   documents.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Decided, PvP ruling 15** ("PvP quests from level 40"): the four
+  level-41 fortress quests (both entry calls, both steel supplies) open at
+  39 like every quest; the user accepted it on 2026-10-27. Nothing to do.
+- **Stale engine probes** (not gates): `r36_e`, `r59_qsys3` and `r57_qsys`'s
+  engine probes had their `min_level` removed; their level-1 stand-ins now meet quests
+  that open at 33, 18 and 3. Not rerun; fix when one is next used.
+- **The r27 minimap probe** calls `grug_xp` without declaring it in its
+  `mod.conf` (it works through `grug_map`'s dependency).
+- **`r65_quest` fixture gap:** the hint-only redraw after the last Accept and
+  field events on an empty dialog are verified by hand only.
+- **Title width slack:** the HUD cuts titles at an estimated 9 GUI px per
+  character; the capture shows about 7.4 px, so titles could keep more
+  characters after the look test.
+- **Small windows:** at GUI 1.5 a 1280×720 window shows 0–1 box and
+  "+N more" (kept until the look test); at 800×600 with HUD 1.5 not even
+  "+N more" fits (it sits at the top of the free band without overlap).
+- **Clients without window information** fall back to the 1280×720 layout
+  (seven boxes and "+3 more" with ten tracked); the web client is checked in
+  the GUI test.
+- **Quest description:** still reads "Minimum level: N" (now level − 2).

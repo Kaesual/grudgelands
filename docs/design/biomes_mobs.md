@@ -19,11 +19,9 @@ delivered behavior.
   win there.
 - Mob level comes from `grug_core.mob_level_at(pos)`: named-zone surface
   level plus the independent depth axis (`combat_stats.md` §3). Biome labels
-  never hand-set a mob's level. **Exception (Round 28 ruling 34, Lane S1):**
-  in a zone with a spawn recipe, a surface mob takes a level in its role's
-  range of its spawn region and a named leader the top of its region (§4.2);
-  `grug_core.mob_level_at` returns the region's level there (the level
-  overlay, [spawn_regions.md](spawn_regions.md)).
+  never hand-set a mob's level. In a zone with a spawn recipe the surface
+  level is the spawn region's (§4.2;
+  [spawn_regions.md](spawn_regions.md#one-level-truth)).
 - Current spawn eligibility consumes `grug_zones.*` through the named-zone
   policy. Retired radial buckets have no compatibility path. Section 1 links
   the historical map evidence and the current geography/coverage authorities.
@@ -693,7 +691,7 @@ collisionbox scaled by that same 1.4 (`0.4 → 0.6` high, `0.2 → 0.3` wide),
 and `punch` **aliased onto the fly clip** of the shared gull mesh so the
 retaliation reads. Same mesh, same texture, same spawn row, same `aoc`.
 
-**Aggressive families** follow the fixed Round 17 disposition matrix.
+**Aggressive families** follow the fixed disposition contract below.
 The earlier prey list does not make every unlisted family aggressive: Boar,
 Plague Boar and Jungle Boar also retaliate only after being attacked.
 Their attack verbs remain defined in §3.1.
@@ -703,6 +701,24 @@ source and moves to the **bird-of-prey table** (crag eagle / vulture), so
 arrow fletching stays behind a real fight. Meat stays universal. The Carrion
 Crow **keeps** its feather — it is prey, not a critter, and that drop is
 what makes the front worth walking by day.
+
+**The disposition contract.** Creature families (or explicitly named variants) have fixed aggressive,
+neutral or critter dispositions. Neutral creatures do not initiate player
+combat, but retaliate; ordinary starter Boars are neutral. Fightable Rats are
+aggressive, while true harmless critters retain their behavior. Grazer/prey
+families remain plausible neutral wildlife; hostile humanoids/undead/monsters
+are aggressive. Higher-level areas predominantly contain aggressive species,
+without changing a family's temperament by location or imposing exact ratios.
+The global non-player damage scale is specified in `combat_stats.md`.
+
+The current family classification is:
+
+| Disposition | Existing families and named variants |
+|---|---|
+| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker; Tortoise |
+| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Frog, Stingray, Bay Shark, Abyssal Shark; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; Bedrock Sentinel (the land guard, no guard role since Round 72), Auditor Nemm, Duewarden; kings and the PvP fortress Generals |
+| Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish, Tide Goby |
+| Independent role | Accord/Throng guards, royal guards, PvP camp captains and the Generals' bodyguards, and peaceful settlement NPCs |
 
 ### 3.1 Families by biome group
 
@@ -738,6 +754,11 @@ and the Mage take damage sooner"):
 | Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | the zombie band table (Round 28, "Loot by band"): rotting flesh 1/2; the band's flesh 1/2 in bands 1–2 and 1/3 from band 3, where its tooth adds 1/6 (Round 35); its tier cloth (linen scrap in band 1, linen cloth in band 2, heavy cloth from band 3) 1/1 ×1–2 (Round 46 ruling 11; scrap drops only in band 1, where it is the tier cloth; the second scrap row of bands 2–6 went, the user, 2026-10-12); the band's tier bar 1/50. Static fallback, unused while the table covers every band: zombie flesh 1/1; linen scrap 1/2; iron bar 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
 | **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table (its arrows 1/3 no longer drop, Round 46) | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
+
+**Boar targeting box.** Boars retain their existing physical collision box and movement behavior. Their
+yaw-rotated targeting box is separately padded to cover the visible body:
+`{-0.62, -0.06, -0.76, 0.62, 1.04, 0.76}`. The base, plague and jungle boars
+share this correction. Other families are adjusted from specific playtest reports.
 
 **Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (Throng names
 in parentheses, same drop tables):
@@ -1109,8 +1130,7 @@ ceiling) on all surface entries, since the natural terrain reaches past
 y 500 and the zone palettes already gate the habitat (Round 22 D37). Only
 water-bound rows keep a low cap, for a gameplay reason: the Kraken at 4
 (sea surface) and the Shore Crab and Reef Lurker at 20 (sea shore). The
-Reed Angelfish uses the flight ceiling too; its height rule is relative to
-the water body (above the column's natural bed, Round 22 Phase 5).
+Reed Angelfish uses the flight ceiling too ("Round 51 water families").
 Every family declares one spawn role, `clock = "day" | "night" | "any"`;
 Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any), and
 a `"zone:<zone id>"` key sets the clock in one named zone ahead of the palette
@@ -1638,50 +1658,6 @@ and 5 record what WP6 then actually shipped.
    verb helper serves both families, and the boar reads as a charger
    without a second state machine.
 
-## Round 17 disposition contract
-
-Creature families (or explicitly named variants) have fixed aggressive,
-neutral or critter dispositions. Neutral creatures do not initiate player
-combat, but retaliate; ordinary starter Boars are neutral. Fightable Rats are
-aggressive, while true harmless critters retain their behavior. Grazer/prey
-families remain plausible neutral wildlife; hostile humanoids/undead/monsters
-are aggressive. Higher-level areas predominantly contain aggressive species,
-without changing a family's temperament by location or imposing exact ratios.
-No total-density/range/HP/per-family-damage increase is part of this roster
-change. The global non-player damage scale is specified in `combat_stats.md`.
-
-The current family classification is:
-
-| Disposition | Existing families and named variants |
-|---|---|
-| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker; Tortoise |
-| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Frog, Stingray, Bay Shark, Abyssal Shark; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; Bedrock Sentinel (the land guard, no guard role since Round 72), Auditor Nemm, Duewarden; kings and the PvP fortress Generals |
-| Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish, Tide Goby |
-| Independent role | Accord/Throng guards, royal guards, PvP camp captains and the Generals' bodyguards, and peaceful settlement NPCs |
-
-
-## Round 21 targeting and freshwater life
-
-Boars retain their existing physical collision box and movement behavior. Their
-yaw-rotated targeting box is separately padded to cover the visible body:
-`{-0.62, -0.06, -0.76, 0.62, 1.04, 0.76}`. The base, plague and jungle boars
-share this correction. Other families are adjusted from specific playtest reports.
-
-Reed Angelfish are passive freshwater critters, with no XP or quality loot; a
-kill drops exactly one ordinary Raw Fish (better fish only from fishing). Like
-the Kraken they never leave the water: no climbing onto a bank, shore
-plants and waterlilies do not count as water, and a swimmer displaced out of
-the water swims back if water is adjacent or otherwise flops in place. Their
-habitat is planned natural inland water, with source water at the spawn
-position and above it, next to a sand bed, above the column's natural bed:
-lakes (and bays) at any altitude, not rivers, whose river water is another
-liquid, and not cave pools. Since the Round 51 follow-up the region spawner's
-water attempt also places them in every lake ("Round 51 water families",
-fish in land lakes). They use the existing critter spawn machinery:
-interval 30s, chance 1/4000, local active-object cap 2, no fixed height cap
-(y -30 to the 600 flight ceiling; Round 22 Phase 5). They add ambient
-movement, not a fishing-resource system.
-
 ## Round 28 sub-types and loot by band
 
 Rulings 35 and 36 (`docs/planning/round28-questing-leveling-plan.md`); data
@@ -1690,10 +1666,10 @@ formats in the design frame §4.1–§4.3. All of it is data in
 `items.json`, `drops.json`), loaded by `grug_mobs/subtypes.lua` after every
 mob file. A missing or empty file means no data, and without data every mob
 behaves as before. The shipped files are copies of the reviewed design
-catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 222 sub-types
-(49 leaders, 10 corrupted, below, and Round 51's 17 water sub-types), 12
-tints, 120 items (94 signatures, of which 89 new, 24 existing generic
-materials and 2 quest items) and 27 drop families. The catalogue is the
+catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 218 sub-types
+(45 leaders, 10 corrupted, below, and Round 51's 17 water sub-types), 12
+tints, 122 items (94 signatures, of which 89 new, 24 existing generic
+materials and 4 quest items) and 27 drop families. The catalogue is the
 source; edit both together.
 
 **Sub-types.** Each record registers `grug_mobs:<role>` as a copy of its
@@ -1721,7 +1697,7 @@ sub-types burn like the Zombie).
 - **Names (Round 38, the user's accepted names of 2026-10-06; plan
   [§2.2](../planning/round38-mob-names-plan.md#22-name-rules-hard)):** every
   mob's name is one slot's in `data/names.json` (zone, source, level band;
-  [quests.md](quests.md#the-quest-name-guarantee-round-38)), and a name is
+  [quests.md](quests.md#the-quest-name-guarantee)), and a name is
   the exact quest target. The rules:
   1. **Words:** normal mobs, critters and guards at most two; named mobs,
      elites and bosses at most three (the three-word names of Round 37 were
@@ -1763,7 +1739,7 @@ sub-types burn like the Zombie).
   a spawn region's belt narrows it further (§4.2).
 - **Name and zone tint:** since Round 38 every mob's name comes from
   `data/names.json`, one name per slot (zone, source, level band; `names.lua`,
-  [quests.md](quests.md#the-quest-name-guarantee-round-38)), and `display`
+  [quests.md](quests.md#the-quest-name-guarantee)), and `display`
   is the fallback; `tint_by_zone` is read from the zone of the spawn tag,
   else of the spawn position on the first activation; the zone is persisted
   with the mob. A tint id from `tints.json` is either a baked
@@ -1901,7 +1877,7 @@ sounds.
 - **Amphibians** (tortoise, frog) float and do not fly, like the crocodile:
   they walk on land, swim at the surface and follow their target through
   harmless water and up a bank (Round 34, `combat_stats.md` §4 "Mobs in
-  water"). They may live near land (S10). Since the Round 51 follow-up the
+  water"). They may live near land (S10). The
   amphibians (`_grug_amphibian`: tortoise, frog, crocodile and the crabs,
   none hurt by water) swim at one height, feet half a node under the surface
   (the shell or back just breaking it); the frog plays its swim clip there,
@@ -1936,7 +1912,7 @@ sounds.
   (`zone/kind`); its names are zone slots (`tools/r38_b1/gen_names.py
   --proposals tools/r51_names/draft.json`).
 
-**Where they spawn (Round 51 MOBS M2).** By water band, from the column's
+**Where they spawn.** By water band, from the column's
 water query ([spawn_regions.md](spawn_regions.md#water-kinds-round-51)):
 
 | Band | Water | Mobs |
@@ -1958,15 +1934,29 @@ merged water spawn ABM like the Kraken and the Reed Angelfish; the zone
 families through the ambient region spawner's one attempt per player and
 second, whose column now may be water.
 
-**Fish in land lakes (Round 51 follow-up, the user's GUI feedback).** Every
-lake — wild lakes, swamp pools and the capitals' lakes (Kezamba's cenote,
-Lethariel's crown lake; the other capitals have only river water, which the
-Reed Angelfish does not swim in) — holds a few Reed Angelfish: a lake
-attempt places one, one or two nodes under the surface, while fewer than 2
-swim within 32 nodes, before it tries the band's kind. A critter: no
-protection, drift or density gate, never a kill target, a Raw Fish as its
-loot; its old ABM row (lakes and bays next to sand, at most 2 within the
-active area) stays. No combat mob spawns in a capital's lake: every column
+**The Reed Angelfish** (freshwater critter; model and texture: ElCeejo's
+MIT-licensed animalia angelfish, `grug_mobs/LICENSE-media.md`) gives no XP
+and no quality loot; a kill drops exactly one ordinary Raw Fish (the better
+fish come only from fishing), and it is never a kill target. Like the Kraken
+it never leaves the water: no climbing onto a bank, shore plants and
+waterlilies do not count as water, and a swimmer displaced out of the water
+swims back if water is adjacent or otherwise flops in place. It has no
+school, breeding, pathfinding or fishing integration: ambient movement, not
+a fishing resource. Its habitat is planned natural inland water, with source
+water at the spawn position and above it, next to a sand bed, above the
+column's natural bed: lakes (and bays) at any altitude, not rivers, whose
+river water is another liquid, and not cave pools. It spawns two ways:
+
+- **its critter ABM row:** interval 30 s, chance 1/4000, local active-object
+  cap 2, no fixed height cap (y −30 to the 600 flight ceiling);
+- **the region spawner's lake attempt (fish in land lakes):** every lake — wild lakes, swamp
+  pools and the capitals' lakes (Kezamba's cenote, Lethariel's crown lake;
+  the other capitals have only river water) — holds a few: a lake attempt
+  places one, one or two nodes under the surface, while fewer than 2 swim
+  within 32 nodes, before it tries the band's kind. A critter: no
+  protection, drift or density gate.
+
+No combat mob spawns in a capital's lake: every column
 of both capitals' own lakes lies in the protected city, where the protected
 surface refuses every non-critter (tortoise and frog included) and the drift
 band keeps aggressive mobs 16 nodes off (measured on the production seed,

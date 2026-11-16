@@ -829,7 +829,7 @@ holds the full tables):
 ### Open notes
 
 The reviews' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-41-carry-overs); none blocks the GUI
+[carry-overs](#carry-overs); none blocks the GUI
 test or the migration. The bow's second, unproven cause (§8) stays open.
 
 ### GUI playtest checklist
@@ -886,3 +886,33 @@ for what others see. Say what looks wrong.
    location, every player sees the red chat line once and the chunk shows
    plain engine terrain. On the production server after its reset, the
    area round (1853, −2, −2457) generates without a crash.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **The rift boss** (`walk_chance = 0`) may hop while chasing (mobs_redo's
+  `do_jump` reads it as a jumping mob); unverified in the engine, not
+  taken up by Round 42.
+- **`wielded_now`** (`grug_abilities/init.lua`) drops an in-place edit by a
+  node `on_rightclick` that returns the passed stack; no such node exists
+  today.
+- **The quiver cover** assumes the default font size (16); a larger user
+  font could show part of the engine's "100".
+- **The bow's second cause** (round41-plan §8, a lost release snapshot on a
+  lossy link) stays open; the plan's three questions tell it apart.
+- **A repair form stays open without a session** after walking out of
+  range and pressing Repair; its Close then only closes.
+- **`check_upgrade.py`** accepts a new entry below the pushed version
+  together with a bump; a later rule: a new entry must exceed the pushed
+  version.
+- **`tools/web_data/README.md`** does not mention `upgrade.json` (the docs
+  index and upgrade-contract.md do).
+- **The late-failure light restore** in the mapgen degrade path has no
+  test (the portable test checks content and param2).
+- **A systematic mapgen failure** would send one red chat line per chunk
+  to every player; a cap would need the user's call.

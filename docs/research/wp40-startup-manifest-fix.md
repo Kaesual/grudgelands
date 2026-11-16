@@ -39,7 +39,7 @@ emerge-environment generation execute. This is an actual-engine regression,
 not a GUI appearance or play-feel test. Existing unmatched-fuel-recipe warnings
 remain outside this startup fix; both runs contain no ERROR lines.
 
-Evidence: [engine logs, input hashes and static checks](wp40-startup-manifest-evidence/).
+Evidence: engine logs, input hashes and static checks (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-startup-manifest-evidence/`).
 The diagnostic capture was made in a separate modified copy to report values;
 passing smoke runs use unmodified production files with all checks enabled.
 

@@ -87,7 +87,7 @@ budget, and stop conditions.
    Native agents run through the coordinator's native delegation interface;
    use its normal completion notifications and wait mechanism rather than
    imposing CLI-style foreground/background process rules. Cross-provider CLI
-   review follows [claude-cli-review.md](../../process/claude-cli-review.md), which owns its
+   review follows [claude-cli-review.md](claude-cli-review.md), which owns its
    process, JSONL stream and result parsing. Larger WPs: split lenses
    across 2–3 independent strong agents (correctness / Lua+perf /
    design-adherence) and adversarially verify High findings. Findings are

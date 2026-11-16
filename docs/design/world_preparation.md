@@ -1,10 +1,6 @@
 # World preparation
 
-Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
-Bounded full-throughput scheduling approved 2026-09-23. Full-column extent and
-the air-chunk fast path decided 2026-09-28 (Round 23, WP48). The waiting point
-decided 2026-10-09 (Round 46). Chunks below the writers skipped since
-2026-10-15 (Round 49).
+Decided 2026-09-21 (last revised 2026-10-15, Round 49); implemented.
 
 
 ### Preparation modes and readiness

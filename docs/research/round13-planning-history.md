@@ -1,6 +1,6 @@
 # Round 13 planning history — historical only
 
-All decisions below were consolidated into [the current design](../design/crafting_equipment_revision.md) and authorized on 2026-09-21. Pending-Go statements below record the earlier discussion, not current authority.
+All decisions below were consolidated into [the current design](../design/items_crafting.md) and authorized on 2026-09-21. Pending-Go statements below record the earlier discussion, not current authority.
 
 # TODO — Simplify equipment enchanting
 
@@ -160,7 +160,7 @@ a feedback/discussion round first.
 
 The user rejected any refinement lifetime bonus on 2026-09-21. Use the proposed
 tier budgets without an x2 multiplier; removal of refinement itself is under
-[separate discussion](../design/crafting_equipment_revision.md).
+[separate discussion](../design/items_crafting.md).
 
 The user's revised wear proposal supersedes the earlier incoming-hit description:
 only the main-hand weapon wears for outgoing damage or healing. Incoming damage

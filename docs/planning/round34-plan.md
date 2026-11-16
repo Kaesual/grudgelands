@@ -770,7 +770,7 @@ track is pushed to one player while music is on. `menu/theme.ogg`: 1.52 MB.
 
 ### Open notes
 
-In the [BACKLOG](../../BACKLOG.md#round-34-carry-overs); none blocks the
+In the [carry-overs](#carry-overs); none blocks the
 GUI test. Numbers are comparisons, never targets.
 
 - **Public town furnaces** use the vendored furnace form, so taking a dish
@@ -871,3 +871,39 @@ Late additions:
 22. **A new world with a random seed** loads (the Round 34 seed fix); rivers
     near outposts and camps run around them, not through.
 23. **A Wisp** chasing you while you swim stays above the water.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Sound balance:** gains and pacing are tuned from the user's GUI check;
+  the formspec click plays at the file's level (a style has no gain).
+- **Public town furnaces** use the vendored furnace form, so taking a dish
+  out of one plays no cooking cue.
+- **Music push cost** is unmeasured (the engine hashes the file on the main
+  thread, a few milliseconds per push); since Round 35 pushes happen only
+  in the capitals.
+- **Volume rounding:** a `/music` or `/ambience` volume off the dropdown's
+  grid (5 % steps since Round 35) shows at the nearest step on the Help
+  page; the stored value is kept.
+- **Licence rows** of the incompetech tracks point at the catalogue, not at
+  each track's page.
+- **Water probe:** with the sea bed shipped it reads 33 nodes per
+  evaluation instead of 1 (not re-measured); a comment in
+  `grug_ambience/init.lua` still says no sea bed exists.
+- **S1a review notes:** the gallop follows the requested speed, a clip's
+  tail plays after a stop, position sounds of one event within 0.1 s fold
+  into one.
+- **F1:** an idle mob facing a two-node bank may stay in water (no
+  regression); animals following food do not wade; `grug_bank_ahead` runs
+  per step for a floating mob in water (could be cached on the 0.25 s
+  probe).
+- **F2:** the Character page's Money label may overlap at a very large
+  balance (GUI check).
+- mobs_redo still falls back to a missing `tnt_explode` sound; no mob can
+  reach it today (note, not a task).
+- The Round 32 real-client performance test stays optional.

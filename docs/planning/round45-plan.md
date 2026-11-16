@@ -705,7 +705,7 @@ The user (2026-10-08 and 2026-10-09), on the lanes' questions:
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#round-45-carry-overs) (theoretical, no
+[carry-overs](#carry-overs) (theoretical, no
 severity, and the user's Round 46 items). Recommendations kept as built
 unless the user says otherwise at the GUI test: a raw dish's text keeps
 the cooked dish's "Hold RMB … to eat" line before the furnace note (PT3);
@@ -889,6 +889,126 @@ damage refresh, descriptions). No map part. Tested end to end on SQLite,
 on PostgreSQL (all three backends and the platform's layout, every row
 equal to the SQLite result) and as the chain from a record-less copy.
 
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Night mobs and idle players** (PT7): a player who stands still or is
+  away keeps every night mob within 64 nodes (up to about 110 at the
+  cube's corners) all day; watch it.
+- **Crafting tab** (UI): the ×N count and the station hint go stale until
+  the next click; the search echo cut at 40 bytes can split a UTF-8
+  character; a Craft now click reads the inventory three times; Help's
+  "Profession recipes need their station within 4 blocks" also reads as
+  covering Cooking (the line above says otherwise); the enchant and
+  upgrade boxes stack their notes without a cap (only an unlikely
+  eight-line combination reaches the button), and a recipe box whose
+  description is dropped for room is not checked against the quantity
+  row (no recipe gets there).
+- **Jobs** (JB, EU): XP counts crafts, not items (the same while every
+  XP recipe makes one); a worn tool without metadata counts as a plain
+  ingredient (no recipe takes a tool); corrupted job meta is dropped with
+  its consumed items (nothing writes such meta); an operation that
+  vanishes mid-job returns the item and its materials, possibly more
+  stacks than the start checked (they spill into the inventory, then at
+  the feet); missing materials do not grey the button.
+- **Recipes** (RG, ST): the 332 dead engine grid routes could be reached
+  by a modified client only while a pre-0.45 `craft` list keeps 9 slots
+  with items; Round 9's setting counts are kept though their collision
+  reason is gone; `r45_st` §Q sees only the records it loads (alchemy and
+  cooking), so it would miss a quest target moved to a primary.
+- **Grudge-Free Repairs** (ST): a saved Cooking trainer keeps its old
+  nametag until its first claim tick (seconds); a refused click (more than
+  8 nodes away, or the NPC pushed off its socket) shows nothing.
+- **Shift-click inbox** (PT5): only a modified client can move a bag slot
+  into the inbox, where a leftover drops at the feet; `room_for` assumes
+  the quiver takes all its room (one arrow item today); "No room in your
+  inventory." also shows when the source would refuse anyway; `bag_rings`
+  reads only the page content, not a view's listrings.
+- **Mounts** (PT6): the ride clip restarts on a speed flicker (pressing
+  almost head-on into a wall under lag); a clip's last 0.05 s is never
+  cut; the fall factor comes from the node under the centre, the engine's
+  from the collided node (an edge case for the three nodes in that
+  group); a mount falls through cobwebs and climbables at full speed; a
+  bottom slab on water refuses a summon.
+- **Mobs** (PT7): a forced stand restarts a hovering flier's wing loop
+  once; a flier within 0.25 nodes of the ground plays stand; a perched
+  bird plays fly for one step after it reloads.
+- **Claim Stone** (PT9): the arrival does not check the floor (a stone
+  that vanished before the 5 s scan; Return home has the same gap); a
+  forged tab-1 field on the Waypoints tab is still handled (the owner on
+  their own stone, harmless).
+- **`tools/r33_ds/allocation.py --check` fails** (pre-existing since
+  `c913dbbe`, noted by EU and its review): the T5 enchants `int` and
+  `dodge_percent` take the scarce input `ash_feather`.
+- **Art** (ART): the lit brewing stand only glows; the jeweller's bench
+  and the brewing stand keep metal dig sounds and `cracky`.
+- **The step** (MS): the drop at the feet runs before a map reset's
+  relocation (only a release crossing a map reset and 0.45.0 together,
+  which the declaration does not allow today); a nil from `core.add_item`
+  would hold the character at every join (safe; a SEVERE line).
+
+### 0.45.1 carry-overs
+
+- **Charge** (CH): after a lag step the per-segment shortcut can leave
+  the carrier off the plan for one step (about 1 run in 14,000 with 10 %
+  lag spikes; the hit and cancels never read it); the pit rule on 45°
+  diagonal stairs with 1-node treads can read a corner as a 2-node drop
+  and roll a cut plan back to that false rim (no longer reached in the
+  sweeps); the pit rollback turns a downhill multi-edge hop into a
+  sloped run that clips step corners by up to 0.6 m (pre-existing since
+  Round 40); the drawn
+  position on such stairs still goes up to 1.85 m below the ground under
+  it (pre-existing, the client's smoothing cuts the corners).
+- **Mounts** (MC): the engine's breath check uses the raised eye height,
+  so a rider whose camera point is in water (a waterfall) loses breath;
+  the first-mount banner's flag is set at purchase and the banner shown
+  when the dialogue closes, so death, leaving or a refused event before
+  the close lose it; `spawn_entity(..., skip_animation)` has no callers;
+  the ridden wolf's mesh top (about 1.95) is above its 1.59 collision box
+  and clips low ceilings visually; the larger flyer cameras look into
+  ceilings lower than the camera (accepted). Probe only: `/mountcam
+  scale` on a model without `display_size` also scales a capital display
+  that activates meanwhile, and the in-place re-summon skips the boat
+  surface rule.
+- **"Now playing"** (MU): the box would show if `core.sound_play` ever
+  failed while nothing is audible; at 720p with 10 tracked quests it
+  overlaps the quest list (accepted; clear from 744 px high).
+- **Map window** (MZ): arrow keys in the quest list resend and move the
+  focus to the map scrollbar, so further presses scroll the map (and
+  break the soft lock); a click on the empty part of the list sends
+  nothing and the list keeps the focus (the inventory key is swallowed
+  until the next send); an event of the old form arriving after a send is
+  read at the new zoom (pre-existing, hidden while the lock holds).
+- **Window focus** (KF): the Claim Stone forces its focus on Close at
+  every send, so a redraw while the player types moves the cursor out of
+  the name field; on the creation window's first screen Space picks the
+  last faction (pre-existing, reversible).
+- **Crafting tab** (CU): a resend the player did not ask for (a job's end,
+  the enchant target) moves the cursor out of a typed search; a form shown
+  right after an Enter resend replaces the inventory without a quit, so
+  the next opening focuses the search field once; the item name clip grew
+  from 19 to 21 characters and a wide name could touch have/need.
+- **Town NPCs** (NQ): Kezamba's `throne_guard_west` sank 1.5 nodes into
+  the hall floor on seed 42 within 12 s of following the king (cause
+  unknown; the re-seat repairs it at activation); the re-seat needs the
+  socket's block loaded at the claim; the fallback placement after 60 s
+  can recreate a sunk NPC when the floor chunk stays unfinished that long;
+  the blueprint puts a stair under Nhal Veyr's
+  `homes_fallen_west_work_step_candle` (the lift covers it).
+- **Skill taps** (SC): `tools/r451_sc`'s food case at 250 ms also passes
+  on the old code and the 0.35 s combat refusal is not covered;
+  `classes.md`'s "any other actor" does not name tamed mobs;
+  Ice Nova with the ranged talent pressed at an ally or NPC now says "No
+  hostile target in your crosshair." (consistent with an air press).
+- **Trainer window** (TR): the line wrap uses the 6.6-characters-per-unit
+  estimate; at a large GUI scaling or font (web build) a 67-character
+  line could reach the window edge.
+
 ## 0.45.1 fix round (2026-10-10)
 
 The user's playtest of 0.45.0 (production runs 0.45.0) became fourteen
@@ -1020,7 +1140,7 @@ re-seated the next time their area loads.
 ### Open notes
 
 The reviews' and reports' backlog notes are in the
-[BACKLOG](../../BACKLOG.md#0451-carry-overs).
+[BACKLOG](#0451-carry-overs).
 
 ### GUI checklist (0.45.1)
 

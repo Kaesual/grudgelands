@@ -4,7 +4,7 @@ Date: 2026-09-23. **Locally delivered; remote push awaits renewed approval.**
 Baseline inspected: `7460c49d227a3f66673ad1bf4b7ed429e4b62321` (main).
 Contract: [round18-plan.md](round18-plan.md).
 User source: [round18-playtest-input.txt](round18-playtest-input.txt).
-All decisions closed: [living revision](../design/playtest_quality_revision.md).
+All decisions closed: [living revision](../design/README.md).
 
 Root Astra coordinates; native Sol default, Astra for complex lanes. No CLI
 agents or Claude. Integration branch: `wp18-playtest-quality`. Production work used isolated lane worktrees.

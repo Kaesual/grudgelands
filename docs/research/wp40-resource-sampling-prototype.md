@@ -117,11 +117,11 @@ fixture run only under LuaJIT. Parser, SETGLOBAL and five static sweeps pass.
 
 Final compact parity is 27 byte-identical PUC/LuaJIT lines, SHA-256
 `9a71c1df7056d6d12d13be9d6d61b7a7d21136146f91f918722c6c35fd7ac42d`.
-The [review receipt](wp40-resource-sampling-evidence/review.md) records GPT-6
+The review receipt (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-resource-sampling-evidence/review.md`) records GPT-6
 coordinator implementation, configured GPT-5.6 Sol fixtures and independent
 review, zero Critical/High/Medium findings, one initial Low proof-comment fix
 and one final Low receipt/calibration fix (two fix rounds; elapsed unknown).
-Technical evidence is in the [archive](wp40-resource-sampling-evidence/README.md). This prototype check does
+Technical evidence is in the archive (archived: `~/projects/grudgelands-orchestration/archive/docs-research/wp40-resource-sampling-evidence/README.md`). This prototype check does
 not replace the complete integration gate or the user's fallback-engine gate.
 
 ## Recommendation and adoption boundary

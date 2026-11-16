@@ -40,7 +40,7 @@ No threading, plateau, gameplay, or mapgen-output redesign was found.
 - Independent fleet: 80/81 initial jobs passed. The retained corrected absolute `/usr/bin/luajit` R7 invocation passed.
 - Static gates and both 60-second headless boots passed on ports 32601 and 32622.
 - The failed `ca6035b8` final pair is correctly preserved and shows the accidental LuaJIT-FFI path.
-- The replacement final pair completed during this review. PUC 5.1 and LuaJIT produced byte-identical 61,236-byte outputs with SHA-256 `6a7bc3e4f266b3969f6e82578ceab9b6a0ed94cb552ff8fe42706274fde23fd4`; input and output manifests verify, and the runner reports PASS. This satisfies the frozen-final-byte rule in [luanti-lua.md](../../docs/research/luanti-lua.md#L366).
+- The replacement final pair completed during this review. PUC 5.1 and LuaJIT produced byte-identical 61,236-byte outputs with SHA-256 `6a7bc3e4f266b3969f6e82578ceab9b6a0ed94cb552ff8fe42706274fde23fd4`; input and output manifests verify, and the runner reports PASS. This satisfies the frozen-final-byte rule in [luanti-lua.md](../technical/luanti-lua.md).
 
 ## Material limits
 

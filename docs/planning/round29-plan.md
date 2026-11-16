@@ -322,7 +322,7 @@ on a fresh world (checklist below).
 
 ### Open items
 
-In [BACKLOG](../../BACKLOG.md#round-29-carry-overs): Round 30 performance
+In [carry-overs](#carry-overs): Round 30 performance
 (lanes P1–P4), band-5 loot median smoothing, PvP and enemy-guard quests
 the new quest format cannot express, possible bugs (Dawnmere NPC
 duplication seen once, `general_attack` eye height), the dragon-island
@@ -372,3 +372,24 @@ On a fresh world (all of Round 29 needs one):
     strip below cliffs 40–130 nodes high, so note where you cannot get up.
 11. **Spawn fixes:** no smoke puff when mobs appear; leaders have a quarter
     less HP than before (1.5× instead of 2×); the Basics book lists T6 recipes.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Pallcloth Den** (Blackwind Rise): its trail now joins the middle road,
+  so it runs along the front; check in the playtest.
+- **Thin front areas:** Gravesalt `tomb_fen` forms only 1–2 regions on some
+  seeds (2.6 % of the land on seed 1234) and Shattered Line `siegecrest`
+  3.8 % on seed 314159; their quest targets form on all six checked seeds.
+  Blackwind Rise's bandit hideout uses the camp slope fallback on seeds 42,
+  2 and 99 (0.42–0.47; accepted). Mournfen's camp belt warns on seed 99999
+  in the region renderer.
+- Smaller notes: the POI "West Trench Mouth" trips the compass-word rule
+  (quests must not name it); T1 trinkets keep Cut Quartz (accepted); the
+  bronze tool stock against the gear axis and base-mob fallback drops (E1
+  review notes).

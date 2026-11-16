@@ -224,7 +224,7 @@ Fixtures and probes by round (moved from AGENTS.md on 2026-10-05). A
 headless probe with a throwaway probe mod (`grug_probe_*`, never shipped).
 Older folders (`r10_*` … `r28_*`, `wp13`, `wp26`, `wp40`) follow the same
 pattern; the shared Round 28 tools are `r28_design`, `r28_regions` and
-`r28_world` (their uses are in AGENTS.md "Zone content") and
+`r28_world` (their uses are in [checks.md](../docs/process/checks.md)) and
 `r28_zone_atlas` (the portable world the seed fleet builds); `r28_names`
 is retired since Round 38 (the naming gate is `r38_names/check_rules.py
 --shipped`).

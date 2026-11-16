@@ -380,7 +380,7 @@ line live in memory.
 ### Open notes
 
 The reviews' and reports' notes, the parked sounds and round K's open
-points are in the [Round 52 carry-overs](../../BACKLOG.md#round-52-carry-overs).
+points are in the [Round 52 carry-overs](#carry-overs).
 Part B §5 lists round K's points from the node list; the
 [delivery plan](class-redesign/delivery-plan.md) marks round F done.
 
@@ -501,3 +501,62 @@ The user's GUI check of 0.52.0 passed; three ambience wishes became
 Gates on main `d30d812f` (0.52.1): full fixtures 221/0, `check_upgrade.py`
 (0.52.1 against origin/main) and `check_fresh_server.py` PASS, one headless
 boot PASS (150 s); synced.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+The five "Round K" items and the weapon overlay's `depends` note were resolved in
+Round 53 (the [round 53 plan](round53-plan.md) turned each into a lane
+goal) and are dropped here.
+
+- **The weapon overlay** (WFX): `grug_abilities/init.lua` calls
+  `grug_gear.weapon_family`, but `grug_gear` is not in its `depends` (it
+  loads through `grug_visuals` and `grug_inventory`; `scout.lua` already
+  did the same); a Scout with a broken bow holding Loose shows the orb
+  (`reset_draw_stack` reads the usable bow; as before the round); desktop
+  clients older than 5.15 would draw a strip whole, squashed.
+- **Ambience** (AMB, its file step): the cave verdict's two-pass
+  hysteresis counts passes, not probes, so a probe and a reuse can flip
+  it; the column computation is the main new cost (a coarser cell for
+  biome and zone could roughly halve it); `tools/r34_s2/engine.sh`'s probe
+  is stale since Round 35 (it reads `D.pools`); the debug line has no
+  shadow (faint on a bright sky); the wolf row matches the pine hills
+  whatever the sound key (a Battleground over pine hills would get wolves;
+  none exists); a forced `/atmosphere underground` no longer drives the
+  beds, and with the atmosphere layer off there are no zone overrides
+  (the biome groups still play). For the GUI check: the snowy crags get
+  no hawks or wolves (one line of data), the mine's water loops (about 27
+  sound starts per player-minute in the walk).
+- **Parked sounds** (ambience plan §4): **crows from long recordings**
+  (n_214869, n_386768, n_353432, "reuse"): more crow calls if two variants
+  are too few; **n_236954** (birds near Szczawnica): "good, keep, no place
+  yet"; **c_bg3 crackling fire** (Freesound 182369, kingsrow, CC0;
+  `r34/listen/dl/fs_182369.mp3`): for large fires later, and an idea for
+  the Mage's Fire Rain in round K (noted on the class-redesign board);
+  **c_bg1** (soft tonal wind): maybe a badlands night, but too short and
+  too monotonous as a loop. Each needs its own cut and pick first.
+- **Fixtures and tools** (SPLIT, SND): `r40_px`'s `PROC_FILES` no longer
+  scans the shared `kits.lua`, so a proc added there would go unscanned
+  (the count check still catches a lost one); the leave cleanup of the
+  talent windows depends on `clear_talent_windows` clearing the table;
+  older Safari may not decode Ogg on a listening page (use Firefox or
+  Chrome).
+- **Repository size:** `tools/r52_art` holds about 40 MB (539 files: the
+  drops, previews and manifests of ARTA and ARTB) and `tools/r52_snd`
+  about 9 MB (the listening page inlines its audio). The first join
+  downloads about 2.2 MB more media since this round.
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` and
+  `os.exit` in older tool fixtures.
+- **0.52.1 ambience** (COAST reviews, no severity): the new `silent` argument
+  skips the two-pass hysteresis for any silent surface layer (a little
+  start/stop churn possible at a crags-at-night border); `sea_share` asks
+  the player column's water query again (memoised; reusing it needs the
+  class in the `atmosphere_zones.lua` column record); a beach next to the
+  Battlegrounds drops that override key too (docs name only ocean and
+  dragon islands); the r34_s2 runtime line labelled "(a capital)" tests
+  only the reach (its `capital_of` stub returns nil).

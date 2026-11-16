@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Template (docs/process/round-workflow.md "Templates"): copy beside lua_run.sh
-# into ~/projects/grudgelands-orchestration/r<NN>/.
+# Template (docs/process/round-workflow.md "Templates"): lives beside the shared
+# lua_run.sh (installed copy in use: ~/projects/grudgelands-orchestration/r45/).
 #
 # Measuring engine runs (before/after timings): at most TWO at once across all
 # lanes, each also holding one Lua slot of lua_run.sh. Run from your worktree
 # root with the same env vars and arguments as tools/luanti_headless.sh:
-#   ~/projects/grudgelands-orchestration/r<NN>/engine_run.sh <label> [luanti_headless args...]
+#   ~/projects/grudgelands-orchestration/r45/engine_run.sh <label> [luanti_headless args...]
 # Plain smoke boots use lua_run.sh <label> 1 ./tools/luanti_headless.sh instead.
 set -uo pipefail
 O="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

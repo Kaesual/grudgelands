@@ -1010,7 +1010,7 @@ seeds build ([Round 37 plan](round37-plan.md) §7).
 
 ### Open notes
 
-In the [BACKLOG](../../BACKLOG.md#round-36-carry-overs); none blocks the
+In the [carry-overs](#carry-overs); none blocks the
 GUI test. Numbers are comparisons, never targets.
 
 - The tally-stone at Tombroad Ambush sits on Isquarre's spot; a chapter-3
@@ -1138,3 +1138,48 @@ The follow-up lanes (F2, W2, W3, RD):
     sparse near the town and denser outward, but no trees or bushes; roads
     stay bare.
 24. **Roads:** no lone half-node bumps or holes along a road.
+
+## Carry-overs
+
+Moved from `BACKLOG.md` in the documentation cleanup of 2026-11-16: the residual
+notes of the round's lane reports and reviews (theoretical or accepted unless they say
+otherwise). Bullets already done were dropped, and so were bullets that only listed
+judgements for the GUI test; open items that still matter are also listed in the
+[backlog](../../BACKLOG.md).
+
+- **Float floor in `scale_player_damage`** (K review): a value that should
+  land on an integer can floor one below it (±1, also for melee since
+  before Round 36); a small epsilon in the shared seam (`floor(x + 1e-9)`)
+  would settle it.
+- **The Tombroad tally-stone sits on Isquarre's spot:** both chapter-3
+  uses at Tombroad Ambush stand on the site's centre, where the boss
+  appears; a chapter-3 player there can be hit only while a finale group
+  has him up (the spawn rule needs a finale holder near). Quest places have
+  no offset field (lane E's format). Round 62 kept it (plan review I3: both
+  uses are spine steps at `r20_anchor_077`).
+- **Quest share above the old level:** with the main line the solo share
+  (`ledger.py --repeat 2`) rose to 106–112 % (40 → 50) and 105–125 %
+  (50 → 60) per race, Human highest (reported, not gated; plan §2.8).
+- **Decor nodes that do not exist yet** (lane W): a thin banner cloth
+  (banners are a whole wool block), weapons for the racks, a tent, rails
+  and an ore cart, an ember node, a grave cross, a window flower box.
+- **The captains' orders** use a placeholder icon.
+- **Main-menu background:** none of lane AM's candidates; the user's own
+  in-game screenshot follows (`menu/background.png` with a
+  `LICENSE-media.md` row).
+- **Hidden achievement rows still count:** a character's counters also
+  advance for the other faction's rows, which it never sees or earns
+  (harmless; no unlock).
+- **The finale's kill target is no zone recipe's:** `validate.py` warns on
+  both finales (`W-role-not-in-zone`, `W-recipe-target`) and does not check
+  the boss's level against the quest; the quest lanes set it by hand.
+- **Names and places:** two corrupted sub-types share their family noun
+  with a sibling of their zone (the bible's names, listed as exceptions);
+  the Kiln-Whisper Hexer's `mourning_mire` row is missing on one quest seed
+  (`tomb_fen` is reliable); Ashen Grave and Coinpit Hollow fall back to
+  the belt's woods on some seeds (their names fit either ground).
+- **Decor ways:** a dressed composition keeps every way within a detour of
+  up to six steps (accepted by the coordinator).
+- **Roads (RD review):** with `C_STEP` 0.5 one Dur Brannoc lane on seed 42
+  became infeasible and the planner took its next option (plots
+  unchanged).

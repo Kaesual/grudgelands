@@ -1,178 +1,69 @@
 # Roadmap — Grudgelands
 
-Goals and remaining milestones, not a chronological implementation diary.
-Current delivery: [project status](docs/STATUS.md). Exact work-package scope and
-status: [BACKLOG](BACKLOG.md). Rules and numbers: [design index](docs/design/README.md).
+Goals and milestones: where the game is heading, not what past rounds
+delivered. What shipped, release by release: [CHANGELOG](CHANGELOG.md).
+Current state: [project status](docs/STATUS.md). Open work and its scope:
+[BACKLOG](BACKLOG.md). Rules and numbers: [design index](docs/design/README.md).
 Earlier delivery narratives are preserved in the
 [historical roadmap](docs/archive/planning/roadmap-before-consolidation.md).
 
 ## Next priorities — Deepening the playable game
 
-The housing-detail pass is implemented in Round 75 and awaits visual acceptance:
-[decorations](docs/design/decorations.md), [checklist](docs/planning/round75-plan.md#6-verification-and-gui-checklist).
-It covers player access and restrained furnishings in our cities.
-
-Presentation milestone awaiting desktop/web acceptance: [Round 64 map icons](docs/planning/round64-plan.md),
-implementing the [atlas rules](docs/design/world_map.md#approved-icon-integration-round-64)
-for readable shared symbols and stable placement. Work status is in
-[BACKLOG](BACKLOG.md#round-64--map-icons-gui-acceptance-pending).
-
 Direction set by the user on 2026-10-11: the playable foundation needs a
-focused improvement pass to become a rewarding experience throughout.
-These are the next gameplay priorities, alongside the fixes already queued;
-they have no assigned round or release date yet. Delivered systems below
-remain delivered foundations, with this refinement work still ahead.
+focused improvement pass to become a rewarding experience throughout. These
+are the next gameplay priorities, alongside the fixes already queued; most
+have no assigned round or release date yet. Each names its goal and the
+next step.
 
-- **Expeditions:** the framework and The Stilled Seam (20–69) shipped in 0.71.0
-  ([rules](docs/design/expeditions.md)); The Second Shift (40–69), The Last Mint (60–69), traps,
-  the Expeditions tab on waystones and shaped rooms in 0.72.0; finish, cancel and the
-  Deserter's Mark in 0.72.1 and 0.72.2; all three redesigned in 0.73.0 (relief by stairs,
-  bent passages, light from what belongs there, the ambush, lava falls, critters, particles;
-  GUI tests pending); 0.74.0 closes runs after 30 s, shortens the Deserter's Mark to 2 minutes,
-  fires the wall traps every 2 s and walks every Expedition mob over a precomputed grid; 0.78.0
-  keeps every node a template places unchangeable and adds a 10 s respawn wait while the group fights. Next:
-  tuning run length, bosses and coins from the user's runs.
+- **Expeditions** ([rules](docs/design/expeditions.md)): repeatable group
+  content beyond the map. Three Expeditions run today (The Stilled Seam,
+  The Second Shift, The Last Mint). Next: tuning run length, bosses and
+  coins from the user's runs.
 - **Website accounts** ([rules](docs/design/accounts.md),
-  [concept](docs/planning/accounts-concept.md)): phase 1 in 0.79.0 (linking by code and by
-  password on the website, account rewards with the Supporter Cloak first, the website
-  setting a linked character's password). Next: the end-to-end test on the rehearsal
-  realm, then phase 2 (a cloak and an emote for every website user) once phase 1 works on
-  the live realm; account bans, characters created through a bridge command, character
-  deletion and the shared Claim Stone as later phases.
-- **Fair fights** (0.72.0, from player reports): combat from the moment a mob targets you, no
-  building in combat, kings and bosses that reset when they cannot reach their target, guards
-  that reset at once out of reach, ranged kings that shoot, no mounts in enemy towns, friend
-  and foe nametags. 0.74.0: self skills wait for the swing instead of being refused, the
-  hotbar shows the block, and evaders walk home along their trail. 0.78.0 (a game night):
-  mobs keep a one-node stand-off and choose ranged or melee by distance, friendly casts pass
-  hostile bodies, and lost nametags are rebuilt.
+  [concept](docs/planning/accounts-concept.md)): characters linked to an
+  account on the realm's website, with account rewards that reach every
+  linked character. Phase 1 shipped in 0.79.0. Next: the end-to-end test on
+  the rehearsal realm, then phase 2
+  ([Round 80 plan](docs/planning/round80-plan.md)) once phase 1 works on
+  the live realm; account bans, characters
+  created through a bridge command, character deletion and the shared
+  Claim Stone are later phases.
 - **Classes, talents and character progression:** make leveling bring more
   meaningful customization. Start with fewer skills and let talent choices
   decide more of which abilities a character gains or leaves out. Build
   coherent ability interactions and rotations, and improve balance in group
-  play and PvP. The Scout most urgently needs attention to how it feels to play.
-  The four-class rework ran in two rounds
-  ([delivery plan](docs/planning/class-redesign/delivery-plan.md)): round
-  F, the foundation, shipped in 0.52.0; round K, the new kits and talent
-  graphs with an automatic talent reset, in 0.53.0, with the fix round
-  0.53.1 from the user's first look. Next: the user's GUI test and
+  play and PvP. The Scout most urgently needs attention to how it feels to
+  play. The four-class rework has shipped
+  ([delivery plan](docs/planning/class-redesign/delivery-plan.md)). Next: a
   playtest of the new classes and a short balance fix round.
 - **World atmosphere, variety and resources:** review music, sounds and
   icons with care for the details that give each region character. Improve
   areas dominated by wind, add more surface variety, more varied tree shapes
   and more distinctive cities. Rebalance ores, gems and coal, with many ores
-  and gems available across more depth tiers (a first pass shipped in
-  0.46.0: gems one and two tiers deeper, more Coal and Iron in T3; 0.47.0
-  added generated trees, the swamp and a mining ladder with Anthracite;
-  0.51.0 gave every land zone calm grounds, new plants and a decoration
-  kit, and the sea a belt, seabed growth, wrecks and water creatures;
-  0.52.0 gave the ambience beds by landscape and height, wind only high
-  up, quiet caves and animal calls).
+  and gems available across more depth tiers. First passes have shipped;
+  the next is not yet scheduled.
 - **Crafting with more character and purpose:** build on the improved
   recipe system with more variety, wit and versatility, especially in
-  Cooking. Explore a broader range of useful food buffs. Round 57 (0.57.0)
-  gave crafting its clearer window: a queue of up to five jobs (crafts,
-  enchants and upgrades alike, offline too), one wide recipe box, a details
-  page per recipe that names where each ingredient comes from, favourites
-  and Basic recipes unlocked with the profession tier; the alloys and wood
-  grades come straight from Steel and planks, and every dye can be made.
+  Cooking. Explore a broader range of useful food buffs. Next: not yet
+  scheduled.
 - **Quests that welcome players into the world:** improve how quests teach
   the game and explore more immersive ways to connect their tasks to the
-  people and places around them. The **quest rework** (decided with the
-  user on 2026-10-22) gives the game a story thread from the capital on
-  (level 15–20 at the latest), marks story quests apart from kill quests,
-  cuts repetition and dependencies between kill quests and stops rewarding
-  the requested items. Round 57 laid its foundation (one quest for many
-  givers, choice rewards with fixed enchants, story marking, completion
-  texts, free play outside the story, no repeatable quests) and rebuilt the
-  six start zones on it, 92 quests as 30; Round 59 rebuilt the band 11–20
-  (83 quests as 59, kill objectives 60 % → 21 %) and opened the story's
-  first chapter in the six capitals; Round 60 rebuilt the band 21–30 (84
-  as 71, kill objectives 58 % → 19 %) and the six capitals (64 as 47),
-  added the second chapter and an Alchemy lesson at the first capital
-  visit; Round 61 rebuilt the band 31–40 (60 as 50, kill objectives 68 %
-  → 25 %) and added the third chapter; Round 62 rebuilt the front 41–60
-  (123 as 120, the free front at 25 % and 18 % kill objectives) and made
-  the Round 36 main line the story path, which **completes the quest
-  rework of levels 11–60**.
-
-Decided with the user on 2026-10-22 and 2026-10-23
-([Round 57 plan §8–§9](docs/planning/round57-plan.md#8-decided-for-round-58),
-[BACKLOG](BACKLOG.md#decided-for-round-58-and-later-round-57-plan-89)):
-
-- **Round 58, the Miner's Guild and the town fixes:** **delivered** in
-  0.58.0 (a map reset; [completion](docs/planning/round58-plan.md#completion-2026-10-24)):
-  The Charter of Stone and The Oathdelvers, 36 mining camps with a
-  faction-only lift to 148 protected rooms at the tier depths, six enemy
-  camps under construction, reputation with ranks and three cloaks, the
-  camp vendor, Ore Sense and Treasure Hunt, a guild house in every capital,
-  30 guild quests, and the Round 56 town fixes. Its GUI test runs together
-  with those of Rounds 57, 59 and 60.
-- **Round 59, the band 11–20 and chapter 1:** **delivered** in 0.59.0 (a
-  map reset; [completion](docs/planning/round59-plan.md#completion-2026-10-24)):
-  the six band zones reworked on the Round 57 system (13 quests each, all
-  free play, three shared quests, three mob names per zone, the reward
-  pattern), chapter 1 of the story arc (the envoys at 19, the Miner's Guild
-  leaders, a town place in each capital at 20), town places on settlement
-  sockets, the quest log's variant zone. Its GUI test runs together with
-  those of Rounds 57, 58 and 60.
-- **Round 60, the band 21–30, the capitals and chapter 2:** **delivered**
-  in 0.60.0 (a map reset; [completion](docs/planning/round60-plan.md#completion-2026-10-24)):
-  the eight band zones and the six capitals reworked on the Round 57
-  system (all free play outside the story, six shared band quests, about
-  three mob names per zone, the reward pattern at item levels 21–30),
-  chapter 2 of the story arc (the Frostbarrow and Ossuary mining camps'
-  foremen at 24, the Miner's Guild houses of Dur Brannoc and Nhal Veyr at
-  29), the mine leaders as guild members, an Alchemy quest at the first
-  capital visit, the Alchemy herbs by level band, soulbound quest-only
-  items. Its GUI test runs together with those of Rounds 57–59.
-- **The UI modernization:** **delivered** in 0.60.1 (compatible;
-  [plan](docs/planning/ui-modernization-plan.md)): every window on one
-  translucent theme with clear buttons, icon tabs, the faction and level in
-  the header and the larger map entered directly. Its GUI test runs
-  together with those of Rounds 57–61.
-- **The refreshed service dialogs:** **delivered** in 0.61.1 (compatible;
-  [dialog review](docs/planning/ui-dialog-review.md)): the vendor,
-  quest-giver, mail, trainer and service windows in the Atlas 03 layouts
-  and the typography audit. Its GUI test runs together with those of
-  Rounds 57–61.
-- **The UI polish:** **delivered** with 0.63.0 (compatible;
-  [implementation and validation](docs/planning/ui-polish-implementation.md)):
-  revised inventory and service layouts, readable quest/mail rows, consistent
-  navigation and a Full-HD scaling ceiling. Final desktop/web acceptance is pending.
-- **Round 61, the band 31–40 and chapter 3:** **delivered** in 0.61.0 (a
-  map reset; [completion](docs/planning/round61-plan.md#completion-2026-10-25)):
-  the six contested zones reworked on the Round 57 system (all free play
-  outside the story, five shared quests, 3–5 mob names per zone, six new
-  quest places, the reward pattern at item levels 31–40), chapter 3 of the
-  story arc (A5 and T4 at 34/35 to the Ashenward and Bannerbreak mining
-  camps' named foremen, A6 and T5 at 39/40 after the camp raid to the
-  fortress zones' hosts), one optional group quest per zone (elite group
-  quests below level 51 are always optional, the user 2026-10-25). Its GUI
-  test runs together with those of Rounds 57–60.
-- **Round 62, the front 41–60 and the main line's story layer:**
-  **delivered** in 0.62.0 (a map reset;
-  [completion](docs/planning/round62-plan.md#completion-2026-10-25)): the
-  last fourteen quest files reworked on the Round 57 system, so all 48 are
-  flagged (ten shared front quests, departures to the capitals' envoys,
-  the Throng's island bounty pair, the reward pattern at item levels
-  41–60), the Round 36 main line as the story path with completions,
-  two template fixes before production, bags of 8 / 12 / 16 / 20 slots.
-  With it the story arc runs from the start zones to the finale at 60 on
-  the Round 57 foundation (the user's direction of 2026-10-23,
-  [decisions](docs/planning/round57-plan.md#decisions-during-the-round):
-  the Miner's Guilds and their faction's military closely interwoven, with
-  little conflict inside a faction, and the enemy faction's guild rather
-  impersonal). Its GUI test runs together with those of Rounds 57–61.
-- **Next: the production deploy with one map reset** (0.57.0 → 0.62.0),
-  after the user's joint GUI test of 0.57 to 0.62; its starting list (the
-  release gates, the unpicked names, the server notes) is the
-  [deploy plan](docs/planning/deploy-plan.md). Then the armor redesign
-  with several polygon groups per slot and unique, non-craftable items
-  (quest rewards, boss loot for the instances, world finds).
+  people and places around them. The quest rework (decided with the user on
+  2026-10-22: a story thread from the capital on, story quests marked apart
+  from kill quests, cut repetition and dependencies between kill quests, no
+  longer rewarding the requested items) is complete from the start zones to
+  the front at 60 ([quests](docs/design/quests.md)). Next: not yet
+  scheduled.
+- **Unique items** (decided with the user on 2026-10-22 and 2026-10-23,
+  [Round 57 plan §9](docs/planning/round57-plan.md#9-later)): unique,
+  non-craftable items. Quest rewards that replace the crafted items in
+  choice rewards, boss drops from fixed loot tables in the Expeditions, and
+  items found in the world. A Miner's Guild material obtainable only this
+  way waits for them ([miners_guild.md](docs/design/miners_guild.md)).
+  Next: a plan; no round assigned.
 
 These are goals for the next design and playtest passes, not changes already
-available in the game. Detailed follow-up scope and current design owners:
+available in the game. Detailed follow-up scope:
 [BACKLOG](BACKLOG.md#player-experience-follow-up-2026-10-11).
 
 ## Vision
@@ -192,101 +83,91 @@ available in the game. Detailed follow-up scope and current design owners:
   peaceful. Every ordinary level-31–60 frontier, Battlegrounds or dragon-island
   zone is contested. At y = −501 and below, every non-ocean land column is
   contested independently of its surface zone.
-- **PvP is a simple per-player flag** (delivered in Round 31,
-  [pvp.md](docs/design/pvp.md)). Two enemy players can harm each other only
-  while both are flagged. Contested ground and enemy territory flag by
-  location, a button and PvP contact flag for 60 s, only own peaceful land
-  clears the flag and death clears it; no attack or heal ever changes it.
-  Support is one-way, PvP combat lasts 10 s and a logout in PvP combat is
-  death. PvE combat does not notice PvP. Each faction holds a fortress at
-  the front, and 16 Battlegrounds war camps are the targets of PvP quests
-  (players are never quest targets).
+- **PvP is a simple per-player flag** ([pvp.md](docs/design/pvp.md)). Two
+  enemy players can harm each other only while both are flagged. Contested
+  ground and enemy territory flag by location, a button and PvP contact
+  flag for 60 s, only own peaceful land clears the flag and death clears
+  it; no attack or heal ever changes it. Support is one-way, PvP combat
+  lasts 10 s and a logout in PvP combat is death. PvE combat does not notice
+  PvP. Each faction holds a fortress at the front, and 16 Battlegrounds war
+  camps are the targets of PvP quests (players are never quest targets).
 - **Controlled destructibility keeps the world playable.** Peaceful home
   terrain is editable by its faction; peaceful enemy land is not. Ordinary
   contested land, including the Battlegrounds at every depth, is editable by
   both sides. Deep ocean and bay, belt and channel water 24 nodes or more
-  off the coast are immutable (Round 51). Roads with
-  their bridges and the building cores of POIs, villages and camps are
-  protected for everyone (Round 25); the rest of village/outpost/camp shells
-  and battlefield dressing stays mutable. Only
-  bounded functional anchors and complete civic cores — capitals and starting
-  settlements with their bare protected bands (Round 22 D76/D78) — are
-  hard-protected, fail-closed
-  against indirect mutation.
+  off the coast are immutable. Roads with their bridges and the building
+  cores of POIs, villages and camps are protected for everyone; the rest of
+  village/outpost/camp shells and battlefield dressing stays mutable. Only
+  bounded functional anchors and complete civic cores — capitals and
+  starting settlements with their bare protected bands — are
+  hard-protected, fail-closed against indirect mutation.
 - **The ocean has authored classes.** Planned mainland water stays part of its
   named zone. A coastal belt 250–350 nodes wide belongs to the zone on land,
   editable only along its shore; the immutable open sea begins beyond it.
   Two shallow organic channels of their islands' level 60 separate the
-  offshore dragon islands and keep them boat-only (Round 51).
+  offshore dragon islands and keep them boat-only.
   Deep ocean is deadly through the Kraken, which never breaks off a
   pursuit while it stands in open water and leashes normally everywhere else.
 - **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
   Summit are contested offshore dragon islands, each with a dragon lair and an
   apex camp, reached by boat. Each dragon fights in a round arena whose edge
-  is its leash, with hazards of its own (Round 31). Each boat landing has a small beach and a wooden
-  pier (Round 30); beyond them the islands stay untamed, without paths or
+  is its leash, with hazards of its own. Each boat landing has a small beach
+  and a wooden pier; beyond them the islands stay untamed, without paths or
   roads, so the climb is part of reaching the dragon. Minerals never regrow
   anywhere, camps included.
-- **Housing lives in the open world** (delivered in Round 25,
-  [housing.md](docs/design/housing.md)). From level 20 each player gets one
-  free, soulbound Claim Stone from a capital's Housing Steward. It claims a
-  101 × 101 column from y = −100 up in the player's own level-11–30 home
-  zones, protects it while coal or charcoal burns, grants Interact or
-  Everything to named players and can be the travel-home target. There are
-  no tiers, and private housing islands do not exist.
+- **Housing lives in the open world** ([housing.md](docs/design/housing.md)).
+  From level 20 each player gets one free, soulbound Claim Stone from a
+  capital's Housing Steward. It claims a 101 × 101 column from y = −100 up
+  in the player's own level-11–30 home zones, protects it while coal or
+  charcoal burns, grants Interact or Everything to named players and can be
+  the travel-home target. There are no tiers, and private housing islands
+  do not exist.
 - **One six-tier material spine serves every race.** Bronze, Iron, Steel,
   Silversteel, Embersteel and Abyssal Steel picks dig the six tier rocks:
-  stone down to −100, then ever harder rock below −100/−300/−500/−700/−1000
-  (Round 24). Every ore and gem needs the pick of the layer where it first
-  appears, at any depth; a weaker pick cannot dig it at all. Loose ground
-  needs no tool, and decorative rocks do not drive access.
+  stone down to −100, then ever harder rock below −100/−300/−500/−700/−1000.
+  Every ore and gem needs the pick of the layer where it first appears, at
+  any depth; a weaker pick cannot dig it at all. Loose ground needs no tool,
+  and decorative rocks do not drive access.
 - **Regional materials add identity without blocking universal progression.**
   Each race region selects one cultural material and one signature wood;
   foreign cultural resources come through contested/deep routes and trade,
-  never through a mandatory faction monopoly. Gems are not regional (Round
-  29): one gem per tier rock — Citrine, Jade, Garnet, Sapphire, Ruby,
-  Diamond — found everywhere at its depth; Quartz is universal.
+  never through a mandatory faction monopoly. Gems are not regional: one gem
+  per tier rock — Citrine, Jade, Garnet, Sapphire, Ruby, Diamond — found
+  everywhere at its depth; Quartz is universal.
 - **The economy stays ledger-only.** Copper/silver/gold are one integer;
   physical Gold is a separate crafting material. The target Common weapon
   axis is 25c/65c/1s60c/4s/10s/25s and vendor buy-back is ceiling-rounded 5%.
   A simple estimate of reliable net solo income after ordinary costs
-  calibrates mount, boat and respec prices (Round 29); the Claim Stone is
-  free.
+  calibrates mount, boat and respec prices; the Claim Stone is free.
 - **Combat supports solo play and the tank/healer/damage trinity.** Threat,
   taunt and healing threat make group roles matter, but content is sized for
   two or three players and remains beatable without a healer. Level 60 takes
   roughly 10–20 played hours; endgame PvP, bosses, crafting and housing are
   the destination.
-- **Travel has separate systems.** Delivered innkeeper home return binds one of
-  twelve faction-compatible homes, returns instantly outside combat on a personal
-  30-minute cooldown and owns death respawn. Visit-unlocked waystones
-  connect every start, every capital and the PvP fortress of a faction
-  (Rounds 29 and 31). Since Round 25 the player's own Claim Stone can
-  replace the innkeeper as the home, and since Round 69 respawn goes there
-  too. Universal riding unlocks at
-  levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 8/12 nodes per
-  second; damage dismounts. Battlegrounds permit flight, enemy territory allows
-  land mounts only, and every exterior-ocean column forbids flight. Boats are
-  water mounts (Round 29): the Shipwright in every capital sells the Boat
-  from level 15 and the twice-as-fast Improved Boat from level 30, and any
-  damage ejects a rider from a boat exactly as it dismounts one from a
-  mount. There are no docks; a boat lands anywhere in water, and only the
-  four island landings have piers (Round 30).
+- **Travel has separate systems.** Innkeeper home return binds one of
+  twelve faction-compatible homes, returns instantly outside combat on a
+  personal 30-minute cooldown and owns death respawn. Visit-unlocked
+  waystones connect every start, every capital and the PvP fortress of a
+  faction. The player's own Claim Stone can replace the innkeeper as the
+  home, respawn included. Universal riding unlocks at levels 15/30/45/60
+  with land speeds 6.4/8 and flight speeds 8/12 nodes per second; damage
+  dismounts. Battlegrounds permit flight, enemy territory allows land mounts
+  only, and every exterior-ocean column forbids flight. Boats are water
+  mounts: the Shipwright in every capital sells the Boat from level 15 and
+  the twice-as-fast Improved Boat from level 30, and any damage ejects a
+  rider from a boat exactly as it dismounts one from a mount. There are no
+  docks; a boat lands anywhere in water, and only the four island landings
+  have piers.
 - **Story remains light and environmental.** The Accord–Throng war is old; an
   ancient demonic threat reaches upward through the Nether. Both factions face
-  it in parallel without becoming allies. Since Round 36 each faction's main
-  line from level 41 follows that threat's branded pay across the front to a
-  shared finale at the rift, whose last line points below
+  it in parallel without becoming allies. Each faction's main line from
+  level 41 follows that threat's branded pay across the front to a shared
+  finale at the rift, whose last line points below
   ([story.md](docs/design/story.md)).
 
-**Scope versus delivery:** this vision includes approved future systems, not just
-running code. The WP9 story from level 41 with its finale is delivered in
-Round 36 (GUI test open); V1's sound is
-delivered in Round 34 (tested by the user; Round 35 made music a capital
-feature); the items
-and professions revision (WP5, WP10) is delivered in Round 33; WP41 PvP and
-the PvP POIs of WP42 are delivered (Round 31, GUI-accepted), WP17
-boats/waypoints and the WP44 economy too (Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
+**Scope versus delivery:** this vision includes approved future systems,
+not just running code. The [CHANGELOG](CHANGELOG.md) records what shipped;
+the [BACKLOG](BACKLOG.md) tracks what remains.
 
 ## V1 scope
 
@@ -301,615 +182,35 @@ B1–B7) settle the rest:
   `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale;
   **sound** (the user, 2026-10-03): effects for the game's events, mob
   voices, ambience and calm background music without a combat switch
-  (delivered in Round 34, [sound.md](docs/design/sound.md); since Round 35
-  music plays only in the six capitals).
-- **After V1:** WP42's scripted NPC battles on the war front. The small PvP
-  POIs shipped in V1 (Round 31).
+  ([sound.md](docs/design/sound.md); music plays only in the six capitals).
+  The small PvP POIs of WP42 are part of V1.
+- **After V1:** WP42's scripted NPC battles on the war front.
 - **Not V1:** the walkable Nether, the first expansion (V2).
+
+The V1 systems listed above have shipped. What is left before a public
+release is [below](#before-the-first-public-release).
 
 ## Phase 1 — Playable core and world foundation
 
-### Delivered foundation
-
-Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
-(2026-10-06), Round 42's playtest (2026-10-08), Rounds 46 and 47 too
-(2026-10-14); Rounds 36–38, 40, 41, 43–45 and 48 and 0.45.1 are open
-([project status](docs/STATUS.md)).
-
-- [x] Standalone game, faction/race/class creation, progression and four classes
-  including Scout; current-ray combat, equipped weapons, talents and shared movement.
-- [x] Named-zone world foundation, six starts and capitals, gathering/materials,
-  strata and bounded terrain/coast/cave corrections. Round 21 improves access,
-  natural POI ground, inland/coastal detail and resource density. Round 24 adds
-  tier-rock mining, ores and layers in the underground fill and start-zone mob
-  gradients. Public-release evidence remains open.
-- [x] Threat/taunt, populations, kings/dragons, homing ranged attacks, dispositions,
-  nametags and injured bars. The dragon encounters are delivered (WP23 closed
-  2026-09-29); boats reach their islands since Round 29 (WP17).
-- [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,
-  fixed-tier enchanting, wear/repair, profession workspaces, food, farming and fishing.
-  The WP44 economy is delivered in Round 29; the items and professions revision
-  (WP5, WP10) in Round 33; the crafting rework (recipe lists, crafting jobs,
-  proximity stations) in Round 45.
-- [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
-  persistent same-faction parties and optional HUDs. Since Round 28 quests are
-  per-zone data with area, item-group and quest-drop objectives and repeatables;
-  Round 29 replaces the catalog with 491 quests up to the front at 60;
-  Round 31 adds 24 PvP fortress quests with garrison objectives.
-- [x] World atlas with zoom/scroll, self/party/quest/service markers and, since
-  Round 27, our own round minimap with the same markers; innkeeper home
-  return and respawn; riding/flight (WP31) and farming (WP32). No
-  fog-of-war or waypoint prerequisite.
-- [x] Surface-following optional full-world preparation, resumable bounded scheduling
-  and shared creation/reconnect waiting flow.
-- [x] **WP24 Housing** (Round 25): Claim Stones, claim protection and
-  permissions, the stone as travel home, and road and POI protection.
-  GUI-accepted: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
-- [x] **Round 26** ([completion](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)):
-  Claim Stone draft and activation with the Housing Steward, the registration
-  cleanup (WP28), the status icons and organic capitals with a character per
-  capital. GUI-accepted.
-- [x] **WP50 own minimap and map quality** (Round 27,
-  [completion](docs/planning/round27-minimap-plan.md#completion-2026-09-30)):
-  a round, north-up minimap drawn from the world map with quest-giver,
-  service, home and party markers in place of the native one; the
-  `grug_map_quality` setting (normal/high); readable relief. GUI-accepted.
-- [x] **Round 28 questing and leveling framework**
-  ([completion](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)):
-  the 2026-09-30 playtest fixes (mob behaviour near roads, environmental
-  damage, knockback, sizes, LMB lock, message feed, class offhands, Scout
-  slots and quiver, Professions tab); data-driven sub-types and loot by band,
-  the kill-equivalent XP curve, quests as per-zone data, self-contained
-  professions; the catalogue (195 sub-types, 119 items, 89 icons) with the
-  naming rule; rule-based spawn regions for all 38 zones
-  ([spawn_regions.md](docs/design/spawn_regions.md)); The Broken Causeway
-  41–50 and Gravesalt/Skyglass 51–60; quest-log level ranges and zone
-  names. Complete and pushed 2026-10-02; the spawn playtest (2026-10-02)
-  fed Round 29.
-- [x] **Round 29 "Economy and travel"**
-  ([completion](docs/planning/round29-plan.md#completion-2026-10-02)):
-  491 quests on the Round 28 framework replace the 240 legacy quests (one
-  track per race, the contested 31–40 zones, the 41–60 front with
-  repeatable and island bounties); the spawn playtest fixes; a mapgen bundle
-  (gems by depth, `apex_sockets` removed, mapgen band data, the
-  Battlegrounds 50 % wider with a middle road). Pushed and tested by the
-  user on a fresh world (2026-10-02).
-- [x] **WP17 travel (V1)**, Round 29: boats as water mounts from the
-  Shipwright in every capital, the Kraken retune, and visit-unlocked
-  waystones at every start and capital. Innkeeper return and the Claim Stone
-  travel home were already delivered.
-- [x] **WP44 economy, a lighter pass**, Round 29: one price module for every
-  payout, 5% buy-back on vendor goods, the vendor rule, the audit fixes,
-  quest copper from weight and mount, boat and respec prices from a simple
-  income estimate. It absorbed the price remainders of WP7, WP11, WP22, WP30
-  and WP31.
-- [x] **Round 30 "Performance and clean-up"**
-  ([completion](docs/planning/round30-plan.md#completion-2026-10-02)): the
-  [performance review](docs/research/perf-review-2026-10.md)'s lanes P1–P4
-  with the user's rulings — a quest-state cache and the Map tab at most every
-  2 s, the region-map file cache (a later start about 7 s instead of about
-  16 s) and lower boot memory, a per-step A* budget and mobs that give up
-  unreachable targets, three merged spawn ABMs instead of 88, cheaper
-  crafting lookups, crosshair and name tags; Return home on the Character
-  page; piers and beaches at the dragon-island landings; the legacy quest
-  fields removed and the Dawnmere NPC duplication fixed; band-4/5 loot
-  smoothing with recomputed prices. Pushed 2026-10-03; GUI-accepted.
-- [x] **Round 31 "PvP, appearance and clean-up"**
-  ([completion](docs/planning/round31-plan.md#completion-2026-10-03)):
-  **WP41 geographic PvP** (the per-player flag, the PvP tab, icons, banner
-  and target frame, the NPC faction filter for services and map markers,
-  PvP from depth tier T4); **WP42's PvP-POI part** (a fortress per faction
-  with a General, a waystone and quests, 16 Battlegrounds war camps with
-  named captains, 24 fortress quests from level 40); the **appearance
-  package** (character looks chosen at creation, NPC look rolls, helmet
-  face window, equal hitboxes, enchant colours on gear); the **dragon
-  arenas** redesigned (round leash arenas, ice and ember hazards, the
-  dragon's wrath); the Round 30 clean-up items and a fixture runner. Pushed
-  2026-10-03; GUI-accepted.
-- [x] **Round 32 "Fixes, preparation and research"**
-  ([completion](docs/planning/round32-plan.md#completion-2026-10-03)): the
-  minimap zoomed ×2, hostile camps marked on the Map tab, zone names
-  coloured by the territory at the player's position with a territory line;
-  one LMB hold state machine (mining turns into combat when a hostile comes
-  into the crosshair, and back); quest kill labels with the zone's mob
-  names; combat and personal notices in the message feed, the quest log in
-  one text field; three performance fixes for many players (Map tab
-  rebuild budget, party HUD slots, camp and leader slices). Read-only
-  studies: a [performance review](docs/research/perf-review-2026-10-r32.md)
-  at 50 and 100 stand-ins, the [sound research](docs/research/sound-research-2026-10.md),
-  the [items and professions analysis](docs/research/items-professions-analysis-2026-10.md).
-  Pushed 2026-10-04; GUI-accepted.
-- [x] **Round 33 "Items, professions and achievements"**
-  ([completion](docs/planning/round33-plan.md#completion-2026-10-04)), the
-  items design session's rulings (**WP5 and WP10 delivered**): gear drops by
-  quality with more from elites and named mobs and two blue or gold items
-  from every boss, bags as world drops, a level requirement on all gear;
-  enchant values that grow with item level up to their tier and show it,
-  profession upgrades, the crown (a Fallen Crown lifts an item beyond its
-  tier), two professions per class; Alchemy beside Cooking, progress only
-  from real recipes, the cultural finishes and other dead ends removed;
-  crit ×2, T1-only vendor gear, dearer repair, fixed potions, a Crownbinder
-  and a Decor Merchant in every capital; per-character achievements that
-  unlock cosmetic cloaks ([item_tiers.md](docs/design/item_tiers.md)).
-  Pushed 2026-10-04; the user's findings fed Round 34.
-- [x] **Round 34 "Sound"**
-  ([completion](docs/planning/round34-plan.md#completion-2026-10-04)), V1's
-  sound ([sound.md](docs/design/sound.md), [credits](CREDITS.md)): every
-  file picked by the user on a listening page; effects at the game's events
-  with many left silent by choice, hits by weapon kind, ability cues, mob
-  voices in 22 families, dragon and King cues; quiet ambience beds per
-  region, night, cave, deep and sea, thunder on the dragon islands, loops at
-  forges, hearths and flowing water; four music pools pushed to a player
-  only while music is on (replaced by capital rotations in Round 35), a
-  main-menu theme, volume and off switches per player. Two fix lanes from
-  the Round 33 test: mobs follow through water in combat; text boxes,
-  cooking costs, the Bag of Coins, service map markers, the damage fit, no
-  gear from encounter adds, thin ice breaking behind a runner. Pushed
-  2026-10-05; the user's GUI test fed Round 35.
-- [x] **Round 35 "Fixes and character creation"**
-  ([completion](docs/planning/round35-plan.md#completion-2026-10-05)), the
-  user's Round 34 GUI findings: the server's aiming rays test rotated
-  selection boxes in Lua (an engine bug since Luanti 5.12), recorded in the
-  new [upstream-workaround list](docs/technical/upstream-workarounds.md);
-  music only in the six capitals with a rotation each, either music or the
-  ambience bed, 35 % by default; a break sound and a clearer broken look,
-  the bare hand for a skill without a weapon, dig sounds for ores and sand,
-  flint removed, quest lists coloured by status with read-only text;
-  character creation in one window with nothing stored before "Create
-  character"; night mobs leave at dawn, a drop audit against the income
-  targets; level-proof talents and the user's picks from a review of all
-  64. Pushed 2026-10-05; the user's first GUI findings fed Round 36.
-- [x] **Round 36 "The main questline" (WP9)**
-  ([completion](docs/planning/round36-plan.md#completion-2026-10-05)), V1's
-  last missing content: each faction's main line from its fortress
-  Warmaster in three chapters (41, 46, 53) and a party finale at 60 on the
-  approved [story bible](docs/planning/round36/story-bible.md), with the
-  front climaxes folded in, a solo step behind enemy lines, the "use at a
-  place" objective with quest objects, ten corrupted sub-types, a turn-in
-  hook and three achievements with cloaks; the rift at Tombroad Ambush with
-  its void crack and Isquarre the Tithe-Eater, war commanders in two enemy
-  camps; WP13's POI review on a render page and a decor pass over every POI,
-  start town and capital house; fixes from the Round 35 GUI test (one target
-  predicate, free mobs evading only from outside their wander radius, talent
-  points in the level-up banner); Priest heals with gear Intelligence and
-  the Scout's damage set; the dragons' wider hazards and wing gust; after
-  the user's first look a held button across a hotbar switch, benches with
-  their back to the wall, ground cover in the protected band round towns
-  and smoother roads. Pushed 2026-10-05; needs a world made on `fef94a6a`
-  or later. Next: the GUI test on desktop and in the web build, two clients
-  for the rift (still open).
-- [x] **Round 37 "Audit fixes"**
-  ([completion](docs/planning/round37-plan.md#completion-2026-10-06)), the
-  [October 2026 audit](docs/audit-2026-10/README.md)'s fix round: combat
-  without the per-hit equipment fan-out, mounts and shields that survive an
-  expiring buff, one knockback rule; mobs that retarget only through
-  threat, show their swing and freeze their wind-up; named rares and
-  dragons that never stand twice, a restart that keeps the world's mobs,
-  capped Bone Call, returning royal guards, straight side shots; the
-  right-click, crop, furnace, ground-growth and water-guard fixes; the
-  minimap and quest markers only on change; the mapgen without its dead
-  halo and a seed fleet over real chunks; the picked dragon and Rift
-  Spawn sounds; after the user's rulings start zones that fight alone,
-  the Salt Reef Lurker and a minimap always at normal quality; a player
-  README with a changelog and version 0.37.0, and the agent and design
-  documents set to one owner per fact. Pushed 2026-10-06; no new world
-  needed beyond Round 36's. Next: the GUI test, together with Round 36's.
-- [x] **Round 38 "Mob names"**
-  ([completion](docs/planning/round38-mob-names-plan.md#completion-2026-10-06)):
-  short names with the zone's feel instead of signal words for every mob
-  slot, picked by the user on a preview page (536 of 950 slots renamed,
-  rules for words, signal words, Piglet and level stretches checked by
-  `check_rules.py --shipped`); a mob's name is the exact answer to which
-  mobs a quest means — a kill counts by the shown name, which fixes the
-  quest kill-credit bug the user met; quest texts on the new names, the
-  dragon whelps at level 60, the Kraken, twelve shorter item names and
-  Party instead of Group. Complete and pushed on 2026-10-06; a
-  fresh world for the test. Next: the GUI test, together with Rounds 36
-  and 37.
-- [x] **Round 39 "Web data for the realm website"**
-  ([completion](docs/planning/round39-web-data-plan.md#completion-2026-10-06)),
-  for websites that host managed realms, with no gameplay change: each
-  character's level and appearance (slot items, the composed textures) in
-  player meta as a documented external contract, an exported
-  `tools/web_data/web_data.json` with the ids, names, frames, wield
-  geometry, texture files and items a website needs, and the player model
-  as an animated glTF tested against the game's `.b3d`. Complete and
-  pushed on 2026-10-06; GUI-accepted on 2026-10-06.
-- [x] **Round 40 "Combat feel"**
-  ([completion](docs/planning/round40-plan.md#completion-2026-10-06)),
-  from the user's four suggestions, each first shown on a preview page or
-  a GUI probe: a cooldown overlay on the hotbar instead of the wear bar,
-  seven poses baked into the player model and a head that follows the
-  look, Charge as a dash on a planned path with the user's hole rule, and
-  single-colour particle effects for every player skill but Strike, the
-  bosses and the mob specials through one helper with the server-wide
-  `grug_particle_scale`. Complete and pushed on 2026-10-06; no
-  new world needed. Next: the GUI test on desktop and the web build.
-  Its follow-up 0.40.1 puts ore wherever digging is allowed (pushed
-  2026-10-07).
-- [x] **Round 41 "Playtest fixes, the production crash and the upgrade
-  contract"** ([completion](docs/planning/round41-plan.md#completion-2026-10-07)),
-  version 0.41.0: **release mode reached** — worlds survive upgrades
-  through the hosting platform's
-  [upgrade contract](docs/technical/upgrade-contract.md) (compatible, map
-  reset or new server, declared per version); the crash loop of the
-  production server fixed, and a mapgen failure no longer stops a server;
-  the Round 40 playtest fixes (walk animation, kings and Generals at their
-  seat, the recipe book's Close and multi-item slots, the bow's missed
-  release, the quiver total, stale map tiles). Complete on 2026-10-07,
-  pushed on 2026-10-08; the production server moves to it with a map
-  reset. Next: the GUI test.
-- [x] **Round 42 "Mob navigation"**
-  ([completion](docs/planning/round42-plan.md#completion-2026-10-08)),
-  version 0.42.0, compatible (a 0.41.0 world plays on): mobs and NPCs that
-  got stuck now use the engine's pathfinder, locally and rarely, on one
-  shared navigation module: creatures in a fight come round trees, walls
-  and fences or give up; guards on patrols and posts, royal guards and
-  the evade run home follow it; villagers and patrols in start towns and
-  capitals walk cached routes and the capital streets, open and close
-  doors and no longer stop at random on their way. Complete on
-  2026-10-08, the user's playtest accepted it the same day; pushed on
-  2026-10-08.
-- [x] **Round 43 "World migrations"**
-  ([completion](docs/planning/round43-plan.md#completion-2026-10-08)),
-  version 0.43.0, compatible (a 0.42.0 world plays on): the fourth upgrade
-  outcome **migrate** of the platform's migration contract — an offline
-  tool (`tools/migrate.py`, SQLite and PostgreSQL) converts a stopped world
-  step by step, the game finishes a step's online work at load and at each
-  character's join, and a start guard refuses a newer world or one that
-  needs the tool; shipped alone with an empty `migrate` list. Complete on
-  2026-10-08, pushed on 2026-10-09. Next: the GUI check.
-- [x] **Round 44 "Inventory, map and quickbar"**
-  ([completion](docs/planning/round44-plan.md#completion-2026-10-09)),
-  version 0.44.0, **migrate** (the first declared step): Round A of the
-  [UI and crafting rework](docs/planning/ui-crafting-rework-plan.md) — one
-  window with fixed tabs, one inventory with bags in bags, Sort and the
-  potion belt, the Character tab's mode box, both talent trees on one
-  Talents & Skills tab with hotbar-only skills, Party & PvP on one page,
-  the pixel-art map with every settlement baked, the map window with the
-  quest log and quest targets on Z, the quickbar on E for mounts, boats,
-  potions and Return home; the offline step removes the retired mount
-  items and skills outside the hotbar. Complete on 2026-10-09; pushed by
-  the user on 2026-10-09 inside `2f918739` (with Round 45 up to EU). Next:
-  the GUI test.
-- [x] **Round 45 "Crafting rework"**
-  ([completion](docs/planning/round45-plan.md#completion-2026-10-09)),
-  version 0.45.0, **migrate** (the second declared step): Round B of the
-  [UI and crafting rework](docs/planning/ui-crafting-rework-plan.md) —
-  recipe lists per area instead of the 3×3 grid and the recipe books,
-  timed crafting jobs with an output area, gear made only by the
-  professions, the item level ladder 1/11/21/…, enchants and +N upgrades
-  as jobs, proximity stations, Cooking known from the start, finished
-  potions at the brewing stand, Grudge-Free Repairs on the former Cooking
-  trainers' places; the user's playtest fixes (the inventory window,
-  mounts, mobs, station sounds, the Claim Stone as a waypoint) and art
-  picks; the offline step removes mixtures, empties the craft grid and
-  keeps old gear at its item level. Complete on 2026-10-09; pushed on the
-  user's word after the round-end gates. Its fix round 0.45.1
-  ([fix round](docs/planning/round45-plan.md#0451-fix-round-2026-10-10))
-  is pushed and in production.
-- [x] **Round 46 "World generation and player feedback"**
-  ([completion](docs/planning/round46-plan.md#completion-2026-10-13)),
-  version 0.46.0, **map reset**: villages, outposts, camps, mines, clash
-  sites, rare dens and the PvP sites placed per seed by rules for each
-  kind; the revised ore, gem and coal table (gems one and two tiers
-  deeper); kill XP by level difference with the gray line at −7, gathering
-  XP cut, the repeatable quests removed; underground spawns from y −1 with
-  elites and the depth pulse (WP34) below −300; rage by weapon speed and
-  caster spells half from the weapon; coin bags instead of the sell-only
-  drops; plain dishes so every start zone cooks; repair only in towns; the
-  waiting point. Complete on 2026-10-13; never deployed on its own, it
-  ships with 0.47.0.
-- [x] **Round 47 "Trees, mining progression and crafting feedback"**
-  ([completion](docs/planning/round47-plan.md#completion-2026-10-14)),
-  version 0.47.0, **map reset** plus the step 0.47.0: trees from a seeded
-  generator in every world (shape nodes, roots, saplings, town groves,
-  greened towns and capitals); the swamp with its ground mix, pools,
-  plants and stilted trees; next-tier ores only in the lower half of the
-  band before, Iron behind a Bronze pick, Anthracite replacing Coal from
-  T3 and the only Steel source; quieter furnaces; crafts delivered into
-  the inventory and Basic recipes unlocked by held ingredients; NPCs
-  facing away from walls and first-entry zone XP; the map window's
-  marker layers. Complete on 2026-10-14; the GUI test of 0.46.0 and
-  0.47.0 together passed and the user pushed main at `6a8afb9f`
-  (2026-10-14).
-- [x] **Round 48 "Mail, plants and light, selling, smaller bags"**
-  ([completion](docs/planning/round48-plan.md#completion-2026-10-14)),
-  version 0.48.0, **map reset** plus the step 0.48.0: mailboxes on the
-  twelve waystone pads with letters, attachments and postage, messages to
-  the admin, announcements and the Admin Mail tab, the starter quest and
-  the welcome and level letters; plant light for crops, papyrus and
-  cactus, saplings by daylight, Melon and Mushroom crops, spores, the Salt
-  Pan and salt regrowing in the wild; selling almost everything (lots,
-  crafted goods at half value) with every old payout unchanged; cactus and
-  leaves as fuel; the daytime band beside the minimap; bags at half size,
-  with what no longer fits mailed at the next join. Complete on
-  2026-10-14 and pushed on the user's word (origin/main `f915d777`), with
-  its fix 0.48.1 (bag slots in rows of eight, `1ef11b5e`). Next: its GUI
-  test.
-- [x] **Round 49 "Mapgen performance (native first) and gameplay polish"**
-  ([completion](docs/planning/round49-plan.md#completion-2026-10-16)),
-  version 0.49.0, **map reset**, no migration step: ores, gems and cave
-  plants native in v7 at the table's rates, the fill ores by a flat
-  integer-hash pass, no ore exclusion under towns; no Lua for chunks
-  below every writer, JIT-compilable hot code, an integer placement hash
-  instead of SHA-256, per-column caches, the v7 flag `nomountains`; the
-  protection depth under towns 80; postage at Send, Sell tooltips, the
-  Claim Stone in any carried list, the starter kit on the hotbar, kill XP
-  −10 % per level below, the rare tier, path repair and ranged mobs
-  regaining sight, smaller blocks in the third-person hand, the
-  half-buried onion (WP48's single-thread part). Complete on 2026-10-16;
-  not pushed (pushed only on the user's word). Next: its GUI test.
-- [x] **Round 51 "Land zones and the sea"**
-  ([completion](docs/planning/round51-plan.md#completion-2026-10-19)),
-  version 0.51.0, **map reset**, no migration step: the larger sea (bounds
-  ±4190 × ±3740, the land unchanged), bays without specks, a 250–350-node
-  coastal belt, organic dragon channels, protected water 24+ off the
-  coast, coral, kelp and seagrass with regrowth, shipwrecks, five water
-  families by band with the swimmer reset, the sea by depth on a larger
-  map; calm 2 × 2 grounds, the swamp moss, clay bands, ice and pebble
-  patches, lianas, flowers, alpine plants, lichen, papyrus on the sand,
-  marram and the land kit (ruins, graveyards in the wild and the towns,
-  cairns, statues, logs, varied bones, driftwood). Complete on
-  2026-10-19 and pushed (`75ea1b4c`). Next: its GUI test.
-- [x] **Round 52 "Ambience and the class rework foundation"**
-  ([completion](docs/planning/round52-plan.md#completion-2026-10-20)),
-  version 0.52.0, **compatible**, no migration step: ambience beds by
-  biome group in three layers by the height relative to the terrain, real
-  caves told from dug tunnels, the underground sky relative to the
-  terrain, animal calls; round F of the class rework (the action clock,
-  transformations, readiness windows, area and group helpers, Mend on the
-  status system, the graph talents as an admin preview, the scrolling
-  skill row, the weapon overlay, the picked art and particle design).
-  Complete on 2026-10-20 and pushed (`67941764`, 0.52.1 `e4d5c9d5`); its
-  GUI test passed on 2026-10-20.
-- [x] **Round 53 "The new classes"**
-  ([completion](docs/planning/round53-plan.md#completion-2026-10-20)),
-  version 0.53.0, **migrate**, one step: round K of the class rework, the
-  four new class kits (two or three starters each, the rest from the
-  trees), the eight talent graphs live on the Talents page with one talent
-  reset, ground areas, cones, group heals and readiness windows, the
-  Scout's bow draw removed, HP factors 0.8/0.8/1.0/1.2, the picked skill
-  icons, effects and sounds. Complete on 2026-10-20. **0.53.1**
-  (compatible, the [fix round](docs/planning/round53-fix-plan.md#completion-2026-10-20)):
-  areas, cones and group heals without line of sight, the range line in
-  tooltips, the 40-node flight band and the no-fly minimap, the same
-  trinket twice, new Undead, Elf and Dwarf racials, skeleton bows,
-  right-click picking and 36 redrawn icons. Pushed together with 0.54.0
-  and 0.54.1 on 2026-10-21 (`abfb30ce`). Next: the user's playtest, then
-  a short balance fix round.
-- [x] **Round 54 "The armor redesign in the game"**
-  ([completion](docs/planning/round54-plan.md#completion-2026-10-21)),
-  version 0.54.0, **compatible**, no step: armour as low-poly boxes in the
-  player and NPC models with one atlas texture
-  ([armor format](docs/technical/armor-format.md)), the swing panels and
-  the weapon card, original art for the three lines picked by the user,
-  opaque pieces, the royal armour for kings, royal guards and Generals,
-  the Character tab with the held weapon, appearance version 2 and the web
-  `.glb`, leather T4 named Hardened. Complete on 2026-10-21; pushed with
-  0.53.x and 0.54.1 (`abfb30ce`, 2026-10-21).
-- [x] **Round 55 "The offhand look"**
-  ([completion](docs/planning/round55-plan.md#completion-2026-10-21)),
-  version 0.55.0, **compatible**, no step: the shield (three sizes by tier)
-  and the open spellbook on two new bones under the left arm, the Scout's
-  second weapon as a card on the back or the cloak, cloak wings
-  ([offhand format](docs/technical/offhand-format.md)), the picked shield
-  and spellbook art with one icon per tier, appearance version 3, manual
-  achievements with `/achievement grant|revoke` and the Supporter Cloak.
-  Complete on 2026-10-21; GUI-accepted and pushed with 0.55.1 the same day,
-  which runs in production. 0.55.1 (**compatible**) adds the admin debug command `/prof`
-  ([professions.md](docs/design/professions.md#16-the-prof-debug-command)).
-- [x] **Round 56 "Playtest fixes, clear enchants, the hood and the quest
-  survey"** ([completion](docs/planning/round56-plan.md#completion-2026-10-22)),
-  version 0.56.0, **compatible**, no step: the fixes from the playtest of
-  2026-10-21 (aggro by level, the hit alert on the hit mob, ranged mobs
-  closing in, land mounts falling and jumping like players, selling from
-  the inactive hotbar, faction-wide Quartermasters, mana food for every
-  class, floating items), `Prefix:`/`Suffix:` in enchant tooltips and the
-  station's "Replaces prefix: …", polygon parts in the armor pipeline with
-  the hood (its art picked and baked in 0.56.1) and the open chin strip, the town
-  buildings frozen byte-identically into 260 building templates with a
-  local editor ([format](docs/technical/building-template-format.md)), and
-  the quest overview page. Complete on 2026-10-22; GUI-accepted and pushed
-  with 0.56.1 on 2026-10-23.
-- [x] **Round 57 "The crafting window, the quest foundation and the new
-  start zones"** ([completion](docs/planning/round57-plan.md#completion-2026-10-23)),
-  version 0.57.0, **compatible**, no step: the crafting queue of five jobs,
-  layout C, recipe details pages with generated ingredient sources,
-  favourites and recursive Basic unlocks; the quest foundation (shared
-  quests with variants, choice rewards with fixed enchants, story marking,
-  completion texts, the free-play rules, no repeatable quests) and the six
-  start zones rebuilt on it (92 → 30 quests); flat alloys and wood grades,
-  every dye craftable, no vendor selling leather, cloth, ores or bars; bay
-  shore water under its zone's flight rule and the chin strip open
-  underneath. Complete on 2026-10-23; pushed on 2026-10-23 without its GUI
-  test, which runs together with Round 58's.
-- [x] **Round 58 "The Miner's Guild and the town fixes"**
-  ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
-  version 0.58.0, **map reset**, no step: one Miner's Guild per faction
-  (`grug_guild`), 20 new mining camps and the 16 war camps as mining camps
-  with a faction-only teleport lift to 148 protected rooms at the tier
-  depths, six enemy camps under construction, reputation (ranks 0–10, a
-  trade-in of raw mined goods, three cloaks), the camp vendor's rank-locked
-  page, Ore Sense and Treasure Hunt, the Miner's Remains, a guild house on
-  a district plot in every capital, 30 guild quests; the Round 56 town
-  fixes. Complete on 2026-10-24; not pushed, the joint GUI test of 0.57
-  to 0.61 open.
-- [x] **Round 59 "The story arc's first chapter and the quest rework of
-  levels 11–20"**
-  ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
-  version 0.59.0, **map reset**, no step: the six band zones of levels
-  11–20 rebuilt on the Round 57 system and flagged reworked (83 → 59
-  quests, kill objectives 60 % → 21 %, 8–10 → 3 mob names per zone, four
-  new use objects), chapter 1 of the story arc in the six capitals (four
-  story quests, the guild leaders' hubs, six town places), the town place
-  kind on settlement sockets, `E-free-follow-ups` per faction and the quest
-  log's variant zone. Complete on 2026-10-24; not pushed, the joint GUI
-  test of 0.57 to 0.61 open.
-- [x] **Round 60 "The story arc's second chapter and the quest rework of
-  levels 21–30"**
-  ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
-  version 0.60.0, **map reset**, no step: the eight band zones of levels
-  21–30 and the six capitals rebuilt on the Round 57 system and flagged
-  reworked (84 → 71 and 64 → 47 quests, 403 shipped, kill objectives per
-  band zone 50–62 % → 17–27 %, three town places and seven open quest
-  places, four new use objects), chapter 2 of the story arc (A3, A4, T2a,
-  T3), the named foremen Brodd Deeppeg and Rellis Shalemark, the Alchemy
-  quest at the first capital visit, the Alchemy herbs by level band and
-  two crop fixes, soulbound quest-only items with their own icons, the
-  seed fleet's quest-place check. Complete on 2026-10-24; not pushed, the
-  joint GUI test of 0.57 to 0.61 open.
-- [x] **The UI modernization**
-  ([plan](docs/planning/ui-modernization-plan.md)), version 0.60.1,
-  **compatible**, no step: the shared theme, navigation and form layouts of
-  every window. Merged on 2026-10-25; not pushed, its GUI test part of the
-  joint one of 0.57 to 0.61.
-- [x] **Round 61 "The story arc's third chapter and the quest rework of
-  levels 31–40"**
-  ([completion](docs/planning/round61-plan.md#completion-2026-10-25)),
-  version 0.61.0, **map reset**, no step: the six contested zones of levels
-  31–40 rebuilt on the Round 57 system and flagged reworked, the two
-  contested base files whole with their 15 main-line steps marked `story`
-  (60 → 50 band quests, 393 shipped, kill objectives 68 % → 25 %, five
-  shared quests on the hosts' line `border`, six new quest places and four
-  uses at the mining camps' loading grounds, four leaders retired), chapter
-  3 of the story arc (A5, A6, T4, T5), the named foremen Audra Wainholt and
-  Greda Stonehaul, one optional group quest per zone, the Runner's Packet
-  and the storm vessel with their picked art. Complete on 2026-10-25; not
-  pushed, the joint GUI test of 0.57 to 0.61 open.
-- [x] **The refreshed service dialogs**
-  ([dialog review](docs/planning/ui-dialog-review.md)), version 0.61.1,
-  **compatible**, no step: the Atlas 03 service windows (views 18–34) and
-  the typography audit. Merged on 2026-10-25; not pushed, its GUI test part
-  of the joint one of 0.57 to 0.61.1.
-- [x] **Round 62 "The front 41–60 and the main line's story layer"**
-  ([completion](docs/planning/round62-plan.md#completion-2026-10-25)),
-  version 0.62.0, **map reset**, no step: the ten `.front` files and the
-  four Battlegrounds files rebuilt on the Round 57 system and flagged
-  reworked, so all 48 quest files are (123 → 120 front quests, 390
-  shipped; the free front at 25 % / 18 % kill objectives, 4–6 mob names
-  per front zone and faction, ten shared front quests on `border`, eight
-  new quest places), the Round 36 main line as the story path (31 steps
-  `story` with completions, the opener at 41 free, The Throng's Chirr
-  after Huskell), departures to Dorrin, Thorga, Borin, Nalo, Eriath,
-  Vaska and Ossa, the Throng's island bounty pair, T5/T6 reward choices
-  with the reward budget per zone and level band; the Kezamba moot-house
-  door and the Lethariel mere shrines; bags of 8 / 12 / 16 / 20 slots.
-  Complete on 2026-10-25; not pushed, the joint GUI test of 0.57 to 0.62
-  open; the production deploy with one map reset follows.
-- [x] **Round 69 "Trash slot, respawn at home, camp sites, exact tooltips,
-  quest-drop markers"** ([plan](docs/planning/round69-plan.md)), version
-  0.69.0, **migrate**, no map reset: the game's first rewrite of a generated
-  composition inside its box
-  ([upgrade contract](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
-  Complete on 2026-11-04; GUI-accepted and pushed the same day.
-- [x] **Round 70 "Spawns, Stonewright, castles, start towns, death penalty"**
-  ([plan](docs/planning/round70-plan.md)), version 0.70.0, **map reset**, no
-  step: rare sources that exist in every world, a castle form in all six
-  capitals with civic radius 56, reworked start towns, wayposts at road
-  junctions, a Miner's Guild stone service with decorative blocks, a death
-  penalty that spares PvP deaths, Kings at level 70 and a new level malus.
-  Complete on 2026-11-07; not pushed, its GUI test open.
+The playable core and the world foundation are delivered: the game, its
+factions, races and four classes, the named-zone world with its starts and
+capitals, combat, mobs and dragons, items, professions and the economy,
+quests and the story to 60, housing, travel, PvP, sound and Expeditions.
+The [CHANGELOG](CHANGELOG.md) and the round plans' "Completion" sections
+record each delivery.
 
 ### Remaining work
 
 - [ ] **Deepen the playable game:** the
-  [next priorities](#next-priorities--deepening-the-playable-game) cover
-  classes and progression, atmosphere and resource distribution, crafting
-  variety and quest onboarding. Follow-up work is tracked in the
-  [BACKLOG](BACKLOG.md#player-experience-follow-up-2026-10-11).
-- [x] **Seed-dependent POI placement:** delivered in Round 46 (0.46.0):
-  POIs are placed per seed by rules for each kind instead of fixed
-  anchors, which also loads the seeds that failed before
-  ([world_zones.md §8.5](docs/design/world_zones.md#85-seed-dependent-poi-placement-round-46)).
-  Quest-bearing POIs with an underground part are later content; the
-  rows' underground reservation is the hook.
-- [x] **WP9 (V1):** the level-41–60 main questline and the finale,
-  delivered in Round 36 on top of Round 29's front quests and bounties.
-- Round 34's late fix: the ~1 % seed load failure is fixed (F3, rivers never
-  cover a POI core; a seed fleet guards world-generation changes). Round 33's to 36's other
-  open notes (sound balance, the music tab study, the main line's ledger
-  and decor notes, the main-menu background) are in the
-  [Round 33](BACKLOG.md#round-33-carry-overs),
-  [Round 34](BACKLOG.md#round-34-carry-overs),
-  [Round 35](BACKLOG.md#round-35-carry-overs),
-  [Round 36](BACKLOG.md#round-36-carry-overs),
-  [Round 37](BACKLOG.md#round-37-carry-overs),
-  [Round 38](BACKLOG.md#round-38-carry-overs),
-  [Round 39](BACKLOG.md#round-39-carry-overs),
-  [Round 40](BACKLOG.md#round-40-carry-overs),
-  [Round 41](BACKLOG.md#round-41-carry-overs),
-  [Round 42](BACKLOG.md#round-42-carry-overs),
-  [Round 43](BACKLOG.md#round-43-carry-overs),
-  [Round 44](BACKLOG.md#round-44-carry-overs),
-  [Round 45](BACKLOG.md#round-45-carry-overs),
-  [0.45.1](BACKLOG.md#0451-carry-overs),
-  [Round 46](BACKLOG.md#round-46-carry-overs),
-  [Round 47](BACKLOG.md#round-47-carry-overs),
-  [Round 48](BACKLOG.md#round-48-carry-overs),
-  [Round 49](BACKLOG.md#round-49-carry-overs),
-  [Round 51](BACKLOG.md#round-51-carry-overs),
-  [Round 52](BACKLOG.md#round-52-carry-overs),
-  [Round 53](BACKLOG.md#round-53-carry-overs),
-  [0.53.1](BACKLOG.md#0531-carry-overs),
-  [Round 54](BACKLOG.md#round-54-carry-overs),
-  [Round 55](BACKLOG.md#round-55-carry-overs),
-  [Round 56](BACKLOG.md#round-56-carry-overs),
-  [Round 57](BACKLOG.md#round-57-carry-overs),
-  [Round 58](BACKLOG.md#round-58-carry-overs),
-  [Round 59](BACKLOG.md#round-59-carry-overs),
-  [Round 60](BACKLOG.md#round-60-carry-overs),
-  [Round 61](BACKLOG.md#round-61-carry-overs) and
-  [Round 62](BACKLOG.md#round-62-carry-overs) carry-overs (Round 40: the
-  sounds left out of it, a later particle art order, the Charge arrival
-  hold to pick; Round 41: the bow's second cause; Round 42: theoretical
-  navigation notes only; Round 43: theoretical migration notes only;
-  Round 44: theoretical UI and step notes, the map icon overlaps for the
-  GUI test; Round 45: theoretical crafting, inventory, mount and step
-  notes; Round 46: depth pulse, spawn, placement, crafting and price
-  notes; Round 47: tree, swamp, mining, crafting and map window notes;
-  Round 48: mail, plant, price, HUD and step notes; Round 49: mapgen,
-  navigation, inventory and tooling notes; Round 51: sea, surface, plant,
-  kit, wreck, map and water-mob notes; Round 52: ambience notes and the
-  parked sounds; Round 53: the balance fix round, dead talent reads,
-  tool and fixture leftovers and the class GUI notes; 0.53.1: fruit
-  picking in towns for the user, picking, flight-overlay, trinket and
-  tool notes; Round 54: the off-hand card, contract z-fighting, clearance,
-  web version 1 and tool notes; Round 55: back cards for other classes,
-  NPC offhands, model, bake, achievement-command and tool notes; Round 56:
-  ranged-mob, mount, float and trade notes, the known template defects and
-  template-tool notes; Round 57: crafting queue, details, chain, quest,
-  start-zone, vendor, bay and tool notes; Round 58: the open GUI judgements
-  and the names to pick, room, consumable, lift, house, town-fix and
-  guild-quest notes; Round 59: the open GUI judgements, quest-system,
-  band, chapter, tool and doc notes, the questing share; Round 60: the
-  open GUI judgements, the mob-loot gaps of T2, the cooking gaps left,
-  quest, item, fleet, tool and doc notes; Round 61: the open GUI
-  judgements, Rattle's kept id, the Recovery Rest's fallback, the
-  Packet's second source, the group quests at 50 and tool notes; Round 62:
-  the open GUI judgements, the Carrier Clearing's fallback, the West Trench
-  Mouth label, Orrel's departure at 40, the template checker's edge-walk,
-  the stale generated tables and tool notes);
-  Round 36 settled
-  Priest healing, the Scout's set and spell rounding. The audit's design
-  questions and later fix packages:
-  [open questions](BACKLOG.md#audit-2026-10-open-questions),
-  [later packages](BACKLOG.md#audit-2026-10-later-fix-packages).
-- [x] **WP13:** the POI review (audit E2) done in Round 36 as a render page
-  with the user's verdicts instead of a walk, and the decor pass it asked
-  for; the reworked places are in the Round 36 GUI checklist.
-- [x] **WP34 depth pulse:** delivered in Round 46 (0.46.0) on the user's
-  design decision: flying servants below −300, the Riftwing below −1000
-  ([biomes_mobs.md §4.1](docs/design/biomes_mobs.md#41-the-depth-pulse-decided-2026-08-08-built-round-46)).
-  Renewable camp resources are removed; the T6 lava lakes stay planned.
-- [ ] **WP46 / WP48:** the fire/explosion guard is deferred until a fire or explosion source exists (expected with V2's Nether)
-  (nothing damages terrain today); WP48's single-thread mapgen work was
-  done in Round 49, several emerge threads wait for Luanti #9357.
-- Closed on 2026-09-29: WP11, WP14, WP21, WP22, WP23, WP27, WP29, WP30, WP31,
-  WP32 (delivered or merged), WP37 and WP49 (canceled). Held-torch moving light,
-  natural out-of-combat regeneration, rested XP, renewable ores, the dragon
-  hoard chest and `/unstuck` are removed from the design. Friendly-guard
-  healing stays deferred.
+  [next priorities](#next-priorities--deepening-the-playable-game).
+- [ ] **WP46 / WP48:** the fire/explosion guard is deferred until a fire or
+  explosion source exists (expected with V2's Nether; nothing damages
+  terrain today); several emerge threads for mapgen wait for Luanti #9357.
+- [ ] **Later world content:** quest-bearing POIs with an underground part
+  ([world_zones.md §8.5](docs/design/world_zones.md#85-seed-dependent-poi-placement-round-46)
+  names the hook); the T6 lava lakes ([world.md](docs/design/world.md)).
+- Smaller open items, the open design questions of the October 2026 audit
+  and the leftovers of each round are in the [BACKLOG](BACKLOG.md).
 
 ### Before the first public release
 
@@ -932,12 +233,14 @@ through migration steps.
 - [ ] Further coastal life and shore wildlife (seals and cold coasts, a sea
   turtle, underwater places for quests), without redefining the open sea or
   the dragon channels. Coral, kelp, seagrass, shipwrecks, fishing and five
-  water families by band shipped (Round 51).
+  water families by band have shipped.
 - [ ] **V2's main content update: the walkable Nether**, with its own mapgen,
   story line and mob cast. The Fire Dragon and the Nether reserve from the mob
   plan remain reserve content for that update.
 - [ ] WP42 bounded war-front encounters (scripted NPC battles, after V1).
-- [ ] Dungeons, regional apex encounters, reputation and player trading.
+- [ ] Player trading, later through an auction house (the user, 2026-11-16).
+  Dungeons shipped in a first version as Expeditions, reputation with the
+  Miner's Guild, apex encounters with the dragons and kings.
 
 ## Phase 3 — Polish
 
@@ -947,7 +250,7 @@ balance, atmosphere and quest onboarding are already part of those next
 passes, not postponed to this phase.
 
 - [ ] Original textures, sounds and animated models with complete provenance
-  (V1's sound pass, Round 34, uses licence-clean sources first).
+  (V1's sound uses licence-clean sources first).
 - [ ] Optional: a small weather system (sky, particles within the web
   budget, a rain bed); not V1 (Round 34 ruling 7,
   [BACKLOG](BACKLOG.md#weather-optional-user-2026-10-04)).
@@ -960,7 +263,7 @@ passes, not postponed to this phase.
 - Private housing islands, purchased mining-depth rights and private material
   sources.
 - An organization with a name, bank, owned land or any game effect.
-  Clans (Round 76, [clans.md](docs/design/clans.md)) stay anonymous and purely
+  Clans ([clans.md](docs/design/clans.md)) stay anonymous and purely
   social: roles, invitations and a clan chat only.
 - Instanced PvP battlegrounds/arenas and permanent war-front capture in the
   current scope.
@@ -968,3 +271,6 @@ passes, not postponed to this phase.
   owns.
 - Taming mounts; riding is a permanent purchase and summons an ephemeral
   owner-bound entity.
+- Removed from the design (2026-09-29): held-torch moving light, natural
+  out-of-combat regeneration, rested XP, renewable ores, the dragon hoard
+  chest and `/unstuck`. Friendly-guard healing stays deferred.

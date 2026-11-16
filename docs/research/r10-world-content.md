@@ -8,7 +8,7 @@ Status: production checkpoint `2bc6f33c`; corrected regression and bounded engin
 
 ## Authority and scope
 
-The accepted rules are [world_zones.md](../design/world_zones.md#round-10-cooking-wild-sources-field-soil-and-shallow-reefs)
+The accepted rules are [world_zones.md](../design/world_zones.md#cooking-wild-sources-and-field-soil)
 and [items_crafting.md](../design/items_crafting.md). The implementation preserves
 WORLD's cave-purpose boundary, current demand-driven resource sampler, capital
 geometry and existing protection. Farming remains usable on legal editable ground;

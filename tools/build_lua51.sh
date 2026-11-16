@@ -7,7 +7,7 @@
 # Why not LuaJIT: LuaJIT is a *superset* and silently accepts syntax the
 # fallback build rejects (`goto`), so it cannot verify our hard plain-5.1
 # requirement. This binary is exactly that fallback build's parser.
-# See docs/research/luanti-lua.md, "Verifying a change".
+# See docs/technical/luanti-lua.md, "Verifying a change".
 #
 # Usage: tools/build_lua51.sh        # writes tools/bin/{lua51,luac51}
 # Re-run after updating the luanti checkout; otherwise once per machine.

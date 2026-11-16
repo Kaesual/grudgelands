@@ -317,7 +317,10 @@ only when digging and placing; §6.3 covers the rest.
 - An expired claim renews under the normal rules, so an abandoned home
   overgrows (ruling 19; `farming.md`).
 - No hostile mob spawns inside an active claim; mobs may still walk in.
-  Expired claims spawn normally (ruling 24).
+  Expired claims spawn normally (ruling 24). Claims that cover every route
+  point of one named rare suppress its spawn (`grug_mobs/rares.lua` picks a
+  route point again each pass); accepted by the user (WP audit E12,
+  2026-09-29).
 - An idle, free-roaming aggressive mob walks away from an active claim, as it
   does from roads and villages (Round 69; the stone is also the respawn point
   now, §8): a tendency, not a wall. A mob in a fight is not pushed, a draft or

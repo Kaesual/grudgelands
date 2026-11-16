@@ -1,58 +1,56 @@
 # Research and historical evidence
 
-This directory preserves reference research, decision records, completed round
-plans, implementation reports, independent reviews and immutable test evidence.
-**It is not the current game specification or the current work queue.**
+Research, decision records, completed round reports, reviews and test
+evidence. **It is not the current specification or the work queue:** read
+[the documentation guide](../README.md), [design](../design/README.md),
+[status](../STATUS.md) and [BACKLOG](../../BACKLOG.md) first. A "must" in a
+record here describes that record's scope and date; it does not authorize
+restoring removed systems, migrations or old test campaigns.
 
-Use [the documentation guide](../README.md), [design](../design/README.md),
-[status](../STATUS.md) and [BACKLOG](../../BACKLOG.md) first. Historical imperatives
-such as “must implement” describe that record's scope and date; they do not
-authorize restoring removed systems, migrations or old test campaigns.
+## Still in use
 
-## Useful technical references
+- **Read by code or tools; do not move or edit:** the R6 documents that
+  `grug_mapgen/wp40/r6_content.lua` and `r7_r6_manifest.lua` name as frozen
+  digest keys (`wp40-simple-map-r6-contract.md`, `-decisions.md`, the five
+  R6 content TSVs, `wp43_wp40_handoff.md`; `wp40-simple-map-r6-shore-bed.tsv`
+  belongs to the same set); `r10-visuals/`, `round24-art/` and `assets/`
+  (art tools and the `LICENSE-media.md` provenance); [licensing](licensing.md)
+  (licence constraints, cited by CREDITS and README).
+- **Cited as authority by live docs or code comments** (indexed in
+  [docs/technical](../technical/README.md)): `wp40-simple-map-r6-contract.md`,
+  `wp40-completion.md`, `wp6_spawn_budget.md`, `perf-review-2026-10.md`,
+  `wp13-npc-sockets-contract.md`, `wp13-character-visuals-contract.md`,
+  `hud-bars.md`, `mob-pressure.md`, `mapgen-chunk-profile-2026-10.md`.
+- **Engine and reference research:** [engine API](luanti_engine_api.md),
+  [mobs_redo](mobs_redo.md), [VoxeLibre/Minetest Game](voxelibre_minetest_game.md),
+  [Lord of the Test](lord_of_the_test.md); verify against the pinned source
+  before a new engine claim. Active Lua rules are in
+  [luanti-lua.md](../technical/luanti-lua.md).
+- **Recent studies** (proposals until the user decides; open items live in
+  BACKLOG): [performance review R32](perf-review-2026-10-r32.md),
+  [sound research](sound-research-2026-10.md),
+  [items and professions analysis](items-professions-analysis-2026-10.md).
 
-- [Lua and engine constraints](../technical/luanti-lua.md): active technical
-  requirements (moved to `docs/technical/` on 2026-10-05).
-- [License compatibility research](licensing.md): retained provenance and constraints.
-- [Engine API research](luanti_engine_api.md), [mobs_redo](mobs_redo.md),
-  [VoxeLibre/Minetest Game](voxelibre_minetest_game.md),
-  [Lord of the Test](lord_of_the_test.md): research tied to reference sources;
-  verify against the pinned source when making a new engine claim.
-- [Reference project registry](../reference_projects.md): pins, purposes and licenses.
-- [Module implementation guide](../technical/module-guide.md): task-specific seams.
+## History
 
-## Recent studies
+Everything else (`round*`, `r9-*`, `r10-*`, `wp*`, `pregen-*`, `playtest*`,
+completion, review and evidence folders) is the record of single deliveries.
+Paths stay stable because plans, the archive and tools cite them. Before
+acting on an old requirement, check its status in BACKLOG and the topic
+design; older WP40 samplers and source rosters are not current.
 
-Read-only reviews that feed planning; their findings are proposals until
-the user decides, and their open items are tracked in BACKLOG.
+## Archive
 
-- [Performance review, Round 29](perf-review-2026-10.md): 22 findings,
-  probes and method; it became Round 30.
-- [Performance review, Round 32](perf-review-2026-10-r32.md): the October
-  baselines re-measured, 50 and 100 stand-ins, findings R1–R13 (R1–R3
-  fixed in Round 32 lane F4).
-- [Sound research](sound-research-2026-10.md): today's sounds, the silent
-  events and their hooks, licence-clean sources, calm music, an effort
-  estimate for the V1 sound lanes.
-- [Items and professions analysis](items-professions-analysis-2026-10.md):
-  the loot, vendor, crafting and money loop per tier, dead ends, options 1–5
-  and 16 questions for a design session.
-- [Mapgen chunk profile](mapgen-chunk-profile-2026-10.md): the R7
-  callback's Lua time per stage for nine chunks from the surface to -1072
-  (P8 ores and gems are 84–90 % underground), throughput per chunk type and
-  ranked WP48 levers.
+On 2026-11-16 (documentation cleanup, step 8) about 155 MB of evidence that
+no code, tool or live document reads left the working tree for
+`~/projects/grudgelands-orchestration/archive/docs-research/` (same relative
+layout; git history keeps every file):
 
-## Plans and evidence
+- 28 `wp40-*.tsv` artifacts, ledgers and receipts (all but the six small R6
+  content files above), among them the 93 MB `wp40-simple-map-r6-artifact.tsv`;
+- the twelve `wp40-*-evidence/` folders (855 files);
+- `round23-tree-line/`, `round23-capital-walls/` and the renders of
+  `round24-underground-fill/` (its receipt README stays here).
 
-`round*`, `r10-*`, completion/review files and evidence subdirectories retain the
-history of individual deliveries. Old task cards and engineering briefs may
-contain useful open requirements, but their current status and dependencies
-must be checked in BACKLOG and the topic design before execution. In particular,
-WP37 density tuning requires reconciliation; older WP40 samplers and source
-rosters must not be restored or presented as current certification.
-
-Paths remain stable where tools, license ledgers and external links cite them.
-Archival status does not imply every recorded requirement is canceled. Open
-requirements are tracked separately; uncertain ones belong in the consolidation
-findings. The [baseline inventory](../maintenance/inventory-baseline.tsv) records
-provisional roles and explicitly distinguishes structural from topic review.
+Links from the records here into that material name the archive path in
+plain text.

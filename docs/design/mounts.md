@@ -1,8 +1,6 @@
 # Mounts — Riding, Speed Tiers & No-Mount Zones
 
-Decided 2026-08-07; revised 2026-08-11 for open-world housing and the authored
-front, 2026-09-18 for the Round-9 entity, border and safety rules, and
-2026-09-20 for capital trainers and mounted usability.
+Decided 2026-08-07 (last structural revision 2026-09-20); implemented.
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
@@ -427,7 +425,8 @@ Mounts run **6.4–12 nodes/s** and could otherwise bypass ordinary chase danger
 indefinitely. Damage therefore dismounts a rider; mounted attacks remain blocked.
 
 The same pillar is why the **Swiftness Draught** is capped where it is:
-`items_crafting.md` §3.6 gives it **+10 % for 5 s** and §10 P4 states the
+`items_crafting.md` §3.6 gives it **+10 % for 5 s** and the archived
+[decision P4](../archive/design/items-history.md#101-2026-08-06) states the
 arithmetic outright — 4.0 × 1.10 = 4.4 < 4.6, so even the alchemist's brief
 sprint keeps mobs faster.
 A mount breaks that ceiling permanently and by design; **the dismount is

@@ -37,11 +37,11 @@ starts from; it holds no plan and decides nothing. The deploy round's coordinato
   record in `menu/LICENSE-media.md`). Checks with judgement, not gates: a native start, generation and restart of the
   candidate as deep as its changes warrant; an **optional** PUC Lua 5.1 crash smoke test; one spot check of resource
   supply and regional access on a few seeds.
-- **Names nobody picked yet** (since Round 58, [BACKLOG](../../BACKLOG.md#round-58-carry-overs)): the three cloaks
+- **Names nobody picked yet** (since Round 58, [BACKLOG](round58-plan.md#carry-overs)): the three cloaks
   Lamp Badge Workcloth, Lamp and Pick Workcloth and Lamplight Mantle, and the achievement "Miner's Guild" I–III with
   its line.
-- **Server operations** (since Round 32, [BACKLOG](../../BACKLOG.md#round-32-carry-overs), R4 and R5): media through
+- **Server operations** (since Round 32, [BACKLOG](round32-plan.md#carry-overs), R4 and R5): media through
   `remote_media` (about 13.8 MB per first join, measured then); at least 4 GB of RAM and swap for the server (2.9–3.3
   GB after the first mapgen, measured then).
 - **`check_upgrade.py`** accepts a new entry below the pushed version together with a version bump
-  ([BACKLOG](../../BACKLOG.md#round-41-carry-overs); the later rule: a new entry must exceed the pushed version).
+  ([BACKLOG](round41-plan.md#carry-overs); the later rule: a new entry must exceed the pushed version).
