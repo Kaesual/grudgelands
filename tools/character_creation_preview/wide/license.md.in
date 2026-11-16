@@ -1,0 +1,43 @@
+# Website media licences
+
+## Wide character creation backdrops — rendered composites
+
+The six 2560 × 1440 PNGs below were rendered on 2026-11-16 from the game's
+existing blocks, plant textures, meshes and building templates. No external
+scene image or generated raster artwork was used. The authored arrangement
+and additional project contribution are CC BY-SA 3.0; this does not relicense
+incorporated components. Those retain their original licenses and notices.
+Author of the arrangement and lateral extension: Grudgelands contributors.
+
+These are browser renders, using the same material sources and the licence
+notice of the [game backdrops](../../../mods/PLAYER/grug_classes/LICENSE-media.md#character-creation-backdrops--rendered-composites).
+Editable base scenes and tree placements:
+`tools/character_creation_preview/scenes/<race>.json`; separate wide layers:
+`tools/character_creation_preview/scenes/wide/<race>.json`.
+The tree shapes come from the shipped procedural generator. Source assembly:
+`tools/character_creation_preview/scenery.py` and `wide/build.py`; game camera
+calibration: `native.py`; renderer: `tools/building_templates/viewer/renderer.js`;
+capture: `tools/character_creation_preview/render-scenes.mjs` and `wide/render.py`.
+All source paths are relative to the repository root, or to
+`tools/character_creation_preview/` where abbreviated.
+
+The texture/mesh attributions and original source licenses remain in
+`mods/BASE/default/license.txt`, `mods/BASE/default/LICENSE-media.md`, and the
+`LICENSE-media.md` files of `mods/ITEMS/grug_decor`, `grug_nodes`, `grug_trees`,
+`grug_gathering`, and `mods/MAPGEN/grug_mapgen`. In particular, the decor ledger
+includes CC BY-SA 3.0, CC BY-SA 2.0 DE, CC0 and WTFPL textures, and the GPLv3
+barrel/tub meshes. Their editable source meshes and notices remain alongside
+the assets; the rendered composite is not offered as wholly CC0 or solely
+under the license of the new arrangement. Upstream source provenance is also
+recorded in [VENDOR.md](../../../VENDOR.md).
+
+Rebuild instructions, camera/input/output receipts and projected figure anchors:
+[wide/README.md](../../character_creation_preview/wide/README.md) and
+`tools/character_creation_preview/wide/renders/<race>.json`.
+Each SHA-256 below equals the `output` hash in that receipt.
+
+| Local file | SHA-256 |
+|---|---|
+__HASH_ROWS__
+
+---

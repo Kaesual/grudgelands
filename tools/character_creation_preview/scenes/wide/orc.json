@@ -1,0 +1,96 @@
+{
+  "camera": {
+    "eye": [
+      0.4967734930564984,
+      2.5,
+      -13.0
+    ],
+    "target": [
+      0.4967734930564984,
+      1.7712061292275552,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "terrain": {
+    "x_min": -76,
+    "x_max": 76,
+    "z_min": -22,
+    "z_max": 82
+  },
+  "description": "Sparse acacia pairs and single ridge trees continue the dry landscape at both sides, leaving broad gaps of open ground.",
+  "trees": [
+    {
+      "species": "acacia",
+      "seed": 80505,
+      "at": [
+        -34,
+        0,
+        28
+      ]
+    },
+    {
+      "species": "acacia",
+      "seed": 80506,
+      "at": [
+        -43,
+        0,
+        40
+      ]
+    },
+    {
+      "species": "acacia",
+      "seed": 80503,
+      "at": [
+        -47,
+        0,
+        57
+      ]
+    },
+    {
+      "species": "acacia",
+      "seed": 80512,
+      "at": [
+        -61,
+        0,
+        67
+      ]
+    },
+    {
+      "species": "acacia",
+      "seed": 80501,
+      "at": [
+        34,
+        0,
+        36
+      ]
+    },
+    {
+      "species": "acacia",
+      "seed": 80510,
+      "at": [
+        47,
+        0,
+        46
+      ]
+    },
+    {
+      "species": "acacia",
+      "seed": 80515,
+      "at": [
+        48,
+        0,
+        62
+      ]
+    },
+    {
+      "species": "acacia",
+      "seed": 80504,
+      "at": [
+        62,
+        0,
+        69
+      ]
+    }
+  ]
+}

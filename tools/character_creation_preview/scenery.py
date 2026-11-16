@@ -200,7 +200,13 @@ def make_scene(spec, palettes, registry, trees):
     return cells, templates_used
 
 
-def main(output=HERE):
+def main(output=HERE, variants=None, extra_sources=()):
+    """Build the original scenes, or explicitly requested offline variants.
+
+    A variant callback receives the completed base spec/cells and returns
+    {name: (spec, cells)}. Default callers retain the original scene geometry.
+    Additional builder sources join the render digest for cache invalidation.
+    """
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     registry_file = ROOT / "tools/building_templates/nodes.json"
@@ -227,9 +233,11 @@ def main(output=HERE):
         assert spec["portrait"]["stature"] == statures[spec["race"]], spec["race"]
         assert spec["portrait"]["units_per_pixel"] == .0525
         cells, template_hashes = make_scene(spec, palettes, reg["nodes"], trees)
-        raw = [(*pos, *node) for pos, node in sorted(cells.items())]
-        scenes[spec["race"]] = V.pack_cells({"spec": spec}, raw, indices, names)
-        receipts[spec["race"]] = {"templates": template_hashes, "cells": len(cells), "recipe": digest(spec)}
+        versions = variants(spec, cells) if variants else {spec["race"]: (spec, cells)}
+        for key, (variant_spec, variant_cells) in versions.items():
+            raw = [(*pos, *node) for pos, node in sorted(variant_cells.items())]
+            scenes[key] = V.pack_cells({"spec": variant_spec}, raw, indices, names)
+            receipts[key] = {"templates": template_hashes, "cells": len(variant_cells), "recipe": digest(variant_spec)}
     types, report = V.build_types(names, reg["nodes"], reg.get("aliases", {}), textures, meshes)
     assert not report["skipped"] and not report["missing_mesh"] and not textures.missing, (report, textures.missing)
     body = json.loads((ROOT / "tools/r54_armor/data/catalog.json").read_text())["body"]
@@ -246,6 +254,9 @@ def main(output=HERE):
                                             ROOT / 'mods/MAPGEN/grug_mapgen/wp40/tree_templates.lua')},
               "capture": hashlib.sha256((HERE / "render-scenes.mjs").read_bytes()).hexdigest(),
               "portrait": hashlib.sha256((HERE / "portrait.js").read_bytes()).hexdigest(), "body": body}
+    if extra_sources:
+        shared["extra_sources"] = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+                                   for path in extra_sources}
     for race, scene in scenes.items():
         scene["digest"] = digest({"scene": scene, "shared": shared})
         receipts[race]["render_input"] = scene["digest"]

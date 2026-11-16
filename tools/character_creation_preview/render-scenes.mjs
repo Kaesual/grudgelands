@@ -11,19 +11,21 @@ const args=process.argv.slice(2),option=name=>{const n=args.indexOf(name);return
 const folder=option('--directory')||path.dirname(fileURLToPath(import.meta.url));
 const chrome=option('--chrome')||process.env.CHROME_BIN||'/home/jan/.cache/puppeteer/chrome/linux-151.0.7922.71/chrome-linux64/chrome';
 const width=Number(option('--width')||1200),height=Number(option('--height')||1400),only=option('--race');
+const withFigure=args.includes('--figure-anchor'),checkOnly=args.includes('--check');
 if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1)throw Error('Invalid capture dimensions');
 const html=await fs.readFile(path.join(folder,'scenes.html'),'utf8');
 const payload=JSON.parse(html.match(/<script id="payload" type="application\/json">([\s\S]*?)<\/script>/)[1]);
 const races=only?[only]:Object.keys(payload.scenes);
 for(const race of races)if(!payload.scenes[race])throw Error('Unknown race '+race);
 const hash=b=>createHash('sha256').update(b).digest('hex');
-const output=path.join(folder,'renders');await fs.mkdir(output,{recursive:true});
+const output=path.join(folder,'renders');if(!checkOnly)await fs.mkdir(output,{recursive:true});
 const pending=[];
 for(const race of races){
  let fresh=false;
- try{const receipt=JSON.parse(await fs.readFile(path.join(output,race+'.json'),'utf8'));const png=await fs.readFile(path.join(output,race+'.png'));fresh=receipt.input===payload.scenes[race].digest&&receipt.width===width&&receipt.height===height&&receipt.output===hash(png)}catch{}
+ try{const receipt=JSON.parse(await fs.readFile(path.join(output,race+'.json'),'utf8'));const png=await fs.readFile(path.join(output,race+'.png'));fresh=receipt.input===payload.scenes[race].digest&&receipt.width===width&&receipt.height===height&&receipt.output===hash(png)&&(!withFigure||['x','y','node'].every(k=>Number.isFinite(receipt.figure?.[k])))}catch{}
  if(fresh)console.log(race+': saved render is current');else pending.push(race);
 }
+if(checkOnly){if(pending.length){console.error('Stale or missing renders: '+pending.join(', '));process.exit(1)}process.exit(0)}
 if(!pending.length)process.exit(0);
 class CDP{
  constructor(url){this.ws=new WebSocket(url);this.next=0;this.calls=new Map();this.errors=[];this.open=new Promise((resolve,reject)=>{this.ws.addEventListener('open',resolve,{once:true});const fail=()=>{const error=Error('Browser connection closed');reject(error);for(const call of this.calls.values())call.reject(error);this.calls.clear()};this.ws.addEventListener('error',fail);this.ws.addEventListener('close',fail)});this.ws.addEventListener('message',e=>{const m=JSON.parse(e.data);if(m.id){const call=this.calls.get(m.id);if(!call)return;this.calls.delete(m.id);if(m.error)call.reject(Error(JSON.stringify(m.error)));else call.resolve(m.result)}else if(m.method==='Runtime.exceptionThrown')this.errors.push(m.params.exceptionDetails)});}
@@ -33,7 +35,7 @@ class CDP{
 let profile,browser,control,page;
 try{
  profile=await fs.mkdtemp(path.join(os.tmpdir(),'grug-creation-scenes-'));
- browser=spawn(chrome,['--headless=new','--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-gpu-sandbox','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','ignore','pipe']});
+ browser=spawn(chrome,['--headless=new','--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-gpu-sandbox','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{detached:true,env:{...process.env,XDG_CONFIG_HOME:profile,XDG_CACHE_HOME:profile,XDG_DATA_HOME:profile},stdio:['ignore','ignore','pipe']});
  let log='';
  const wsURL=await new Promise((resolve,reject)=>{browser.stderr.on('data',data=>{log+=data;const m=log.match(/DevTools listening on (ws:\/\/[^\s]+)/);if(m)resolve(m[1])});browser.once('error',reject);browser.once('exit',code=>reject(Error('Browser exited '+code+': '+log.slice(-2000))))});
  control=new CDP(wsURL);
@@ -46,19 +48,30 @@ try{
  for(const race of pending){
   console.log(race+': building shared-renderer geometry');
   const receipt=await page.evaluate(`selectScene(${JSON.stringify(race)},${width},${height})`);
+  const figure=withFigure?await page.evaluate(`(()=>{
+   view.camera.updateMatrixWorld();
+   const [x,y,z]=D.scenes[${JSON.stringify(race)}].spec.portrait.feet;
+   const feet=new THREE.Vector3(x,y,-z).project(view.camera);
+   const top=new THREE.Vector3(x,y+1,-z).project(view.camera);
+   const round=v=>+v.toFixed(6);
+   return {x:round((feet.x+1)/2),y:round((1-feet.y)/2),node:round((top.y-feet.y)/2)};
+  })()`):null;
   const encoded=await page.evaluate('view.step(0);view.renderer.domElement.toDataURL("image/png").split(",")[1]');
   const png=Buffer.from(encoded,'base64');
   if(page.errors.length)throw Error(JSON.stringify(page.errors));
   await fs.writeFile(path.join(output,race+'.png'),png);
-  await fs.writeFile(path.join(output,race+'.json'),JSON.stringify({input:payload.scenes[race].digest,output:hash(png),width,height,camera:receipt.camera,cells:receipt.cells,renderer:'tools/building_templates/viewer/renderer.js',browser:await page.evaluate('navigator.userAgent')},null,2)+'\n');
+  await fs.writeFile(path.join(output,race+'.json'),JSON.stringify({input:payload.scenes[race].digest,output:hash(png),width,height,camera:{...receipt.camera,fov:payload.scenes[race].spec.camera.fov},...(figure?{figure}:{}),cells:receipt.cells,renderer:'tools/building_templates/viewer/renderer.js',browser:await page.evaluate('navigator.userAgent')},null,2)+'\n');
   console.log(race+': saved '+png.length+' bytes');
  }
 }finally{
  if(page)page.ws.close();
- if(browser?.pid&&browser.exitCode===null&&browser.signalCode===null){
-  const closed=new Promise(resolve=>browser.once('exit',resolve));
-  if(control)await control.send('Browser.close').catch(()=>{});
-  if(browser.exitCode===null&&browser.signalCode===null)browser.kill('SIGTERM');
+ if(browser?.pid){
+  // Chromium 156 can retain GPU children after completing a multi-scene
+  // capture. Bound shutdown only, never rendering, and reap our own group.
+  const closed=browser.exitCode!==null||browser.signalCode!==null?Promise.resolve():new Promise(resolve=>browser.once('exit',resolve));
+  if(control)control.send('Browser.close').catch(()=>{});
+  let timer;await Promise.race([closed,new Promise(resolve=>{timer=setTimeout(resolve,5000)})]);clearTimeout(timer);
+  try{process.kill(-browser.pid,'SIGKILL')}catch(error){if(error.code!=='ESRCH')throw error}
   await closed;
  }
  control?.ws.close();

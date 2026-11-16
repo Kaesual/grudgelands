@@ -15,6 +15,15 @@
 --   F  factions, races and classes: unique ids, a name each, faction colours
 --      as #rrggbb, every race of a listed faction with its stature as a
 --      uniform visual size, every class icon on disk;
+--   K  character creation (Round 80.1): the `creation` key has exactly its
+--      fields; every faction, race and class id of factions[], races[] and
+--      classes[] has its entry and nothing else does; every picture exists at
+--      its path with the stated PNG size (the wide ones 2560 x 1440), its
+--      licence file exists and names it, and it is not among the texture
+--      files; each figure anchor is fractions; the descriptions are the
+--      registered ones; the look per race is a bare character's stored
+--      appearance (the race, option 1 everywhere, nothing worn, its body the
+--      race's bare_body) and passes the closed grammar and both byte caps;
 --   M  the model: the .b3d (and the .glb of tools/web_data/model) on disk,
 --      the frame rate and the stand and walk ranges;
 --   W  the hand attachment: every race x every pose, numbers only;
@@ -148,6 +157,205 @@ for _, class in ipairs(data.classes) do
 end
 for id in pairs(grug_classes.registered_classes) do
 	check(class_ids[id] == true, "F registered class " .. id .. " exported")
+end
+
+-- K. Character creation (Round 80.1, README "Character creation").
+local function keys_are(value, expected, label)
+	local want, ok = {}, type(value) == "table"
+	for _, key in ipairs(expected) do
+		want[key] = true
+		ok = ok and value[key] ~= nil
+	end
+	for key in pairs(ok and value or {}) do ok = ok and want[key] == true end
+	return check(ok, label .. " has exactly " .. table.concat(expected, ", "))
+end
+
+local function png_size(path)
+	local handle = io.open(ROOT .. "/" .. path, "rb")
+	local head = handle and handle:read(24) or ""
+	if handle then handle:close() end
+	if #head ~= 24 or head:sub(1, 8) ~= "\137PNG\r\n\26\n" then return nil end
+	local function u32(at)
+		local a, b, c, d = head:byte(at, at + 3)
+		return ((a * 256 + b) * 256 + c) * 256 + d
+	end
+	return u32(17), u32(21)
+end
+
+local texture_paths = {}
+for _, entry in ipairs(data.texture_files) do
+	if entry.path then texture_paths[entry.path] = true end
+end
+
+-- A picture: its path on disk with the stated size, a licence file that
+-- exists and names it, and outside the texture files.
+local function picture_ok(entry, label, extra, size)
+	local fields = {"path", "width", "height", "license"}
+	for _, key in ipairs(extra or {}) do fields[#fields + 1] = key end
+	if not keys_are(entry, fields, label) then return end
+	local width, height = png_size(entry.path)
+	check(width ~= nil and width == entry.width and height == entry.height,
+		label .. " " .. tostring(entry.path) .. " is a PNG of the stated size")
+	if size then
+		check(entry.width == size[1] and entry.height == size[2],
+			label .. " is " .. size[1] .. " x " .. size[2])
+	end
+	local handle = type(entry.license) == "string" and
+		entry.license:match("LICENSE%-media%.md$") and io.open(ROOT .. "/" .. entry.license, "rb")
+	local text = handle and handle:read("*a") or ""
+	if handle then handle:close() end
+	local name = tostring(entry.path):match("[^/]+$") or ""
+	check(handle and text:find(name, 1, true) ~= nil,
+		label .. " licence file " .. tostring(entry.license) .. " exists and names " .. name)
+	check(not texture_paths[entry.path] and not texture_names[name],
+		label .. " is not among the texture files")
+end
+
+-- The closed texture grammar (module guide, "Player meta read by external
+-- tools"), read from the export: a stored texture string parses and names
+-- only texture files.
+local function grammar_ok(text)
+	local g, pos = data.texture_grammar, 1
+	local chain
+	local function part(depth, first)
+		local char = text:sub(pos, pos)
+		if char == "(" then
+			if depth >= g.max_depth then return false end
+			pos = pos + 1
+			if not chain(depth + 1) or text:sub(pos, pos) ~= ")" then return false end
+			pos = pos + 1
+			return true
+		elseif char == "[" then
+			local name = text:match("^[a-z]+", pos + 1)
+			local kinds = not first and name and g.modifiers[name]
+			if not kinds then return false end
+			pos = pos + 1 + #name
+			for _, kind in ipairs(kinds) do
+				local arg = text:match("^:([^:%^%(%)%[]*)", pos)
+				if not arg or not arg:match(g.args[kind].pattern) then return false end
+				pos = pos + 1 + #arg
+			end
+			return true
+		end
+		local file = text:match("^[^:%^%(%)%[]+", pos)
+		if not file or not file:match(g.args.file.pattern) or
+				#file > g.args.file.max_length or not texture_names[file] then
+			return false
+		end
+		pos = pos + #file
+		return true
+	end
+	function chain(depth)
+		if not part(depth, true) then return false end
+		while text:sub(pos, pos) == "^" do
+			pos = pos + 1
+			if not part(depth, false) then return false end
+		end
+		return true
+	end
+	return chain(0) and pos == #text + 1
+end
+check(not grammar_ok("[colorize:#ffffff:1") and not grammar_ok("nofile.png") and
+	not grammar_ok("((((grug_visuals_skin_mask.png))))"),
+	"K the grammar check rejects a leading modifier, an unknown file and depth 4")
+
+-- The look per race: the stored appearance's shape and values for a bare
+-- character of that race, its texture strings under the grammar and caps.
+local function appearance_ok(value, race, label)
+	if not keys_are(value, {"v", "race", "look", "cloak", "visual_size", "textures",
+			"slots"}, label) then
+		return
+	end
+	check(value.v == data.appearance_version, label .. " v is appearance_version")
+	check(value.race == race.id and value.cloak == "none" and next(value.slots) == nil,
+		label .. " is the race, no cloak, nothing worn")
+	keys_are(value.look, grug_visuals.LOOK_CATEGORIES, label .. " look")
+	local ones = true
+	for _, category in ipairs(grug_visuals.LOOK_CATEGORIES) do
+		ones = ones and value.look[category] == 1
+	end
+	check(ones, label .. " look is option 1 in every category")
+	local size, want = value.visual_size, race.visual_size
+	check(size.x == want.x and size.y == want.y and size.z == want.z,
+		label .. " visual_size is the race's")
+	if not keys_are(value.textures, {"body", "cloak", "armor", "offhand", "wings"},
+			label .. " textures") then
+		return
+	end
+	check(value.textures.body == race.bare_body, label .. " body is the race's bare_body")
+	check(value.textures.cloak == "none" and value.textures.armor == "none" and
+		value.textures.offhand == "none" and value.textures.wings == "none",
+		label .. " cloak, armor, offhand and wings are none")
+	check(#value.textures.body <= data.appearance_limits.texture_max_bytes and
+		grammar_ok(value.textures.body), label .. " body parses under the grammar")
+	check(#grug_visuals.appearance_json(value) <= data.appearance_limits.json_max_bytes,
+		label .. " fits json_max_bytes as the game stores it")
+end
+
+local creation = data.creation
+if keys_are(creation, {"camera", "intro", "crest", "factions", "races", "classes"},
+		"K creation") then
+	local camera = creation.camera
+	if keys_are(camera, {"height_fraction", "aspect", "pitch", "scene_aspect", "fov"},
+			"K camera") then
+		for key, value in pairs(camera) do
+			check(type(value) == "number" and value > 0, "K camera." .. key .. " positive")
+		end
+	end
+	local WIDE = {2560, 1440}
+	picture_ok(creation.intro, "K intro", {"wide"})
+	picture_ok(creation.intro.wide, "K intro wide", nil, WIDE)
+	picture_ok(creation.crest, "K crest")
+
+	local seen = {}
+	for _, faction in ipairs(data.factions) do
+		seen[faction.id] = true
+		local entry = creation.factions[faction.id]
+		if keys_are(entry, {"banner"}, "K faction " .. faction.id) then
+			picture_ok(entry.banner, "K faction " .. faction.id .. " banner")
+		end
+	end
+	for id in pairs(creation.factions) do
+		check(seen[id], "K creation faction " .. id .. " is a listed faction")
+	end
+
+	seen = {}
+	for _, race in ipairs(data.races) do
+		seen[race.id] = true
+		local label = "K race " .. race.id
+		local entry = creation.races[race.id]
+		if keys_are(entry, {"backdrop", "icon", "description", "appearance"}, label) then
+			picture_ok(entry.backdrop, label .. " backdrop", {"wide"})
+			local wide = entry.backdrop.wide
+			picture_ok(wide, label .. " wide backdrop", {"figure"}, WIDE)
+			if keys_are(wide and wide.figure, {"x", "y", "node"}, label .. " figure") then
+				local f = wide.figure
+				check(f.x > 0 and f.x < 1 and f.y > 0 and f.y < 1 and f.node > 0 and f.node < 1,
+					label .. " figure x, y and node are fractions")
+			end
+			picture_ok(entry.icon, label .. " icon")
+			check(entry.description == grug_classes.registered_races[race.id].description,
+				label .. " description is the registered one")
+			appearance_ok(entry.appearance, race, label .. " appearance")
+		end
+	end
+	for id in pairs(creation.races) do
+		check(seen[id], "K creation race " .. id .. " is a listed race")
+	end
+
+	seen = {}
+	for _, class in ipairs(data.classes) do
+		seen[class.id] = true
+		local entry = creation.classes[class.id]
+		if keys_are(entry, {"description"}, "K class " .. class.id) then
+			check(type(entry.description) == "string" and entry.description ~= "" and
+				entry.description == grug_classes.registered_classes[class.id].description,
+				"K class " .. class.id .. " description is the registered one")
+		end
+	end
+	for id in pairs(creation.classes) do
+		check(seen[id], "K creation class " .. id .. " is a listed class")
+	end
 end
 
 -- M. Model.

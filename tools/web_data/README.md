@@ -30,8 +30,10 @@ tools/run_fixtures.sh web_data              # the fixture: current + shape
 
 Regenerate after any change to factions, races, classes, the XP curve, the
 player model's frames, the wield geometry, equippable items, the appearance
-constants, the texture directories, or the offhand look's setting default
-or back card (a turned-on setting changes both); the fixture
+constants, the texture directories, the offhand look's setting default
+or back card (a turned-on setting changes both), the creation pictures
+(game or wide, their licence files or the wide renders' figure anchors),
+the creation camera, or race or class descriptions; the fixture
 (`tools/web_data/portable_test.lua`, part of `tools/run_fixtures.sh`) fails
 while the committed file is stale.
 
@@ -42,7 +44,12 @@ faction table and equipment slot table cut out of `grug_core` and
 they fill. Every equippable item is registered by `grug_gear`; a headless
 engine probe listed the same 156 items with the same names and images
 (2026-10-06). A mod that starts registering equippable items is added to
-`build.lua`.
+`build.lua`. The [character creation](#character-creation) part also reads
+the creation pictures' PNG headers and licence files, the generated
+`grug_classes/creation_camera.lua` and [`media/wide.json`](media/), the
+figure anchors from the wide renders' receipts
+(`{"<race>": {"figure": {"x": …, "y": …, "node": …}}}`, every race and no
+other key).
 
 ## Format
 
@@ -146,6 +153,72 @@ character is shown **without armor** until the next join:
 | `factions[]` | `id` (the value of `grug_factions:faction`), `name` (display form, "The Accord"), `color` (`#rrggbb`). |
 | `races[]` | `id` (`grug_classes:race`), `name`, `faction` (a faction `id`), `visual_size` (`{x, y, z}`, the race's visual scale of the model; collision and eye height do not change), `bare_body` (the race's skin with option 1 in every look category and nothing worn, as the game composes it: what a website draws when a stored body cannot be used). Grouped by faction in registration order. |
 | `classes[]` | `id` (`grug_classes:class`), `name`, `icon` (repository path of the class icon PNG). |
+
+### Character creation
+
+The pictures, texts and camera of the game's character-creation window, for
+a website that stands a character in front of its race's backdrop.
+**`creation` is absent in every commit before 0.80.1 and complete from
+then on**: a reader either finds no `creation` key or every field below.
+`schema` stays 1 (the key is added; no other key changed shape).
+
+**A picture** is an object `{path, width, height, license}`: `path` its
+repository path (as `classes[].icon`), `width` and `height` its size in
+pixels (read from the PNG), `license` the repository path of the
+`LICENSE-media.md` that covers it, to publish with the file. The game's
+pictures are covered by their mod's licence file
+(`mods/PLAYER/grug_classes/`, `mods/MAPGEN/grug_mapgen/`). The wide
+pictures are website media outside every mod (the game client never loads
+them): their licence file is `tools/web_data/media/LICENSE-media.md`, a
+licence file outside `mods/`. No creation picture is in `texture_files`
+(no stored appearance names one). The export fails while a picture or its
+licence file is missing, or the licence file does not name the picture.
+
+| Field | Meaning |
+|---|---|
+| `creation.camera` | The creation window's figure camera ([below](#placing-the-figure)): `height_fraction`, `aspect`, `pitch` (degrees), `scene_aspect` (width / height of the scene box the game backdrop fills: 1.1), `fov` (vertical field of view in degrees, 30: the engine's fixed value for a model in a window, named in the generated `mods/PLAYER/grug_classes/creation_camera.lua`, from which all five come). |
+| `creation.intro` | The opening picture (1920 × 1080; the two keeps), shown before a race is chosen; `wide`, a picture of the same scene at 2560 × 1440 composed for a full window. |
+| `creation.crest` | The crest the game draws on the opening picture. |
+| `creation.factions.<faction>.banner` | The faction's banner, shown beside its races. One entry per id of `factions[]`, no other. |
+| `creation.races.<race>` | One entry per id of `races[]`, no other: `backdrop` (the race's creation backdrop, 1540 × 1400, the game's scene box) with `backdrop.wide` (the same scene at 2560 × 1440, composed for a full window) and its `backdrop.wide.figure` ([below](#placing-the-figure)); `icon` (the race's icon); `description`; `appearance` ([below](#the-look-per-race)). |
+| `creation.classes.<class>.description` | One entry per id of `classes[]`, no other. |
+
+**Descriptions** are the registered English strings as they are, line
+breaks (`\n`) included. The creation window shows a race's with its line
+break (the second line is the race's passive) and joins a class's lines
+with spaces (they are wrapped by hand).
+
+#### The look per race
+
+`creation.races.<race>.appearance` is a whole `grug_visuals:appearance`
+value of the current `appearance_version`, as the object its stored JSON
+parses to: the race with option 1 in every look category, no cloak, nothing
+worn or held. It is what the game stores for such a character (built by
+`grug_visuals.appearance` as on a join), and its `textures.body` is the
+race's `bare_body`. A website validates and draws it like any stored value.
+There is no class starting kit to show (a new character starts with apples
+and torches), so there is one look per race, none per class.
+
+#### Placing the figure
+
+- **On a wide backdrop:** `figure` = `{x, y, node}`, from the wide render's
+  camera. `x`, `y` are the scene's standing point as fractions of the
+  picture's width and height (0, 0 top left): put the figure's feet there.
+  `node` is the screen height of one node (one world unit) standing upright
+  at that point, as a fraction of the picture's height: a figure is
+  `model height in nodes × visual_size.y × node × picture height` pixels
+  tall. When the picture is scaled or cropped to the window, scale and move
+  the anchor with it.
+- **On a game backdrop**, as the game does (`mods/PLAYER/grug_visuals/creation.lua`):
+  the backdrop fills a box of `scene_aspect`. The figure's viewport is
+  `height_fraction × visual_size.y` of the box's height high and `aspect`
+  times that wide, centred in the box. The figure is seen with a vertical
+  field of view of `fov` degrees, tilted by `pitch` degrees (the camera
+  looks down on it), and fitted into the viewport by its bounding box. The
+  backdrops were rendered to match
+  (`tools/character_creation_preview/native.py`): from the race's standing
+  point, pitched down by `pitch`, with a vertical field of view of
+  2 · atan(tan(`fov` / 2) / (`height_fraction` × stature)).
 
 ### Model
 

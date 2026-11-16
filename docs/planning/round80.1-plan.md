@@ -67,6 +67,16 @@ From the conversation of 2026-11-16:
    are. The scenes grow sideways only for the wide renders: the additions live in a separate
    wide layer per scene, the game's scene recipes stay unchanged, and a re-render of a game
    backdrop gives the shipped picture again (§6).
+6. **The pixel check measures, it does not stop** (the user, 2026-11-16, refining ruling 5): the
+   art lanes render each game view with and without their wide layer and report the difference;
+   lighting may depend on the scene's extent, so a difference is a finding the user looks at, not a
+   stop. (Measured: zero in all seven views.)
+7. **Repo weight** (the user, 2026-11-16): commit only the website pictures plus small proofs
+   (receipts, proof JSON, diff images); renders, comparison renders and preview screenshots are
+   ignored build output.
+8. **Look** (the user, 2026-11-16): the six race pictures approved after one pass that added trees
+   to their sides and back hills; the opening approved in its third version (closer camera,
+   fuller camp, the bottom-left corner filled quietly).
 
 ## 3. Shared conventions
 
@@ -90,11 +100,14 @@ From the conversation of 2026-11-16:
   height; nothing important in the right quarter (the list panel) or the bottom-left corner (the
   name); no character in the picture; no text, HUD or watermark; the same place, light and mood
   as the race's game backdrop. These are rough targets, not checks.
-- **Each wide race picture carries its figure anchor**: from the render's camera, the pixel point
-  (as fractions of width and height) of the scene's standing point (`portrait.feet` in the scene
-  JSON) and the screen height of a figure of stature 1 (fraction of the picture's height). Then
-  the website stands the figure where the scene's ground is, at the scene's scale. The lanes
-  write it into the render receipt; EXPORT reads it from there.
+- **Each wide race picture carries its figure anchor** `figure = {x, y, node}` (refined by the
+  coordinator, 2026-11-16): `x`, `y` the projected standing point (`portrait.feet` in the scene
+  JSON) as fractions of the picture's width and height (0,0 top left), `node` the projected
+  screen height of one node standing upright at that point, as a fraction of the picture's
+  height. The website scales its figure by its model's height in nodes times the race's
+  `visual_size`. SCENES writes the six anchors into `tools/web_data/media/wide.json`
+  (`{"<race>":{"figure":{"x","y","node"}}}`, plain ASCII JSON, no other keys); EXPORT reads them
+  from there.
 - **Everything new goes under one new top-level key `creation`**; no existing key changes shape,
   not even by an added field (the website validates strictly). `schema` stays 1: the key is
   either absent (every commit before 0.80.1) or complete. The README says so.
@@ -114,7 +127,7 @@ creation = {
   factions = {<faction id> = {banner = {path, width, height, license}}},
   races    = {<race id> = {
                 backdrop = {path, width, height, license,
-                            wide = {path, width, height, license, figure = {x, y, height}}},
+                            wide = {path, width, height, license, figure = {x, y, node}}},
                 icon = {path, width, height, license},
                 description = "...",
                 appearance = {...}}},                                    -- the stored-format value
@@ -219,8 +232,8 @@ plan's Completion and Carry-overs; the answer to the website (§3.3) in
   the game's scene recipes (`scenes/<race>.json`, `intro/scene.json`, their builders' output for
   the game camera) are unchanged. One re-render of each game view with the base recipe plus the
   wide layer, game camera and game size (1540 × 1400; the opening at 1920 × 1080), compared with
-  the same re-render without the wide layer: zero differing pixels, reported. (Compared with each
-  other, not with the shipped PNGs: the browser has moved from Chromium 151 to 156 since those
+  the same re-render without the wide layer: the number of differing pixels, reported (ruling 6;
+  measured: zero in all seven views). (Compared with each other, not with the shipped PNGs: the browser has moved from Chromium 151 to 156 since those
   renders.) Renders go to the lane's output folder, never over a game file. Fixtures only those
   that read a changed document (found by grep).
 - **Round end** (a small follow-up round, one area): the targeted fixture selection
@@ -239,3 +252,46 @@ plan's Completion and Carry-overs; the answer to the website (§3.3) in
   user's look go; (2) after lane D, before the round-end gates.
 - Decided during the round: the user's look fixes and go on the wide pictures; whether part 3
   stays in (ruling 4).
+
+## Completion (2026-11-16)
+
+All three lanes are merged into `round80.1`; lane D runs on it. Nothing is on main and nothing is
+pushed: `round80.1` lands on main as one squash commit (0.80.1) after the round-end gates. Both
+art lanes merged after the user's look go (ruling 8) and an Opus review of their pipeline
+changes; EXPORT had an Opus review before the art arrived, then merged the round branch,
+regenerated `web_data.json` against the real pictures and passed `web_data`, `r54_web` and
+`r55_web`.
+
+**0.80.1 is compatible:** no file under `mods/` changes, no saved key is read or written; the
+version number is the only game change.
+
+Measured: the six race pictures 0.89–1.62 MB (7.1 MB), the opening 1.99 MB, all 2560 × 1440 RGB
+sRGB; the game-view comparison (ruling 6) zero differing pixels in all seven views; all six race
+anchors are `x 0.43, y 0.811757, node 0.24151` (every wide camera stands at the same offset from
+the standing point). `web_data.json` only gains the `creation` key (183 added lines, none
+changed).
+
+### Lanes
+
+| Lane | What | Review |
+|---|---|---|
+| SCENES | `scenes/wide/<race>.json` layers, `tools/character_creation_preview/wide/` (build, render, `--check`, proof, review page), opt-in wide paths in `scenery.py` and `render-scenes.mjs`, six media PNGs, `wide.json`, `LICENSE-media.md`; one tree pass after the user's look | MERGE (no Critical/High/Medium); the user's go |
+| INTRO | `intro/wide.json` layer, `intro/wide-build.py` (`--check`), `wide-capture.mjs`, the opening PNG and its licence section; two look passes | MERGE (two Low doc items fixed by the coordinator); the user's go |
+| EXPORT | The `creation` key (camera, intro, crest, factions, races with backdrop, wide picture and anchor, icon, description and look, classes with description), the PNG header reader, the strict `wide.json` reader, the licence check per picture, README section, fixture checks | MERGE (one Low bound fixed by the coordinator) |
+
+## Carry-overs
+
+- **Shared pipeline scripts in the game scenes' digest:** `scenery.py` hashes itself and
+  `render-scenes.mjs` into every game scene's `render_input`, so after this round an
+  `architecture-refresh` rebuild recaptures all six game backdrops (with today's Chromium). The
+  game's files change only through an explicit `native.py --install`.
+- **The wide `render.py --check` pins its sources:** 386 source hashes, 344 of them under
+  `mods/` (textures, templates, tree generation); a later texture or template change turns the
+  check red although the pictures still match their receipts. Either report stale sources as a
+  warning (exit 1 only for picture, receipt, licence or anchor mismatches) or re-render the wide
+  pictures with that change. No fixture runs it.
+- **Small tooling notes:** `intro/wide-build.py --check` uses `assert` (passes under
+  `python3 -O`); `wide-capture.mjs` has no overall timeout; Chromium started detached by
+  `render-scenes.mjs` and `check-page.mjs` may outlive a Ctrl-C.
+- **The pictures follow the game only by hand:** a new race or a repainted game backdrop needs
+  its wide render too; `export.lua` fails while one is missing.

@@ -1,0 +1,22 @@
+{
+  "input": "5758a26b4c813d3125517991636e44e6200488c8726822a073af0c7f6c5fb101",
+  "output": "09ad3364bd1bcd15208f1ffcc693f6b1199ec97cf3b9a1c22102c3730777ae85",
+  "width": 1540,
+  "height": 1400,
+  "camera": {
+    "pos": [
+      0,
+      2.224618898814722,
+      -13.294843558238117
+    ],
+    "target": [
+      0,
+      1.4179999999999957,
+      -9.5
+    ],
+    "fov": 44.930368928857696
+  },
+  "cells": 118189,
+  "renderer": "tools/building_templates/viewer/renderer.js",
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+}

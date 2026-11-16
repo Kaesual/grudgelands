@@ -1,0 +1,132 @@
+{
+  "camera": {
+    "eye": [
+      0.4967734930564984,
+      3.5,
+      -9.5
+    ],
+    "target": [
+      0.4967734930564984,
+      2.771206129227555,
+      -6
+    ],
+    "fov": 55
+  },
+  "terrain": {
+    "x_min": -76,
+    "x_max": 76,
+    "z_min": -22,
+    "z_max": 82
+  },
+  "description": "Jungle-tree clumps with the generator's hanging vines continue both banks into the distant side hills, separated by misty openings.",
+  "trees": [
+    {
+      "species": "jungle",
+      "seed": 80604,
+      "at": [
+        -32,
+        0,
+        29
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80601,
+      "at": [
+        -43,
+        0,
+        32
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80606,
+      "at": [
+        -40,
+        0,
+        44
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80603,
+      "at": [
+        -49,
+        0,
+        52
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80610,
+      "at": [
+        -56,
+        0,
+        64
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80607,
+      "at": [
+        -64,
+        0,
+        72
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80605,
+      "at": [
+        41,
+        0,
+        53
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80602,
+      "at": [
+        51,
+        0,
+        49
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80609,
+      "at": [
+        48,
+        0,
+        64
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80612,
+      "at": [
+        62,
+        0,
+        60
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80614,
+      "at": [
+        59,
+        0,
+        73
+      ]
+    },
+    {
+      "species": "jungle",
+      "seed": 80615,
+      "at": [
+        70,
+        0,
+        74
+      ]
+    }
+  ]
+}

@@ -12,6 +12,16 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.80.1 — character creation for the website (2026-11-16)
+
+Compatible: no map reset, no new world, nothing for the host to do. Nothing changes in the
+game itself.
+
+- **The website's Play page** can now show your character in front of your race's
+  character-creation scene: the game's export for the website names the creation pictures,
+  the creation camera, each race's default look and the race and class descriptions, and
+  ships wide versions of the six race scenes and the opening for full-window display.
+
 ## 0.80.0 — Cheer, donor cloaks and five fixes (2026-11-16)
 
 Compatible: no map reset, no new world, nothing for the host to do.

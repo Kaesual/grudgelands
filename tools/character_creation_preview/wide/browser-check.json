@@ -1,0 +1,241 @@
+{
+  "checks": [
+    {
+      "pass": true,
+      "label": "source images loaded human"
+    },
+    {
+      "pass": true,
+      "label": "both requested display sizes human"
+    },
+    {
+      "pass": true,
+      "label": "anchor placement human"
+    },
+    {
+      "pass": true,
+      "label": "hide overlay human"
+    },
+    {
+      "pass": true,
+      "label": "show overlay human"
+    },
+    {
+      "pass": true,
+      "label": "hide figure human"
+    },
+    {
+      "pass": true,
+      "label": "show figure human"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow human"
+    },
+    {
+      "pass": true,
+      "label": "source images loaded dwarf"
+    },
+    {
+      "pass": true,
+      "label": "both requested display sizes dwarf"
+    },
+    {
+      "pass": true,
+      "label": "anchor placement dwarf"
+    },
+    {
+      "pass": true,
+      "label": "hide overlay dwarf"
+    },
+    {
+      "pass": true,
+      "label": "show overlay dwarf"
+    },
+    {
+      "pass": true,
+      "label": "hide figure dwarf"
+    },
+    {
+      "pass": true,
+      "label": "show figure dwarf"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow dwarf"
+    },
+    {
+      "pass": true,
+      "label": "source images loaded elf"
+    },
+    {
+      "pass": true,
+      "label": "both requested display sizes elf"
+    },
+    {
+      "pass": true,
+      "label": "anchor placement elf"
+    },
+    {
+      "pass": true,
+      "label": "hide overlay elf"
+    },
+    {
+      "pass": true,
+      "label": "show overlay elf"
+    },
+    {
+      "pass": true,
+      "label": "hide figure elf"
+    },
+    {
+      "pass": true,
+      "label": "show figure elf"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow elf"
+    },
+    {
+      "pass": true,
+      "label": "source images loaded orc"
+    },
+    {
+      "pass": true,
+      "label": "both requested display sizes orc"
+    },
+    {
+      "pass": true,
+      "label": "anchor placement orc"
+    },
+    {
+      "pass": true,
+      "label": "hide overlay orc"
+    },
+    {
+      "pass": true,
+      "label": "show overlay orc"
+    },
+    {
+      "pass": true,
+      "label": "hide figure orc"
+    },
+    {
+      "pass": true,
+      "label": "show figure orc"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow orc"
+    },
+    {
+      "pass": true,
+      "label": "source images loaded troll"
+    },
+    {
+      "pass": true,
+      "label": "both requested display sizes troll"
+    },
+    {
+      "pass": true,
+      "label": "anchor placement troll"
+    },
+    {
+      "pass": true,
+      "label": "hide overlay troll"
+    },
+    {
+      "pass": true,
+      "label": "show overlay troll"
+    },
+    {
+      "pass": true,
+      "label": "hide figure troll"
+    },
+    {
+      "pass": true,
+      "label": "show figure troll"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow troll"
+    },
+    {
+      "pass": true,
+      "label": "source images loaded undead"
+    },
+    {
+      "pass": true,
+      "label": "both requested display sizes undead"
+    },
+    {
+      "pass": true,
+      "label": "anchor placement undead"
+    },
+    {
+      "pass": true,
+      "label": "hide overlay undead"
+    },
+    {
+      "pass": true,
+      "label": "show overlay undead"
+    },
+    {
+      "pass": true,
+      "label": "hide figure undead"
+    },
+    {
+      "pass": true,
+      "label": "show figure undead"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow undead"
+    },
+    {
+      "pass": true,
+      "label": "no JavaScript or console errors"
+    }
+  ],
+  "errors": [],
+  "captures": [
+    {
+      "name": "preview-human.png",
+      "sha256": "3452ef597553996e24e0a0dd2f64977edf88d72091fd4a8d10779273db6beb44",
+      "width": 1600,
+      "height": 1120
+    },
+    {
+      "name": "preview-dwarf.png",
+      "sha256": "5dc4874ed1f18780f19e47ef460a45fb8adf071647e9ce4e902f818fbe3ea433",
+      "width": 1600,
+      "height": 1120
+    },
+    {
+      "name": "preview-elf.png",
+      "sha256": "02a836e674b4a1f584a95e14dcce24b5cd02d6c2f8bd9776e2037f42a8e3ddd3",
+      "width": 1600,
+      "height": 1120
+    },
+    {
+      "name": "preview-orc.png",
+      "sha256": "ebd66dee6df1cc64a61f83af4e432a4d8eaaa55a88eac3d328064efe13a3b48f",
+      "width": 1600,
+      "height": 1120
+    },
+    {
+      "name": "preview-troll.png",
+      "sha256": "a84884a0ed7e8caa86d2cbc7c751cd9239d4188de4c31739c63f770349d0c82e",
+      "width": 1600,
+      "height": 1120
+    },
+    {
+      "name": "preview-undead.png",
+      "sha256": "472fb4867b3243c9931024a2f1dbeb40e3655dc5aa015f2be177193e3a4d2e07",
+      "width": 1600,
+      "height": 1120
+    }
+  ],
+  "page_sha256": "e00c20e1d9d9ac3a0c86aee4b83b4662d34e81faac669e9e1667d4f4447a4f49",
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+}

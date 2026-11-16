@@ -7,13 +7,16 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.80.0 (`game.conf`), Round 80 (accounts phase 2 and five fixes): squash
-  commit `f2ee52cb`, tag `round-80`. Pushed 2026-11-16.
+- **Game:** 0.80.1 (`game.conf`), Round 80.1 (character-creation pictures for the
+  website, compatible): squash commit on main, tag `round-80.1`. Not pushed. Before it:
+  0.80.0, Round 80 (accounts phase 2 and five fixes), `f2ee52cb`, tag `round-80`, pushed
+  2026-11-16.
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the documentation cleanup of 2026-11
   ([plan](planning/docs-cleanup-plan.md)); no game change.
 - **Next:** the platform's side of Round 80 (the pin of `f2ee52cb`, `emote:cheer` for
-  every account, the six donor cloaks in the catalogue).
+  every account, the six donor cloaks in the catalogue) and of Round 80.1 (the website reads
+  the new `creation` key; the answer to its request goes through the user).
 - **Other branches:** `town-viewer` (kept on purpose: the three.js town viewer for design
   feedback); `study-dwarf-architecture` and `study-website-screenshots` (unmerged studies
   of 2026-11-11; the second has its own worktree).
@@ -29,7 +32,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
-| 80 | 0.80.0 | compatible | yes | [Round 80](planning/round80-plan.md#completion-2026-11-16) |
+| 80 | 0.80.0–0.80.1 | compatible | 0.80.0 yes | [Round 80](planning/round80-plan.md#completion-2026-11-16), [80.1](planning/round80.1-plan.md#completion-2026-11-16) |
 | 79 | 0.79.0 | compatible | yes | [Round 79](planning/round79-plan.md#completion-2026-11-15) |
 | 78 | 0.78.0 | compatible | yes | [Round 78](planning/round78-plan.md#completion-2026-11-12) |
 | 76 | 0.76.0–0.76.2 | compatible | yes | [Round 76](planning/round76-plan.md#completion-2026-11-11) |

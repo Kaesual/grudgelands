@@ -1,0 +1,150 @@
+{
+  "camera": {
+    "eye": [
+      0.4967734930564984,
+      2.5,
+      -13.0
+    ],
+    "target": [
+      0.4967734930564984,
+      1.7712061292275552,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "terrain": {
+    "x_min": -76,
+    "x_max": 76,
+    "z_min": -22,
+    "z_max": 82
+  },
+  "description": "Uneven pine groups climb both rocky side slopes and thin into isolated trees on the far ridges. Open stone remains between the groups.",
+  "trees": [
+    {
+      "species": "pine",
+      "seed": 80203,
+      "at": [
+        -33,
+        0,
+        29
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80201,
+      "at": [
+        -41,
+        0,
+        34
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80207,
+      "at": [
+        -40,
+        0,
+        44
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80204,
+      "at": [
+        -48,
+        0,
+        49
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80208,
+      "at": [
+        -57,
+        0,
+        57
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80211,
+      "at": [
+        -54,
+        0,
+        66
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80202,
+      "at": [
+        -64,
+        0,
+        72
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80206,
+      "at": [
+        46,
+        0,
+        55
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80209,
+      "at": [
+        55,
+        0,
+        53
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80210,
+      "at": [
+        53,
+        0,
+        65
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80205,
+      "at": [
+        63,
+        0,
+        63
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80212,
+      "at": [
+        60,
+        0,
+        76
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80213,
+      "at": [
+        71,
+        0,
+        74
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 80215,
+      "at": [
+        73,
+        0,
+        63
+      ]
+    }
+  ]
+}

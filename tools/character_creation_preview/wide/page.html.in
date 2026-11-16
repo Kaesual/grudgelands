@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grudgelands · Wide character scenes</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:28px;background:#101719;color:#e2e2d4;font:15px/1.5 system-ui}header{display:flex;justify-content:space-between;gap:25px;align-items:center}h1{font:32px Georgia;margin:0}p{margin:6px 0;color:#a8b9b4}nav{display:flex;gap:8px;margin:22px 0}button,select{font:inherit;color:#e2e2d4;background:#243234;border:1px solid #506361;padding:7px 14px;border-radius:3px;cursor:pointer}button[aria-pressed=true]{color:#f5d596;border-color:#c5a36b;background:#384339}label{margin-right:16px;white-space:nowrap}input{accent-color:#d4b477}a{color:#e5bf7c}.comparison{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px;align-items:start}h2{font:24px Georgia;margin:4px 0 12px}h3{font-size:14px;font-weight:500;margin:0 0 10px;color:#bbcac4}.stage{position:relative;aspect-ratio:16/9;overflow:hidden;background:#263739}.stage>img{width:100%;height:100%;display:block}.figure,.layout{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.figure polygon{fill:#1c3031;stroke:#d5b578;stroke-width:1.2;stroke-linejoin:round}.figure{filter:drop-shadow(0 3px 3px #0008)}.layout>div{position:absolute;font:13px system-ui}.horizon{top:30%;width:100%;height:0;border-top:2px dashed #f5dc9da0;color:#f5dc9d;padding-left:12px}.feet-zone{left:30%;top:70%;width:25%;height:20%;border:2px dashed #cde4bd;box-shadow:inset 0 0 0 1000px #b2cc9824;color:#e1efcf;padding:7px}.panel{left:75%;top:0;width:25%;height:100%;background:#0b1418ac;border-left:1px solid #cddbd340;padding:18px;color:#d0dcd5}.name-corner{left:0;bottom:0;width:28%;height:13%;padding:15px;background:#0b14187a;color:#d0dcd5}.anchor{width:13px;height:13px;border:2px solid #fff5c9;border-radius:50%;transform:translate(-50%,-50%);background:#dfb56c}.reference img{width:100%;display:block}.reference p{font-size:13px;margin-top:12px}.details{font:13px/1.7 ui-monospace,monospace;color:#b8c8c1;margin-top:16px}.scroll{overflow:auto;margin-top:12px;border:1px solid #38494b}.size1366{width:1366px;height:768px;aspect-ratio:auto}.size2560{width:2560px;height:1440px}details{margin-top:22px}summary{cursor:pointer;color:#e5bf7c}body[data-overlay=off] .layout,body[data-figure=off] .figure{display:none}footer{margin-top:26px;font-size:13px;color:#a5b8af}@media(max-width:900px){.comparison{grid-template-columns:1fr}.reference{max-width:320px}body{padding:16px}header{display:block}nav{flex-wrap:wrap}}
+</style>
+<body data-overlay="on" data-figure="on">
+<header><div><h1>Grudgelands · Wide character scenes</h1><p>Website composition study · same places, new framing · awaiting visual approval</p></div><div><label><input id="overlay" type="checkbox" checked> Layout guides</label><label><input id="figure" type="checkbox" checked> Figure silhouette</label></div></header>
+<nav aria-label="Choose race"></nav>
+<main><h2 id="title"></h2><div class="comparison"><section><h3>2560 × 1440 source · fitted overview</h3><div class="stage overview"></div><p class="details" id="anchor-text"></p></section><aside class="reference"><h3>Unchanged game backdrop · 1540 × 1400</h3><img id="game" alt="Game backdrop"><p id="description"></p><p>Silhouette: the existing bare-body catalogue, at this race's stature and projected through the render camera. No figure is baked into the exported picture.</p></aside></div>
+<details open><summary>1366 × 768 website viewport · scroll horizontally on smaller windows</summary><div class="scroll"><div class="stage size1366"></div></div></details>
+<details><summary>2560 × 1440 native pixels · scroll to inspect</summary><div class="scroll"><div class="stage size2560"></div></div></details></main>
+<footer><a id="download">Open clean PNG</a> · <a href="README.md">Rebuild and proof</a> · <a href="proof/comparison.json">Game-camera pixel comparison</a><p>Guides: projected horizon 30%; feet zone x 30–55%, y 70–90%; right-quarter list; bottom-left name. The terrain and tree skyline may rise above the geometric horizon.</p></footer>
+<script>
+const DATA=__DATA__;
+const races=['human','dwarf','elf','orc','troll','undead'];
+for(const race of races){const b=document.createElement('button');b.textContent=race[0].toUpperCase()+race.slice(1);b.dataset.race=race;b.onclick=()=>chooseRace(race);document.querySelector('nav').append(b)}
+window.chooseRace=function(race){
+ const d=DATA[race];if(!d)throw Error('Unknown race');window.currentRace=race;
+ document.querySelectorAll('button[data-race]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.race===race)));
+ document.getElementById('title').textContent=race[0].toUpperCase()+race.slice(1)+' / '+d.title;
+ document.getElementById('description').textContent=d.description;
+ document.getElementById('game').src='../../../mods/PLAYER/grug_classes/textures/grug_creation_'+race+'.png';
+ document.getElementById('anchor-text').textContent=`Feet (${d.figure.x}, ${d.figure.y}) · one upright node ${d.figure.node} of image height · stature ${d.stature} · ${(d.bytes/1000000).toFixed(2)} MB`;
+ const src='../../web_data/media/grug_creation_'+race+'_wide.png';document.getElementById('download').href=src;
+ for(const stage of document.querySelectorAll('.stage'))stage.innerHTML=`<img src="${src}" alt="${race} wide backdrop">${d.silhouette}<div class="layout"><div class="horizon">30% horizon</div><div class="feet-zone">Standing area</div><div class="panel">List panel · 25%</div><div class="name-corner">Character name</div><div class="anchor" style="left:${d.figure.x*100}%;top:${d.figure.y*100}%"></div></div>`;
+};
+for(const name of ['overlay','figure'])document.getElementById(name).onchange=e=>document.body.dataset[name]=e.target.checked?'on':'off';
+chooseRace(new URLSearchParams(location.search).get('race')||'human');
+window.previewReady=()=>Promise.all([...document.images].map(i=>i.decode()));
+</script></body></html>

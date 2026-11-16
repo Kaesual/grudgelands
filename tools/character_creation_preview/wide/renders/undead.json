@@ -1,0 +1,29 @@
+{
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+  "camera": {
+    "fov": 55,
+    "pos": [
+      0.4967734930564984,
+      2.5,
+      -13
+    ],
+    "target": [
+      0.4967734930564984,
+      1.7712061292275552,
+      -9.5
+    ]
+  },
+  "cells": 114557,
+  "color_space": "sRGB",
+  "figure": {
+    "node": 0.24151,
+    "x": 0.43,
+    "y": 0.811757
+  },
+  "height": 1440,
+  "input": "2c2b3130fbc55020404e7254e01dba6d35682f502390ad9c308a477894fdb8ae",
+  "output": "948e289e4506eaa804073d7800203b586a4108b6dc056bc12308dd8c3e46e3cc",
+  "renderer": "tools/building_templates/viewer/renderer.js",
+  "source_digest": "d5928d56a8dda70ee1b3f787d31afcdf38a54030def666372ea9f51b82de7a05",
+  "width": 2560
+}

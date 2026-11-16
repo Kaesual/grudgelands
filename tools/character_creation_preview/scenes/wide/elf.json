@@ -1,0 +1,150 @@
+{
+  "camera": {
+    "eye": [
+      0.4967734930564984,
+      2.5,
+      -13.0
+    ],
+    "target": [
+      0.4967734930564984,
+      1.7712061292275552,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "terrain": {
+    "x_min": -76,
+    "x_max": 76,
+    "z_min": -22,
+    "z_max": 82
+  },
+  "description": "Mixed silverwood and aspen groups extend the garden into loose woodland on both side hills, with lighter distant crowns and open gaps.",
+  "trees": [
+    {
+      "species": "silverwood",
+      "seed": 80301,
+      "at": [
+        -33,
+        0,
+        32
+      ]
+    },
+    {
+      "species": "silverwood",
+      "seed": 80304,
+      "at": [
+        -43,
+        0,
+        43
+      ]
+    },
+    {
+      "species": "silverwood",
+      "seed": 80306,
+      "at": [
+        -48,
+        0,
+        59
+      ]
+    },
+    {
+      "species": "silverwood",
+      "seed": 80311,
+      "at": [
+        -59,
+        0,
+        67
+      ]
+    },
+    {
+      "species": "silverwood",
+      "seed": 80303,
+      "at": [
+        43,
+        0,
+        60
+      ]
+    },
+    {
+      "species": "silverwood",
+      "seed": 80308,
+      "at": [
+        46,
+        0,
+        50
+      ]
+    },
+    {
+      "species": "silverwood",
+      "seed": 80310,
+      "at": [
+        54,
+        0,
+        66
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 80402,
+      "at": [
+        -41,
+        0,
+        31
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 80404,
+      "at": [
+        -38,
+        0,
+        50
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 80409,
+      "at": [
+        -58,
+        0,
+        55
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 80405,
+      "at": [
+        43,
+        0,
+        33
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 80403,
+      "at": [
+        38,
+        0,
+        50
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 80412,
+      "at": [
+        57,
+        0,
+        55
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 80410,
+      "at": [
+        64,
+        0,
+        71
+      ]
+    }
+  ]
+}

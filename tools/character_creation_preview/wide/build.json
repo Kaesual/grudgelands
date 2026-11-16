@@ -1,0 +1,2764 @@
+{
+  "geometry": {
+    "dwarf": {
+      "added_cells": 64200,
+      "added_columns_inside_game_frustum": 0,
+      "added_terrain_cells": 62505,
+      "added_trees_inside_game_frustum": 0,
+      "base_cells": 51727,
+      "base_cells_first": true,
+      "base_geometry_matches_installed_refresh": true,
+      "changed_base_cells": 0,
+      "frustum_margin_fraction": 0.02,
+      "layer": {
+        "camera": {
+          "eye": [
+            0.4967734930564984,
+            2.5,
+            -13.0
+          ],
+          "fov": 55,
+          "target": [
+            0.4967734930564984,
+            1.7712061292275552,
+            -9.5
+          ]
+        },
+        "description": "Uneven pine groups climb both rocky side slopes and thin into isolated trees on the far ridges. Open stone remains between the groups.",
+        "terrain": {
+          "x_max": 76,
+          "x_min": -76,
+          "z_max": 82,
+          "z_min": -22
+        },
+        "trees": [
+          {
+            "at": [
+              -33,
+              0,
+              29
+            ],
+            "seed": 80203,
+            "species": "pine"
+          },
+          {
+            "at": [
+              -41,
+              0,
+              34
+            ],
+            "seed": 80201,
+            "species": "pine"
+          },
+          {
+            "at": [
+              -40,
+              0,
+              44
+            ],
+            "seed": 80207,
+            "species": "pine"
+          },
+          {
+            "at": [
+              -48,
+              0,
+              49
+            ],
+            "seed": 80204,
+            "species": "pine"
+          },
+          {
+            "at": [
+              -57,
+              0,
+              57
+            ],
+            "seed": 80208,
+            "species": "pine"
+          },
+          {
+            "at": [
+              -54,
+              0,
+              66
+            ],
+            "seed": 80211,
+            "species": "pine"
+          },
+          {
+            "at": [
+              -64,
+              0,
+              72
+            ],
+            "seed": 80202,
+            "species": "pine"
+          },
+          {
+            "at": [
+              46,
+              0,
+              55
+            ],
+            "seed": 80206,
+            "species": "pine"
+          },
+          {
+            "at": [
+              55,
+              0,
+              53
+            ],
+            "seed": 80209,
+            "species": "pine"
+          },
+          {
+            "at": [
+              53,
+              0,
+              65
+            ],
+            "seed": 80210,
+            "species": "pine"
+          },
+          {
+            "at": [
+              63,
+              0,
+              63
+            ],
+            "seed": 80205,
+            "species": "pine"
+          },
+          {
+            "at": [
+              60,
+              0,
+              76
+            ],
+            "seed": 80212,
+            "species": "pine"
+          },
+          {
+            "at": [
+              71,
+              0,
+              74
+            ],
+            "seed": 80213,
+            "species": "pine"
+          },
+          {
+            "at": [
+              73,
+              0,
+              63
+            ],
+            "seed": 80215,
+            "species": "pine"
+          }
+        ]
+      },
+      "trees": [
+        {
+          "base": [
+            -33,
+            3,
+            29
+          ],
+          "bounds": [
+            [
+              -36.5,
+              2.5,
+              25.5
+            ],
+            [
+              -29.5,
+              14.5,
+              32.5
+            ]
+          ],
+          "cells": 114,
+          "seed": 80203,
+          "species": "pine"
+        },
+        {
+          "base": [
+            -41,
+            5,
+            34
+          ],
+          "bounds": [
+            [
+              -44.5,
+              4.5,
+              30.5
+            ],
+            [
+              -37.5,
+              21.5,
+              37.5
+            ]
+          ],
+          "cells": 141,
+          "seed": 80201,
+          "species": "pine"
+        },
+        {
+          "base": [
+            -40,
+            4,
+            44
+          ],
+          "bounds": [
+            [
+              -43.5,
+              3.5,
+              40.5
+            ],
+            [
+              -36.5,
+              15.5,
+              47.5
+            ]
+          ],
+          "cells": 94,
+          "seed": 80207,
+          "species": "pine"
+        },
+        {
+          "base": [
+            -48,
+            6,
+            49
+          ],
+          "bounds": [
+            [
+              -51.5,
+              5.5,
+              45.5
+            ],
+            [
+              -44.5,
+              22.5,
+              52.5
+            ]
+          ],
+          "cells": 143,
+          "seed": 80204,
+          "species": "pine"
+        },
+        {
+          "base": [
+            -57,
+            9,
+            57
+          ],
+          "bounds": [
+            [
+              -60.5,
+              8.5,
+              53.5
+            ],
+            [
+              -53.5,
+              21.5,
+              60.5
+            ]
+          ],
+          "cells": 114,
+          "seed": 80208,
+          "species": "pine"
+        },
+        {
+          "base": [
+            -54,
+            13,
+            66
+          ],
+          "bounds": [
+            [
+              -57.5,
+              12.5,
+              62.5
+            ],
+            [
+              -50.5,
+              27.5,
+              69.5
+            ]
+          ],
+          "cells": 123,
+          "seed": 80211,
+          "species": "pine"
+        },
+        {
+          "base": [
+            -64,
+            14,
+            72
+          ],
+          "bounds": [
+            [
+              -67.5,
+              13.5,
+              68.5
+            ],
+            [
+              -60.5,
+              27.5,
+              75.5
+            ]
+          ],
+          "cells": 151,
+          "seed": 80202,
+          "species": "pine"
+        },
+        {
+          "base": [
+            46,
+            10,
+            55
+          ],
+          "bounds": [
+            [
+              42.5,
+              9.5,
+              52.5
+            ],
+            [
+              48.5,
+              26.5,
+              58.5
+            ]
+          ],
+          "cells": 111,
+          "seed": 80206,
+          "species": "pine"
+        },
+        {
+          "base": [
+            55,
+            9,
+            53
+          ],
+          "bounds": [
+            [
+              51.5,
+              8.5,
+              49.5
+            ],
+            [
+              58.5,
+              21.5,
+              56.5
+            ]
+          ],
+          "cells": 115,
+          "seed": 80209,
+          "species": "pine"
+        },
+        {
+          "base": [
+            53,
+            11,
+            65
+          ],
+          "bounds": [
+            [
+              49.5,
+              10.5,
+              61.5
+            ],
+            [
+              56.5,
+              24.5,
+              68.5
+            ]
+          ],
+          "cells": 120,
+          "seed": 80210,
+          "species": "pine"
+        },
+        {
+          "base": [
+            63,
+            11,
+            63
+          ],
+          "bounds": [
+            [
+              59.5,
+              10.5,
+              59.5
+            ],
+            [
+              66.5,
+              26.5,
+              66.5
+            ]
+          ],
+          "cells": 118,
+          "seed": 80205,
+          "species": "pine"
+        },
+        {
+          "base": [
+            60,
+            11,
+            76
+          ],
+          "bounds": [
+            [
+              56.5,
+              10.5,
+              72.5
+            ],
+            [
+              63.5,
+              22.5,
+              79.5
+            ]
+          ],
+          "cells": 92,
+          "seed": 80212,
+          "species": "pine"
+        },
+        {
+          "base": [
+            71,
+            10,
+            74
+          ],
+          "bounds": [
+            [
+              67.5,
+              9.5,
+              70.5
+            ],
+            [
+              74.5,
+              25.5,
+              77.5
+            ]
+          ],
+          "cells": 134,
+          "seed": 80213,
+          "species": "pine"
+        },
+        {
+          "base": [
+            73,
+            11,
+            63
+          ],
+          "bounds": [
+            [
+              69.5,
+              10.5,
+              59.5
+            ],
+            [
+              76.5,
+              25.5,
+              66.5
+            ]
+          ],
+          "cells": 125,
+          "seed": 80215,
+          "species": "pine"
+        }
+      ]
+    },
+    "elf": {
+      "added_cells": 68367,
+      "added_columns_inside_game_frustum": 0,
+      "added_terrain_cells": 65999,
+      "added_trees_inside_game_frustum": 0,
+      "base_cells": 52867,
+      "base_cells_first": true,
+      "base_geometry_matches_installed_refresh": true,
+      "changed_base_cells": 0,
+      "frustum_margin_fraction": 0.02,
+      "layer": {
+        "camera": {
+          "eye": [
+            0.4967734930564984,
+            2.5,
+            -13.0
+          ],
+          "fov": 55,
+          "target": [
+            0.4967734930564984,
+            1.7712061292275552,
+            -9.5
+          ]
+        },
+        "description": "Mixed silverwood and aspen groups extend the garden into loose woodland on both side hills, with lighter distant crowns and open gaps.",
+        "terrain": {
+          "x_max": 76,
+          "x_min": -76,
+          "z_max": 82,
+          "z_min": -22
+        },
+        "trees": [
+          {
+            "at": [
+              -33,
+              0,
+              32
+            ],
+            "seed": 80301,
+            "species": "silverwood"
+          },
+          {
+            "at": [
+              -43,
+              0,
+              43
+            ],
+            "seed": 80304,
+            "species": "silverwood"
+          },
+          {
+            "at": [
+              -48,
+              0,
+              59
+            ],
+            "seed": 80306,
+            "species": "silverwood"
+          },
+          {
+            "at": [
+              -59,
+              0,
+              67
+            ],
+            "seed": 80311,
+            "species": "silverwood"
+          },
+          {
+            "at": [
+              43,
+              0,
+              60
+            ],
+            "seed": 80303,
+            "species": "silverwood"
+          },
+          {
+            "at": [
+              46,
+              0,
+              50
+            ],
+            "seed": 80308,
+            "species": "silverwood"
+          },
+          {
+            "at": [
+              54,
+              0,
+              66
+            ],
+            "seed": 80310,
+            "species": "silverwood"
+          },
+          {
+            "at": [
+              -41,
+              0,
+              31
+            ],
+            "seed": 80402,
+            "species": "aspen"
+          },
+          {
+            "at": [
+              -38,
+              0,
+              50
+            ],
+            "seed": 80404,
+            "species": "aspen"
+          },
+          {
+            "at": [
+              -58,
+              0,
+              55
+            ],
+            "seed": 80409,
+            "species": "aspen"
+          },
+          {
+            "at": [
+              43,
+              0,
+              33
+            ],
+            "seed": 80405,
+            "species": "aspen"
+          },
+          {
+            "at": [
+              38,
+              0,
+              50
+            ],
+            "seed": 80403,
+            "species": "aspen"
+          },
+          {
+            "at": [
+              57,
+              0,
+              55
+            ],
+            "seed": 80412,
+            "species": "aspen"
+          },
+          {
+            "at": [
+              64,
+              0,
+              71
+            ],
+            "seed": 80410,
+            "species": "aspen"
+          }
+        ]
+      },
+      "trees": [
+        {
+          "base": [
+            -33,
+            3,
+            32
+          ],
+          "bounds": [
+            [
+              -36.5,
+              2.5,
+              28.5
+            ],
+            [
+              -29.5,
+              18.5,
+              36.5
+            ]
+          ],
+          "cells": 185,
+          "seed": 80301,
+          "species": "silverwood"
+        },
+        {
+          "base": [
+            -43,
+            5,
+            43
+          ],
+          "bounds": [
+            [
+              -47.5,
+              4.5,
+              39.5
+            ],
+            [
+              -40.5,
+              23.5,
+              47.5
+            ]
+          ],
+          "cells": 182,
+          "seed": 80304,
+          "species": "silverwood"
+        },
+        {
+          "base": [
+            -48,
+            10,
+            59
+          ],
+          "bounds": [
+            [
+              -52.5,
+              9.5,
+              55.5
+            ],
+            [
+              -44.5,
+              25.5,
+              62.5
+            ]
+          ],
+          "cells": 150,
+          "seed": 80306,
+          "species": "silverwood"
+        },
+        {
+          "base": [
+            -59,
+            13,
+            67
+          ],
+          "bounds": [
+            [
+              -62.5,
+              12.5,
+              62.5
+            ],
+            [
+              -54.5,
+              28.5,
+              70.5
+            ]
+          ],
+          "cells": 234,
+          "seed": 80311,
+          "species": "silverwood"
+        },
+        {
+          "base": [
+            43,
+            11,
+            60
+          ],
+          "bounds": [
+            [
+              39.5,
+              10.5,
+              56.5
+            ],
+            [
+              47.5,
+              27.5,
+              63.5
+            ]
+          ],
+          "cells": 179,
+          "seed": 80303,
+          "species": "silverwood"
+        },
+        {
+          "base": [
+            46,
+            8,
+            50
+          ],
+          "bounds": [
+            [
+              41.5,
+              7.5,
+              44.5
+            ],
+            [
+              49.5,
+              26.5,
+              54.5
+            ]
+          ],
+          "cells": 350,
+          "seed": 80308,
+          "species": "silverwood"
+        },
+        {
+          "base": [
+            54,
+            11,
+            66
+          ],
+          "bounds": [
+            [
+              49.5,
+              10.5,
+              62.5
+            ],
+            [
+              58.5,
+              27.5,
+              70.5
+            ]
+          ],
+          "cells": 287,
+          "seed": 80310,
+          "species": "silverwood"
+        },
+        {
+          "base": [
+            -41,
+            5,
+            31
+          ],
+          "bounds": [
+            [
+              -44.5,
+              4.5,
+              27.5
+            ],
+            [
+              -38.5,
+              16.5,
+              34.5
+            ]
+          ],
+          "cells": 104,
+          "seed": 80402,
+          "species": "aspen"
+        },
+        {
+          "base": [
+            -38,
+            6,
+            50
+          ],
+          "bounds": [
+            [
+              -40.5,
+              5.5,
+              47.5
+            ],
+            [
+              -35.5,
+              17.5,
+              53.5
+            ]
+          ],
+          "cells": 100,
+          "seed": 80404,
+          "species": "aspen"
+        },
+        {
+          "base": [
+            -58,
+            8,
+            55
+          ],
+          "bounds": [
+            [
+              -60.5,
+              7.5,
+              52.5
+            ],
+            [
+              -54.5,
+              22.5,
+              57.5
+            ]
+          ],
+          "cells": 129,
+          "seed": 80409,
+          "species": "aspen"
+        },
+        {
+          "base": [
+            43,
+            5,
+            33
+          ],
+          "bounds": [
+            [
+              40.5,
+              4.5,
+              30.5
+            ],
+            [
+              45.5,
+              17.5,
+              35.5
+            ]
+          ],
+          "cells": 110,
+          "seed": 80405,
+          "species": "aspen"
+        },
+        {
+          "base": [
+            38,
+            6,
+            50
+          ],
+          "bounds": [
+            [
+              35.5,
+              5.5,
+              47.5
+            ],
+            [
+              41.5,
+              17.5,
+              52.5
+            ]
+          ],
+          "cells": 95,
+          "seed": 80403,
+          "species": "aspen"
+        },
+        {
+          "base": [
+            57,
+            10,
+            55
+          ],
+          "bounds": [
+            [
+              53.5,
+              9.5,
+              51.5
+            ],
+            [
+              59.5,
+              23.5,
+              57.5
+            ]
+          ],
+          "cells": 142,
+          "seed": 80412,
+          "species": "aspen"
+        },
+        {
+          "base": [
+            64,
+            10,
+            71
+          ],
+          "bounds": [
+            [
+              60.5,
+              9.5,
+              68.5
+            ],
+            [
+              67.5,
+              22.5,
+              74.5
+            ]
+          ],
+          "cells": 121,
+          "seed": 80410,
+          "species": "aspen"
+        }
+      ]
+    },
+    "human": {
+      "added_cells": 67360,
+      "added_columns_inside_game_frustum": 0,
+      "added_terrain_cells": 64773,
+      "added_trees_inside_game_frustum": 0,
+      "base_cells": 52235,
+      "base_cells_first": true,
+      "base_geometry_matches_installed_refresh": true,
+      "changed_base_cells": 0,
+      "frustum_margin_fraction": 0.02,
+      "layer": {
+        "camera": {
+          "eye": [
+            0.4967734930564984,
+            2.5,
+            -13.0
+          ],
+          "fov": 55,
+          "target": [
+            0.4967734930564984,
+            1.7712061292275552,
+            -9.5
+          ]
+        },
+        "description": "Small apple-tree groups continue the orchard along both side slopes, with separated crowns on the far ridges. The lane and standing area stay open.",
+        "terrain": {
+          "x_max": 76,
+          "x_min": -76,
+          "z_max": 82,
+          "z_min": -22
+        },
+        "trees": [
+          {
+            "at": [
+              -35,
+              0,
+              29
+            ],
+            "seed": 80101,
+            "species": "apple"
+          },
+          {
+            "at": [
+              -43,
+              0,
+              39
+            ],
+            "seed": 80104,
+            "species": "apple"
+          },
+          {
+            "at": [
+              -46,
+              0,
+              50
+            ],
+            "seed": 80108,
+            "species": "apple"
+          },
+          {
+            "at": [
+              -56,
+              0,
+              60
+            ],
+            "seed": 80103,
+            "species": "apple"
+          },
+          {
+            "at": [
+              -61,
+              0,
+              72
+            ],
+            "seed": 80113,
+            "species": "apple"
+          },
+          {
+            "at": [
+              48,
+              0,
+              52
+            ],
+            "seed": 80105,
+            "species": "apple"
+          },
+          {
+            "at": [
+              59,
+              0,
+              57
+            ],
+            "seed": 80107,
+            "species": "apple"
+          },
+          {
+            "at": [
+              49,
+              0,
+              68
+            ],
+            "seed": 80109,
+            "species": "apple"
+          },
+          {
+            "at": [
+              64,
+              0,
+              72
+            ],
+            "seed": 80114,
+            "species": "apple"
+          },
+          {
+            "at": [
+              53,
+              0,
+              79
+            ],
+            "seed": 80115,
+            "species": "apple"
+          }
+        ]
+      },
+      "trees": [
+        {
+          "base": [
+            -35,
+            3,
+            29
+          ],
+          "bounds": [
+            [
+              -39.5,
+              2.5,
+              24.5
+            ],
+            [
+              -29.5,
+              12.5,
+              33.5
+            ]
+          ],
+          "cells": 225,
+          "seed": 80101,
+          "species": "apple"
+        },
+        {
+          "base": [
+            -43,
+            5,
+            39
+          ],
+          "bounds": [
+            [
+              -48.5,
+              4.5,
+              33.5
+            ],
+            [
+              -38.5,
+              15.5,
+              42.5
+            ]
+          ],
+          "cells": 257,
+          "seed": 80104,
+          "species": "apple"
+        },
+        {
+          "base": [
+            -46,
+            6,
+            50
+          ],
+          "bounds": [
+            [
+              -49.5,
+              5.5,
+              45.5
+            ],
+            [
+              -40.5,
+              14.5,
+              55.5
+            ]
+          ],
+          "cells": 256,
+          "seed": 80108,
+          "species": "apple"
+        },
+        {
+          "base": [
+            -56,
+            11,
+            60
+          ],
+          "bounds": [
+            [
+              -62.5,
+              10.5,
+              55.5
+            ],
+            [
+              -50.5,
+              19.5,
+              65.5
+            ]
+          ],
+          "cells": 299,
+          "seed": 80103,
+          "species": "apple"
+        },
+        {
+          "base": [
+            -61,
+            14,
+            72
+          ],
+          "bounds": [
+            [
+              -65.5,
+              13.5,
+              66.5
+            ],
+            [
+              -56.5,
+              24.5,
+              77.5
+            ]
+          ],
+          "cells": 235,
+          "seed": 80113,
+          "species": "apple"
+        },
+        {
+          "base": [
+            48,
+            9,
+            52
+          ],
+          "bounds": [
+            [
+              43.5,
+              8.5,
+              46.5
+            ],
+            [
+              52.5,
+              19.5,
+              55.5
+            ]
+          ],
+          "cells": 264,
+          "seed": 80105,
+          "species": "apple"
+        },
+        {
+          "base": [
+            59,
+            10,
+            57
+          ],
+          "bounds": [
+            [
+              53.5,
+              9.5,
+              50.5
+            ],
+            [
+              64.5,
+              18.5,
+              60.5
+            ]
+          ],
+          "cells": 299,
+          "seed": 80107,
+          "species": "apple"
+        },
+        {
+          "base": [
+            49,
+            11,
+            68
+          ],
+          "bounds": [
+            [
+              43.5,
+              10.5,
+              63.5
+            ],
+            [
+              54.5,
+              19.5,
+              73.5
+            ]
+          ],
+          "cells": 235,
+          "seed": 80109,
+          "species": "apple"
+        },
+        {
+          "base": [
+            64,
+            10,
+            72
+          ],
+          "bounds": [
+            [
+              58.5,
+              9.5,
+              67.5
+            ],
+            [
+              69.5,
+              20.5,
+              77.5
+            ]
+          ],
+          "cells": 294,
+          "seed": 80114,
+          "species": "apple"
+        },
+        {
+          "base": [
+            53,
+            11,
+            79
+          ],
+          "bounds": [
+            [
+              48.5,
+              10.5,
+              74.5
+            ],
+            [
+              57.5,
+              20.5,
+              83.5
+            ]
+          ],
+          "cells": 223,
+          "seed": 80115,
+          "species": "apple"
+        }
+      ]
+    },
+    "orc": {
+      "added_cells": 67450,
+      "added_columns_inside_game_frustum": 0,
+      "added_terrain_cells": 66204,
+      "added_trees_inside_game_frustum": 0,
+      "base_cells": 50739,
+      "base_cells_first": true,
+      "base_geometry_matches_installed_refresh": true,
+      "changed_base_cells": 0,
+      "frustum_margin_fraction": 0.02,
+      "layer": {
+        "camera": {
+          "eye": [
+            0.4967734930564984,
+            2.5,
+            -13.0
+          ],
+          "fov": 55,
+          "target": [
+            0.4967734930564984,
+            1.7712061292275552,
+            -9.5
+          ]
+        },
+        "description": "Sparse acacia pairs and single ridge trees continue the dry landscape at both sides, leaving broad gaps of open ground.",
+        "terrain": {
+          "x_max": 76,
+          "x_min": -76,
+          "z_max": 82,
+          "z_min": -22
+        },
+        "trees": [
+          {
+            "at": [
+              -34,
+              0,
+              28
+            ],
+            "seed": 80505,
+            "species": "acacia"
+          },
+          {
+            "at": [
+              -43,
+              0,
+              40
+            ],
+            "seed": 80506,
+            "species": "acacia"
+          },
+          {
+            "at": [
+              -47,
+              0,
+              57
+            ],
+            "seed": 80503,
+            "species": "acacia"
+          },
+          {
+            "at": [
+              -61,
+              0,
+              67
+            ],
+            "seed": 80512,
+            "species": "acacia"
+          },
+          {
+            "at": [
+              34,
+              0,
+              36
+            ],
+            "seed": 80501,
+            "species": "acacia"
+          },
+          {
+            "at": [
+              47,
+              0,
+              46
+            ],
+            "seed": 80510,
+            "species": "acacia"
+          },
+          {
+            "at": [
+              48,
+              0,
+              62
+            ],
+            "seed": 80515,
+            "species": "acacia"
+          },
+          {
+            "at": [
+              62,
+              0,
+              69
+            ],
+            "seed": 80504,
+            "species": "acacia"
+          }
+        ]
+      },
+      "trees": [
+        {
+          "base": [
+            -34,
+            3,
+            28
+          ],
+          "bounds": [
+            [
+              -38.5,
+              2.5,
+              22.5
+            ],
+            [
+              -29.5,
+              11.5,
+              35.5
+            ]
+          ],
+          "cells": 109,
+          "seed": 80505,
+          "species": "acacia"
+        },
+        {
+          "base": [
+            -43,
+            5,
+            40
+          ],
+          "bounds": [
+            [
+              -48.5,
+              4.5,
+              33.5
+            ],
+            [
+              -39.5,
+              10.5,
+              47.5
+            ]
+          ],
+          "cells": 116,
+          "seed": 80506,
+          "species": "acacia"
+        },
+        {
+          "base": [
+            -47,
+            9,
+            57
+          ],
+          "bounds": [
+            [
+              -54.5,
+              8.5,
+              50.5
+            ],
+            [
+              -40.5,
+              15.5,
+              62.5
+            ]
+          ],
+          "cells": 201,
+          "seed": 80503,
+          "species": "acacia"
+        },
+        {
+          "base": [
+            -61,
+            13,
+            67
+          ],
+          "bounds": [
+            [
+              -65.5,
+              12.5,
+              61.5
+            ],
+            [
+              -55.5,
+              18.5,
+              74.5
+            ]
+          ],
+          "cells": 143,
+          "seed": 80512,
+          "species": "acacia"
+        },
+        {
+          "base": [
+            34,
+            3,
+            36
+          ],
+          "bounds": [
+            [
+              28.5,
+              2.5,
+              29.5
+            ],
+            [
+              41.5,
+              11.5,
+              42.5
+            ]
+          ],
+          "cells": 167,
+          "seed": 80501,
+          "species": "acacia"
+        },
+        {
+          "base": [
+            47,
+            7,
+            46
+          ],
+          "bounds": [
+            [
+              39.5,
+              6.5,
+              39.5
+            ],
+            [
+              53.5,
+              12.5,
+              53.5
+            ]
+          ],
+          "cells": 191,
+          "seed": 80510,
+          "species": "acacia"
+        },
+        {
+          "base": [
+            48,
+            11,
+            62
+          ],
+          "bounds": [
+            [
+              41.5,
+              10.5,
+              56.5
+            ],
+            [
+              53.5,
+              18.5,
+              68.5
+            ]
+          ],
+          "cells": 118,
+          "seed": 80515,
+          "species": "acacia"
+        },
+        {
+          "base": [
+            62,
+            11,
+            69
+          ],
+          "bounds": [
+            [
+              56.5,
+              10.5,
+              62.5
+            ],
+            [
+              69.5,
+              17.5,
+              76.5
+            ]
+          ],
+          "cells": 201,
+          "seed": 80504,
+          "species": "acacia"
+        }
+      ]
+    },
+    "troll": {
+      "added_cells": 68506,
+      "added_columns_inside_game_frustum": 0,
+      "added_terrain_cells": 66470,
+      "added_trees_inside_game_frustum": 0,
+      "base_cells": 53250,
+      "base_cells_first": true,
+      "base_geometry_matches_installed_refresh": true,
+      "changed_base_cells": 0,
+      "frustum_margin_fraction": 0.02,
+      "layer": {
+        "camera": {
+          "eye": [
+            0.4967734930564984,
+            3.5,
+            -9.5
+          ],
+          "fov": 55,
+          "target": [
+            0.4967734930564984,
+            2.771206129227555,
+            -6
+          ]
+        },
+        "description": "Jungle-tree clumps with the generator's hanging vines continue both banks into the distant side hills, separated by misty openings.",
+        "terrain": {
+          "x_max": 76,
+          "x_min": -76,
+          "z_max": 82,
+          "z_min": -22
+        },
+        "trees": [
+          {
+            "at": [
+              -32,
+              0,
+              29
+            ],
+            "seed": 80604,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              -43,
+              0,
+              32
+            ],
+            "seed": 80601,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              -40,
+              0,
+              44
+            ],
+            "seed": 80606,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              -49,
+              0,
+              52
+            ],
+            "seed": 80603,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              -56,
+              0,
+              64
+            ],
+            "seed": 80610,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              -64,
+              0,
+              72
+            ],
+            "seed": 80607,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              41,
+              0,
+              53
+            ],
+            "seed": 80605,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              51,
+              0,
+              49
+            ],
+            "seed": 80602,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              48,
+              0,
+              64
+            ],
+            "seed": 80609,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              62,
+              0,
+              60
+            ],
+            "seed": 80612,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              59,
+              0,
+              73
+            ],
+            "seed": 80614,
+            "species": "jungle"
+          },
+          {
+            "at": [
+              70,
+              0,
+              74
+            ],
+            "seed": 80615,
+            "species": "jungle"
+          }
+        ]
+      },
+      "trees": [
+        {
+          "base": [
+            -32,
+            2,
+            29
+          ],
+          "bounds": [
+            [
+              -33.5,
+              1.5,
+              24.5
+            ],
+            [
+              -26.5,
+              14.5,
+              33.5
+            ]
+          ],
+          "cells": 144,
+          "seed": 80604,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            -43,
+            6,
+            32
+          ],
+          "bounds": [
+            [
+              -46.5,
+              5.5,
+              25.5
+            ],
+            [
+              -39.5,
+              17.5,
+              37.5
+            ]
+          ],
+          "cells": 202,
+          "seed": 80601,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            -40,
+            4,
+            44
+          ],
+          "bounds": [
+            [
+              -44.5,
+              3.5,
+              41.5
+            ],
+            [
+              -33.5,
+              16.5,
+              47.5
+            ]
+          ],
+          "cells": 166,
+          "seed": 80606,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            -49,
+            7,
+            52
+          ],
+          "bounds": [
+            [
+              -54.5,
+              6.5,
+              46.5
+            ],
+            [
+              -45.5,
+              20.5,
+              56.5
+            ]
+          ],
+          "cells": 178,
+          "seed": 80603,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            -56,
+            12,
+            64
+          ],
+          "bounds": [
+            [
+              -62.5,
+              11.5,
+              61.5
+            ],
+            [
+              -51.5,
+              26.5,
+              67.5
+            ]
+          ],
+          "cells": 164,
+          "seed": 80610,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            -64,
+            14,
+            72
+          ],
+          "bounds": [
+            [
+              -66.5,
+              13.5,
+              66.5
+            ],
+            [
+              -59.5,
+              26.5,
+              76.5
+            ]
+          ],
+          "cells": 144,
+          "seed": 80607,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            41,
+            9,
+            53
+          ],
+          "bounds": [
+            [
+              35.5,
+              8.5,
+              50.5
+            ],
+            [
+              46.5,
+              21.5,
+              56.5
+            ]
+          ],
+          "cells": 164,
+          "seed": 80605,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            51,
+            8,
+            49
+          ],
+          "bounds": [
+            [
+              46.5,
+              7.5,
+              42.5
+            ],
+            [
+              55.5,
+              21.5,
+              54.5
+            ]
+          ],
+          "cells": 229,
+          "seed": 80602,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            48,
+            11,
+            64
+          ],
+          "bounds": [
+            [
+              43.5,
+              10.5,
+              57.5
+            ],
+            [
+              51.5,
+              25.5,
+              68.5
+            ]
+          ],
+          "cells": 161,
+          "seed": 80609,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            62,
+            11,
+            60
+          ],
+          "bounds": [
+            [
+              58.5,
+              10.5,
+              54.5
+            ],
+            [
+              67.5,
+              22.5,
+              64.5
+            ]
+          ],
+          "cells": 170,
+          "seed": 80612,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            59,
+            10,
+            73
+          ],
+          "bounds": [
+            [
+              55.5,
+              9.5,
+              68.5
+            ],
+            [
+              65.5,
+              24.5,
+              77.5
+            ]
+          ],
+          "cells": 157,
+          "seed": 80614,
+          "species": "jungle"
+        },
+        {
+          "base": [
+            70,
+            10,
+            74
+          ],
+          "bounds": [
+            [
+              64.5,
+              9.5,
+              70.5
+            ],
+            [
+              74.5,
+              23.5,
+              77.5
+            ]
+          ],
+          "cells": 157,
+          "seed": 80615,
+          "species": "jungle"
+        }
+      ]
+    },
+    "undead": {
+      "added_cells": 64106,
+      "added_columns_inside_game_frustum": 0,
+      "added_terrain_cells": 63563,
+      "added_trees_inside_game_frustum": 0,
+      "base_cells": 50451,
+      "base_cells_first": true,
+      "base_geometry_matches_installed_refresh": true,
+      "changed_base_cells": 0,
+      "frustum_margin_fraction": 0.02,
+      "layer": {
+        "camera": {
+          "eye": [
+            0.4967734930564984,
+            2.5,
+            -13.0
+          ],
+          "fov": 55,
+          "target": [
+            0.4967734930564984,
+            1.7712061292275552,
+            -9.5
+          ]
+        },
+        "description": "Loose gravewood groups and isolated crooked trees line the cemetery's side slopes and far ridges, with bare ground visible between them.",
+        "terrain": {
+          "x_max": 76,
+          "x_min": -76,
+          "z_max": 82,
+          "z_min": -22
+        },
+        "trees": [
+          {
+            "at": [
+              -28,
+              0,
+              26
+            ],
+            "seed": 80707,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              -37,
+              0,
+              34
+            ],
+            "seed": 80702,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              -43,
+              0,
+              43
+            ],
+            "seed": 80704,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              -45,
+              0,
+              57
+            ],
+            "seed": 80701,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              -56,
+              0,
+              63
+            ],
+            "seed": 80710,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              -62,
+              0,
+              75
+            ],
+            "seed": 80703,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              44,
+              0,
+              51
+            ],
+            "seed": 80709,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              56,
+              0,
+              55
+            ],
+            "seed": 80705,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              49,
+              0,
+              65
+            ],
+            "seed": 80706,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              63,
+              0,
+              67
+            ],
+            "seed": 80708,
+            "species": "gravewood"
+          },
+          {
+            "at": [
+              58,
+              0,
+              79
+            ],
+            "seed": 80711,
+            "species": "gravewood"
+          }
+        ]
+      },
+      "trees": [
+        {
+          "base": [
+            -28,
+            2,
+            26
+          ],
+          "bounds": [
+            [
+              -32.5,
+              1.5,
+              20.5
+            ],
+            [
+              -23.5,
+              12.5,
+              29.5
+            ]
+          ],
+          "cells": 42,
+          "seed": 80707,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            -37,
+            4,
+            34
+          ],
+          "bounds": [
+            [
+              -40.5,
+              3.5,
+              30.5
+            ],
+            [
+              -32.5,
+              11.5,
+              38.5
+            ]
+          ],
+          "cells": 44,
+          "seed": 80702,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            -43,
+            5,
+            43
+          ],
+          "bounds": [
+            [
+              -47.5,
+              4.5,
+              39.5
+            ],
+            [
+              -37.5,
+              10.5,
+              45.5
+            ]
+          ],
+          "cells": 37,
+          "seed": 80704,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            -45,
+            9,
+            57
+          ],
+          "bounds": [
+            [
+              -46.5,
+              8.5,
+              53.5
+            ],
+            [
+              -40.5,
+              14.5,
+              62.5
+            ]
+          ],
+          "cells": 45,
+          "seed": 80701,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            -56,
+            12,
+            63
+          ],
+          "bounds": [
+            [
+              -60.5,
+              11.5,
+              57.5
+            ],
+            [
+              -50.5,
+              21.5,
+              67.5
+            ]
+          ],
+          "cells": 47,
+          "seed": 80710,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            -62,
+            14,
+            75
+          ],
+          "bounds": [
+            [
+              -66.5,
+              13.5,
+              69.5
+            ],
+            [
+              -58.5,
+              21.5,
+              79.5
+            ]
+          ],
+          "cells": 54,
+          "seed": 80703,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            44,
+            9,
+            51
+          ],
+          "bounds": [
+            [
+              39.5,
+              8.5,
+              46.5
+            ],
+            [
+              48.5,
+              19.5,
+              55.5
+            ]
+          ],
+          "cells": 49,
+          "seed": 80709,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            56,
+            10,
+            55
+          ],
+          "bounds": [
+            [
+              51.5,
+              9.5,
+              53.5
+            ],
+            [
+              60.5,
+              17.5,
+              61.5
+            ]
+          ],
+          "cells": 38,
+          "seed": 80705,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            49,
+            11,
+            65
+          ],
+          "bounds": [
+            [
+              44.5,
+              10.5,
+              63.5
+            ],
+            [
+              54.5,
+              21.5,
+              72.5
+            ]
+          ],
+          "cells": 68,
+          "seed": 80706,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            63,
+            11,
+            67
+          ],
+          "bounds": [
+            [
+              58.5,
+              10.5,
+              61.5
+            ],
+            [
+              66.5,
+              19.5,
+              71.5
+            ]
+          ],
+          "cells": 65,
+          "seed": 80708,
+          "species": "gravewood"
+        },
+        {
+          "base": [
+            58,
+            11,
+            79
+          ],
+          "bounds": [
+            [
+              53.5,
+              10.5,
+              74.5
+            ],
+            [
+              63.5,
+              18.5,
+              81.5
+            ]
+          ],
+          "cells": 54,
+          "seed": 80711,
+          "species": "gravewood"
+        }
+      ]
+    }
+  },
+  "protected_game_images": {
+    "mods/PLAYER/grug_classes/textures/grug_creation_crest.png": "08cad78a882779a6dbddc8c5301881dd729e9053bdc09d0addb0cfc996a759da",
+    "mods/PLAYER/grug_classes/textures/grug_creation_dwarf.png": "c70da9eb0161df7909964ec1f460bbc8fdf09520ff0aa989ff399e4aefdad52c",
+    "mods/PLAYER/grug_classes/textures/grug_creation_elf.png": "cb878bbf434cfe8a8b505c5f5265d45e927a900a86ee4ebc302b8e6ce1d0a672",
+    "mods/PLAYER/grug_classes/textures/grug_creation_human.png": "34c39452ea44c55b380b0486a10b954b88a411bb3d8f1ec0eca770d3f97a875f",
+    "mods/PLAYER/grug_classes/textures/grug_creation_intro.png": "74291ece69c42c9c745023e390dcd88bbd069c9dabb1989a8a6c43cb1ef7805e",
+    "mods/PLAYER/grug_classes/textures/grug_creation_orc.png": "09ad3364bd1bcd15208f1ffcc693f6b1199ec97cf3b9a1c22102c3730777ae85",
+    "mods/PLAYER/grug_classes/textures/grug_creation_troll.png": "783cac0d25114b27881b0c6aeecd2cc5471bf99fb5e90499431fcfbeed58931d",
+    "mods/PLAYER/grug_classes/textures/grug_creation_undead.png": "ff4886b6e32372721380de922dbf5d40d2e1063f720d63437745a762cc0e27a6"
+  },
+  "source_digest": "d5928d56a8dda70ee1b3f787d31afcdf38a54030def666372ea9f51b82de7a05",
+  "sources": {
+    "mods/BASE/beds/textures/beds_bed_foot.png": "694ff5653ed7ab6a11e6510cdc9d73288169c172d5393b3642c6f57cb6c3cff3",
+    "mods/BASE/beds/textures/beds_bed_head.png": "4580879279c322657b91fc445caa3e514451027d66f8dd180f7bce72ffd25adf",
+    "mods/BASE/beds/textures/beds_bed_side1.png": "e33150b791ba80d81269d8a89626358fc9989761cf3ef1f024a375142f2d1074",
+    "mods/BASE/beds/textures/beds_bed_side2.png": "0b93b0e2ccc138debb6b2f770e942ac9215bf63f9009fbd0bc13ab5e35b30480",
+    "mods/BASE/beds/textures/beds_bed_side_bottom.png": "849074872ac04ab1fff3a50fce496801fc40e30ca0659f09a2333e3a9d9c64c0",
+    "mods/BASE/beds/textures/beds_bed_side_bottom_r.png": "af680e7a0541c260420ae54a4f84aad5537bce6492674482fa23afba4050eb2f",
+    "mods/BASE/beds/textures/beds_bed_side_top.png": "138be13fefbff7b07236c0e89e69b094e8ee6b98aff807072aac2304409df76f",
+    "mods/BASE/beds/textures/beds_bed_side_top_r.png": "34eabcf55c373bac81fb750f0d36acfaed3d75043a5dc5f609c556b217c626cc",
+    "mods/BASE/beds/textures/beds_bed_top1.png": "6b18ca5cf26cfda1e8057835e0d56c6513218702addc7bebc252248a7c221260",
+    "mods/BASE/beds/textures/beds_bed_top2.png": "7c358972da0cedf9131c1e24a935f25a93403502c5bfe2863d896c94291f56ac",
+    "mods/BASE/beds/textures/beds_bed_top_bottom.png": "a88631c98c10eac9ad1db4da51a6bc74d0e169e6f3f49a32abf30ec553ea213f",
+    "mods/BASE/beds/textures/beds_bed_top_top.png": "8317b12a670a8d9082ff9ada51a5a8efc7a89a81a3a90ac806622efd81ddf56f",
+    "mods/BASE/beds/textures/beds_bed_under.png": "d0634112bf641d79744f136bc670d19785785b490a85436893255a26acea9f38",
+    "mods/BASE/default/models/torch_floor.obj": "17a5d902928ccde9b8a87a9886428f0fbb515925b9b714bf216c2b9f81db585c",
+    "mods/BASE/default/models/torch_wall.obj": "f2ac1641de9403cd3064e3457bf46295b527350d5b7478ec38ac4601ec57b2c3",
+    "mods/BASE/default/textures/default_acacia_leaves.png": "ca31299e4e2040168897cebde30446e9906192d47c2697008f4300d905c8e7ed",
+    "mods/BASE/default/textures/default_acacia_leaves_simple.png": "92117170abed7c78f7693f940a106b8f514a5454ab0d1479a536035c6ce0ceba",
+    "mods/BASE/default/textures/default_acacia_tree.png": "3ad03feef0032ec96c27f907a1b3fad940f5d1f28c147b845e115a8261e335ad",
+    "mods/BASE/default/textures/default_acacia_tree_top.png": "0ae1c051a48031e1093c93a49a6aa917c2e6829ad1385de96b5862256b4fbc72",
+    "mods/BASE/default/textures/default_acacia_wood.png": "eee592d2cc72db5fdb84057e4114a9e05b3a932b9f34f37b8613379a597326d0",
+    "mods/BASE/default/textures/default_apple.png": "d0ce76d0c9c4da313a19af98420a0e010d6978fdfacaa0e68426a41fa12e2b41",
+    "mods/BASE/default/textures/default_aspen_leaves.png": "db5bf86464c7370b6645f1fa7586fadc9b421bd4166922d0397845a66a343c96",
+    "mods/BASE/default/textures/default_aspen_tree.png": "10750f31872ef0a63cb11d10302806e412ec0bc3622b087c37958c04692306af",
+    "mods/BASE/default/textures/default_aspen_tree_top.png": "62b938c97c485afd7831b0f14a80b4e2aa5af17367cd12911a17060e3e996fca",
+    "mods/BASE/default/textures/default_brick.png": "32a1fdd1155e7630c1333a24d99d2c9659eddb9bd32213984d577716e4f484fe",
+    "mods/BASE/default/textures/default_cobble.png": "ce9e03d6786da33b1a16fbf26dd809a21e19d70958e50d73803a61d481de7826",
+    "mods/BASE/default/textures/default_desert_cobble.png": "8ac3d35f96b1273b868577cc3396945d97e3a6f9e76b7d6388513e5656822b81",
+    "mods/BASE/default/textures/default_desert_sandstone.png": "075816e82ec87b09e6cb1bc5ba5511bbb9167db2bc8e040226f6d8d6785f804f",
+    "mods/BASE/default/textures/default_desert_sandstone_brick.png": "234d060af8203e9f3936b7cc2b4f5f570632dcaed9be12a83fbb954bbdd35c5e",
+    "mods/BASE/default/textures/default_desert_stone.png": "84bc66a66dae23a452b433131cf52d8e6c31a75ca02b4b85f52df56138d5f1f8",
+    "mods/BASE/default/textures/default_desert_stone_brick.png": "6162402d6abb4d412a106f3f9f3c38ac0e48d734fbc3976cd5070fa2ab5085ee",
+    "mods/BASE/default/textures/default_dirt.png": "d2f693ff1e1bfd3cee0697d753b9cdd6270e6a374eccda791c8767674d5c3949",
+    "mods/BASE/default/textures/default_dry_dirt.png": "7a9189bee661bd9230b77c2a8bb4eb6baf4f1efdf859a7aff79954472b560373",
+    "mods/BASE/default/textures/default_dry_grass.png": "defd7533a02c08272ef06fa8b1ad40b6f0c9ed067ee7f932ab24ac268727a0cc",
+    "mods/BASE/default/textures/default_dry_grass_3.png": "84f798fbcfeb372bd8bbe86d6f57425b49b6ac7c43dd303541aec310106a012e",
+    "mods/BASE/default/textures/default_dry_grass_4.png": "4645dc5c6c6748e04790a3edbbdbdc2c1a1ffdce92f000c537fc4d74928aa65f",
+    "mods/BASE/default/textures/default_dry_grass_side.png": "2cfb25104eccaa1b5fb996943898989c4fbf90e0e03f273e62f5c9567c354bd0",
+    "mods/BASE/default/textures/default_dry_shrub.png": "48a8ad92def5558e1709c0d861cf8ed7b52b2b2d98502fb1556505eb4f454319",
+    "mods/BASE/default/textures/default_fence_acacia_wood.png": "e1ea28c87612d6c8081060c311f4704fd4c8faed0fbc7f8327b54f95d4333730",
+    "mods/BASE/default/textures/default_fence_aspen_wood.png": "de15651d3276ea57c676ad42f7a44b740e3235f318591f8b8da629f2ed5d2ca8",
+    "mods/BASE/default/textures/default_fence_junglewood.png": "ec8457949ec7bea2595ce734fd7c67dc0af2bae7088b479a3ce57edfbbac3cbd",
+    "mods/BASE/default/textures/default_fence_wood.png": "fa1a7bbe176364c9f6bb826cab23ab8db189fef441341f64cfdd01be0fde57d3",
+    "mods/BASE/default/textures/default_fern_1.png": "57a02789f346716b1e6961f4db2836914eae6badf5f0c9a96714e2acacb4ec14",
+    "mods/BASE/default/textures/default_fern_2.png": "8fd24d51c8fee8439d094f0686003d4196ad9b62422cc676197b8765e5796e31",
+    "mods/BASE/default/textures/default_fern_3.png": "2cdd02404ddf8b0bf69af048be6d556fd0f6a6e7053e8639675759e8e4a52192",
+    "mods/BASE/default/textures/default_glass.png": "cd770db5c3a3e1b9cf7405d28ac55ee1629f255179c5e0e9a913857df081af87",
+    "mods/BASE/default/textures/default_grass.png": "4bc38f157e38eae07cac20beb8309d5050d571f2c35690a54dde213548ca0e1b",
+    "mods/BASE/default/textures/default_grass_3.png": "7033726878a6c13d4bcf44364ddd9202573644ea59e73b0f11088f569c2855d3",
+    "mods/BASE/default/textures/default_grass_side.png": "1a52f427483c6a2e313de0370bfdb6320516e7822cd97058e7e2d38b13936c29",
+    "mods/BASE/default/textures/default_gravel.png": "69e4e086f69de5dcd14c2947f4f82bd4d19744bbc44d2ceb18b8766672faf0c6",
+    "mods/BASE/default/textures/default_junglegrass.png": "6c13b9b9305cfc4f5c46bd35426515393b9a860a63fc726e847503105394a9d8",
+    "mods/BASE/default/textures/default_jungleleaves.png": "aaca53c761ebb695a316169491147eb014ebafdde10bc56e8b9740f774ad4cb5",
+    "mods/BASE/default/textures/default_jungleleaves_simple.png": "fb41a0c99fb76b5fc9ad7c22f7879baf4b5635aedfac1106d3e5c0efacb5f3d5",
+    "mods/BASE/default/textures/default_junglewood.png": "f7f30806a9ad46e2050638259c4c271b4897eedefff43c0a33ce2e64b08f8386",
+    "mods/BASE/default/textures/default_leaves.png": "805048f7e1026a9e9cd38d782f9bc61766b285f0096a47488ddf243b82f0b4e0",
+    "mods/BASE/default/textures/default_leaves_simple.png": "fa43fe4de5f97b65ad3b303563bbe4cd75c76dd3c1add66fcc2527ea5de8a22b",
+    "mods/BASE/default/textures/default_meselamp.png": "ca2a883591dabc7e2c2e3a708ae31b8341088f1d301209b508f903d46659faff",
+    "mods/BASE/default/textures/default_mineral_coal.png": "ba09ff6a6ede71b486e15d998e2c7ae1a6688a450b08289bc643239c71effa56",
+    "mods/BASE/default/textures/default_mineral_iron.png": "ebfc0d78f5a7c71bc74787b5a6bce043ccbee0fe80c67c212c5b9c03bee8e523",
+    "mods/BASE/default/textures/default_mossycobble.png": "e552477a150e676c73155c913ddb8dbda694267b4bd48bf9923cd077e2120909",
+    "mods/BASE/default/textures/default_obsidian_brick.png": "007a9a32eeb28592631eff493fdeb6deca32e13a6f4005006f859c6afe099fee",
+    "mods/BASE/default/textures/default_pine_needles.png": "c22b03808d6731f3bf5eb00c79172248ab7e700c33666adbf68193a48d2611a9",
+    "mods/BASE/default/textures/default_pine_tree.png": "760d771193e1358f0d900580faccf5c9a9e1be450c639bd7194adfaa251f9fc4",
+    "mods/BASE/default/textures/default_pine_tree_top.png": "f6e9b21cf30aa9d422fa49dc0c57d7aa1071f3beffd98ba29dd67fde3d8f3e6b",
+    "mods/BASE/default/textures/default_pine_wood.png": "d42fb831a998bafadca375f1f3e54c5ba59bac57e00f18edb817cbbc25e2ce17",
+    "mods/BASE/default/textures/default_river_water_source_animated.png": "b71ac10092987e89bbf0e6a4fc59279443bd0886dbbb1873520c92427beab737",
+    "mods/BASE/default/textures/default_silver_sandstone.png": "f592de95c9f77830133f3b35820c029a8bb0b645c0c7f2622300554bc83de56d",
+    "mods/BASE/default/textures/default_silver_sandstone_block.png": "918ea37d5f3d40cd6a4595d62eeeb93b1dcb9f18b814a266061542e17f96cad8",
+    "mods/BASE/default/textures/default_silver_sandstone_brick.png": "57cb983a44cfe52906566b8bef2faeebbc7d0afe0c65970cd2747a6189e5d11e",
+    "mods/BASE/default/textures/default_steel_block.png": "2ea2a1dbb8a576776d7e0ee67f808b188c09df428db8110b080963435b286580",
+    "mods/BASE/default/textures/default_stone.png": "0803a6cd3e8a07ec5d7885735800ee9578a3fa9019d4deb8838290a744e2318a",
+    "mods/BASE/default/textures/default_stone_block.png": "0f830d8e3eaf3278abcffe64feed208f11bfc27d63c7dec448412c8c5dba19ef",
+    "mods/BASE/default/textures/default_stone_brick.png": "71493a7ec3ddb724f41c3a0a015622a5fe3c5bbe2916e4f2b9c893d6b0b4a082",
+    "mods/BASE/default/textures/default_torch_on_floor_animated.png": "988842f8a057910893747dbbedcb7bc719ce761d2552f83e26844f201e93e354",
+    "mods/BASE/default/textures/default_tree.png": "26b1051fb141b031cb05c30ea24b8adc904d358c615a85829467844da0897cd7",
+    "mods/BASE/default/textures/default_tree_top.png": "610b79ba51ec122460b2463eb7ee0564043e6181ff2c578718fa4d12c2b9a4a7",
+    "mods/BASE/default/textures/default_wood.png": "4540d1d39328d23a881f2b9180c11fdf92e6414bf93cbfe1383b786e60af874e",
+    "mods/BASE/doors/models/door_a.b3d": "dc56cbfde3bbbd4fae54feb1229ebedbff136b9b1324ddd1af5a733fe4d1a10d",
+    "mods/BASE/doors/models/door_b.b3d": "297f0fa0d4a133bf3629ad59ed0484395c1454e897138e3adbfb4beff3cb36b1",
+    "mods/BASE/doors/textures/doors_door_steel.png": "90949b049d7bf5bc9ec69e03c849544561e07151c87f461855d6ca3175d56a9a",
+    "mods/BASE/doors/textures/doors_door_wood.png": "1438301e65e895289cfe94885ac37a40e69de389d9c78b8c6de2725be20ba86e",
+    "mods/BASE/player_api/models/character.b3d": "69a9b760487f0938929aaf3e0ef49c68bb8feb1e213f78544d2c23a71e83c98b",
+    "mods/BASE/wool/textures/wool_brown.png": "feca712ec496ab4c9fc79a580a79d950ede4125c84d08416a5403076a31ef860",
+    "mods/BASE/wool/textures/wool_green.png": "aeecfb000656310f67db4213865a0cc8dbe15fad07585ea507cd5aa70283e327",
+    "mods/BASE/wool/textures/wool_red.png": "36cf7d423c9869cdc76c457a787292244d20d79d6cdb6adc01fcde5f54580f18",
+    "mods/BASE/wool/textures/wool_white.png": "6409a07b47a4056da3128fc50c1de2ee8b6952a8d77ffca97237c5fe285b851e",
+    "mods/BASE/xpanes/textures/xpanes_bar.png": "960b349c55920d54841692e2ac2d8a4adc7448ba534bdd9e5ec98aabc711a0b9",
+    "mods/BASE/xpanes/textures/xpanes_bar_top.png": "a79db183b579e01c044b0384e3c3e580bf62c6aebe9dc4298c9bd714a40887a4",
+    "mods/BASE/xpanes/textures/xpanes_edge.png": "7a951aa3c3a9dba20a0dfbb2a5cc68d2f10cbeb6757fb4666b2d5ce1b06d9a0e",
+    "mods/ENTITIES/grug_mobs/textures/grug_mobs_blank.png": "d1f997e9d36cab74d9b7c82335b21734e1c74b284d17a8b3df2aa3f4661d2f6c",
+    "mods/ENTITIES/grug_mobs/textures/grug_mobs_camp_fire.png": "7083c6c56e639b24d63f5b7b356a3aa756210c21391a3fb96de5872b0ed331ab",
+    "mods/ENTITIES/grug_mobs/textures/grug_mobs_item_light_leather.png": "fd9ef08851579c33c149ff78d29e64ec8e49ee3e9da9b9c2556f399836974090",
+    "mods/ITEMS/grug_decor/models/grug_decor_capital_hides.obj": "ae2cbd044ed0e82c8dc9f9c4b5d8287721b148f7bed13c1479b80be57f075f90",
+    "mods/ITEMS/grug_decor/models/grug_decor_cottages_cottages_barrel.obj": "886237d1654e4019d6e4949bd8b2d1f37ae5ffeeea4a1f20617a544f5fe3bece",
+    "mods/ITEMS/grug_decor/models/grug_decor_cottages_cottages_barrel_closed.obj": "86cf6d8303c82a18eb34139817845598d18b74601b51adbe8266230db8262faf",
+    "mods/ITEMS/grug_decor/models/grug_decor_cottages_cottages_barrel_closed_lying.obj": "34b5e665cfd548e90c5c0128dc681042ef40e350af4ad7b10d4fc6169725e6ad",
+    "mods/ITEMS/grug_decor/models/grug_decor_cottages_cottages_tub.obj": "07ec813b97e4d582ffca4f4260aae533183e1dc18fe89e2fdd0213312a0c26e3",
+    "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_dungeon_stone.png": "e88c47831bd070c9cd9f2c329eadef632445860873e4240ccdd067dfce8e66c2",
+    "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_pavement_brick.png": "50bdcf844c7f43de911a94dbd9c2238e8e5e64b8b92366a4b5b8417dda3912b6",
+    "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_rubble.png": "541805de8fba2d152c9e0498fbbc1e93e2f253c8eaaecbf70c9e37906efd4a6e",
+    "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_barrel.png": "45ca15188d4f87657c681c1aa7c19a4b19c4e36ebf1b20d6c636b1884ddfbb29",
+    "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_darkage_straw.png": "4e1929e8f5d4ffb8abe4c9d84dfcb34bc23d77cd916cdc29950440850f30e90a",
+    "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_darkage_straw_bale.png": "fc62897048d75aaea312dd95496f987edf2c916e130f4b391d0b588147dc1b49",
+    "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_loam.png": "3edeac741c439e49a78ba610fad5fb04e455032b0b4b16e0428bfade8c17ff99",
+    "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_minimal_wood.png": "d11f7d839224e73921e895978c9e380b011995acd83568bff3b7567e27a07853",
+    "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_reet.png": "804ace8f3a3ffc34469b2f23d1291d83d0c17bb4dff8111296c5b26cba61437a",
+    "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_stone.png": "340234c5a805d8f1518b3a4188733609413ae8c4191f56c2bc4065973b54cf81",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_adobe.png": "999ada631f0b282f3974dcd83328b2862167f947b9f72fd41a9c8e5bee49cb17",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_basalt_block.png": "3abd8be1e8079c16314110bc53e87af42c425ceb6ede59b531fc3ce804630423",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_basalt_brick.png": "2ed984e6da9009ce9453e463a3d9570775de05781f19bd155265326c84f4b5af",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_marble.png": "0b7ee480c9c4310bf482e367f4df1ab4132f5caba08e0e9dc7f8aaebddd9a73e",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_ors_block.png": "e117c04a97596a486011d475fd3ec980affcdbcb7c3bdcca11b5db59cab28cca",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_serpentine.png": "09f26c4c05aa3ae898d205513e5a1e168c5d5bbe8dba99f19acfd5f1ff6badc7",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate.png": "96cc71b5ef4573ef3dc65d0c7090ba5085867e91ee9ba4c53ea3f527f2338a93",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_block.png": "eb8daa791e98d8c4cf5ea0383a3bd780694c52030ec289ec197dc3da3374be22",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_brick.png": "00dedb702cd43314f3eac51ecd5d98f04a095d2446a7a117aec6af4ad8a2c331",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_rubble.png": "436006cab9a44b612fc4f4f50858bcb3864c812617a22df2dfeaef0764b54f11",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_side.png": "fd7241a2671c06075c17da47ec819850d1f8d001ecdb76121eea4ebfb8bf31a5",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_tile.png": "947272f0d8e91a6f3856a323a363410bcd035a626edbdc7151846ea4b4e7c358",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_stone_brick.png": "30a292e4addb5f9e7ae93534489f140d893bc438ca6dec66fb91db25c7278356",
+    "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_wood_bars.png": "91eea37cab654cb5453b051933f03ab52d54cbb84953fcf87985d5ee076d3a1c",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_barrel_sides.png": "b03e8178e0f8dbb289982f56e1b3e9e7e89e69d42ea493e42a61f13435e8c31c",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_barrel_top.png": "4d84847f9948f2e8a962adc2662b6b2c9eb7f4f665b203beb0e6960c3215a484",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_floor.png": "988c204b8ec70a29011a29f096964ba60b8f30335e97d0255211c907644ef8c8",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_hanging.png": "41fbed80cdcd16c9192d0127c98c039a2e0e5d7661db8277f44706a9ab00bce1",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_wall.png": "a234c9731434a1df97565bc32995be5bddcdf9117531f748eba16dc1bf3d2dbc",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cauldron_bottom.png": "4235ee40c654f4f5f1691881e790401c43856890d94dff00ff70b23f5ef8182e",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cauldron_sides.png": "7497f9ed9d8aa41969777aa7c5e899e1b1ccb5a415a279a23223b1159ea1d6c6",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cauldron_top_empty.png": "dcb9dd89e3e3552cf76571e70695ede5f1a3cf4fe91fae2d8fd56585866dbfe8",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_chrysanthemum_green_pot.png": "aba70c0b3f23321a94f9400c94e5dc79bdb3efd2c674e0a132a39e40558c69a0",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cobweb.png": "bd2915777d0eae0932b39b4a190355a51b390ec3f1ad741e9c093763548672d6",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_dandelion_white_pot.png": "f2a3673d8e81a95c33a6adbb7c1ff8949abab8134468c6973e3670aa7ac352c3",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_dandelion_yellow_pot.png": "ad643e5c6e90ddce262beb7436bdc3d46edd045177b714a2120bd748e3dc496e",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_empty_shelf.png": "c2b870f95756f1ca6d8f379b9ddb4484f851f9103309798c76bb79213e106181",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_geranium_pot.png": "77345b9b46a6b51d8fbc4859c3776cefd4183920da0ea67977de57fec376e907",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_ivy.png": "40a904f4aab090ee594f65ded5852a1eb5ed7ab2d7d491f1efb4c9c849932f9e",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_lantern.png": "689b3752d53d5073a8a19dcbd7408bca9f7e6cd3ebe134ee5fcb59506123ce85",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_rope.png": "adea46dbba3172191fe239d910eedc2fd9dbab55f7a7f1ddb60e0296e407e0cc",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_rose_pot.png": "843fa0d7bbe098186a9513993eeb4ad04519dc56aca272c6bcedf47fcb1158df",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_tulip_black_pot.png": "3e80abf6ea4c9ecdf85cb311a428b07dd9135dc79aff022a9b1497a5efbf0a93",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_tulip_pot.png": "6cc72fba6171c0d3cbaa27ec697311d90e89dab08a34138669ee63b16ebc00e5",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_viola_pot.png": "0e321981195a09babf86ccc062ce1dc31643a6ce43ca45039e6d0703f69d9ff3",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_wood.png": "4c22127860c51f7498b3fc35b0c97071cbb34cb6d44ee7f1facc0b1ce9384483",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_bottom.png": "92b0d1988b7f71df693eb281eab90e60d64dd3702ce9596426c23e9618c63e20",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_front.png": "e5b07364e6e7bd1d8486cae7fb4456700dea7e05c5a19d5e242f5830bac1105c",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_sides.png": "4c0e9e5ca8da4d6f74640a84f3bd0c196a2b59477068e68475877654adfc6c41",
+    "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_top.png": "8e434df2739944daefb015e1c83b139370e0507379797853b3b322fcd80364d3",
+    "mods/ITEMS/grug_gathering/textures/grug_gathering_gravemoss_plant.png": "f52bcff7a158ebf00bbf8b4b28e96c0bec3fe517b7b42ea3cf9a266b1fddb90c",
+    "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_bronze.png": "089082d6a7ec0cd5cd17e523e44f97eabc5f4c2b8518df181a415a1dce31b251",
+    "mods/ITEMS/grug_materials/textures/grug_materials_iron_block.png": "f3be34c6eb99324c2ade782150aa27041d84eece35c70225d942934310b42d90",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_alpine_cushion.png": "a59e4b6a6793227bf3fdd3b9a496721ede5ba95550fd241205f483784e2305fe",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_blight_dirt.png": "0b07ac9fcafe98bc13449c8ea3765d1218a0457a431154478d92ebd23097a2ac",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_litter.png": "75697b8bbcc946a660d8d67ff08f60cb8d2ec94b0b2c66bc7eb415ade091f5f4",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_litter_side.png": "fd30a1979a3205e9a7d8c5917748220773dc18c05d953ecb2e0e50c917a690d5",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_pile_back.png": "b29927b67ebac53ad2414aded01178576fd4575a485ef3d0842a0ed4a127a768",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_pile_bottom.png": "d49503cb1cd837022c36645b9d352e6363df3b3416a0a39c5405bb6b7966a176",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_pile_front.png": "09e37f8aed786ee0b9a1e94d1562d9b2ef79a9b4e0737bffa1fea2a53e61dbfe",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_pile_left.png": "41ce2dd0d4faf40775a0f628c3e9fecad737b48aafb3d6300a13f86b379e7297",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_pile_right.png": "b7cfdbda4fd3ede8eea1c2ee8706939565edd530d0557bbaf0bc83480ddde353",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bone_pile_top.png": "e2a6bbd867a6373b3ea58a5615ab3a3f6a5d284f672f4e13f1e21db014597998",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bones_fragments_back.png": "f71d03ca1af6868fcf0ff161f790ed0adcca9c386e4decc44c1fec95533c069d",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bones_fragments_bottom.png": "7c3c62c77f56221676db6dfa98d3eb3ecf65ade57a6f06078c84546f5b75c9cb",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bones_fragments_front.png": "41717131359d43a192beb866926f2253284f958541cf7da5f275342ae6f22ede",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bones_fragments_left.png": "5851f6a04c6ba97c8a9f62da9b9efa32358bb08e5cf2d9497bda84e239e4c3e4",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bones_fragments_right.png": "e7be9fdace2f9ca11e56456bc4dc8b331b35788994bf491b9299e2836215cdae",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_bones_fragments_top.png": "324604f31a4362d2c5df3c7157d6b736aa1f731ab8e3345f5f73cce8f1fcdba2",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_cattails.png": "c6d4b60333b6c28e3ec89d5231bb543cee049f07ec3ae9e24496cbcfbf209dbc",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_clay_band_ochre.png": "59b185c1eb65e4da1c86463a34e9bf9e9871fc986ddfd5303e2dcc489e363550",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_fork_back.png": "c22980497cf0c489eb043fde35876b85a0bad1aa86102553016866ca1ffd94ea",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_fork_bottom.png": "d533531d3f51512a36aedd05b8e69da5dfe1d0d2b58550a761545a80d3cf0c30",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_fork_front.png": "e3a1d986bd801786a7ad9b9395609d40071fea85062ed06eee48d7625fc6f86a",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_fork_left.png": "921acc01b54efbf291e8f4ab27a875a82bb58f0b795b23cde90a39e86f97b97a",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_fork_right.png": "38698fd4e6b7668667b7e43a3c3bd5207b8762f286f8ed11b122f677dec1abb1",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_fork_top.png": "78df284c2ac2fa7be10a86101df9618dc68ebcd0ca267f2458a82d21571288c8",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_log_back.png": "7df3c4d5050a751dc605755f08b763a97d47114211cd6402294e7bba2381a5bd",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_log_bottom.png": "47565351e551f4f40543acc7863f041483a845307073695818bb3e7f01677815",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_log_front.png": "eb100782fa2944be80eb079f480129fe5b5322c433b6ce86ef7ca923abbdb921",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_log_left.png": "e7929ea4d0ab53027ce123483d8af407cca9bc977349761d4fbc5ae72df9f244",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_log_right.png": "41fb2761795b2cdb0cff2ffb1edc8ca174105a2cd4668d15adb9947e66f2630b",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_driftwood_log_top.png": "cc5ec1ef54fb7dd417e624a9faf18894f8edb1b595476ed72f1e086c48f3f643",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_flower_cream_cups.png": "fd57c2bdc573aeb724d999bc4c9361c2b9185550b89709b663bedf839aae4aef",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_flower_lilac_bells.png": "6946d545d86f2d57764f8ef4a450347de83129a5d3eed719b4c74744909b34e5",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_flower_ruby_fan.png": "8d67dbc3f1b85dea67b4a831b645d85a534d235d57c520af622b85166be893cc",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_forest_litter.png": "995f7420bc6e3b07951b0581aa32ccff8781c07a04437f345903ceb2078e366e",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_forest_litter_side.png": "f06641123c9e39035131522148bd5d68c69e243ecab058246891aba4aec5e76d",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_cross_back.png": "56f5accdcf309ad09f92cf8ff316719c53501059aead3e8d1a084fc58426e3b5",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_cross_bottom.png": "f660728ccd0a8139ab2fb4e2db10c280c10c5b870e6d84dbabd3606e17b0dd24",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_cross_front.png": "82d4b0dd03e2c44efd8fc1b9bc6982b6a29a9f223a334ad43cdb86667994fe0e",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_cross_left.png": "426c4af8cf43d3354026f608b77d92a3e7005d5e38fa74f602a6009c924e04cc",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_cross_right.png": "b10899c3eb24d42824c51090ca919c5bf19707a36a36cf3d8a894c5ff75b806f",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_cross_top.png": "c539755e683c2b5ea939ca953c041d4fb65eb80321e878d8058b3a4451f18532",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_fallen_back.png": "685a178775ed53c9db982acdc2400f66823a16949570a8020f16b56cb8e501c0",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_fallen_bottom.png": "e6726a4d1bfbc6c32eab89d4a05cc88b87f75ba81ed5f5340d48f135a2581003",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_fallen_front.png": "12d6edf72052068dc0394c33a964dc7f3f9f156bc922e97209d35f8532c8f290",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_fallen_left.png": "6d04c8e8ed577cfddb9cf294c016f831df17d7c7b065ed98cb4a6c2a2d2112f9",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_fallen_right.png": "b6aae50c9677d8516226b2cc3be33180b6c07ae4d14b9303aaeea9f9cbd77922",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_fallen_top.png": "cd4592c455f3a8036c6d24e109f72a6c463f49693f53023673740430f1545ae0",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_stele_back.png": "94b352e9bc607eb9faae8c2a8c96abc5e40dae75f015c30af806e8c068ce4a91",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_stele_bottom.png": "34e00347753e7b814ded9f990859c78109d9821e9a7ac8a36f7e57178c0c63cb",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_stele_front.png": "5579ad54603531ad6e5aebc2508ed031232cebd73cea20876bff5576ead4fea4",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_stele_left.png": "ddb57a4e6adc10a1e9082a1413e27588297ef3f151dfb35005f6a841f7f00247",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_stele_right.png": "ce54e505843eaa01cd94239e26e35cee5132aa14380f85913a95ae72e4581e1a",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_stele_top.png": "398f86d396e213f759fec66075bb0ebe60ad52ce254fb528f4d6b59ae398ade1",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_sunken_back.png": "de182502da8988db26b41539ed611e7f6cfc5c7024d381704f58952d0d8faff3",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_sunken_bottom.png": "86e821732e4d82df15cd0fcc33021ee8630141f440a85bc0c65156cbed4dd589",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_sunken_front.png": "cbd15f80cef9971b6163f9b5295ddb338db115f8577ecdc58971ba9507ccb66b",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_sunken_left.png": "c6a6a6982a4a8959b0090f1236634084cca911e10250365d9f9a6654738372ab",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_sunken_right.png": "5e117456196e8e4d72d1d57633fa86a70a9ebab0cb20e32a9eb56b171a764914",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_gravestone_sunken_top.png": "d22965b67b38e05b84b535fa7a5b27f14e4f6e1ae3a1745499ece5eb975e3e77",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_jungle_bush_leaves.png": "9b32cd47b235c4b34d304a04e3ead3f1f92e226a25d09511c2c9b617897981f8",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_moss_soil_side.png": "f9de213731ffae3176ef33c63e2c51e3594908a4a83060332608550e4674de85",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_moss_soil_top.png": "5574d394d00fef351af721e58538460ad85d502cc3fb50696ad11c645471cec1",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_mud.png": "300527766c18251a7b7a1fa34125fa7cf87bdcab605b43bc556bd89b0d1a8b21",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_mud_dry_side.png": "ff8192001b7733285850a88041c492663a746027c02d4b85992d7a87045f9a4f",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_mud_dry_top.png": "511ae4d21c1a66205a5b0a1b9af9969854af3b7b01689c19191604aff25f7914",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_mud_mottled_side.png": "9901db18bc1840b86614368837dd448695df3b18755cde875b148d20d66cd072",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_reeds.png": "fff57c876ac09bdd1d22bcdc27f3018c08ac067d1b512f210cba149c567eec6e",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_ribcage_human_back.png": "9a9c7241906784f3299a9b01f6f5d1c70cbae32d5bcd69ed4fb9314354caf034",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_ribcage_human_bottom.png": "dc70facbcff027b1cabed0779a88f3162f361cbd1182827020dbaf3e08d8b7da",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_ribcage_human_front.png": "7eaea2f66fc9012e78976679c9e678e34e197f8a1382a84974473afac38009c0",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_ribcage_human_left.png": "5d782e01a7b9ec5ba190a8ed551c0625173f9b856070f2997962b244b935eac0",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_ribcage_human_right.png": "7875d119d633a5e79331ddb910d1c44ecd6e4d84805eea154b1d4fd1bcddd667",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_ribcage_human_top.png": "df04687b2b8fc6216642b6ec054b19ad2f61ce45b5f65a3a01794054c6c91bbf",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_silver_litter.png": "1cfea13c0512cd1b46da105c29cceead69f3724f5c7f6601bbcae61342f875fe",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_silver_litter_side.png": "1ec79a1d410762323a44213bc4ed22e8152977a3355629034c8d23fbfb0c4c1d",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_skull_horned_back.png": "6fee65e9f72f757b95be81c9c0611ca89c465281dabf66b035201e353f503956",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_skull_horned_bottom.png": "9c6302f9a6843278d7bcc9d3e8ee178d46286f1c348bd2db629751d0d2f36d05",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_skull_horned_front.png": "0bc0b0fa9b4e4a1bf87e2dff46065831fc991d15587d91fbec3c062c4d0a8e41",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_skull_horned_left.png": "fba4f321bb46f29c1a280eeceba69418797c4f9100c99ab0f722314b5edffba8",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_skull_horned_right.png": "14e2bfee9c3a31cc6945c4914b20a8b01edc8f8a8c727aa0c25cc4370705f405",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_skull_horned_top.png": "265bd5b1cfe70b41387d5efe0315b2cb9e6f5eab9a68a3ad13014cc990c9575b",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_base_back.png": "67c23f63a2dec2c817675db927a35a9f3ce134d8709af0f7aa20fad00a1f8f6b",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_base_bottom.png": "f10745a1b0b4cde6590111026c8f2df10acb7399e53ca4fed0e978b09d7b0e16",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_base_front.png": "2ff6f72535988bab25f5749fa1b2563a26b743c7d82cd9eb160cc6b55607cb05",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_base_left.png": "b7cb28ef867e69a79efdee976b3b7dbb065913d68bf4788583189f655cbc8f55",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_base_right.png": "6dcf6440d91516704d37a09aa05d5777774fce21316a5350a4580169e7a16fd4",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_base_top.png": "5459b59c24640795fceab8c9a086cdac069fd478c6c87d4278a8bae5e218a2ea",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_upper_back.png": "14f5ee63426a474002178cec13b6c5a2a00a518692b8feaadca32663d7d1bfa6",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_upper_bottom.png": "ae06b4e6c980dc41bb3e0fe8fa771ddde1ef3e20fcedd42ec8bb0f4d3915676e",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_upper_front.png": "9107b935678e99789d49cca395fdee873a1132adfe8d60b496914ae72a08f4ad",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_upper_left.png": "41cf938f95d3117e9baa4482778f256386a1b02531c2bf5070fd1257320b1bc6",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_upper_right.png": "31d5b00ab4da6b7ea171feca7ca6b1e363dc5c39348b9341e7d68cdc5cd95010",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_mourner_upper_top.png": "fbf68e717ad5bd67c078616da49aeb3f5d90350cb04fbdd33227c2ed7f82652a",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_veiled_head_back.png": "d8d5550993c3bcaa451584f586fb7e4d8d912e29434382d79532d83b36d92328",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_veiled_head_bottom.png": "db94de702f6f9df6c35653707f30e766f46aa6b8307361b77620ba35390bb4d6",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_veiled_head_front.png": "125319286927ccd74c98d5ffac7accefe6b9efbec8d7101acf13672cd455d338",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_veiled_head_left.png": "6373dbc77b2bb036047f5f187990b12bea5c8f799ab877e9fcf564c3ac3bcb02",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_veiled_head_right.png": "5b988478cb372341fea83eeb4edc1684196dde4306d571ffc2f58aea40cdacca",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_statue_veiled_head_top.png": "0d6cfc65987a3187a5ade90c17803603c1b6d8dd2b7eb429a1e04fe83897ba79",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_swamp_moss_side.png": "8015fa162274fcbe9a78c5d16449649decefdd896e07e2eb2188dd30bdf7808b",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_swamp_moss_top.png": "8f57419cddef422a6c112678c81e6cf1575b9d3eef39108e340df2f42fbd37b3",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_wet_grass_side.png": "6d9e33bf2f3020781f0ee648c6bbe5e4338fe404d9b7b8c958ede47a3bc50979",
+    "mods/ITEMS/grug_nodes/textures/grug_nodes_wet_grass_top.png": "72ef2129269d1764044514cc52f5dae92922fc84630dcbe5a133fa01ea27d4c3",
+    "mods/ITEMS/grug_trees/models/grug_tree_quarter_oct.obj": "cf681056d09ae6e67f5d97b7a9325342f3753867797b1406eb446a00b1bcbe50",
+    "mods/ITEMS/grug_trees/textures/grug_trees_gravewood_tree.png": "2e882e2406d5ffb37c522ce80ba81ba11efd8f17e82109e4fe2be8aaf4789809",
+    "mods/ITEMS/grug_trees/textures/grug_trees_gravewood_tree_top.png": "4db448d63cabea3a2fd4a6e0cc335d0c4ad23e05162c78cd4dd47d105ec33b72",
+    "mods/ITEMS/grug_trees/textures/grug_trees_gravewood_wood.png": "61cce3aa27988c69185a7f59725be8750fe194303070638058dc94f52a0c2889",
+    "mods/ITEMS/grug_trees/textures/grug_trees_jungle_bark.png": "a8f08f5a5146df1d7b662f2e9a166e4555973fae0cee4938719026995e2562a9",
+    "mods/ITEMS/grug_trees/textures/grug_trees_jungle_bark_top.png": "b7e78fc6e8f3022dac67e8fd9ec22bd0f35e2c5a868272744b72349c4c8e2524",
+    "mods/ITEMS/grug_trees/textures/grug_trees_liana.png": "cdcda95b39d518e8f1edbac8a9c20ba368e2f64b26bf3d5cbb349c10b4a9b97b",
+    "mods/ITEMS/grug_trees/textures/grug_trees_liana_strand.png": "ae8383807d4921f91bc6bfd80aa326a5990a71579b96de5fe1e618de3891dc89",
+    "mods/ITEMS/grug_trees/textures/grug_trees_silverwood_leaves.png": "57a77d21e30de0b4488def36b5b2d1053769af11238017a4656887206b4af564",
+    "mods/ITEMS/grug_trees/textures/grug_trees_silverwood_tree.png": "3d1798c9726bc688df68b006cdc54b0efd85ae18de7ca522d48deb290b725427",
+    "mods/ITEMS/grug_trees/textures/grug_trees_silverwood_tree_top.png": "a8ee8cfe09d2ffcfebdd4d2c77f42b44595617515c827c75f2456c7734c9162b",
+    "mods/ITEMS/grug_trees/textures/grug_trees_silverwood_wood.png": "db3882a378120c5fb8dba3870b1c3c8ca2d9eae70064d62a70d6ae949365e373",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout": "e7f734b89fd7b87d4cf39a4540ced0d116c84c22c14ec08a2e2ac42ee3c98d19",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout": "a7f5c63ef9134b471f9acb2f18e3bf710bb846a01dd47b705ce350825a8a3ef4",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout": "a84922d5268f8eb24920081d21c8f000be25f5c34b36985292fded2417153409",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout": "8b9601faae32807f5f1768a87f8dc121627c68846f6317646bf6d66015a23e24",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout": "0eb0f11f4d904ca2fc2482d9bfa7742b97a8e00cbfad28c19ced210a7456c5d1",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout": "fef863535a20e991a07f91a8df4c7a8c42a1c4e58e32b54cde8fc26488164824",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/dawnmere_orchard_cottage.tpl": "ab255839432c48ef566b61573668a47bbde0da88db5ff4dbf542592c3e3ccd79",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/dawnmere_smithy.tpl": "36f1498582319c79a54aebb9ee05aacbf659cf5e4a701aa6c27663916409ae64",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/hearthpine_east_home.tpl": "63e4bbab23816d1dda38b6751229fcee66fafbd4d56a58b987e4826a5535bdc2",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/hearthpine_forge_hall.tpl": "05061f0ac2d8cfa4268999c03294b4b091e587da1f4139c91f71cb22c12036df",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/kapok_river_stilt.tpl": "e7942ffbd46d0d9c925c6c79341d236b76d12aa7187e46b6a9fcc515cbec639b",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/kapok_spirit_lodge.tpl": "739d5c2220d6aa649666e70d1447105f7966e12b69d87726c9159fce3d0368e4",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/silverleaf_glade_house_west.tpl": "c46f18dbb406ac701dea4126e7bb05870873c13d84ea5ed77dbca00529e4936d",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/silverleaf_moon_shrine.tpl": "cac719199ce51c4a97bf231530a5a000df0aa428cbda2e454fe1f665ec67e87e",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/stillgrave_crypt_chapel.tpl": "eb6e9045bd215f0ff4816298c9be6582699c51c7df31f57828951edd6c4b2b72",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/stillgrave_sunken_ruin.tpl": "a9eef7e210fe77ccc68a0b0512bf621c284d43cb7825e30c5b66874aa02958ae",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/sunscar_spear_lodge.tpl": "93257e94b00f1029dabfddb54b7ba19a21a4451630e10dcc6b47cca6dd322594",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/sunscar_tusk_lodge.tpl": "740f0dfc4bb423851cdedafc310647e0bfb11762d5084bab5c1103315cca859f",
+    "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_waterlily.png": "45008dbf079c3175bee84adcc2892f690dd140aa3c6c072ecc228490f6aa1826",
+    "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_waterlily_bottom.png": "4a9237c4d0a796eb1bf1852016985e11b75357cb2afa6f40ddc1829e72729849",
+    "mods/MAPGEN/grug_mapgen/wp13/capital_services.lua": "5d74918f98e8f6ef8a56a3ee38d3318034eca7eef4733287b08986e7496e0486",
+    "mods/MAPGEN/grug_mapgen/wp13/city_edge.lua": "6d48eb55b1146cd9403bb8ff42518e36a5d7be43332ec2cd6c177cfe14d97126",
+    "mods/MAPGEN/grug_mapgen/wp13/city_green.lua": "a104a5b83d45d747b499f802d9d0b349dc9d322b09e373b1b632e49243d13e7c",
+    "mods/MAPGEN/grug_mapgen/wp13/dawnmere.lua": "6201d44172729223f871d050bf7e082ff30a37c55992a134032cfeb842846ec2",
+    "mods/MAPGEN/grug_mapgen/wp13/decor_kit.lua": "db636a265a365a3d2d7936358acc1a259a8060e6d4ce8c5ab79e52a445cade5e",
+    "mods/MAPGEN/grug_mapgen/wp13/dressing.lua": "c87fb1df8093184eeedc471c77b85d0ee2096450ebb29cabf2c0e051643b77fd",
+    "mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua": "ef08e06d98c4d57510fac5849ad49fc6cf278619f6936ec7b1b6acd1c272f218",
+    "mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_district.lua": "6c9deb8946ea504927c27a7eb60dc853b7cbe9b988002756fc8773a2540b1a4b",
+    "mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_district_homes.lua": "4ff9641e668d9adcc3b257b69076afecb22f6be855f91912c681f9488d5cd8fc",
+    "mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_district_lore.lua": "5126ebd53b2c1a90c7e74487904732c5f34238b41dfe72f4a0e850ca76461ed8",
+    "mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_district_martial.lua": "b1a62319d72b9021ca9dd97e7d1253063d407f932c67781b2903a7fa778fc1ac",
+    "mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_districts.lua": "7085f23467f2d7daf57fa1efc20d5067ad65b9e7315c7a2de3139fdc90c233f8",
+    "mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_plot.lua": "b2ca2834701525c03fd5cfce83848dc627c4bd6d1b1e477c657d07c671a001bd",
+    "mods/MAPGEN/grug_mapgen/wp13/dwarf_dressing.lua": "3dbf767c1373dbca75ad24a60e36454e9d3a1e7ea4c9843910cfb98cb3c82684",
+    "mods/MAPGEN/grug_mapgen/wp13/gate_watch.lua": "cf24967a2e408481a765e765735a1aa8825115feec91be717b45995c1d5de251",
+    "mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua": "336106d2730970dd7103c2bab578af5933043a7ecd99b10316b5f96b90073d60",
+    "mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_district_homes.lua": "6a05fb68306b6a1c6b40d07080c923ccad7e7a338b991645a30c658cd36061bf",
+    "mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_district_lore.lua": "bd2e87cc2811c8d1629cea71c7233749afb7ecab6b2d8042d2b19d37152fdd57",
+    "mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_district_market.lua": "7fd8a824ba39cd1aac467eef221931d16ff6e981b1e3bab4b977abb43677a9ce",
+    "mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_district_martial.lua": "e055bd0a468b7b87668d4779cb30f3323d4f6896dceeba50edc69bf38d0db008",
+    "mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_districts.lua": "a531038b0150717841e7202d8244bba20053ffd4e08ffcb2e8879f9574accbf1",
+    "mods/MAPGEN/grug_mapgen/wp13/gor_drazhak_plot.lua": "37b162e41e8e8ab686a8ade96ae810a966a46c172e2a37c30cc3b56c9995fc38",
+    "mods/MAPGEN/grug_mapgen/wp13/hearthpine.lua": "ee9b6fdcfe03633557f32462b8dab85e0ba5b345a3fd5b9d503dce3207443f95",
+    "mods/MAPGEN/grug_mapgen/wp13/highcourt.lua": "38f5ba0f734c0fabcc1d83e6b5307f1e3ac345ca4ee2b193080960fb5b832cae",
+    "mods/MAPGEN/grug_mapgen/wp13/highcourt_district.lua": "b40cdb270b9f0ef63f891f9ad33fa360a51f608e00688579f234b33f3057147a",
+    "mods/MAPGEN/grug_mapgen/wp13/highcourt_district_homes.lua": "e92755ea4c1233c2c5f7274051cd4c27924cc5d848d709dc92cb50bdae5a6fd5",
+    "mods/MAPGEN/grug_mapgen/wp13/highcourt_district_lore.lua": "8000e778aec98b2b73706a2b5eba99861cdd01378aa03c39bd72e42c18343110",
+    "mods/MAPGEN/grug_mapgen/wp13/highcourt_district_martial.lua": "144d270bdcc2156def05c6135591496545136b6c81749e231266b3104e2e7239",
+    "mods/MAPGEN/grug_mapgen/wp13/highcourt_districts.lua": "d312433de02874036af27fe6a04890aa095911d1c97283754a64ffe384f7514b",
+    "mods/MAPGEN/grug_mapgen/wp13/highcourt_plot.lua": "dcc959356b167ab414ee7daea5553ff7d3af225555e4ef43064032253b832f43",
+    "mods/MAPGEN/grug_mapgen/wp13/kapok.lua": "ca2972527b80e26f2cba62161b31add04708ca7c8543087eaf33a7187a6d6b1b",
+    "mods/MAPGEN/grug_mapgen/wp13/kezamba.lua": "4adcab42e4c18aeb1b5db145a69adc87f57a8192155da8c1424c29bd7d344f4a",
+    "mods/MAPGEN/grug_mapgen/wp13/kezamba_districts.lua": "aee3455ebf683c9255ff706e5742506ca96ef17ed41af14dbbee7982b4d9a22f",
+    "mods/MAPGEN/grug_mapgen/wp13/kezamba_lagoon.lua": "95f69a83c12d81a79a0ffd9fc68094378fb05f89fe04a1de147c624364be117f",
+    "mods/MAPGEN/grug_mapgen/wp13/kezamba_lots.lua": "8c30586724bbc50f537a5241cc7bfe97ffee86b22a6b7c4934560a9908dbff08",
+    "mods/MAPGEN/grug_mapgen/wp13/kezamba_plot.lua": "7a51e0a1073c40533db91843a3e6a757049f602810718775a4194d2ce11c0709",
+    "mods/MAPGEN/grug_mapgen/wp13/layout.lua": "ebb3b3802d9728d57da587f6713d855a8278d4e7282022d96363028e6ba0de7e",
+    "mods/MAPGEN/grug_mapgen/wp13/lethariel.lua": "88da9ac070c1e97534355b41cd5568d4b38576e2a2ec229e1d79372bd9cf7538",
+    "mods/MAPGEN/grug_mapgen/wp13/lethariel_districts.lua": "afef1f794f3e3cbd336deb101a775998205b168b45494bea564a61c20afda73c",
+    "mods/MAPGEN/grug_mapgen/wp13/lethariel_plot.lua": "97a17213239bc723c69ce25da7bd8bcffda0bf00eefde2b7cfae684b89971e30",
+    "mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua": "99877ca816c5b484cf296b7510198beb4fcacfc3be5e75ddf87086eaad4f210d",
+    "mods/MAPGEN/grug_mapgen/wp13/nhal_veyr_district.lua": "d9df7fcf2b3f0f285581b379ff54acba186f86b11559a8ccd906235ddd2c8853",
+    "mods/MAPGEN/grug_mapgen/wp13/nhal_veyr_district_homes.lua": "726c97796c6b961a492cdf76115c7db714563e4b95045cf4872dc7312948b034",
+    "mods/MAPGEN/grug_mapgen/wp13/nhal_veyr_district_lore.lua": "0f3f60150d73f4093a3c8ff24cb3ba700984a30ee4b8587ac4d44fc0db63afe7",
+    "mods/MAPGEN/grug_mapgen/wp13/nhal_veyr_district_martial.lua": "4c98393e4d621abcc218c8f125cbdd9b5921d3bb76a39058ffad7a3182f68dd6",
+    "mods/MAPGEN/grug_mapgen/wp13/nhal_veyr_districts.lua": "7a12eaec4f156b43b130dfb48e3f7b3e067b80bb9014853e43d852d314405377",
+    "mods/MAPGEN/grug_mapgen/wp13/nhal_veyr_plot.lua": "067401d834045cd294fa131b4845436cbad216f576c00e3d46377c5c02f579c6",
+    "mods/MAPGEN/grug_mapgen/wp13/palette.lua": "19b718e26a3c6dd8eeb6fc60cfaae2d2b4fe7a6047e1e1f4c99046b8d1aef27b",
+    "mods/MAPGEN/grug_mapgen/wp13/parts.lua": "d7f22cb60ec6abed06d3c9986ac7dd66e74678c6b0f50f52cd4d8755b6b7290e",
+    "mods/MAPGEN/grug_mapgen/wp13/plot_approach.lua": "b1033ad3b4b2fafa9b2d68d252ae33c3e31d6e8ac530964ea5f7bd7534b68271",
+    "mods/MAPGEN/grug_mapgen/wp13/precinct_ring.lua": "9ca3c0e4f84ea7c785904e4866422e40762eb690c69c66b397dbc146e4351cd8",
+    "mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua": "f02a48f6879987fcef3f2389de8d93fff14029a9b73fe40775c1bc47f7994a63",
+    "mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua": "75002ca125ee22789721b089aa8b8b0b0a050c547d1c528263eefc77d8aadca2",
+    "mods/MAPGEN/grug_mapgen/wp13/sunscar.lua": "fda88d2610be6c9d63cd5a4b59eaa6d1b6bef88cb650d3059ecc0a35cc8124bc",
+    "mods/MAPGEN/grug_mapgen/wp13/templates.lua": "4ac3cbd8b7566d6698cad8a92124a65595ef8850348fbbfcc8e9931e59818457",
+    "mods/MAPGEN/grug_mapgen/wp13/troll_palette.lua": "455185902983a9ec1e555f7830c2cdab96b40d15742e8e9556ff763b491bc9ed",
+    "mods/MAPGEN/grug_mapgen/wp40/tree_templates.lua": "9e4ab4c336274d23ed8855413c1bf67643a88ae3efd2d114b8b7689f4e921bc9",
+    "mods/MAPGEN/grug_mapgen/wp40/treegen.lua": "07c3f0c0c6076542818de3c5a951fb3f135b0101e8615d9662b7151c7995e4b7",
+    "mods/PLAYER/grug_visuals/compose.lua": "9c9445349e25414b18e3d838e1484eafd920531e8e6f3d921df29a58aa5b18b8",
+    "tools/building_templates/nodes.json": "337d2c66fbed5795099ace1fe58b672f9188bb61f24020f42689e18401e405d2",
+    "tools/building_templates/viewer/build_gallery.py": "e64a7bad028e29ef6c5a3b6380796f31d126f1d4d37875e9a33f3270884583b7",
+    "tools/building_templates/viewer/build_viewer.py": "897eee1ee7bf6b6f6155cb7300bc9e72f202754c08929110672f7ca4d343492a",
+    "tools/building_templates/viewer/palettes.lua": "717ba141a33c6141d094590f74751d97f249eb4152b651836a01bb7807678cac",
+    "tools/building_templates/viewer/renderer.js": "285379a84f327e7dc00793c6b6e44d8a83d61ef6b088e99f776f92a73c2360c0",
+    "tools/building_templates/viewer/templates.py": "1de724dc97201921a0b22cee9fd605e88769c89f92609ba7aaa7dbaad95ad438",
+    "tools/character_creation_preview/architecture-refresh/native/scenes/dwarf.json": "3ae2833ddf76a1ffa7380ff8ebbc2daea8d1e6d68c696c5632951a9f8d8cd39d",
+    "tools/character_creation_preview/architecture-refresh/native/scenes/elf.json": "da5ff1316f9ee6721c05d658d79ce1d57a200b925307c4034d1c790538e1e0f6",
+    "tools/character_creation_preview/architecture-refresh/native/scenes/human.json": "8b078b575cccf478b2be8ae7b2e71dfce4d0a5542cf227c5a352e7c9520501ab",
+    "tools/character_creation_preview/architecture-refresh/native/scenes/orc.json": "84ceba43c5e428276aca2d8c02e91dc9064b6ed660a0621739e754d644b00c28",
+    "tools/character_creation_preview/architecture-refresh/native/scenes/troll.json": "6d3dd2b81f4f1b15ad9487229f2342c8d49be6326c28f61247969d3a45b39a04",
+    "tools/character_creation_preview/architecture-refresh/native/scenes/undead.json": "d078be446295b8b65592e0390234fddf119a0948815569cb2d44092be4c26f59",
+    "tools/character_creation_preview/export-trees.lua": "42453004e1a8423391f31e200a32a7602d0784aaca174af115cf9b78a809d037",
+    "tools/character_creation_preview/native.py": "58963affa437f4407f1bd290f3403b9364e5abd4c5cf120b3539d133d41f6b1f",
+    "tools/character_creation_preview/portrait.js": "ffc8d288e6bbc90a5f15aac03a906f13cc93873e52b43af60c17947c194aeace",
+    "tools/character_creation_preview/render-scenes.mjs": "f54d3890c62e1bb8fdf9aabc5d5a4e0e0a02c61e9b3725605836095b3ab5ce9a",
+    "tools/character_creation_preview/scenery.py": "b20078bd3933ec5f093f78680bbc16d8441d883db3d7ab4826b6e5d60192efb1",
+    "tools/character_creation_preview/scenes.html.in": "283d4a27fc35ce7e2c8ea7927214848335eb2fb1fe04d356549747a9f2a8d245",
+    "tools/character_creation_preview/scenes/dwarf.json": "fb8883a4729124baa19c19f4af675f156b98008288a6402c339d4a0815ae7781",
+    "tools/character_creation_preview/scenes/elf.json": "1f583070bdf4fa7f3deb62eeadfa7df314bfb4bbe336406bb0a950060b4d345c",
+    "tools/character_creation_preview/scenes/human.json": "f02017d3ddee3edd6072b6c24772251ef9294d7ad134fa51ea0aabaaab086744",
+    "tools/character_creation_preview/scenes/orc.json": "c553d0ed5028848b7c44f8bed2a96b2ebaadf2edeba04eccc8265ed5e594b9d6",
+    "tools/character_creation_preview/scenes/troll.json": "72e10d7acbb8db3690fd34e018f9a9671607a86c69d1224fa5ed3444e357eff5",
+    "tools/character_creation_preview/scenes/undead.json": "81d6c028e5f8c5a44c037da956109eac95a23a999eb2a0566be4856552887a8a",
+    "tools/character_creation_preview/scenes/wide/dwarf.json": "352e8af483f41754c8b6f5e5af43d2f1fd22acadee4839643f7c3a473ce0dbed",
+    "tools/character_creation_preview/scenes/wide/elf.json": "e1f4df772e98eac677ef352e492f88ce456ea4c835d76bf36f614e4aa4a97081",
+    "tools/character_creation_preview/scenes/wide/human.json": "71342e0be56ee02febd9cf024c96a549fa00c9f528d87fbc85e2c8a967e03698",
+    "tools/character_creation_preview/scenes/wide/orc.json": "6b2b2ece74fd7d719fb26e0a9a627817e7af35040160b5cc28b1458d473e7c95",
+    "tools/character_creation_preview/scenes/wide/troll.json": "64de8d1f137a1c36693ddd16e5a48e0b8f077980b8ee7c1dbc6b33af80606ebd",
+    "tools/character_creation_preview/scenes/wide/undead.json": "eefed2435799e71fd5ac4518fbf31b524300d4f1c843d6a4703b843ad45ab0c8",
+    "tools/character_creation_preview/wide/build-page.py": "053a230a45b0fc778591336e6f68291fb84e5f1a5ca00e7fd5057656e12aa24a",
+    "tools/character_creation_preview/wide/build.py": "636ba0eb1d74ba021727edde668e1722cf0dfb625436765f4c38234043e6a906",
+    "tools/character_creation_preview/wide/check-page.mjs": "42738b237e5257b56c7960b4fced7d68290c6376a300975ad100cc1aee7346f3",
+    "tools/character_creation_preview/wide/proof.py": "d8fe147c010869f43df415bd790a92159855aaa5737c496ce8beba57b154843f",
+    "tools/character_creation_preview/wide/render.py": "560bf0fc11bf3a7923a07080582e08ea0dc72e06f0ea5fbab5514d40e45d3c1c",
+    "tools/r33_c3/gen_cloak_model.py": "95334d6a5880b1ca93e1dfadff0ed6b9b3033e5c84aafdf056033ffb05fd90e7",
+    "tools/r54_armor/data/catalog.json": "a9868dea804b639d075259e308985a982832e66b841e7f9afb108fb6ea9a87c4",
+    "tools/r54_armor/vendor/three.min.js": "f34446bf875b5fb0dcd93819ffe1d9e182d46634ee855f5d904c6c4ac7cdbc95",
+    "tools/r69_camp_art/THREE-LICENSE.txt": "fbf3943930dacbf56aabb8dc5d816440bd16aa6f4cc78ddbdf12106ee1807832",
+    "tools/r69_camp_art/orbit.js": "9ce8c552ae1f3fbc2f410f6186232199b1915e0ac76f6bd2285ccb2f24dea441",
+    "tools/wp13/node_tiles.json": "c43a0c72713e8ef3fbc107ea332604abc27565829538fa7206ac7e7424a0889c",
+    "tools/wp13/render_blueprint.py": "9a9fcd82708ccc3a062b67d933212796e3da8c05e0b019ef5001752502c748be"
+  }
+}

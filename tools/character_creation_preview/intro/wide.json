@@ -1,0 +1,46 @@
+{
+  "camera": {
+    "eye": [-10, 5, -48],
+    "target": [13, 10, 20],
+    "fov": 50
+  },
+  "terrain": {
+    "x": [76, 240],
+    "z": [-65, 210]
+  },
+  "trees": [
+    {"source": [-18, 74], "at": [98, 64]},
+    {"source": [24, 78], "at": [108, 82]},
+    {"source": [4, 76], "at": [113, 70]},
+    {"source": [-18, 74], "at": [123, 91]},
+    {"source": [24, 78], "at": [128, 69]},
+    {"source": [-18, 74], "at": [139, 79]},
+    {"source": [4, 76], "at": [147, 95]},
+    {"source": [24, 78], "at": [151, 66]},
+    {"source": [-18, 74], "at": [164, 84]},
+    {"source": [24, 78], "at": [178, 76]},
+    {"source": [-18, 74], "at": [192, 96]}
+  ],
+  "barricades": [
+    {"at": [53, -9], "length": 12},
+    {"at": [66, 14], "length": 11},
+    {"at": [83, 33], "length": 8}
+  ],
+  "fallen_logs": [[3, -36, 6], [14, -37, 4], [-16, -30, 3], [-12, -36, 2]],
+  "rubble": {"x": [40, 85], "z": [-26, 30], "count": 58},
+  "foreground_stones": [
+    [-3, -36, "grug_decor:darkage_basalt_rubble"],
+    [0, -37, "grug_decor:darkage_basalt_rubble"],
+    [9, -35, "grug_decor:darkage_basalt_rubble"],
+    [12, -37, "grug_decor:darkage_basalt_rubble"],
+    [18, -36, "grug_decor:darkage_basalt_rubble"],
+    [-17, -29, "grug_decor:darkage_basalt_rubble"],
+    [-15, -29, "default:stone"],
+    [-16, -32, "default:stone"],
+    [-13, -32, "grug_decor:darkage_basalt_rubble"],
+    [-15, -34, "default:stone"],
+    [-14, -35, "default:stone"],
+    [-11, -34, "default:stone"],
+    [-9, -36, "default:stone"]
+  ]
+}

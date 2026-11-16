@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grudgelands · Wide opening</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#151b20;color:#e6e2d8;font:15px/1.6 system-ui,sans-serif}
+header,main{max-width:1800px;margin:auto;padding:24px 32px}header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #41484b}
+h1{font:32px Georgia,serif;margin:0 0 6px}h2{font:22px Georgia,serif;margin:0 0 12px}p{margin:8px 0 20px;color:#bfc7c9}a{color:#d8bc84}label{cursor:pointer;white-space:nowrap}input{accent-color:#d8bc84}
+.compare{display:grid;grid-template-columns:3fr 1fr;gap:20px;align-items:start;margin-bottom:28px}.compare>*{min-width:0}figure{margin:0}figcaption{color:#bdc3c2;margin:9px 0 16px;font-size:13px}
+.stage{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#424c55}.stage>img{display:block;width:100%;height:100%;object-fit:cover}.game{display:block;width:100%;height:auto}
+.layout{position:absolute;inset:0;pointer-events:none}.panel{position:absolute;right:0;top:0;width:25%;height:100%;background:#111b28a6;border-left:1px solid #b7c6d87a;color:#e3e9f0;padding:16px}
+.corner{position:absolute;bottom:0;left:0;width:30%;height:15%;padding:14px;background:#171d25a6;border-top:1px solid #b7c6d87a;color:#e3e9f0}
+.horizon{position:absolute;left:0;right:0;top:30%;border-top:1px dashed #e0bc7eaa;color:#e0c690;padding:3px 10px;font-size:12px}.layout span{font-size:12px;text-shadow:0 1px 2px #000}
+body[data-overlay="off"] .layout{display:none}.scroll{overflow:auto;max-width:100%;border:1px solid #434b51}.compact{width:1366px;height:768px;aspect-ratio:auto}.full{width:2560px;height:1440px;aspect-ratio:auto}
+details{margin:28px 0}summary{cursor:pointer;color:#e0c690;padding:12px 0}footer{color:#abb4b8;margin-top:24px;font-size:13px}
+@media(max-width:850px){header,main{padding:20px}.compare{grid-template-columns:1fr}header{align-items:start;flex-direction:column}.compare aside{max-width:480px}}
+</style>
+</head>
+<body data-overlay="on">
+<header><div><h1>Two keeps, one frontier</h1><span>Website opening · 2560 × 1440 · sRGB</span></div><label><input id="overlay" type="checkbox" checked> Website layout overlay</label></header>
+<main>
+<section class="compare">
+<figure><div class="stage"><img src="../../../web_data/media/grug_creation_intro_wide.png" width="2560" height="1440" alt="The Accord's stone bastion and The Throng's timber platforms on a misty siege front."><div class="layout" aria-hidden="true"><div class="horizon">30% guide</div><div class="panel"><span>Character list<br>Right quarter</span></div><div class="corner"><span>Name / prompt</span></div></div></div><figcaption>Website view. The banners and main towers sit to the left of the list panel; low debris leaves the lower-left prompt readable.</figcaption></figure>
+<aside><h2>In the game</h2><img class="game" data-game="true" src="../../../../mods/PLAYER/grug_classes/textures/grug_creation_intro.png" width="1920" height="1080" alt="The unchanged opening currently used by the game."><p>The unchanged 1920 × 1080 opening, for comparison.</p><p>Same blocks, trees, banners, smoke, fire, tint and fog. The website camera stands low and close to the camp. The separate layer continues the barricades, fallen timber, rubble and distant tree line outside the game view.</p><p>The horizon guide is a composition aid. There is no figure in the opening.</p><a href="proof.json">Game-camera pixel proof</a> · <a href="diff.png">Difference image</a></aside>
+</section>
+<section><h2>1366 × 768</h2><p>Browser-sized view, at its actual pixel size. Narrow windows can scroll within the frame.</p><div class="scroll"><div id="compact" class="stage compact"><img src="../../../web_data/media/grug_creation_intro_wide.png" width="2560" height="1440" alt="Wide opening scaled to a 1366 by 768 browser window."><div class="layout" aria-hidden="true"><div class="horizon">30% guide</div><div class="panel"><span>Character list<br>Right quarter</span></div><div class="corner"><span>Name / prompt</span></div></div></div></div></section>
+<details id="native"><summary>Inspect the full 2560 × 1440 image at 1:1</summary><div class="scroll"><div id="full" class="stage full"><img src="../../../web_data/media/grug_creation_intro_wide.png" width="2560" height="1440" alt="Wide opening at full resolution."><div class="layout" aria-hidden="true"><div class="horizon">30% guide</div><div class="panel"><span>Character list<br>Right quarter</span></div><div class="corner"><span>Name / prompt</span></div></div></div></div></details>
+<footer>The overlay is part of this preview only. <a href="../../../web_data/media/grug_creation_intro_wide.png">Open the clean PNG</a> · <a href="../../../web_data/media/LICENSE-media.md">Media licence and provenance</a></footer>
+</main>
+<script>
+document.getElementById('overlay').addEventListener('change', event => {
+ document.body.dataset.overlay = event.target.checked ? 'on' : 'off';
+});
+</script>
+</body>
+</html>

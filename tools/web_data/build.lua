@@ -431,6 +431,242 @@ local function wield_image(def)
 	return def.inventory_image or ""
 end
 
+------------------------------------------------------------------------------
+-- Character creation (Round 80.1, README "Character creation")
+------------------------------------------------------------------------------
+
+-- The width and height in the PNG's IHDR chunk (bytes 17-24, big-endian).
+local function png_size(path)
+	local handle = assert(io.open(path, "rb"), "web_data: cannot read " .. path)
+	local head = handle:read(24) or ""
+	handle:close()
+	assert(#head == 24 and head:sub(1, 8) == "\137PNG\r\n\26\n" and
+		head:sub(13, 16) == "IHDR", "web_data: " .. path .. " is not a PNG")
+	local function u32(at)
+		local a, b, c, d = head:byte(at, at + 3)
+		return ((a * 256 + b) * 256 + c) * 256 + d
+	end
+	return u32(17), u32(21)
+end
+
+-- A strict, small JSON reader for the wide renders' anchor file: objects,
+-- arrays, strings without escapes beyond \" \\ \/, numbers, true and false.
+-- Anything else (null included) fails.
+local function json_decode(text, source)
+	local at = 1
+	local function fail(what)
+		error("web_data: " .. source .. ": " .. what .. " at byte " .. at, 0)
+	end
+	local function skip()
+		at = text:find("[^ \t\r\n]", at) or #text + 1
+	end
+	local value
+	local function string_value()
+		local out, from = {}, at + 1
+		while true do
+			local stop = text:find('["\\]', from)
+			if not stop then fail("an unterminated string") end
+			out[#out + 1] = text:sub(from, stop - 1)
+			if text:sub(stop, stop) == '"' then
+				at = stop + 1
+				return table.concat(out)
+			end
+			local escaped = text:sub(stop + 1, stop + 1)
+			if not escaped:match('["\\/]') then fail("an unsupported escape") end
+			out[#out + 1] = escaped
+			from = stop + 2
+		end
+	end
+	function value()
+		skip()
+		local char = text:sub(at, at)
+		if char == "{" then
+			local out = {}
+			at = at + 1
+			skip()
+			if text:sub(at, at) == "}" then at = at + 1 return out end
+			while true do
+				skip()
+				if text:sub(at, at) ~= '"' then fail("a key that is not a string") end
+				local key = string_value()
+				skip()
+				if text:sub(at, at) ~= ":" then fail("a missing ':'") end
+				at = at + 1
+				if out[key] ~= nil then fail("the key " .. key .. " twice") end
+				out[key] = value()
+				skip()
+				local sep = text:sub(at, at)
+				at = at + 1
+				if sep == "}" then return out end
+				if sep ~= "," then fail("a missing ',' or '}'") end
+			end
+		elseif char == "[" then
+			local out = {}
+			at = at + 1
+			skip()
+			if text:sub(at, at) == "]" then at = at + 1 return out end
+			while true do
+				out[#out + 1] = value()
+				skip()
+				local sep = text:sub(at, at)
+				at = at + 1
+				if sep == "]" then return out end
+				if sep ~= "," then fail("a missing ',' or ']'") end
+			end
+		elseif char == '"' then
+			return string_value()
+		end
+		if text:sub(at, at + 3) == "true" then at = at + 4 return true end
+		if text:sub(at, at + 4) == "false" then at = at + 5 return false end
+		local number = text:match("^%-?%d+%.?%d*[eE]?[%+%-]?%d*", at)
+		if not number or not tonumber(number) then fail("an unknown value") end
+		at = at + #number
+		return tonumber(number)
+	end
+	local result = value()
+	skip()
+	if at <= #text then fail("text after the value") end
+	return result
+end
+
+-- Where the creation pictures are and which licence file covers them. The
+-- names are the creation window's (grug_classes/creation_window.lua); the
+-- wide renders for the website live outside every mod (round80.1-plan.md
+-- §3.1), with their own licence file and the figure anchors of their render
+-- receipts in wide.json.
+local CREATION = {
+	textures = MODS.grug_classes .. "/textures/",
+	license = MODS.grug_classes .. "/LICENSE-media.md",
+	banners = "mods/MAPGEN/grug_mapgen/textures/",
+	banner_license = "mods/MAPGEN/grug_mapgen/LICENSE-media.md",
+	media = "tools/web_data/media/",
+	media_license = "tools/web_data/media/LICENSE-media.md",
+	anchors = "tools/web_data/media/wide.json",
+	camera = MODS.grug_classes .. "/creation_camera.lua",
+}
+
+-- One picture: its repository path, its pixel size and the licence file that
+-- names it. A missing picture, a missing licence file or a licence file that
+-- does not name the picture fails the export.
+local function creation_picture(root, path, license)
+	assert(exists(root .. "/" .. path), "web_data: missing creation picture " .. path)
+	assert(exists(root .. "/" .. license), "web_data: missing licence file " ..
+		license .. " (for " .. path .. ")")
+	local name = path:match("[^/]+$")
+	assert(read(root .. "/" .. license):find(name, 1, true),
+		"web_data: " .. license .. " does not name " .. name)
+	local width, height = png_size(root .. "/" .. path)
+	return {path = path, width = width, height = height, license = license}
+end
+
+-- The figure anchor of a wide race picture (common brief of Round 80.1):
+-- `x`, `y` the standing point as fractions of the picture's width and height
+-- (0,0 top left), `node` the screen height of one node standing upright there
+-- as a fraction of the picture's height.
+local function figure_anchor(entry, race)
+	local figure = type(entry) == "table" and entry.figure
+	assert(type(figure) == "table", "web_data: " .. CREATION.anchors ..
+		" has no figure for " .. race)
+	local out = {}
+	for _, key in ipairs({"x", "y", "node"}) do
+		local value = figure[key]
+		assert(type(value) == "number" and value > 0 and value < 1,
+			"web_data: " .. CREATION.anchors .. ": " .. race .. ".figure." .. key ..
+			" is not a fraction")
+		out[key] = value
+	end
+	for key in pairs(figure) do
+		assert(out[key], "web_data: " .. CREATION.anchors .. ": " .. race ..
+			".figure has the unknown field " .. key)
+	end
+	return out
+end
+
+-- The camera the creation window's model preview uses
+-- (grug_visuals/creation.lua), as tools/character_creation_preview/native.py
+-- generated it; the field of view is the engine's fixed GUIScene value the
+-- generated comment names.
+local function creation_camera(root)
+	local path = root .. "/" .. CREATION.camera
+	local camera = dofile(path)
+	local out = {}
+	for _, key in ipairs({"height_fraction", "aspect", "pitch", "scene_aspect"}) do
+		assert(type(camera[key]) == "number", "web_data: " .. CREATION.camera ..
+			" has no number " .. key)
+		out[key] = camera[key]
+	end
+	local fov = read(path):match("%-%-[^\n]-(%d+)%-degree vertical FOV")
+	assert(fov, "web_data: " .. CREATION.camera .. " names no vertical FOV")
+	out.fov = tonumber(fov)
+	return out
+end
+
+-- A registered race's or class's description, as the creation window shows it
+-- (line breaks included).
+local function description(def, what)
+	assert(type(def.description) == "string" and def.description ~= "",
+		"web_data: " .. what .. " " .. def.id .. " has no description")
+	return def.description
+end
+
+-- The look per race: the stored `grug_visuals:appearance` value (as a table)
+-- of a character of that race with option 1 in every look category, no cloak
+-- and nothing worn or held -- built as apply.lua builds it, so its body is
+-- the race's `bare_body`.
+local function race_appearance(gv, race)
+	local spec = {race = race}
+	return gv.appearance(spec, gv.compose(spec), gv.CLOAK_NONE, nil, gv.WINGS_NONE)
+end
+
+local function creation(root, gv, races, classes)
+	local anchors_path = root .. "/" .. CREATION.anchors
+	assert(exists(anchors_path), "web_data: missing " .. CREATION.anchors ..
+		" (the wide renders' figure anchors)")
+	local anchors = json_decode(read(anchors_path), CREATION.anchors)
+	assert(type(anchors) == "table", "web_data: " .. CREATION.anchors .. " is not an object")
+
+	local function own(name)
+		return creation_picture(root, CREATION.textures .. name, CREATION.license)
+	end
+	local function wide(name)
+		return creation_picture(root, CREATION.media .. name, CREATION.media_license)
+	end
+
+	local intro = own("grug_creation_intro.png")
+	intro.wide = wide("grug_creation_intro_wide.png")
+
+	local factions = {}
+	for _, id in ipairs(grug_core.faction_ids) do
+		factions[id] = {banner = creation_picture(root, CREATION.banners ..
+			"grug_mapgen_faction_banner_" .. id .. ".png", CREATION.banner_license)}
+	end
+
+	local by_race = {}
+	for _, race in ipairs(races) do
+		local id = race.id
+		local backdrop = own("grug_creation_" .. id .. ".png")
+		backdrop.wide = wide("grug_creation_" .. id .. "_wide.png")
+		backdrop.wide.figure = figure_anchor(anchors[id], id)
+		by_race[id] = {backdrop = backdrop, icon = own("grug_race_" .. id .. ".png"),
+			description = description(grug_classes.registered_races[id], "race"),
+			appearance = race_appearance(gv, id)}
+	end
+	for id in pairs(anchors) do
+		assert(by_race[id], "web_data: " .. CREATION.anchors .. " names " .. id ..
+			", which is no exported race")
+	end
+
+	local by_class = {}
+	for _, class in ipairs(classes) do
+		by_class[class.id] = {description = description(
+			grug_classes.registered_classes[class.id], "class")}
+	end
+
+	return {camera = creation_camera(root), intro = intro,
+		crest = own("grug_creation_crest.png"), factions = factions,
+		races = by_race, classes = by_class}
+end
+
 -- Which equipment list is which appearance slot (plan §2.4).
 local LIST_SLOT = {
 	grug_head = "head", grug_chest = "chest", grug_legs = "legs",
@@ -572,6 +808,7 @@ function M.build(root)
 		factions = factions,
 		races = races,
 		classes = classes,
+		creation = creation(root, gv, races, classes),
 		model = model,
 		offhand_look = offhand_look(root, gv, items),
 		wield = wield,

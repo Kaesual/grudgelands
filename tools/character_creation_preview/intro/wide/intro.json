@@ -1,0 +1,68 @@
+{
+  "input": "7083422a951bf46da99d8c0767d8f1d43fa7a38572beb5bf73ec6c43ea5b3b21",
+  "sources": {
+    "tools/character_creation_preview/intro/scene.json": "6fe28dbee597b11a28a813b5c2480d9718071734e0da2669104613b5e32d9783",
+    "tools/character_creation_preview/intro/scene-build.json": "63ff9754598800fb1a9a560ce4c6351548707e8ea80e9c5eb806e9ce0606f417",
+    "tools/character_creation_preview/intro/scenes.html": "49d568798c6c3bd5618ee049ad8bfbd870cf5ebc8202820a5ad8af118b6981e7",
+    "tools/character_creation_preview/intro/wide.json": "adcde4da2fb52a7b91459269d308007be04603770c4a15498f9acb848878f6bc",
+    "tools/character_creation_preview/intro/wide-build.py": "4a9bac6083480c3d825686c302a01d23d85cf180c58636a602eedff241228ec0",
+    "tools/character_creation_preview/intro/wide-capture.mjs": "134da31b4ecae1278a3fd3455ec984c10903c551afe7f47f8c2247d9828fd415"
+  },
+  "output": "71392e92be6047dbc024accd904a360dcda94c0b9ff01b8917798481c1b775c1",
+  "width": 2560,
+  "height": 1440,
+  "bytes": 1990719,
+  "color_space": "sRGB",
+  "mode": "RGB",
+  "camera": {
+    "eye": [
+      -10,
+      5,
+      -48
+    ],
+    "target": [
+      13,
+      10,
+      20
+    ],
+    "fov": 50
+  },
+  "cells": 314692,
+  "added_cells": 178118,
+  "renderer": "tools/building_templates/viewer/renderer.js (embedded in intro/scenes.html)",
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/156.0.8078.79",
+    "revision": "@a21ce95c24ce3964416f09ae1862f53f319eb4d0",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "jsVersion": "15.6.75.27"
+  },
+  "capture": {
+    "race": "intro",
+    "cells": 314692,
+    "digest": "7083422a951bf46da99d8c0767d8f1d43fa7a38572beb5bf73ec6c43ea5b3b21",
+    "camera": {
+      "pos": [
+        -10,
+        5,
+        -48
+      ],
+      "target": [
+        13,
+        10,
+        20
+      ]
+    },
+    "width": 2560,
+    "height": 1440,
+    "fov": 50,
+    "reference": false,
+    "fog": {
+      "near": 100,
+      "far": 210,
+      "color": "424c55"
+    },
+    "shadowMap": false,
+    "outputEncoding": 3001
+  }
+}

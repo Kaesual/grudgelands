@@ -1,0 +1,123 @@
+{
+  "camera": {
+    "eye": [
+      0.4967734930564984,
+      2.5,
+      -13.0
+    ],
+    "target": [
+      0.4967734930564984,
+      1.7712061292275552,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "terrain": {
+    "x_min": -76,
+    "x_max": 76,
+    "z_min": -22,
+    "z_max": 82
+  },
+  "description": "Loose gravewood groups and isolated crooked trees line the cemetery's side slopes and far ridges, with bare ground visible between them.",
+  "trees": [
+    {
+      "species": "gravewood",
+      "seed": 80707,
+      "at": [
+        -28,
+        0,
+        26
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80702,
+      "at": [
+        -37,
+        0,
+        34
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80704,
+      "at": [
+        -43,
+        0,
+        43
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80701,
+      "at": [
+        -45,
+        0,
+        57
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80710,
+      "at": [
+        -56,
+        0,
+        63
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80703,
+      "at": [
+        -62,
+        0,
+        75
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80709,
+      "at": [
+        44,
+        0,
+        51
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80705,
+      "at": [
+        56,
+        0,
+        55
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80706,
+      "at": [
+        49,
+        0,
+        65
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80708,
+      "at": [
+        63,
+        0,
+        67
+      ]
+    },
+    {
+      "species": "gravewood",
+      "seed": 80711,
+      "at": [
+        58,
+        0,
+        79
+      ]
+    }
+  ]
+}

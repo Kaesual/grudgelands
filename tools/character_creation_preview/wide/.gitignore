@@ -1,0 +1,7 @@
+.build/
+scenes.html
+proof/*/scenes.html
+# Build output; the committed pictures are tools/web_data/media/*_wide.png.
+renders/*.png
+proof/*/renders/*.png
+preview-*.png

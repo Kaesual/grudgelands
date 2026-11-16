@@ -1,0 +1,114 @@
+{
+  "camera": {
+    "eye": [
+      0.4967734930564984,
+      2.5,
+      -13.0
+    ],
+    "target": [
+      0.4967734930564984,
+      1.7712061292275552,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "terrain": {
+    "x_min": -76,
+    "x_max": 76,
+    "z_min": -22,
+    "z_max": 82
+  },
+  "description": "Small apple-tree groups continue the orchard along both side slopes, with separated crowns on the far ridges. The lane and standing area stay open.",
+  "trees": [
+    {
+      "species": "apple",
+      "seed": 80101,
+      "at": [
+        -35,
+        0,
+        29
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80104,
+      "at": [
+        -43,
+        0,
+        39
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80108,
+      "at": [
+        -46,
+        0,
+        50
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80103,
+      "at": [
+        -56,
+        0,
+        60
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80113,
+      "at": [
+        -61,
+        0,
+        72
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80105,
+      "at": [
+        48,
+        0,
+        52
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80107,
+      "at": [
+        59,
+        0,
+        57
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80109,
+      "at": [
+        49,
+        0,
+        68
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80114,
+      "at": [
+        64,
+        0,
+        72
+      ]
+    },
+    {
+      "species": "apple",
+      "seed": 80115,
+      "at": [
+        53,
+        0,
+        79
+      ]
+    }
+  ]
+}
