@@ -519,8 +519,9 @@ lacks(fs, "Finish creating", "P13 after creation no creation line")
 
 local SUP = book.cloak.supporter
 check(SUP and SUP.account == true, "C the Supporter Cloak is flagged")
-eq(#book.account_cloaks, 1, "C one account cloak")
-eq(book.account_cloaks[1], "supporter", "C it is the Supporter Cloak")
+-- Round 80 added the six donor cloaks after it (tools/r80_rewards checks them).
+eq(#book.account_cloaks, 7, "C seven account cloaks")
+eq(book.account_cloaks[1], "supporter", "C the first is the Supporter Cloak")
 do
 	local meta = new_storage()
 	local GIVES = {supporter = true}
@@ -585,7 +586,7 @@ end
 --
 
 local catalog = grug_accounts.catalog()
-eq(#catalog, 1, "A one reward registered")
+eq(#catalog, 7, "A seven rewards registered (Round 80: the donor cloaks after the Supporter Cloak)")
 eq(catalog[1].id, "cloak:supporter", "A its id")
 eq(catalog[1].kind, "cloak", "A its kind")
 eq(catalog[1].name, "Supporter Cloak", "A its name")

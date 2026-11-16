@@ -85,8 +85,21 @@ local function skill_text(viewer, def)
 	return " At your level: " .. abilities.skill_text(viewer, skill):gsub("%s*\n%s*", " ")
 end
 
+-- What a granting node's skill costs `viewer` now, through the one cost
+-- text of every skill description (grug_abilities.cost_text, round80-plan.md
+-- ruling 12); the node descriptions state no cost of their own. Empty for
+-- every other node.
+local function cost_text(viewer, def)
+	local abilities = rawget(_G, "grug_abilities")
+	local skill = def.ability and abilities and abilities.registered[def.ability]
+	if not skill then
+		return ""
+	end
+	return " Cost: " .. abilities.cost_text(viewer, skill) .. "."
+end
+
 function graph.node_text(viewer, def)
-	return own_text(viewer, def) .. skill_text(viewer, def)
+	return own_text(viewer, def) .. cost_text(viewer, def) .. skill_text(viewer, def)
 end
 
 function graph.background_texture(tree)
@@ -201,8 +214,8 @@ local function strip_text(viewer, view)
 		view.buy_text or ""
 	-- The strip keeps its text and status in view; a skill's numbers follow
 	-- them (the textarea scrolls, the tooltip shows them whole).
-	return ("%s — rank %d/%d: %s  %s%s"):format(def.name, rank, def.ranks,
-		own_text(viewer, def), status, skill_text(viewer, def))
+	return ("%s — rank %d/%d: %s%s  %s%s"):format(def.name, rank, def.ranks,
+		own_text(viewer, def), cost_text(viewer, def), status, skill_text(viewer, def))
 end
 
 -- The page's content in real coordinates. view = {trees (the class's

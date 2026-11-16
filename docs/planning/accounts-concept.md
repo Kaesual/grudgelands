@@ -1,7 +1,8 @@
 # Website accounts — concept
 
 Drafted with the user on 2026-11-14 and 2026-11-15. Status: **concept**; phase 1 is
-planned in [round79-plan.md](round79-plan.md), its contract with the website is
+planned in [round79-plan.md](round79-plan.md), phase 2 in
+[round80-plan.md](round80-plan.md), their contract with the website is
 [web-accounts.md](../technical/web-accounts.md). This file holds the long-term model,
 the user's rulings and the order of the phases. Every phase gets its own round
 plan; what this file says about a later phase is direction, not a brief.
@@ -62,7 +63,8 @@ model may push them towards the website or the web client.
     The administrator grants them **manually per account on the website**. The first
     is the **Supporter Cloak**; Supporter emotes follow.
 12. **Later, all website users get a cloak and an emote** as a reward, once linking
-    works. More Supporter cloaks and emotes come after that.
+    works. More Supporter cloaks and emotes come after that. *Narrowed by Round 80
+    ruling 1 (2026-11-16): an emote only, Cheer; no cloak for everyone.*
 13. **Claim Stones stay as they are** (one per character from level 20). The shared
     claim (§5.5) comes with a later map reset (ruling 25); an in-between version is not worth
     building.
@@ -198,7 +200,7 @@ the website, exact shapes and the website's duties:
 | Phase | Content | When |
 |---|---|---|
 | 1 | Foundation (§3), the Account page, linking by code and by password on the website, setting a linked character's password from the website, the Supporter Cloak as the first account reward, account id in the online rows | [Round 79](round79-plan.md) |
-| 2 | A cloak and an emote for every website user (granted by the website to every account); reward emotes and a quickbar layout that grows with them; the art | after phase 1 works on the live realm |
+| 2 | One emote for every website user, Cheer (`emote:cheer`, granted by the website to every account; no cloak for everyone, Round 80 ruling 1); six donor cloaks granted per account; the quickbar's emotes as icon buttons that grow with them; the art | [Round 80](round80-plan.md) |
 | 3 | More Supporter emotes and cloaks: content only | later |
 | — | Account ban, characters created through a bridge command, character deletion | each as its own phase, order open |
 | — | Shared Claim Stone per account and faction, account-bound locked chests and doors | with a later map reset (ruling 25) |

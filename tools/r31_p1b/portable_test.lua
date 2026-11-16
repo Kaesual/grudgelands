@@ -63,7 +63,8 @@ do
 		function p:get_player_name() return self.name end
 		function p:get_hp() return self.hp end
 		function p:get_pos() return {x = 0, y = 0, z = 0} end
-		function p:get_properties() return {eye_height = 1.5} end
+		-- hp_max: since Round 80 Heal reads it (it refuses a target at full health).
+		function p:get_properties() return {hp_max = 100, eye_height = 1.5} end
 		return p
 	end
 	grug_factions = {

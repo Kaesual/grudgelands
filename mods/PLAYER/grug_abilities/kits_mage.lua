@@ -198,13 +198,13 @@ grug_abilities.register_ability({
 	-- The Mage's basic attack: replaces the universal Strike in place.
 	transforms = "strike",
 	tags = {"fire"},
-	description = "A free spark of fire at the enemy in your crosshair;\n" ..
+	description = "A spark of fire at the enemy in your crosshair;\n" ..
 		"damage scales with your level and your staff or wand.",
 	values = function(user, def)
 		return {damage = damage(user, def or grug_abilities.registered.fiery_spark, 1.0)}
 	end,
 	description_for = function(user, def)
-		return ("A free spark of fire at the enemy in your crosshair:\n" ..
+		return ("A spark of fire at the enemy in your crosshair:\n" ..
 			"%d damage, from your level and your staff or wand."):format(
 				effective_number(user, def.values(user, def).damage))
 	end,
@@ -433,7 +433,7 @@ grug_abilities.register_ability({
 	transforms = "fiery_spark",
 	talent_gated = true, talent = "rime_cold_spark",
 	tags = {"frost"},
-	description = "A free spark of frost at the enemy in your crosshair;\n" ..
+	description = "A spark of frost at the enemy in your crosshair;\n" ..
 		"it slows by 12% for 1.5 s.",
 	-- Keen Cold adds to every hit; Cold Shock's window (`shock`, read at the
 	-- launch that spends it) to the next one.
@@ -442,7 +442,7 @@ grug_abilities.register_ability({
 			1.0 + bonus(user, "cold_spark_unit_add") + (shock or 0))}
 	end,
 	description_for = function(user, def)
-		return ("A free spark of frost at the enemy in your crosshair:\n" ..
+		return ("A spark of frost at the enemy in your crosshair:\n" ..
 			"%d damage and a 12%% slow for 1.5 s."):format(
 				effective_number(user, def.values(user, def).damage))
 	end,

@@ -1428,6 +1428,14 @@ end
 
 function grug_core.add_absorb(player, id, amount, duration, source, action_id, modifiers)
 	amount = grug_core.scale_player_value(source or player, amount)
+	-- Whole points only (Round 80 ruling 11): the kits hand in unrounded
+	-- pool shares, and a fractional shield made the soak below return a
+	-- fractional hp_change that the hp loggers (the nametag) printed. Floored,
+	-- as every absorb tooltip floors its number, so the shield holds what the
+	-- tooltip says; at least 1 for any positive amount.
+	if amount > 0 then
+		amount = math.max(1, math.floor(amount))
+	end
 	local expiry = core.get_us_time() + duration * 1e6
 	local name = player:get_player_name()
 	absorbs[name] = absorbs[name] or {}
@@ -1535,6 +1543,17 @@ core.register_on_leaveplayer(function(player)
 	absorbs[player:get_player_name()] = nil
 end)
 
+-- The engine stores a modifier's result as an integer, truncated toward
+-- zero (s_player.cpp on_player_hpchange, lua_tointeger), but the
+-- non-modifier callbacks receive the returned number as it is. Both exits of
+-- the modifier below hand on that integer, so every logger (the nametag, the
+-- life bar's prediction) sees the change the engine applies (Round 80
+-- ruling 11).
+local function engine_hp_change(hp_change)
+	if hp_change < 0 then return math.ceil(hp_change) end
+	return math.floor(hp_change)
+end
+
 --
 -- Central damage modifier for players: punch combat marking and dodge,
 -- same-level-fitted mob pressure, equipped-armor mitigation for physical hits
@@ -1547,7 +1566,7 @@ end)
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change >= 0 then
-		return hp_change
+		return engine_hp_change(hp_change)
 	end
 	-- Drowning is dealt once per second by environment_damage.lua as a share
 	-- of the pool. The engine's own flat drown tick (every 2 s) is cancelled
@@ -1636,6 +1655,10 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 			tonumber(properties.hp_max) or 0)
 		if share and share > 0 then hp_change = -share end
 	end
+	-- The engine's integer before the soak, so the soak works in whole
+	-- points too. Every step above already yields whole numbers; this is
+	-- the guard.
+	hp_change = engine_hp_change(hp_change)
 	-- Absorb shield soaks the remaining damage of every source except fall,
 	-- lava and drowning (ruling 24).
 	local absorbed = false

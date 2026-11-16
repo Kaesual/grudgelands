@@ -198,6 +198,20 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
 - **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
   textures={...}}`; texture layering (skin/armor/wielditem) following
   LotT `lottarmor/multiskin.lua`.
+- **Emotes** (Rounds 78 and 80, rules in
+  [character_visuals.md](../../design/character_visuals.md) "Emotes"): clips baked
+  after the poses (`tools/r40_an/poses.json`, `tools/r33_c3/gen_cloak_model.py`, whose
+  `--check` holds `grug_visuals.EMOTE_CLIPS` in `apply.lua` to the model; new clips are
+  appended after the last frame). `grug_visuals.play_emote(player, id)` returns true or
+  false plus `unknown`, `not_owned`, `dead`, `busy`, `playing` or `seated`. Ownership
+  lives in `grug_quickbar.owns_emote(player, id)` (Wave and Dance always; a row of
+  `grug_quickbar.EMOTES` with `reward` while `grug_accounts.has_reward` holds it), handed
+  to `grug_visuals.set_emote_gate` at load, because `grug_visuals` must not depend on
+  `grug_accounts`; without a gate (fixtures) every emote is owned.
+  `grug_quickbar.emotes(player)` lists the owned ones in grid order. The quickbar
+  registers the reward `emote:cheer`. Icons `grug_quickbar_emote_<id>.png` and
+  `_off.png` (64 px, renders of the model) come from `tools/r80_emote/icons.py`
+  (`--check`). Fixtures `tools/r78_emote`, `tools/r80_emote`.
 
 ## Looks and enchant colours
 
@@ -346,8 +360,10 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   faction rule, and a manual row only once granted). Cloak textures are 32×32 (outer face left, lining
   right). Fixtures `tools/r33_c3`, `tools/r55_supporter`; rules
   [character_visuals.md](../../design/character_visuals.md) §5b.
-- **Account cloaks (Round 79):** a catalogue cloak with `account = true` (so far
-  `supporter`) is also the website-account reward `cloak:<id>`: `init.lua` registers it
+- **Account cloaks (Rounds 79 and 80):** a catalogue cloak with `account = true`
+  (`supporter` and the six donor cloaks `emberwake`, `veilstream`, `pearlwing`,
+  `moonfall`, `wintercourt`, `frost_regent`, which have no achievement and no tier) is
+  also the website-account reward `cloak:<id>`: `init.lua` registers it
   with `grug_accounts.register_reward` (kind `cloak`, the outer face as the Account
   page's icon). `account_cloaks(player)` builds the set of the ones the character's
   account gives (`grug_accounts.has_reward`, read live at every check, never stored),
@@ -360,7 +376,11 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   again (the user, 2026-11-15). On `grug_accounts.register_on_change` an online
   character is redrawn (`grug_visuals.apply`: look and stored appearance) and its
   Character page re-sent; an offline one follows at its next join, so its stored
-  appearance names a revoked account cloak until then. Fixture `tools/r79_page`.
+  appearance names a revoked account cloak until then. The donor cloaks' textures
+  (`grug_achievements_cloak_<id>.png` and `_wings.png`) are made by
+  `tools/r80_art/assemble.py` from the delivered painters (`--check`). Fixtures
+  `tools/r79_page`, `tools/r80_rewards` (the rows, the grant and loss, the Account page
+  with up to 18 rewards in two columns at both text sizes).
 
 ## Sound
 

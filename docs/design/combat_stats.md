@@ -286,6 +286,17 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   the absorb shield never soaks it (`grug_core.bypasses_absorb`).
 - Fall damage is the pool conversion in §2 above
   (`ceil(max_hp × r / 20)`), the same for every race.
+- **Water brakes a fast fall** (the user, 2026-11-16, Round 80): a fall from
+  about 30 nodes into deep water stops about 7.5 nodes down (it is below the
+  no-damage landing speed after 6.5 nodes), a 60-node fall after about 14.5;
+  shallower water does not protect from such a fall. The game's
+  `minetest.conf` sets `movement_liquid_fluidity_smooth = 0.75` (engine
+  default 0.5), a server setting every client receives; measured with
+  `tools/r80_fixes/water_drop.sh` (the numbers in the setting's comment and
+  the [Round 80 plan](../planning/round80-plan.md#completion-2026-11-16)). It brakes falls into every liquid a player moves in:
+  lava, the rift void and the dragon arena's Ice Water stop a fall somewhat
+  sooner too (their damage is unchanged). Swimming and the slow sinking are
+  unchanged.
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is
   punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
   damage** (nor the dragon's wrath, nor the max-HP clamp of an expiring HP

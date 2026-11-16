@@ -42,7 +42,8 @@ registered in mods/PLAYER/grug_visuals/apply.lua (POSE_CLIPS), which
 round78-plan.md ruling 10) appends the emotes after the poses the same way:
 Wave over `stand` and over `sit` (`wave_sit`, the seated rider's upper
 body), Dance over `stand`, registered as EMOTE_CLIPS; a seated clip keys
-the panels and the cloak as the sit range does.
+the panels and the cloak as the sit range does. Round 80 (lane EMOTE,
+round80-plan.md ruling 2) appends Cheer after them, over `stand` and `sit`.
 
 Round 54 (lane MODEL) adds the armor and the weapon card:
   * the ARMOR buffer: every box of tools/r54_armor/data/catalog.json
@@ -152,8 +153,9 @@ BASE_RANGES = (("stand", STAND), ("sit", SIT_R), ("lay", LAY), ("walk", WALK),
 PICKS = (("cast1", "a"), ("cast2", "b"), ("swing", "b"), ("bow", "a"),
          ("block", "b"), ("charge", "b"), ("flinch", "a"))
 # Round 78: the emotes, after the poses, each over the bases poses.json bakes
-# it over (`<emote>` over stand, `<emote>_sit` over sit).
-EMOTE_PICKS = (("wave", "a"), ("dance", "a"))
+# it over (`<emote>` over stand, `<emote>_sit` over sit); Round 80 appends
+# Cheer (stand and sit) after them.
+EMOTE_PICKS = (("wave", "a"), ("dance", "a"), ("cheer", "a"))
 SUFFIX = {"stand": "", "walk": "_walk", "sit": "_sit"}
 FIRST_POSE_FRAME = 221
 TWIST_LIFT = 0.2         # of the torso's twist the cloak swings out (pose_swing)

@@ -484,6 +484,15 @@ are kept per character, and so is the choice.
   texture for the cloak's two wing pieces ([offhand
   format](../technical/offhand-format.md) §3.4, §6), shown while the
   setting `grug_offhand_visuals` is on (the default).
+- **Account cloaks** (Rounds 79 and 80, [accounts.md](accounts.md)): a
+  catalogue cloak row with `account = true` is also a website account
+  reward `cloak:<id>`; a linked character owns it while its account holds
+  it (read live, never stored). The Supporter Cloak is one both ways. The
+  six **donor cloaks** (Round 80, the user's picks 2026-11-16, art by GPT-6
+  Astra, `tools/r80_art/`) are account rewards only, with no achievement:
+  **Emberwake**, **Veilstream**, **Pearlwing**, **Moonfall**,
+  **Wintercourt** and **Frost Regent**. Every reward cloak has **wings**
+  (the user, 2026-11-16).
 - The Character page has an **Achievements** mode: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, one column of seven per page (Round 44).
@@ -597,10 +606,12 @@ frames 0–220).
   without a hitch. Without it the player's own
   view would keep the pose until the movement changed.
 
-### Emotes (Round 78)
+### Emotes (Rounds 78 and 80)
 
-Two emotes in the quickbar (E), the user's ruling 10 of round78-plan.md:
-**Wave** and **Dance**. They are clips of the player model like the poses,
+Three emotes in the quickbar (E): **Wave** and **Dance** for every
+character (the user's ruling 10 of round78-plan.md) and **Cheer** for a
+character whose website account holds `emote:cheer` (Round 80, rulings 1 and
+2 of round80-plan.md; [accounts.md](accounts.md)). They are clips of the player model like the poses,
 baked after them by the same generator from `tools/r40_an/poses.json` and
 registered in `grug_visuals/apply.lua` (`EMOTE_CLIPS`, held to the model by
 the generator's `--check`):
@@ -610,17 +621,24 @@ the generator's `--check`):
 | `wave` | the right arm rises forward and on up and out to the side, turned so the palm faces forward (a held item points backward), waving three and a half times | 485–544 | once, 2 s |
 | `wave_sit` | the same over the seated frame (the legs stay on the saddle) | 545–604 | once, 2 s, on a mount |
 | `dance` | a 96-frame loop: the arms pump in turn (1.07 s a cycle); the hips sway and bob, the head follows and each knee lifts while the other leg steps out to the side (0.8 s a cycle) | 605–701 | one loop, 3.2 s |
+| `cheer` | "V-Jubel" (the user's pick on the preview page): the arms fly up into a V and pump twice, the head goes back, the torso leans back a little | 702–761 | once, 2 s |
+| `cheer_sit` | the same over the seated frame | 762–821 | once, 2 s, on a mount |
 
 - **A click plays it once.** Moving, jumping, a click (an attack or a cast;
   a skill's pose replaces it anyway) and mounting end it, with the same
   `<base>_resume` way back as a pose. The same emote again while it plays is
   ignored, the other one replaces it, and at most one emote starts per
   second (`grug_visuals.EMOTE_GAP`). A hit taken never flinches over it.
-- **On a mount** Wave plays seated and Dance is greyed out in the quickbar
-  (and refused). The mount keeps the rider in `sit` through player_api, so
+- **Who has which:** one function answers it, `grug_quickbar.owns_emote`
+  (Wave and Dance always, a reward emote while the account holds it, read
+  live). The quickbar hands it to `grug_visuals` at load as the gate, and
+  `play_emote` refuses an emote the character does not have (`not_owned`),
+  so a forged click cannot play it either.
+- **On a mount** Wave and Cheer play seated and Dance is greyed out in the
+  quickbar (and refused). The mount keeps the rider in `sit` through player_api, so
   the seated clip goes to the player object directly and `sit` plays again
   when it is over (one timer, nothing per step); a dismount simply replaces
-  it. Riding on does not end the seated Wave.
+  it. Riding on does not end a seated emote.
 - **Who sees them:** every player, the emoting player in third person too;
   the cloak and the panels follow the clip's base frame as in a pose.
 

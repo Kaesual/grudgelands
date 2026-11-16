@@ -7,13 +7,13 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.79.0 (`game.conf`), Round 79's squash commit `b1b035c3` (tag `round-79`),
-  pushed.
+- **Game:** 0.80.0 (`game.conf`), Round 80 (accounts phase 2 and five fixes); its squash
+  commit and tag `round-80` follow the round-end gates. Not pushed.
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the documentation cleanup of 2026-11
   ([plan](planning/docs-cleanup-plan.md)); no game change.
-- **Next:** Round 80, accounts phase 2 ([plan](planning/round80-plan.md)); planned, not
-  started.
+- **Next:** the push of Round 80, then the platform's message (the pin, `emote:cheer` for
+  every account, the six donor cloaks in the catalogue).
 - **Other branches:** `town-viewer` (kept on purpose: the three.js town viewer for design
   feedback); `study-dwarf-architecture` and `study-website-screenshots` (unmerged studies
   of 2026-11-11; the second has its own worktree).
@@ -29,11 +29,11 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
+| 80 | 0.80.0 | compatible | no | [Round 80](planning/round80-plan.md#completion-2026-11-16) |
 | 79 | 0.79.0 | compatible | yes | [Round 79](planning/round79-plan.md#completion-2026-11-15) |
 | 78 | 0.78.0 | compatible | yes | [Round 78](planning/round78-plan.md#completion-2026-11-12) |
 | 76 | 0.76.0–0.76.2 | compatible | yes | [Round 76](planning/round76-plan.md#completion-2026-11-11) |
 | 75 | 0.75.0–0.75.5 | map reset (0.75.4 compatible) | yes | [Round 75](planning/round75-plan.md#7-completion--2026-11-10) |
-| 74 | 0.74.0 | compatible | yes | [Round 74](planning/round74-plan.md#completion-2026-11-10) |
 
 Round 77 (a keep-claims map reset) was discarded; the number is not reused. The upgrade
 kinds come from `tools/web_data/upgrade.json` and the

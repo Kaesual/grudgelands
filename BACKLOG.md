@@ -70,10 +70,6 @@ for these checks by Round 22 D1/D5 and the decisions above.
 
 - **The end-to-end test on the rehearsal realm** once the platform side is ready
   ([web-accounts.md](docs/technical/web-accounts.md) §9).
-- **Contract note for the rate limits:** the website confirmed the typed-password rate
-  limits on 2026-11-15; §6a item 4 of the contract still says "to confirm" and needs a
-  dated note with the confirmed numbers (they are in the Round 79 correspondence outside
-  the repository).
 - **Account tombstones:** a tombstone in the id index is overwritten by the next new id at
   a join; fix it with the deletion amendment, before anything writes tombstones (contract
   §10, `grug_accounts/model.lua`;
@@ -236,6 +232,10 @@ Not planned yet.
   and [tools](docs/planning/class-redesign-handoff.md#73-tools-and-everyday-layouts)
   (remove shovels, combine axe and hoe)
   ([Round 53](docs/planning/round53-plan.md#carry-overs)).
+- **Heal out of range says "full health":** Heal aimed at a hurt ally beyond its 15 m
+  falls back to the caster and, at full health, answers "Target is at full health."
+  (Hearten beyond 6 m alike); a range message would be clearer
+  ([Round 80](docs/planning/round80-plan.md#carry-overs)).
 
 ## Items, crafting and economy
 
@@ -300,6 +300,9 @@ Rules: [expeditions.md](docs/design/expeditions.md).
   [Round 73](docs/planning/round73-plan.md#carry-overs)).
 
 ## UI, map and HUD
+
+- **Quickbar hint at GUI scale 2:** "Click to use; the window closes." reaches the
+  window's right edge ([Round 80](docs/planning/round80-plan.md#carry-overs)).
 
 ### UI review follow-ups (2026-10-26)
 
@@ -538,7 +541,7 @@ since 2026-11-16). Sources:
 
 The residual notes of each round live in its plan, in a section "Carry-overs" after
 "Completion": `docs/planning/round<NN>-plan.md#carry-overs` for Rounds 29–37, 40–49, 51–62,
-65–74, 76, 78 and 79 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
+65–74, 76 and 78–80 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
 the plans with longer names for
 [24](docs/planning/round24-mining-underground-mobs-plan.md#carry-overs),
 [25](docs/planning/round25-housing-plan.md#carry-overs),

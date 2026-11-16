@@ -300,7 +300,13 @@ load("mods/PLAYER/grug_mounts/flight.lua")
 load("mods/PLAYER/grug_mounts/entity.lua")
 load("mods/PLAYER/grug_mounts/trainer.lua")
 load("mods/PLAYER/grug_mounts/shipwright.lua")
+-- Round 80: at load the quickbar hands grug_visuals its emote gate and keeps
+-- which emotes have a seated clip (Dance greyed while riding); this fixture
+-- runs without grug_visuals otherwise.
+grug_visuals = {set_emote_gate = function() end,
+	EMOTE_CLIPS = {wave = {sit = {}}, dance = {}, cheer = {sit = {}}}}
 load("mods/PLAYER/grug_quickbar/init.lua")
+grug_visuals = nil
 
 local MODELS = grug_mounts.MODELS
 local function seat_of(model) return model.attach_y * model.visual_size.y / 10 end

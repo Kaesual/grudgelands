@@ -16,7 +16,8 @@
 -- (apply.lua): the player's own client ignores the plain base animation and
 -- would keep showing the pose.
 --
--- The Round 78 emotes (Wave, Dance; play_emote below) ride the same row.
+-- The emotes (Round 78's Wave and Dance, Round 80's Cheer; play_emote
+-- below) ride the same row.
 --
 
 local CLIPS = grug_visuals.POSE_CLIPS
@@ -162,8 +163,10 @@ function grug_visuals.current_pose(player)
 end
 
 --
--- THE EMOTES (Round 78 ruling 10, round78-plan.md §3.1): Wave and Dance from
--- the quickbar (grug_quickbar). One click plays the emote once, Dance as
+-- THE EMOTES (Round 78 ruling 10, round78-plan.md §3.1; Cheer since Round
+-- 80): Wave, Dance and Cheer from the quickbar (grug_quickbar), each only for
+-- a character that has it (the emote gate below). One click plays the emote
+-- once, Dance as
 -- one round of its loop; moving, jumping, a click (an attack or a cast;
 -- a skill's pose replaces it anyway) and mounting end it, and the player's
 -- own client gets the `<base>_resume` way back like after a pose. The same
@@ -171,8 +174,8 @@ end
 -- most one emote starts per EMOTE_GAP, so a click flood sends no flood of
 -- animations.
 --
--- A rider waves seated (`wave_sit`: the upper body; the legs stay on the
--- saddle) and has no Dance. The mount re-asserts `sit` through player_api
+-- A rider waves and cheers seated (`wave_sit`, `cheer_sit`: the upper body;
+-- the legs stay on the saddle) and has no Dance. The mount re-asserts `sit` through player_api
 -- every step it differs (grug_mounts/entity.lua), so the seated clip goes
 -- to the object directly while player_api keeps `sit`, and `sit` is played
 -- again when the clip is over (a timer; nothing runs per step). Any other
@@ -187,6 +190,18 @@ local BLEND = 0.12
 local last_emote = {}
 -- player name -> {emote, ends (us)} of the seated emote playing.
 local seated = {}
+-- Who may play which emote (Round 80, round80-plan.md §3.3) is the
+-- quickbar's answer, not this mod's: grug_visuals does not depend on
+-- grug_accounts, so grug_quickbar hands its ownership function over at load
+-- (set_emote_gate(grug_quickbar.owns_emote)). Without one (fixtures that
+-- load this file alone) every emote of EMOTE_CLIPS may play.
+local emote_gate
+
+-- gate(player, emote) -> true when the character has that emote.
+function grug_visuals.set_emote_gate(gate)
+	assert(type(gate) == "function", "grug_visuals.set_emote_gate: not a function")
+	emote_gate = gate
+end
 
 local function play_seated(player, name, emote, range, now)
 	local running = seated[name]
@@ -212,12 +227,14 @@ local function play_seated(player, name, emote, range, now)
 end
 
 -- Plays `emote` (a key of EMOTE_CLIPS) on `player`. Returns true, or false
--- and why: "unknown", "dead", "busy" (within EMOTE_GAP of the last start),
+-- and why: "unknown", "not_owned" (the emote gate says the character does
+-- not have it), "dead", "busy" (within EMOTE_GAP of the last start),
 -- "playing" (the same emote runs), "seated" (no seated clip, or attached to
 -- something that is no mount).
 function grug_visuals.play_emote(player, emote)
 	local clip = EMOTES[emote]
 	if not clip then return false, "unknown" end
+	if emote_gate and not emote_gate(player, emote) then return false, "not_owned" end
 	if player:get_hp() <= 0 then return false, "dead" end
 	local name = player:get_player_name()
 	local now = core.get_us_time()

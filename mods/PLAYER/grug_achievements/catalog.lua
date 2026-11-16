@@ -23,7 +23,8 @@
 -- makes a cloak a website-account reward as well: grug_accounts lists it as
 -- cloak:<id>, and every character of an account the administrator granted it
 -- owns it while the account holds it (init.lua); a character may also earn
--- it the usual way. Only the Supporter Cloak is one so far.
+-- it the usual way. The Supporter Cloak is one; the six donor cloaks (Round
+-- 80) are account rewards only: no achievement unlocks them.
 -- Names, flavour and cloak names are GPT-6 Astra's proposals
 -- (Round 33); the selection and tiers are the user's (2026-10-04). Counters:
 --   kill:animal           every wild animal: critters and hostile beasts,
@@ -154,6 +155,28 @@ return {
 		{id = "miners_guild_3", name = "Lamplight Mantle",
 			texture = "grug_achievements_cloak_miners_guild_3.png",
 			wings = "grug_achievements_cloak_miners_guild_3_wings.png"},
+		-- Round 80: the donor cloaks, for players who supported the game with
+		-- money, granted per account on the website (round80-plan.md §2
+		-- rulings 4-6). GPT-6 Astra's (donor cloak drop-02, picked 2026-11-16,
+		-- tools/r80_art); every one winged.
+		{id = "emberwake", name = "Emberwake", account = true,
+			texture = "grug_achievements_cloak_emberwake.png",
+			wings = "grug_achievements_cloak_emberwake_wings.png"},
+		{id = "veilstream", name = "Veilstream", account = true,
+			texture = "grug_achievements_cloak_veilstream.png",
+			wings = "grug_achievements_cloak_veilstream_wings.png"},
+		{id = "pearlwing", name = "Pearlwing", account = true,
+			texture = "grug_achievements_cloak_pearlwing.png",
+			wings = "grug_achievements_cloak_pearlwing_wings.png"},
+		{id = "moonfall", name = "Moonfall", account = true,
+			texture = "grug_achievements_cloak_moonfall.png",
+			wings = "grug_achievements_cloak_moonfall_wings.png"},
+		{id = "wintercourt", name = "Wintercourt", account = true,
+			texture = "grug_achievements_cloak_wintercourt.png",
+			wings = "grug_achievements_cloak_wintercourt_wings.png"},
+		{id = "frost_regent", name = "Frost Regent", account = true,
+			texture = "grug_achievements_cloak_frost_regent.png",
+			wings = "grug_achievements_cloak_frost_regent_wings.png"},
 	},
 	achievements = {
 		-- U1

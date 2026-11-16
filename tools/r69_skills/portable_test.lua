@@ -676,13 +676,16 @@ do
 			local p = new_player(node.class, 60, {ranks = ranks, melee = own_sword(60),
 				weapon = node.class == "scout" and own_bow(60) or own_staff(60)})
 			local text = graph.node_text(p, node)
+			-- Round 80 (SKILLS, ruling 12): a granting node states its skill's
+			-- cost after the description (tools/r80_skills checks it).
+			local cost = node.ability and " Cost: " .. G.cost_text(p, R[node.ability]) .. "." or ""
 			if node.ability and not STATIC[node.ability] then
 				local skill = G.skill_text(p, R[node.ability]):gsub("%s*\n%s*", " ")
-				eq(text, node.description .. " At your level: " .. skill,
+				eq(text, node.description .. cost .. " At your level: " .. skill,
 					"D " .. id .. " ends in its skill's text")
 				check(not text:find("\n", 1, true), "D " .. id .. " is one paragraph")
 			elseif not next(node.effects) or node.ability then
-				eq(text, node.description, "D " .. id .. " stays its description")
+				eq(text, node.description .. cost, "D " .. id .. " stays its description")
 			else
 				local _, count = text:gsub("At your level", "")
 				check(count <= 1, "D " .. id .. " keeps at most its own amounts")
@@ -722,7 +725,7 @@ do
 	local amount = 42
 	grug_abilities.registered.fireball = {description_for = function()
 		return "Line one:\n" .. amount .. " damage."
-	end}
+	end, cost = "6% base mana"} -- Round 80: the harness's cost_text reads `cost`
 	grug_abilities.skill_text = function(p, def) return def.description_for(p, def) end
 	local mage = H.make_player("e_mage", "mage", 60, "")
 	H.join(mage)

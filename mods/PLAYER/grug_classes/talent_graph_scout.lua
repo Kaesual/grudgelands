@@ -63,7 +63,7 @@ graph.register_tree({
 		{id = "quarry_true_draw", code = "Q4", name = "True Draw", type = "unlock",
 			ability = "true_draw", ranks = 1, gate = 2, col = 3,
 			description = "Unlocks True Draw: an instant shot for 220 % of a base bow hit; " ..
-				"6 s cooldown, 6 % mana and 1 arrow, 1.35 s recovery."},
+				"6 s cooldown, 1 arrow, 1.35 s recovery."},
 		{id = "quarry_firm_aim", code = "Q5", name = "Firm Aim", type = "modifier",
 			ranks = 3, gate = 6, col = 2, requires = {"quarry_true_draw"},
 			effects = {true_draw_add = {0.10, 0.20, 0.30}},
@@ -71,7 +71,7 @@ graph.register_tree({
 		{id = "quarry_snare_shot", code = "Q6", name = "Snare Shot", type = "unlock",
 			ability = "snare_shot", ranks = 1, gate = 6, col = 4,
 			description = "Unlocks Snare Shot: an instant shot for 45 % of a base bow hit " ..
-				"that slows by 35 % for 3 s; 14 s cooldown, 5 % mana and 1 arrow, 0.85 s " ..
+				"that slows by 35 % for 3 s; 14 s cooldown, 1 arrow, 0.85 s " ..
 				"recovery."},
 		{id = "quarry_long_view", code = "Q7", name = "Long View", type = "modifier",
 			ranks = 3, gate = 10, col = 4, effects = {["range_add:bow"] = {1, 2, 3}},
@@ -79,7 +79,7 @@ graph.register_tree({
 		{id = "quarry_split_shot", code = "Q8", name = "Split Shot", type = "unlock",
 			ability = "split_shot", ranks = 1, gate = 12, col = 2,
 			description = "Unlocks Split Shot: one arrow for 90 % of a base bow hit; up to " ..
-				"2 others within 3 m of the target take 55 %; 10 s cooldown, 8 % mana and " ..
+				"2 others within 3 m of the target take 55 %; 10 s cooldown, " ..
 				"1 arrow."},
 		{id = "quarry_broad_shot", code = "Q9", name = "Broad Shot", type = "modifier",
 			ranks = 3, gate = 12, col = 1, requires = {"quarry_split_shot"},
@@ -98,7 +98,7 @@ graph.register_tree({
 			ability = "arrowfall", ranks = 1, gate = 20, col = 3, requires = {"quarry_true_draw"},
 			description = "Unlocks Arrowfall: 4 arrows at once at the target under your " ..
 				"crosshair, each 140 % of a base bow hit, critical hits allowed; 60 s " ..
-				"cooldown, 16 % mana and 4 arrows, 2.5 s recovery."},
+				"cooldown, 4 arrows, 2.5 s recovery."},
 		{id = "quarry_iron_hail", code = "Q13", name = "Iron Hail", type = "modifier",
 			ranks = 3, gate = 20, col = 4, requires = {"quarry_arrowfall"},
 			effects = {arrowfall_add = {0.04, 0.08, 0.12}},
@@ -124,14 +124,14 @@ graph.register_tree({
 		{id = "veil_opening", code = "V4", name = "Opening", type = "unlock",
 			ability = "opening", ranks = 1, gate = 2, col = 3, requires = {"veil_bladecraft"},
 			description = "Unlocks Opening: your next swing deals 135 % of a base blade hit, " ..
-				"180 % from behind or in Parry's window; 8 s cooldown, 5 % mana."},
+				"180 % from behind or in Parry's window; 8 s cooldown."},
 		{id = "veil_deep_focus", code = "V5", name = "Deep Focus", type = "modifier",
 			ranks = 3, gate = 2, col = 5, effects = {["cost_pct:blade"] = {-5, -10, -15}},
 			description = "Paid blade skills, Parry and Close Dance cost 5/10/15 % less."},
 		{id = "veil_parry", code = "V6", name = "Parry", type = "unlock", ability = "parry",
 			ranks = 1, gate = 6, col = 4,
 			description = "Unlocks Parry: a shield of 10 % of a base health pool for 2 s, " ..
-				"and Opening's window opens for 3 s; 12 s cooldown, 4 % mana, 0.5 s recovery."},
+				"and Opening's window opens for 3 s; 12 s cooldown, 0.5 s recovery."},
 		{id = "veil_held_guard", code = "V7", name = "Held Guard", type = "modifier",
 			ranks = 3, gate = 6, col = 5, requires = {"veil_parry"},
 			effects = {["duration_add:parry"] = {0.25, 0.5, 0.75}},
@@ -139,7 +139,7 @@ graph.register_tree({
 		{id = "veil_flourish", code = "V8", name = "Flourish", type = "unlock",
 			ability = "flourish", ranks = 1, gate = 12, col = 2, requires = {"veil_bladecraft"},
 			description = "Unlocks Flourish: an instant 90 degree, 3 m sweep; the 3 nearest " ..
-				"take 80 % of a base blade hit each; 12 s cooldown, 8 % mana."},
+				"take 80 % of a base blade hit each; 12 s cooldown."},
 		{id = "veil_wide_edge", code = "V9", name = "Wide Edge", type = "modifier",
 			ranks = 3, gate = 12, col = 1, requires = {"veil_flourish"},
 			effects = {flourish_add = {0.05, 0.10, 0.15}},
@@ -158,7 +158,7 @@ graph.register_tree({
 			requires = {"veil_opening", "veil_parry"},
 			description = "Unlocks Close Dance: for 6 s your blade swings deal +35 % of a " ..
 				"base blade hit, and a shield of 15 % of a base health pool; 60 s " ..
-				"cooldown, 14 % mana, 0.25 s recovery."},
+				"cooldown, 0.25 s recovery."},
 		{id = "veil_cutting_rhythm", code = "V13", name = "Cutting Rhythm", type = "modifier",
 			ranks = 3, gate = 20, col = 5, requires = {"veil_close_dance"},
 			effects = {close_dance_add = {0.05, 0.10, 0.15}},

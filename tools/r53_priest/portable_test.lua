@@ -760,12 +760,16 @@ local function at_mob(m)
 		origin = vector.new(0, 1.47, 0), destination = m.pos}
 end
 local function full_mana(p) G.restore_mana(p, 1e6) end
+-- Round 80 (SKILLS, ruling 10): Heal refuses a target at full health (the
+-- fake heal_player changes no health), so the casters below that Heal miss
+-- a point; tools/r80_skills checks the refusal.
+local function hurt() return {hp = 99} end
 
 ------------------------------------------------------------------------------
 -- C: the clock.
 ------------------------------------------------------------------------------
 do
-	local p = priest("c_clock", 30, {mercy_shield = 1})
+	local p = priest("c_clock", 30, {mercy_shield = 1}, hurt())
 	full_mana(p)
 	local m = new_mob("c_mob", vector.new(0, 0, 5))
 	check(cast(p, "smite", at_mob(m)), "C Smite casts, free")
@@ -798,7 +802,8 @@ end
 do
 	local L = 40
 	local m = new_mob("w_mob", vector.new(0, 0, 6))
-	local p = priest("w_cc", L, {mercy_clear_conscience = 3, mercy_shield = 1, mercy_mend = 1})
+	local p = priest("w_cc", L, {mercy_clear_conscience = 3, mercy_shield = 1, mercy_mend = 1},
+		hurt())
 	full_mana(p)
 	local function smite_damage()
 		reset_log()
@@ -830,14 +835,14 @@ do
 	assert(cast(p, "heal"))
 	eq(log.procs[1], "clear_conscience", "W 8 s after the opening it opens again")
 	-- Rank 1; and none without the node.
-	local r1 = priest("w_r1", L, {mercy_clear_conscience = 1})
+	local r1 = priest("w_r1", L, {mercy_clear_conscience = 1}, hurt())
 	full_mana(r1)
 	assert(cast(r1, "heal"))
 	wait(2)
 	reset_log()
 	assert(cast(r1, "smite", at_mob(m)))
 	eq(log.damage[1].amount, hit(L, 1, 0, 0.1), "W rank 1: +0.10 B")
-	local none = priest("w_none", L)
+	local none = priest("w_none", L, nil, hurt())
 	full_mana(none)
 	reset_log()
 	assert(cast(none, "heal"))
@@ -1055,7 +1060,7 @@ do
 	local L = 60
 	clear_world()
 	local p = priest("d_priest", L, {reckoning_word_of_ruin = 1, reckoning_rebuke = 1,
-		reckoning_final_word = 1, mercy_shield = 1})
+		reckoning_final_word = 1, mercy_shield = 1}, hurt())
 	full_mana(p)
 	local m = new_mob("d_mob", vector.new(0, 0, 6))
 	reset_log()

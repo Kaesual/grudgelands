@@ -1116,7 +1116,13 @@ do
 	grug_keys = {register_on_press = function(key, fn) presses[key] = fn end}
 	grug_mounts = {owned_tier_ids = function() return {} end, active = {}, TIERS = {},
 		owns_tier = function() return false end}
+	-- Round 80: at load the quickbar hands grug_visuals its emote gate and keeps
+	-- which emotes have a seated clip (Dance greyed while riding); this fixture
+	-- runs without grug_visuals otherwise.
+	grug_visuals = {set_emote_gate = function() end,
+		EMOTE_CLIPS = {wave = {sit = {}}, dance = {}, cheer = {sit = {}}}}
 	dofile(repo .. "/mods/PLAYER/grug_quickbar/init.lua")
+	grug_visuals = nil
 	local p = player("u_quick")
 	presses.aux1(p)
 	local first = last_shown("u_quick")

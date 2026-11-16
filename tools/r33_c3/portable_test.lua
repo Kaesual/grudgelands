@@ -455,9 +455,10 @@ for _, ach in ipairs(book.achievements) do
 	check(ok, "C counter " .. c .. " of " .. ach.id .. " is produced by a hook")
 end
 -- Every textured cloak has its file (and its wings file, if any), and the ids
--- are exactly Astra's 48 (Round 55 added the Supporter Cloak, Round 58 the
--- three Miner's Guild cloaks).
-local ASTRA = {"plain_grey", "unburnt_roll", "unbought_banner", "broken_due", "supporter"}
+-- are exactly Astra's 54 (Round 55 added the Supporter Cloak, Round 58 the
+-- three Miner's Guild cloaks, Round 80 the six donor cloaks).
+local ASTRA = {"plain_grey", "unburnt_roll", "unbought_banner", "broken_due", "supporter",
+	"emberwake", "veilstream", "pearlwing", "moonfall", "wintercourt", "frost_regent"}
 for _, row in ipairs({{"hunter", 3}, {"kingslayer", 3}, {"wyvernslayer", 3},
 		{"dragonslayer", 3}, {"honored", 3}, {"zombie_slayer", 3}, {"boaring_work", 3},
 		{"rat_race", 2}, {"suppers_ready", 3}, {"bottle_service", 3}, {"loose_bones", 3},
@@ -481,11 +482,11 @@ for _, cloak in ipairs(book.cloaks) do
 		if handle then handle:close() end
 	end
 end
-eq(#ASTRA, 48, "C Astra's list")
+eq(#ASTRA, 54, "C Astra's list")
 for _, id in ipairs(ASTRA) do check(textured[id], "C catalogue has " .. id) end
 local count = 0
 for _ in pairs(textured) do count = count + 1 end
-eq(count, 48, "C no cloak beyond Astra's list")
+eq(count, 54, "C no cloak beyond Astra's list")
 -- Tier N of an achievement unlocks <id>_N; the Round 36 three and Round 55's
 -- Supporter unlock their one cloak by its own name (story bible §6).
 local NAMED = {every_name_accounted_for = "unburnt_roll", our_oaths_are_ours = "unbought_banner",

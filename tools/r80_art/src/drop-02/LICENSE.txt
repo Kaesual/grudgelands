@@ -1,0 +1,16 @@
+Original Drop 02 cloak and wing paintings, scripts and comparison layouts:
+CC0 1.0 Universal.
+
+To the extent possible under law, the authors dedicate these original works
+to the public domain and waive all copyright and related or neighboring rights.
+The works are provided without warranty. You may copy, modify and distribute
+them, including for commercial purposes, without asking permission.
+
+License text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+SPDX-License-Identifier: CC0-1.0
+
+This drop refines our original CC0 Drop 01 paintings and reuses their helpers.
+No downloaded pixels, third-party painting assets or image models were used.
+Model previews include the supplied game model, character skins and back
+weapon for review. Those existing components retain their original licenses;
+this dedication applies to the new paintings and original source/layouts.

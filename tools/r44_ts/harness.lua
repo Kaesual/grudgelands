@@ -278,11 +278,15 @@ return function(repo, hidden)
 
 	-- The ability catalogue: a scout's six, two of them talent-gated by
 	-- graph nodes (round53-plan.md §3: `talent = "<tree>_<name>"`).
+	-- `cost`: the static text grug_abilities.cost_text gives (Round 80, the
+	-- talent nodes state their skill's cost through it).
 	local abilities = {
-		{id = "strike", name = "Strike"}, {id = "sprint", name = "Sprint"},
-		{id = "loose", name = "Loose"}, {id = "snare_shot", name = "Snare Shot"},
-		{id = "true_draw", name = "True Draw", talent = "quarry_true_draw"},
-		{id = "opening", name = "Opening", talent = "veil_opening"},
+		{id = "strike", name = "Strike", cost = "free"},
+		{id = "sprint", name = "Sprint", cost = "15% base mana"},
+		{id = "loose", name = "Loose", cost = "free"},
+		{id = "snare_shot", name = "Snare Shot", cost = "5% base mana"},
+		{id = "true_draw", name = "True Draw", talent = "quarry_true_draw", cost = "6% base mana"},
+		{id = "opening", name = "Opening", talent = "veil_opening", cost = "5% base mana"},
 	}
 	H.abilities = abilities
 	local ability_def = {}
@@ -303,6 +307,7 @@ return function(repo, hidden)
 			if not def then return false end
 			return not def.talent or grug_classes.talent_rank(player, def.talent) > 0
 		end,
+		cost_text = function(_, def) return def.cost end,
 	}
 	function grug_abilities.unlocked_ids(player)
 		local out = {}

@@ -595,8 +595,14 @@ do
 		effective_charge = function() return 2 end,
 		-- Round 53 (HOOKS): no family keys here; the cost as defined.
 		family_bonus = function() return 0 end,
-		effective_cost = function(_, def) return def.cost end}
+		-- Round 80 (SKILLS): the head's mana number is the cast's charge.
+		effective_cost = function(_, def)
+			return def.cost.mana_percent and {mana = 10} or def.cost
+		end}
 	local init = "mods/PLAYER/grug_abilities/init.lua"
+	-- Round 80 (SKILLS): the head states the cost through cost_text.
+	run(cut(init, "\n(function grug_abilities%.cost_text%(.-\nend)\n",
+		"cost_text"), "cost_text")
 	run(cut(init, "\n(function grug_abilities%.effective_cooldown%(.-\nend)\n",
 		"effective_cooldown"), "effective_cooldown")
 	run(cut(init, "\n(function grug_abilities%.description_prefix%(.-\nend)\n",

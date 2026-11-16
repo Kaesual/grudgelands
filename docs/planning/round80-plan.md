@@ -26,7 +26,7 @@ as their own lanes beside the two account lanes so the round finishes in one wav
 
 ## 1. Lanes and order
 
-Start state: main at the round's planning commit (0.79.0 + this plan). Integration branch
+Start state: main at `b948b22e` (0.79.0, this plan, the documentation cleanup of 2026-11). Integration branch
 `round80` in `.claude/worktrees/round80`; every lane branches from it.
 
 | Lane | Goal (§4) | Wave | Merge order | Review |
@@ -35,7 +35,7 @@ Start state: main at the round's planning commit (0.79.0 + this plan). Integrati
 | EMOTE | The Cheer emote (clip, seated twin, the account reward `emote:cheer`, the ownership gate); the quickbar's emotes as icon buttons; the icon tool | 1 | 2 | independent; screenshots to the user before the merge |
 | SKILLS | Instant heals refuse a target at full health; every skill text states its cost, a percentage cost with the current mana number | 1 | 3 | independent |
 | FIXES | Water brakes a fast fall; party nametags never show fractional health | 1 | 4 | independent |
-| D | Contract amendments (§3.2), design docs, mod map, module guide, help text, release 0.80.0, completion, GUI checklist | after every merge | — | coordinator |
+| D | Contract notes (§3.2), design docs, mod map, module guide, help text, release 0.80.0, the round's end records | after every merge | — | coordinator |
 
 All four implementation lanes touch different files (§3.4) and run in parallel in one wave.
 
@@ -80,6 +80,10 @@ From the user's additions of 2026-11-16:
 
 9. **Water brakes a fast fall.** While a player is in water, a high downward speed shrinks until
    only the normal slow sinking remains.
+   *Amended by the user (2026-11-16):* the first pass's 3.5 nodes are too short (even shallow
+   water would protect from fall damage); a fall at maximal speed (reference: 30 nodes, about
+   33 nodes/s at entry) stops within 6–10 nodes. Shipped: `movement_liquid_fluidity_smooth = 0.75`
+   (measured 7.6 nodes; receipts in the lane report).
 10. **Instant heals refuse a target at full health.** A heal that heals at once and has no
     heal-over-time part is not cast when its target has full health (no mana, no cooldown, a short
     message); from the first missing hit point it casts. Heal-over-time effects are not affected:
@@ -92,6 +96,9 @@ From the user's additions of 2026-11-16:
 13. **The website's four narrower answers** (its note of 2026-11-15,
     `~/projects/grudgelands-orchestration/r79/correspondence/kaesual-web-accounts-wave2-notes.md`)
     go into the contract as a dated note.
+14. **The rate-limit note goes into the contract too** (2026-11-16): lane D adds a dated note to
+    §6a item 4 of the contract with the limits the website confirmed on 2026-11-15, replacing "to
+    confirm", and the BACKLOG item for it is deleted.
 
 ## 3. Shared conventions
 
@@ -136,7 +143,9 @@ a game change: a request over the website's limits may get no answer (the game's
 it); a used code comes back as `unknown_code`; a confirmation the website never offered gets no
 answer; a bound name takes the game's spelling. The draft answer to the website
 (`~/projects/grudgelands-orchestration/r79/correspondence/grudgelands-wave2-answer-draft.md`) says
-so; the user sends it.
+so; the user forwards it once the website is ready. **The user's ruling (2026-11-16, ruling 14):** the same pass closes the
+BACKLOG item "Contract note for the rate limits": a dated note in §6a item 4 with the numbers the
+website confirmed on 2026-11-15 (from the Round 79 correspondence), replacing "to confirm".
 
 The platform agent gets a short message from the user after the push (the coordinator drafts it):
 the pin, `emote:cheer` for every account, the six new cloaks in the catalogue.
@@ -260,7 +269,7 @@ re-check (confirmed / changed / refuted in the report).
    depend on it. The game sets none of the liquid settings. Preferred fix: the game's
    `minetest.conf` sets `movement_liquid_fluidity_smooth` (start at 2; the lane measures 2 and 3
    in one headless or capture run and picks the one that stops a fall from about 30 nodes within
-   about 2–3 nodes). Alternative if a server setting turns out not to reach the clients as wanted:
+   about 2–3 nodes; superseded by the amended ruling 9: 6–10 nodes, shipped 0.75). Alternative if a server setting turns out not to reach the clients as wanted:
    the per-player physics override `liquid_fluidity_smooth`, written only through
    `grug_core/movement.lua` (its single-writer rule) and at join. Not server-side `add_velocity`
    (a round trip late, jitter). Known side effect, to report: horizontal speed into water is
@@ -281,13 +290,16 @@ re-check (confirmed / changed / refuted in the report).
 
 ### D
 
-The contract amendments of §3.2 (dated note, nothing else in the contract); the design docs
+The contract notes of §3.2 (dated, nothing else in the contract changes); the design docs
 (`accounts.md`: phase 2; `character_visuals.md`: Cheer; `inventory_equipment.md`: the emote grid);
-mod map and module guide (the ownership function, the new textures, the catalogue rows); the
-help text (Cheer for linked characters, the icons); release 0.80.0 (`game.conf`,
-`tools/web_data/upgrade.json`, CHANGELOG, STATUS, AGENTS pointer); the concept's §4 phase row; the
-completion section; the GUI checklist; BACKLOG rows from the reports; `tools/README.md` lines for
-`r80_*`.
+the mod map and the module guide's area files (`docs/technical/modules/`: the ownership function,
+the new textures, the catalogue rows); the help text (`grug_inventory/help.lua`: Cheer for linked
+characters, the icons); the concept's §4 phase row; `tools/README.md` lines for `r80_*` if a lane
+left one out. Release 0.80.0 (`game.conf`, `tools/web_data/upgrade.json`) and the round's three
+end records ([round workflow §4](../process/round-workflow.md#4-lane-d-and-the-post-merge-status-step)):
+the CHANGELOG entry, this plan's "Completion" and "Carry-overs", the STATUS row. BACKLOG in place:
+the delivered items are deleted (the Account card's overflow, Round 79's carry-over; the rate-limit
+note, ruling 14), a still-wanted carry-over gets a one-line item.
 
 ## 5. Rules
 
@@ -298,51 +310,180 @@ eight Lua processes across all agents. Headless runs only through `tools/luanti_
 wants to change it stops and reports. UI lanes merge only on the user's explicit go after the
 screenshots.
 
-## 6. Verification and GUI checklist
+## 6. Verification and human tests
 
 **Code:** changed-file Lua check, the lanes' fixtures, the model generator's and both art tools'
-`--check`, the full suite at the round end, `tools/check_upgrade.py`, `check_fresh_server.py`, a
-headless smoke boot.
+`--check`, the full suite at the round end (once, by the coordinator), `tools/check_upgrade.py`,
+`check_fresh_server.py`, a headless smoke boot. The look of the cloaks, the icons and the Account
+page is judged by the user on the lanes' screenshots before those lanes merge.
 
-**User GUI test** (desktop and web; fake bridge in accounts mode, `grant` and `revoke` for the
-rewards; D refines this list from the reports):
+**Human-test proposal** (an offer, nothing waits on it; desktop and web, the fake bridge in
+accounts mode with `grant` and `revoke`; D refines it from the reports). The points no fixture or
+capture can judge:
 
-1. A character without an account: the quickbar shows Wave and Dance as icons, tooltips name them.
-2. Grant `emote:cheer`: the notice comes; the quickbar shows Cheer as the third icon after the
-   next opening; it plays (arms up in a V, head back), standing and on a mount.
-3. Revoke it: Cheer leaves the quickbar; `play_emote` refuses it if called directly.
-4. While riding: Dance's icon is dimmed, its tooltip says "Not while riding.", a click does
-   nothing; Wave and Cheer play seated.
-5. Grant each donor cloak: the Account page lists it with its icon; the Character page offers it;
-   worn, it shows with its wings; revoke falls back to no cloak.
-6. All eight rewards granted: the Account page shows them all at the smallest and the largest
-   text size.
-7. Other players see Cheer and the donor cloaks.
-8. Jump from about 30 nodes into deep water: the fall stops within a few nodes, then you sink
-   slowly as before; swimming, jumping out and boats feel unchanged.
-9. Priest at full health: Heal on yourself is refused with the message, no mana spent, no
-   cooldown; take one point of damage and it casts. Mend casts at full health. Hearten is refused
-   only when the whole group is full.
-10. The talent tree and the hotbar tooltips state every skill's cost; percentage costs show the
-    mana number, which changes when the mana pool changes.
-11. In a party, a priest shields a member who is then hit until the shield breaks: the nametag
-    over the member shows whole numbers.
+1. Jump from about 30 nodes into deep water: the fall stops about 8 nodes down, then you sink
+   slowly as before; the same jump into water 4–5 nodes deep still hurts; swimming, jumping out and boats feel unchanged.
+2. Cheer on foot and on a mount, seen by another player; it ends on a move like Wave.
+3. Grant and revoke `emote:cheer` and a donor cloak on a logged-in character: the quickbar and the
+   Character page follow without a relog.
+4. Priest Heal at full health is refused with the message (no mana, no cooldown); one missing
+   point and it casts; Mend casts at full health.
 
 ## 7. Orchestration notes
 
-- **Start:** on the user's go, after a compaction and after the user's restructuring of the
-  repository's Markdown files (re-read AGENTS.md first; paths in this plan may have moved: fix
-  them before writing briefs). REWARDS, EMOTE, SKILLS and FIXES in one wave; D after the merges.
-- **Open with the user:** whether trinket enchantments change (below).
+- **Start:** 2026-11-16, after the documentation cleanup (`b948b22e`); paths re-checked against
+  the new layout. REWARDS, EMOTE, SKILLS and FIXES in one wave; D after the merges.
+- **Compaction checkpoints:** (1) when all four lane reports are in and their reviews are
+  launched; (2) after the four merges, before D; (3) after D's merge and the round-end gates,
+  before the squash.
 - **Trinket enchantments, T5 equals T6** (the user's report, 2026-11-16; research, not a lane):
   not a bug in the code. The enchant value uses `L = min(item level, 10 × tier)`
   (`grug_quality/init.lua`, documented in `docs/design/item_tiers.md`), so on an un-upgraded T6
   item (level 51) a T6 enchant uses L = 51 and a T5 enchant L = 50, which round to the same value;
   T6 pulls ahead only as the item is upgraded towards level 60. The same holds on every slot and
-  one tier down (T4 = T5 on a level-41 item). It becomes a lane only if the user wants the rule
-  or its wording changed.
+  one tier down (T4 = T5 on a level-41 item). The user keeps the rule as it is (2026-11-16).
 - **The platform:** after the push the user sends the platform agent the pin and §3.2's message.
 - **Handover:** `~/projects/grudgelands-orchestration/r80/HANDOVER.md`.
 - **Inputs outside the repository** (the lanes copy, never move): the cloak drops and picks
   under `~/projects/grudgelands-orchestration/donor-cloak/`, the cheer bake and icon studies
   under `~/projects/grudgelands-orchestration/cheer-page/`.
+
+## Completion (2026-11-16)
+
+All four lanes are merged into `round80`; this lane D runs on it (branch `r80-d`). Nothing
+is on main and nothing is pushed: `round80` lands on main as one squash commit (0.80.0)
+after the round-end gates. Every lane had an independent review (all four MERGE); FIXES
+had a fix round and a delta review (MERGE). REWARDS and EMOTE merged after the user's go
+on their screenshots.
+
+Round-end gates (coordinator, 2026-11-16, `round80` at `dbf33572`): the full fixture run
+360 passed, 0 failed; `check_upgrade` (0.80.0) and `check_fresh_server` PASS;
+`validate.py --game` 0 errors; `income.py --check`, `gen_bat_ride_mesh.py --check`,
+`r80_art/assemble.py --check`, `r80_emote/icons.py --check`, `gen_cloak_model.py --check`
+and `web_data/export.lua --check` current; `building_templates/check.py` PASS (no template
+changed); headless smoke boot PASS. `sync_to_luanti.sh` is left to the user.
+
+**0.80.0 is compatible:** no step, no map reset, no new world. All four lane reports say
+compatible, and lane D's reading agrees: **no new saved key**. Cheer and the donor cloaks
+are read live from `grug_accounts`' stored `list` (`has_reward`), the cloak choice stays in
+the existing `grug_achievements:cloak`/`:cloaks`; absorbs and the nametag are runtime
+state; the player model only gains appended frames (702–821); the quickbar's field names
+are transient. `movement_liquid_fluidity_smooth` is a server default read at boot.
+
+### Lanes
+
+`round80`'s first-parent merges after the plan commits (lane tip in brackets):
+
+| Lane | Merge | What | Review |
+|---|---|---|---|
+| REWARDS | `f8415b32` (`8e16ac02`) | `tools/r80_art/` (the two drops' painters, `picks.json`, `assemble.py --check`), six donor cloak rows with textures and wings, the Account page in two columns, `r80_rewards` and its capture | MERGE; the user's go on the shots |
+| EMOTE | `46d97607` (`0e90f1c1`) | The Cheer clip (stand and seated) in the model, `emote:cheer`, `grug_quickbar.owns_emote` and the `not_owned` gate, the quickbar's icon grid, `tools/r80_emote/icons.py`, `r80_emote` and its capture | MERGE; the user's go on the shots |
+| SKILLS | `11e79a08` (`a352d9f4`) | Heal and Hearten refuse full health, `grug_abilities.cost_text` in the tooltip, talent nodes and strip, 28 node descriptions without their own cost, `r80_skills` | MERGE |
+| FIXES | `cb8a83fb` (`0dbfbb31`; first build `2fcdb313`) | `movement_liquid_fluidity_smooth = 0.75`, whole absorbs (floored as the tooltips) and the HP change truncated toward zero, whole numbers in the nametag, `r80_fixes` and the water probe | MERGE (2 low); fix round; delta MERGE |
+| — | `935f877a` | Ruling 9 amended, human test 1 | coordinator |
+| D | this branch, `r80-d` | Contract notes, design docs, mod map, module guides, help text, checks row, BACKLOG, release 0.80.0, this completion | coordinator, independent review |
+
+### What shipped, with numbers
+
+Fixture numbers on the fixtures' fake engines.
+
+- **REWARDS** (`r80_rewards`, 552 checks; mutation-checked by hand): all 12 textures
+  byte-identical to the delivered drop; the six rows load with no achievement and register
+  `cloak:<id>` after the Supporter Cloak; grant, wear (texture and wings) and loss per
+  account; the Account page holds 18 rewards in two columns (9 rows, bottom at 13.15 of
+  the 13.5 body) at GUI scale 1 and 2; 7, 8 and 18 rewards checked in the engine. Fixture
+  counts updated: `r79_page` (account cloaks 1 → 7), `r33_c3` (Astra's cloaks 48 → 54).
+  `web_data.json` gained the 12 texture rows. One capture boot, 16 shots.
+- **EMOTE** (`r80_emote`, 99 checks): Cheer 702–761 standing and 762–821 seated, identical
+  to the preview's `cheerv`; the icons pixel-identical to the user's framing-A studies (64 px
+  and dimmed copies); ownership for no account, without and with `emote:cheer` and after
+  removal; a forged field refused `not_owned`; the grid four to a row with Dance greyed while
+  riding. Updated: `r78_emote`, `r44_qb`, `r451_mc`, `r50_hotbar`, `r40_an2`, `r54_model`,
+  `r55_model` (the model ends at frame 821). One capture boot, 12 shots. The web build was
+  not checked (no web client in the capture; it uses the same b3d and plain PNG buttons).
+- **SKILLS** (`r80_skills`, 2056 checks; three mutations fail it): Heal at yourself or an
+  aimed full ally refused with no mana, no cooldown and no follow-up window, one missing
+  point casts; Hearten refused only when no recipient is hurt; Mend, Haven, Shield cast at
+  full health; the cost text of every skill of every class at levels 10, 30 and 60,
+  untalented and at full ranks, in every place, against an independent oracle. Updated:
+  `r36_f`, `r53_priest`, `r31_p1b`, `r69_skills`, `r44_ts/harness.lua`.
+- **FIXES** (`r80_fixes`, 33 checks; it fails on the old code): absorbs agree with their
+  tooltips in 72 of 72 share/level/factor cases (39 disagreed before); a +7.6 heal leaves
+  the modifier as +7. Water, three engine runs with one real client (run3, samples every
+  0.03 s; depth below the surface for a 30-node fall entering at 33.7 nodes/s):
+
+  | smooth | below 14 n/s | down to 3 n/s |
+  |---|---|---|
+  | 0.5 (engine default, run2) | — | 10.6 |
+  | 0.6 | 7.74 | 9.08 |
+  | **0.75 (shipped)** | **6.47** | **7.62** |
+  | 1.0 | 5.14 | 6.13 |
+  | 1.5 | 3.76 | 4.67 |
+  | 3 (first pass, run2) | — | 3.5 |
+
+  A 60-node fall (48.5 nodes/s) at 0.75: 13.36 / 14.52. Sinking afterwards 0.17–0.2
+  nodes/s at every value. The brake is a constant deceleration (about 93 nodes/s² at 0.75)
+  above 7.5 nodes/s and proportional below. The setting reaches a dedicated server through
+  the game layer and every client at join (engine sources in `minetest.conf`'s comment);
+  the platform's server settings carry no movement key.
+- **D:** the contract notes of §3.2 (§5.4, §6a item 4, §8, dated 2026-11-16, and a line
+  naming them under the status), `accounts.md` (rulings 12–14, the two-column card, account
+  cloaks, Cheer), the concept's phase row, `character_visuals.md` (account cloaks, the
+  Cheer clips, the ownership gate), `inventory_equipment.md` (the emote grid),
+  `combat_stats.md` (the water brake, also for lava, the rift void and Ice Water), the
+  mod map (`grug_quickbar`, `grug_visuals`, `grug_achievements`, `grug_accounts`,
+  `cost_text`), the module guides (`ui-looks.md`: emotes and account cloaks;
+  `combat-classes.md`: the cost text and the heal refusal), the help text (emotes, account
+  rewards, cost display, the heal refusal), `checks.md` (the two art checks), the
+  `minetest.conf` comment (run2's numbers named as such; the other liquids).
+
+### The user's decisions during the round
+
+- **Go on the REWARDS and EMOTE screenshots** (2026-11-16).
+- **Ruling 9 amended** (2026-11-16): the first pass's 3.5 nodes are too short; a fall at
+  full speed stops within 6–10 nodes. Shipped 0.75 (7.6 nodes).
+- **Trinket enchantments, T5 equals T6 on an un-upgraded T6 item:** the rule stays (§7).
+- **The website answer draft** is approved; the user forwards it once the website is
+  ready. **Ruling 14:** the rate-limit note, written by D.
+
+### Deviations
+
+- FIXES' first pass shipped 3 (3.5 nodes) for the plan's "about 2–3 nodes", which was a
+  coordinator estimate the setting alone cannot reach; the user's amended ruling replaced
+  it, and the fix round measured and shipped 0.75. The coordinator merged FIXES with 0.75
+  before the user's reply to the measurement; the value is inside the user's range.
+- The fix round floors absorbs (as every tooltip does) instead of the first pass's
+  rounding to nearest, after the review found tooltips and stored shields disagreeing.
+- REWARDS' Account page holds 18 rewards without a scroll container; `r80_rewards` fails
+  if the catalogue ever exceeds it.
+- The SKILLS report's note "health potions drink at full health" is wrong: they refuse
+  ("You are already at full health.", `grug_traders/potion.lua`); nothing to do.
+
+### Open for the user
+
+- **Human tests** (an offer, nothing waits on them): §6 items 1–4.
+- **After the push:** the platform message (the pin, `emote:cheer` for every account, the
+  six donor cloaks in the catalogue), and forwarding the wave-2 answer once the website is
+  ready.
+
+## Carry-overs
+
+- **Heal out of range says "full health":** Heal aimed at a hurt ally beyond 15 m falls
+  back to the caster and, at full health, answers "Target is at full health." (Hearten
+  beyond 6 m alike). A range message would be clearer (BACKLOG, Classes and combat).
+- **Quickbar hint at GUI scale 2:** "Click to use; the window closes." reaches the
+  window's right edge (pre-existing; BACKLOG, UI).
+- **Reward catalogue order:** Cheer's place in the catalogue depends on the load order of
+  `grug_achievements` and `grug_quickbar`; the contract does not bind the order.
+- **The emote gate fails open** when no gate is set; only fixtures run without one, the
+  game always sets it at load.
+- **The greyed Dance button** sets only a background colour; the engine may still draw a
+  pressed frame on a click (cosmetic).
+- **A refused Heal mid-hold** in combat fires the fallback basic attack once, as an
+  out-of-mana Heal already did.
+- **Talent tooltips** at `r69_skills`' 10-line limit (Broadstroke, locked); a longer node
+  text needs the limit or the text changed.
+- **The water brake** has about 10 nodes/s² more braking than the engine formula explains
+  (candidate `localplayer.cpp`); harmless, only measured numbers are used. A 60-node fall
+  needs about 14.5 nodes of water.
+- **The realm website's model has no emotes** (Cheer included); the BACKLOG item stays.

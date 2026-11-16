@@ -69,7 +69,7 @@ graph.register_tree({
 		{id = "bulwark_hold_ground", code = "B4", name = "Hold Ground", type = "unlock",
 			ability = "hold_ground", ranks = 1, gate = 2, col = 3,
 			description = "Unlocks Hold Ground: a shield of 12 % of a base health pool for " ..
-				"5 s; 25 rage, 24 s cooldown."},
+				"5 s; 24 s cooldown."},
 		{id = "bulwark_measured_answer", code = "B5", name = "Measured Answer",
 			type = "modifier", ranks = 3, gate = 6, col = 1, requires = {"bulwark_retort"},
 			effects = {retort_bonus_add = {0.05, 0.1, 0.15}},
@@ -79,7 +79,7 @@ graph.register_tree({
 			description = "Dodge chance +2/4/6 %."},
 		{id = "bulwark_taunt", code = "B7", name = "Taunt", type = "unlock", ability = "taunt",
 			ranks = 1, gate = 6, col = 5,
-			description = "Unlocks Taunt: the enemy in your crosshair attacks you for 3 s; free, " ..
+			description = "Unlocks Taunt: the enemy in your crosshair attacks you for 3 s; " ..
 				"8 s cooldown."},
 		{id = "bulwark_recover", code = "B8", name = "Recover", type = "modifier",
 			ranks = 3, gate = 10, col = 2, requires = {"bulwark_retort"},
@@ -100,7 +100,7 @@ graph.register_tree({
 		{id = "bulwark_unbroken", code = "B12", name = "Unbroken", type = "ultimate",
 			ability = "unbroken", ranks = 1, gate = 20, col = 3, requires = {"bulwark_hold_ground"},
 			description = "Unlocks Unbroken: for 8 s, armor +50 % of the level's armor " ..
-				"constant and a shield of 15 % of a base health pool; 25 rage, 60 s cooldown."},
+				"constant and a shield of 15 % of a base health pool; 60 s cooldown."},
 		{id = "bulwark_enduring_stand", code = "B13", name = "Enduring Stand",
 			type = "modifier", ranks = 3, gate = 20, col = 4, requires = {"bulwark_unbroken"},
 			effects = {["duration_add:unbroken"] = {0.5, 1, 1.5}},
@@ -121,7 +121,7 @@ graph.register_tree({
 		{id = "ruin_mighty_blow", code = "U1", name = "Mighty Blow", type = "unlock",
 			ability = "mighty_blow", ranks = 1, gate = 0, col = 3,
 			description = "Unlocks Mighty Blow: a swing for 145 % of a Strike hit when you " ..
-				"have 25 rage, else a plain swing; no cooldown of its own."},
+				"have the rage, else a plain swing; no cooldown of its own."},
 		{id = "ruin_heavy_hand", code = "U2", name = "Heavy Hand", type = "modifier",
 			ranks = 4, gate = 0, col = 4, requires = {"ruin_mighty_blow"},
 			effects = {mighty_blow_unit_add = {0.05, 0.1, 0.15, 0.2}},
@@ -132,7 +132,7 @@ graph.register_tree({
 		{id = "ruin_hamstring", code = "U4", name = "Hamstring", type = "unlock",
 			ability = "hamstring", ranks = 1, gate = 2, col = 5,
 			description = "Unlocks Hamstring: a swing for a full Strike hit that slows by " ..
-				"35 % for 3 s; 10 rage, recharges in 8 s."},
+				"35 % for 3 s; recharges in 8 s."},
 		{id = "ruin_keen_edge", code = "U5", name = "Keen Edge", type = "modifier",
 			ranks = 3, gate = 6, col = 1, effects = {crit_chance_add = {2, 4, 6}},
 			description = "Critical chance +2/4/6 %."},
@@ -163,7 +163,7 @@ graph.register_tree({
 		{id = "ruin_ruination", code = "U12", name = "Ruination", type = "ultimate",
 			ability = "ruination", ranks = 1, gate = 20, col = 3, requires = {"ruin_mighty_blow"},
 			description = "Unlocks Ruination: for 8 s your swings deal +15 % damage and each " ..
-				"landed swing gives 2 more rage; 20 rage, 60 s cooldown."},
+				"landed swing gives 2 more rage; 60 s cooldown."},
 		{id = "ruin_long_fury", code = "U13", name = "Long Fury", type = "modifier",
 			ranks = 3, gate = 20, col = 4, requires = {"ruin_ruination"},
 			effects = {["duration_add:ruination"] = {0.5, 1, 1.5}},

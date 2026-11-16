@@ -87,6 +87,16 @@ local function support_target(user, pointed, def)
 	return target
 end
 
+-- An instant heal refuses a recipient at full health (round80-plan.md
+-- ruling 10): `cast` returns false with the message, so no mana, no cooldown
+-- and no window; the first missing hit point casts. Full health is what
+-- grug_core.heal_player sees: the hp at the object's hp_max. A heal over
+-- time (Mend, Haven) never refuses: casting it ahead of damage is a tactic.
+local function missing_health(player)
+	local hp = player:get_hp()
+	return hp > 0 and hp < player:get_properties().hp_max
+end
+
 --
 -- Priest (mana). The order is the catalogue row and the starter hotbar:
 -- Smite (in Strike's place), Heal, then the talent skills.
@@ -102,7 +112,7 @@ grug_abilities.register_ability({
 	name = "Smite",
 	kind = "cast",
 	target_kind = "hostile",
-	description = "Smites the enemy in your crosshair; free, once a second. Damage " ..
+	description = "Smites the enemy in your crosshair, once a second. Damage " ..
 		"scales with your level and your staff or wand.",
 	values = function(user, window)
 		local add = math.max(bonus(user, "smite_steady_add"), bonus(user, "smite_sharpened_add"))
@@ -110,7 +120,7 @@ grug_abilities.register_ability({
 		return {damage = spell_hit(user, grug_abilities.registered.smite, 1, add)}
 	end,
 	description_for = function(user, def)
-		return ("Smites the enemy in your crosshair for %d damage; free, once a second.\n" ..
+		return ("Smites the enemy in your crosshair for %d damage, once a second.\n" ..
 			"Damage scales with your level and your staff or wand."):format(
 				effective_number(user, def.values(user).damage))
 	end,
@@ -157,6 +167,9 @@ grug_abilities.register_ability({
 		local target, err = support_target(user, pointed, def)
 		if not target then
 			return false, err
+		end
+		if not missing_health(target) then
+			return false, "Target is at full health."
 		end
 		-- Effective support on a player in PvP combat is PvP contact for the
 		-- healer (pvp-plan ruling 7b); valid_target already refused a flagged
@@ -302,9 +315,17 @@ grug_abilities.register_ability({
 	occupied_cast = 1.5,
 	range = 6,
 	cast = function(user, pointed, def)
+		-- Refused only when no one it would heal misses health.
+		local group, hurt = group_of(user, 6, 4), false
+		for _, player in ipairs(group) do
+			hurt = hurt or missing_health(player)
+		end
+		if not hurt then
+			return false, "Everyone is at full health."
+		end
 		local amount, action_id = def.values(user).heal, {}
 		fx("hearten", {caster = user:get_pos(), reach = 6})
-		for _, player in ipairs(group_of(user, 6, 4)) do
+		for _, player in ipairs(group) do
 			if grug_core.heal_player(user, player, amount,
 					{no_crit = true, action_id = action_id}) > 0 then
 				grug_pvp.support_contact(user, player)

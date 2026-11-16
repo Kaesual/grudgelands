@@ -12,6 +12,42 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.80.0 — Cheer, donor cloaks and five fixes (2026-11-16)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Cheer:** a new emote for every character linked to a website account.
+  The arms fly up into a V and pump twice; on a mount you cheer seated.
+  It appears in the quickbar (E) once the account has it, which the website
+  grants to every account.
+- **Emotes as icons:** the quickbar's emotes are now icon buttons, four to a
+  row like the mounts, each a small picture of the emote with its name as the
+  tooltip. Only the emotes you have are shown; Dance is greyed while riding
+  and says why.
+- **Six donor cloaks:** Emberwake, Veilstream, Pearlwing, Moonfall,
+  Wintercourt and Frost Regent, each with wings, for players who support the
+  game. An administrator grants them per website account; every linked
+  character can then choose them on the Character page.
+- **The Account tab** lists rewards in two columns and holds every reward
+  the game can give.
+- **Water breaks a fall sooner:** a fall from 30 nodes into deep water now
+  stops about 7–8 nodes down instead of about 11, so water about 7 nodes
+  deep saves you from it (from 60 nodes about 15). Shallow water still does
+  not. Lava, the rift void and
+  the dragon arena's Ice Water slow a fall a little sooner too; swimming is
+  unchanged.
+- **Heals at full health:** Heal and Hearten are no longer cast on someone
+  at full health ("Target is at full health."), so they cost no mana and
+  start no cooldown. Mend, Haven and Shield can still be cast ahead of
+  damage.
+- **Every skill states its cost:** tooltips and the talent tree show each
+  cost once, a percentage with the mana it takes now ("9% base mana (54
+  mana)"), or its rage, or "free". Shield, Mend, Haven, Broadstroke, Bellow
+  and others showed no cost in the talent tree before.
+- **Whole numbers:** party members' health in their nametags no longer shows
+  fractions after a shield breaks; shields hold exactly the amount their
+  tooltip shows.
+
 ## 0.79.0 — website accounts (2026-11-15)
 
 Compatible: no map reset, no new world, nothing for the host to do. Nothing

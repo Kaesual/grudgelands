@@ -102,8 +102,8 @@ graph.register_tree({
 		{id = "mercy_hearten", code = "M10", name = "Hearten", type = "unlock",
 			ability = "hearten", ranks = 1, gate = 12, col = 3,
 			description = "Unlocks Hearten: you and up to 3 allies within 6 m, lowest " ..
-				"health first, heal 15 % of a base health pool each; 20 s cooldown, 14 % " ..
-				"mana, 1.5 s recovery."},
+				"health first, heal 15 % of a base health pool each; 20 s cooldown, " ..
+				"1.5 s recovery."},
 		{id = "mercy_quiet_care", code = "M11", name = "Quiet Care", type = "modifier",
 			ranks = 3, gate = 12, col = 4,
 			effects = {heal_threat_factor_sub = {0.05, 0.1, 0.15}},
@@ -136,7 +136,7 @@ graph.register_tree({
 		{id = "reckoning_rebuke", code = "RK3", name = "Rebuke", type = "unlock",
 			ability = "rebuke", ranks = 1, gate = 2, col = 3,
 			description = "Unlocks Rebuke: an instant hit at the enemy in your crosshair for " ..
-				"180 % of a Smite hit; 6 s cooldown, 6 % mana."},
+				"180 % of a Smite hit; 6 s cooldown."},
 		{id = "reckoning_firm_rebuke", code = "RK4", name = "Firm Rebuke", type = "modifier",
 			ranks = 3, gate = 2, col = 4, requires = {"reckoning_rebuke"},
 			effects = {rebuke_add = {0.1, 0.2, 0.3}},
@@ -150,7 +150,7 @@ graph.register_tree({
 			ability = "word_of_ruin", ranks = 1, gate = 6, col = 4,
 			description = "Unlocks Word of Ruin: an instant hit for 160 % of a Smite hit " ..
 				"that heals you for half the damage, at most 6 % of a base health pool; " ..
-				"16 s cooldown, 10 % mana."},
+				"16 s cooldown."},
 		{id = "reckoning_resolute_word", code = "RK7", name = "Resolute Word",
 			type = "modifier", ranks = 3, gate = 10, col = 4, requires = {"reckoning_word_of_ruin"},
 			effects = {word_of_ruin_cap_add = {1, 2, 3}},
@@ -162,7 +162,7 @@ graph.register_tree({
 			ability = "censure", ranks = 1, gate = 12, col = 4,
 			description = "Unlocks Censure: strikes the ground in your crosshair after " ..
 				"0.75 s with a warning, 120 % of a Smite hit to the 4 nearest within 3 m; " ..
-				"18 s cooldown, 12 % mana."},
+				"18 s cooldown."},
 		{id = "reckoning_broad_judgment", code = "RK10", name = "Broad Judgment",
 			type = "modifier", ranks = 3, gate = 12, col = 5, requires = {"reckoning_censure"},
 			effects = {["radius_add:censure"] = {0.25, 0.5, 0.75}},
@@ -177,7 +177,7 @@ graph.register_tree({
 		{id = "reckoning_final_word", code = "RK13", name = "Final Word", type = "ultimate",
 			ability = "final_word", ranks = 1, gate = 20, col = 3, requires = {"reckoning_rebuke"},
 			description = "Unlocks Final Word: an instant hit at the enemy in your crosshair " ..
-				"for 280 % of a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery."},
+				"for 280 % of a Smite hit; 60 s cooldown, 1.5 s recovery."},
 		{id = "reckoning_unfinished_sentence", code = "RK14", name = "Unfinished Sentence",
 			type = "modifier", ranks = 3, gate = 20, col = 4,
 			requires = {"reckoning_final_word"}, effects = {final_word_add = {0.1, 0.2, 0.3}},

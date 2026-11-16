@@ -2,8 +2,8 @@
 -- rising edge of aux1 (E; grug_keys) opens a small window on the left of the
 -- screen with the character's purchased mounts and boats on top (and
 -- Dismount below them while riding), the potion belt and the hotbar switch
--- (A and B, Round 50) below, the emotes Wave and Dance (Round 78) and the
--- Return home button at the foot. A click uses the mount, boat, potion,
+-- (A and B, Round 50) below, the emotes (Round 78; icon buttons since Round
+-- 80) and the Return home button at the foot. A click uses the mount, boat, potion,
 -- Dismount, emote or Return home and closes the window. The window is sent once per opening and refreshed only by a
 -- hotbar switch. Its own mod because it reaches mounts, home travel and the
 -- inventory's belt, and grug_mounts and grug_home already depend on
@@ -13,8 +13,8 @@
 -- the boat's water surface, the flight rules, dismount of the active tier),
 -- the potion's own on_use with the shared potion cooldown
 -- (grug_traders.potion_cooldown_left), grug_home.return_home (combat, the
--- cooldown, a running return), grug_visuals.play_emote (the seated Wave on a
--- mount, its rate limit). No "menu open" check: the client releases
+-- cooldown, a running return), grug_visuals.play_emote (the seated clips on
+-- a mount, its rate limit, the emote gate this mod hands it). No "menu open" check: the client releases
 -- every key while a menu or the chat is open, so E cannot rise there.
 grug_quickbar = {}
 
@@ -29,12 +29,64 @@ local PITCH = SLOT + GAP
 local WIDTH = PAD * 2 + COLUMNS * SLOT + (COLUMNS - 1) * GAP
 local SLOT_COLOR = "#00000069" -- the empty-slot colour of the inventory lists
 local ACTIVE_COLOR = "#7ae08a" -- the frame of the mount or boat being ridden
--- Dance while riding: greyed in every state (grug_jobs' disabled button), a
--- click on it changes nothing.
-local DANCE_OFF = "grug_quickbar_dance_off"
-local DANCE_OFF_STYLE = "style[" .. DANCE_OFF .. "," .. DANCE_OFF .. ":hovered," ..
-	DANCE_OFF .. ":pressed;bgimg=grug_ui_button.png;bgcolor=#2a2a2a;" ..
-	"textcolor=#808080;border=false]"
+
+-- The emotes (Round 78 ruling 10; round80-plan.md rulings 1 and 7, §3.1,
+-- §3.3), in the grid's order: Wave and Dance for every character, then the
+-- account rewards in catalogue order (this list registers them, so its
+-- order is theirs). A reward emote is the character's while its website
+-- account gives `reward`, read live (grug_accounts.has_reward) at every
+-- check and never stored, like a reward cloak. Each has its icon,
+-- grug_quickbar_emote_<id>.png, and a dimmed `_off` copy
+-- (tools/r80_emote/icons.py renders both from the player model).
+grug_quickbar.EMOTES = {
+	{id = "wave", name = "Wave"},
+	{id = "dance", name = "Dance"},
+	{id = "cheer", name = "Cheer", reward = "emote:cheer"},
+}
+local EMOTE_FIELD = "grug_quickbar_emote_"
+local EMOTE_CLIPS = grug_visuals.EMOTE_CLIPS
+-- The portable fixtures load this file without grug_accounts: no reward
+-- emotes there.
+local accounts = rawget(_G, "grug_accounts")
+
+local function icon(id, off)
+	return "grug_quickbar_emote_" .. id .. (off and "_off" or "") .. ".png"
+end
+
+-- The one answer to "which emotes does this character have" (§3.3): the
+-- quickbar's grid and grug_visuals.play_emote's gate both ask it.
+function grug_quickbar.owns_emote(player, id)
+	for _, entry in ipairs(grug_quickbar.EMOTES) do
+		if entry.id == id then
+			return not entry.reward or (accounts ~= nil and
+				accounts.has_reward(player:get_player_name(), entry.reward))
+		end
+	end
+	return false
+end
+
+-- The character's emotes, in the grid's order.
+function grug_quickbar.emotes(player)
+	local out = {}
+	for _, entry in ipairs(grug_quickbar.EMOTES) do
+		if grug_quickbar.owns_emote(player, entry.id) then out[#out + 1] = entry end
+	end
+	return out
+end
+
+grug_visuals.set_emote_gate(grug_quickbar.owns_emote)
+
+-- The reward emotes in grug_accounts' catalogue: the Account page shows
+-- the emote's icon. The window is sent once per opening, so a grant or a
+-- removal shows at the next opening; the gate follows at once.
+if accounts then
+	for _, entry in ipairs(grug_quickbar.EMOTES) do
+		if entry.reward then
+			accounts.register_reward(entry.reward, {kind = "emote", name = entry.name,
+				icon = icon(entry.id), hint = "Play it from the quickbar (E)."})
+		end
+	end
+end
 
 -- player name -> true from a send until the window's quit or a click.
 local open = {}
@@ -129,24 +181,33 @@ function grug_quickbar.formspec(player)
 	fs[#fs + 1] = grug_inventory.hotbar_switch(player, PAD, y, SLOT, 0.6, PITCH, 0)
 	y = y + 0.6
 	fs[section_index] = grug_core.ui.panel(0.2, section_y - 0.2, WIDTH - 0.4, y - section_y + 0.4)
-	-- The emotes (Round 78 ruling 10): two buttons side by side. A rider
-	-- waves seated; Dance is greyed out while riding.
+	-- The emotes (Round 78 ruling 10, Round 80 ruling 7): the character's
+	-- emotes as icon buttons, four to a row in the mounts' slot size, the
+	-- tooltip naming each. A rider plays the seated clips; an emote without
+	-- one (Dance) is greyed while riding: its dimmed icon on a dark button
+	-- that does not react, under its own field, a click on it changes
+	-- nothing.
 	y = y + 0.65
 	section_y, section_index = y, #fs + 1
 	fs[section_index] = ""
 	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Emotes", growth)
 	y = y + 0.3
-	local half = (WIDTH - PAD * 2 - GAP) / 2
-	fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.6;grug_quickbar_wave;Wave]"):format(PAD, y, half)
-	if active then
-		fs[#fs + 1] = DANCE_OFF_STYLE .. ("button[%.3f,%.3f;%.3f,0.6;%s;Dance]"):format(
-			PAD + half + GAP, y, half, DANCE_OFF) ..
-			("tooltip[%s;%s]"):format(DANCE_OFF, esc("Not while riding."))
-	else
-		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.6;grug_quickbar_dance;Dance]"):format(
-			PAD + half + GAP, y, half)
+	local emotes = grug_quickbar.emotes(player)
+	for index, entry in ipairs(emotes) do
+		local x = PAD + ((index - 1) % COLUMNS) * PITCH
+		local row_y = y + math.floor((index - 1) / COLUMNS) * PITCH
+		local field, tip = EMOTE_FIELD .. entry.id, entry.name
+		local off = active ~= nil and not EMOTE_CLIPS[entry.id].sit
+		if off then
+			field, tip = field .. "_off", entry.name .. "\nNot while riding."
+			fs[#fs + 1] = ("style[%s,%s:hovered,%s:pressed;bgcolor=#2a2a2a]"):format(
+				field, field, field)
+		end
+		fs[#fs + 1] = ("image_button[%.3f,%.3f;%d,%d;%s;%s;]"):format(x, row_y, SLOT, SLOT,
+			icon(entry.id, off), field) .. ("tooltip[%s;%s]"):format(field, esc(tip))
 	end
-	y = y + 0.6
+	local rows = math.floor((#emotes - 1) / COLUMNS) + 1
+	y = y + rows * SLOT + (rows - 1) * GAP
 	fs[section_index] = grug_core.ui.panel(0.2, section_y - 0.2, WIDTH - 0.4, y - section_y + 0.4)
 	fs[#fs + 1] = "style_type[label;font_size=" .. grug_core.ui.font_size(0.85, growth) .. "]"
 	local home_label, home_state = grug_inventory.home_state(player)
@@ -231,10 +292,16 @@ function grug_quickbar.handle_fields(player, fields)
 			end
 		end
 	end
-	-- The greyed Dance (riding) is no field here: the window stays.
-	if not acted and (fields.grug_quickbar_wave or fields.grug_quickbar_dance) then
-		grug_visuals.play_emote(player, fields.grug_quickbar_wave and "wave" or "dance")
-		acted = true
+	-- A greyed emote (riding) is no field here: the window stays. The gate in
+	-- play_emote refuses an emote the character does not have.
+	if not acted then
+		for _, entry in ipairs(grug_quickbar.EMOTES) do
+			if fields[EMOTE_FIELD .. entry.id] then
+				grug_visuals.play_emote(player, entry.id)
+				acted = true
+				break
+			end
+		end
 	end
 	if not acted and fields.grug_quickbar_home then
 		grug_home.return_home(player)

@@ -24,8 +24,9 @@ Every pose is baked twice: over `stand` (unposed bones from stand frame 0)
 and over `walk` (unposed bones from walk frames 168-187, a one-shot running
 on to the end of the walk cycle). An emote (Round 78, after the poses) names
 its own `bases`: Wave over `stand` and over `sit` (unposed bones from sit
-frame 81, the seated rider's upper body), Dance over `stand` only; walking
-ends an emote, so it has no walking twin. The output `poses.json` holds, per pose and
+frame 81, the seated rider's upper body), Dance over `stand` only, Cheer
+(Round 80) over `stand` and `sit` like Wave; walking ends an emote, so it
+has no walking twin. The output `poses.json` holds, per pose and
 base, one key per engine frame and bone in the B3D's own frame -- position
 (x, y, z) and rotation (w, x, y, z) in the parent's space, exactly what
 `tools/r33_c3/gen_cloak_model.py` writes into a KEYS chunk (engine frame
@@ -98,6 +99,13 @@ def dance_bones(arm, leg, loop):
 
 def held(*keys):
     return [list(k) for k in keys]
+
+
+def mirrored_arms(right):
+    """Both arms held, the left arm's keys mirrored from the right arm's
+    (yaw and roll change sign): the Cheer's symmetric V (Round 80)."""
+    return {"Arm_Right": {"mode": "hold", "keys": right},
+            "Arm_Left": {"mode": "hold", "keys": [[f, p, -y, -r] for f, p, y, r in right]}}
 
 
 POSES = [
@@ -238,6 +246,21 @@ POSES = [
     {"pose": "dance", "variant": "A", "label": "Emote: dance",
      "use": "the quickbar's Dance", "kind": "held", "length": 97, "bases": ("stand",),
      "bones": dance_bones(32, 24, 96)},
+    # Round 80 (lane EMOTE, round80-plan.md ruling 2): Cheer, the website
+    # account's emote, the preview's variant `cheerv` unchanged: the arms fly
+    # up into a V, pump twice, the head goes back, the torso leans back a
+    # little; 2 s, once. Seated (over `sit`) the legs stay on the saddle.
+    {"pose": "cheer", "variant": "A", "label": "Emote: cheer",
+     "use": "the quickbar's Cheer, standing and seated", "kind": "oneshot", "length": 60,
+     "bases": ("stand", "sit"),
+     "bones": {**mirrored_arms([[0, 0, 0, 0], [5, 168, 0, -26], [12, 148, 0, -20], [18, 168, 0, -26],
+                                [25, 148, 0, -20], [31, 168, 0, -26], [48, 168, 0, -26], [56, 20, 0, -5],
+                                [59, 0, 0, 0]]),
+               "Head": {"mode": "add", "keys": [[0, 0, 0, 0], [6, 25, 0, 0], [50, 25, 0, 0], [59, 0, 0, 0]]},
+               "Body": {"mode": "add", "keys": [[0, 0, 0, 0], [5, 7, 0, 0], [12, 4, 0, 0], [18, 7, 0, 0],
+                                                [25, 4, 0, 0], [31, 7, 0, 0], [48, 7, 0, 0], [59, 0, 0, 0]]},
+               "Leg_Right": {"mode": "add", "counter": True, "keys": [[0, 0, 0, 0]]},
+               "Leg_Left": {"mode": "add", "counter": True, "keys": [[0, 0, 0, 0]]}}},
 ]
 
 

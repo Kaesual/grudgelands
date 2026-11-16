@@ -1061,10 +1061,14 @@ a small window on the left of the screen, four inventory-sized slots wide
   and its gates (combat, the cooldown, a running return).
 - **Hotbar:** the A and B buttons of the hotbar switch (§1); a switch keeps
   the window open and shows it again with the new layout marked (Round 50).
-- **Emotes** (Round 78): **Wave** and **Dance** side by side, below the
-  hotbar switch; a click plays the emote once (`character_visuals.md`
-  "Emotes"). While riding, Wave plays seated and Dance is greyed out (a
-  click on it does nothing and keeps the window open).
+- **Emotes** (Rounds 78 and 80): one icon button per emote the character
+  has, four to a row in the mounts' slot size, below the hotbar switch:
+  Wave, Dance, then reward emotes in catalogue order (Cheer for a character
+  whose website account holds it). The icon is a still of the player model
+  (upper body), the tooltip names the emote; a click plays it once
+  (`character_visuals.md` "Emotes"). While riding, Wave and Cheer play
+  seated and Dance is greyed out: dimmed icon, tooltip "Not while riding.",
+  a click does nothing and keeps the window open.
 - A click acts once and closes the window. It is sent once per opening and
   refreshed only by a hotbar switch; it does not open while dead or during character
   creation. The client releases every key while a menu or the chat is open,

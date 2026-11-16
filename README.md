@@ -98,11 +98,12 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.79.0** adds website accounts: link your characters to your account on the realm's
-website (grudgelands.com/play), by a code entered on the new Account tab or with the
-character's password on the website, and the rewards an administrator grants the account
-(first: the Supporter Cloak) reach every linked character. Accounts are optional; the tab
-shows only on realms with the website
+**0.80.0** adds the second phase of website accounts: link your characters to your
+account on the realm's website (grudgelands.com/play), by a code entered on the Account
+tab or with the character's password on the website, and the account's rewards reach every
+linked character: the **Cheer** emote for every account, and the Supporter and six donor
+cloaks an administrator grants. The quickbar's emotes are icon buttons now. Accounts are
+optional; the tab shows only on realms with the website
 ([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)).
 Compatible: existing worlds play on.
 

@@ -7,6 +7,10 @@
 user, as for the bridge. The model and the later phases:
 [accounts-concept.md](../planning/accounts-concept.md).
 
+**Amended 2026-11-16** (game 0.80.0, [round80-plan.md](../planning/round80-plan.md)):
+dated notes in §5.4 (the website's narrower answers), §6a item 4 (the confirmed rate
+limits) and §8 (what phase 2 is). Nothing else changed.
+
 Written for the agent that builds the website and bridge side. It names what the
 website must do, what it sends, what it receives and how the game behaves.
 
@@ -299,6 +303,20 @@ text a player reads:
 | `too_many_attempts` | the website's rate limit (§4) |
 | `other` | anything else; the game shows a general refusal |
 
+*Note of 2026-11-16: the website's answers are narrower than this table reads*
+(its note of 2026-11-15). None needs a change in the game:
+
+- **Some link requests get no answer.** The first request over a character's limit
+  (the 11th within an hour) gets `too_many_attempts`; later requests of that
+  character in the same hour, and every request once the deployment's ceiling of
+  600 link requests per hour is reached, get none. The game's 30 s timeout ends them.
+- **A used code comes back as `unknown_code`**, not `used_code`: the website deletes
+  a code together with the binding.
+- **A confirmation the website never offered gets no answer** (the request was
+  refused or not answered). Each confirmation is answered once.
+- **A bound name takes the game's spelling** from the request, also when the account
+  held the same name in another case. The game compares names ignoring case.
+
 **Results the game reports:**
 
 | Code | Meaning | What the website does |
@@ -382,11 +400,21 @@ stores, and for a character whose password the player types once on the website:
    password is checked once for the binding, and again before every web start in auto
    mode. On a mismatch (for instance after an in-game password change) the website
    switches the character to manual mode and asks for the password.
-4. **Rate limits for typed passwords** (proposal by the game side, for the website to
-   confirm), because the check would otherwise let anyone test passwords:
-   - at most 5 failed checks per character per 15 minutes, and per account per hour
-   - a global ceiling
-   - one generic refusal text that does not say whether the name exists
+4. **Rate limits for typed passwords**, because the check would otherwise let anyone
+   test passwords. *Note of 2026-11-16: confirmed and built by the website on
+   2026-11-15 with these numbers:*
+   - at most 5 failed checks per character per 15 minutes (per realm and name, the
+     name as the auth table stores it, compared ignoring case), and at most 5 per
+     account per hour across all realms
+   - a global ceiling of 100 failed typed-password checks per hour per deployment;
+     once it is reached, every typed-password bind is refused until the hour has
+     rolled on
+   - one generic refusal text, the same for a wrong password, an unknown name, a
+     character without a password and every limit: it never says whether the name
+     exists
+   - an empty auth entry or an empty typed password never binds
+   - the limits are counted in fixed time windows, so around a window boundary up
+     to twice a limit can pass
 5. **During character creation:** a character that joined through the web client
    and is still creating its character can be bound as soon as its id is in
    `player_metadata` (item 2). The game stores the binding and does not disturb the creation.
@@ -483,9 +511,12 @@ back to none. There is no command for either.
 - **Character-bound rewards stay in the game.** The existing character-bound
   Supporter achievement and its cloak are unaffected; a character may have the cloak
   both ways.
-- **Phase 2** adds a cloak and an emote for every website user. The website grants
-  them to every account automatically. New kinds (`emote`) appear in the catalogue
-  first; nothing in this contract changes for them.
+- **Phase 2** (*note of 2026-11-16*, game 0.80.0): the reward every account gets
+  automatically is the emote **`emote:cheer`**; there is no cloak for every account.
+  The six donor cloaks (`cloak:emberwake`, `cloak:veilstream`, `cloak:pearlwing`,
+  `cloak:moonfall`, `cloak:wintercourt`, `cloak:frost_regent`) and the Supporter
+  Cloak are granted **manually** per account. All of them arrive through the
+  catalogue (§5.1). No new field, event, command or capability.
 
 ## 9. Testing
 

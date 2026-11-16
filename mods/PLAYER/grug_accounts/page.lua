@@ -29,7 +29,10 @@ local CARD_X, CARD_Y, CARD_W, CARD_H = 3.5, 0.6, 13, 6.6
 local X, W = CARD_X + 0.5, CARD_W - 1
 local ROW_Y, BUTTON_W, BUTTON_H, FIELD_W = 4.7, 2.6, 0.7, 6.2
 local STATUS_Y, STATUS_H = 5.6, 1.3
-local REWARDS_Y, REWARD_H = 3.85, 1.0
+-- The rewards: two columns of rows, filled left to right; the card grows to
+-- 9 rows (18 rewards) inside the 13.5 body (Round 80: eight today).
+local REWARDS_Y, REWARD_H, REWARD_COLUMNS = 3.85, 1.0, 2
+local REWARD_W = W / REWARD_COLUMNS
 
 local CODE, LINK = "grug_account_code", "grug_account_link"
 local CONFIRM, CANCEL = "grug_account_confirm", "grug_account_cancel"
@@ -136,12 +139,13 @@ local function creating(fs, reason, scale)
 	prose(fs, X, 1.6, W, 1.4, reason, UI.colors.accent, 1.15, scale)
 end
 
--- Linked: the account's name and its rewards, one row each (icon, name and
--- kind, where to use it).
+-- Linked: the account's name and its rewards, one cell each in two columns
+-- (icon, name and kind, where to use it).
 local function linked(fs, player, account, scale)
 	local rewards, by_id = grug_accounts.rewards_of(player:get_player_name()), {}
 	for _, entry in ipairs(grug_accounts.catalog()) do by_id[entry.id] = entry end
-	card(fs, math.max(CARD_H, REWARDS_Y - CARD_Y + math.max(1, #rewards) * REWARD_H + 0.3), scale)
+	local rows = math.max(1, math.ceil(#rewards / REWARD_COLUMNS))
+	card(fs, math.max(CARD_H, REWARDS_Y - CARD_Y + rows * REWARD_H + 0.3), scale)
 	prose(fs, X, 1.6, W, 1.4, "Linked to the website account " .. account.name .. ".", nil, 1.15, scale)
 	fs[#fs + 1] = UI.heading(X, REWARDS_Y - 0.35, "ACCOUNT REWARDS", scale)
 	if #rewards == 0 then
@@ -150,16 +154,17 @@ local function linked(fs, player, account, scale)
 	end
 	for index, reward in ipairs(rewards) do
 		local entry = by_id[reward.id] or {}
-		local y = REWARDS_Y + (index - 1) * REWARD_H
+		local x = X + (index - 1) % REWARD_COLUMNS * REWARD_W
+		local y = REWARDS_Y + math.floor((index - 1) / REWARD_COLUMNS) * REWARD_H
 		local kind = reward.kind:sub(1, 1):upper() .. reward.kind:sub(2)
 		if entry.icon then
-			fs[#fs + 1] = ("image[%.3f,%.3f;0.8,0.8;%s]"):format(X, y + 0.05, esc(entry.icon))
+			fs[#fs + 1] = ("image[%.3f,%.3f;0.8,0.8;%s]"):format(x, y + 0.05, esc(entry.icon))
 		end
 		fs[#fs + 1] = ("style_type[label;font=bold;font_size=*%.3f]"):format(scale)
-		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(X + 1.0, y + 0.25, esc(reward.name ..
+		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x + 1.0, y + 0.25, esc(reward.name ..
 			"  " .. core.colorize(UI.colors.muted, kind)))
 		fs[#fs + 1] = ("style_type[label;font=normal;font_size=*%.3f]"):format(0.9 * scale)
-		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(X + 1.0, y + 0.65,
+		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x + 1.0, y + 0.65,
 			esc(core.colorize(UI.colors.muted, entry.hint or "")))
 		fs[#fs + 1] = ("style_type[label;font=normal;font_size=*%.3f]"):format(scale)
 	end

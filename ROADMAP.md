@@ -22,10 +22,9 @@ next step.
 - **Website accounts** ([rules](docs/design/accounts.md),
   [concept](docs/planning/accounts-concept.md)): characters linked to an
   account on the realm's website, with account rewards that reach every
-  linked character. Phase 1 shipped in 0.79.0. Next: the end-to-end test on
-  the rehearsal realm, then phase 2
-  ([Round 80 plan](docs/planning/round80-plan.md)) once phase 1 works on
-  the live realm; account bans, characters
+  linked character. Phase 1 shipped in 0.79.0, phase 2 (the Cheer emote
+  for every account, six donor cloaks) in 0.80.0. Next: the end-to-end test
+  on the rehearsal realm; more Supporter content, account bans, characters
   created through a bridge command, character deletion and the shared
   Claim Stone are later phases.
 - **Classes, talents and character progression:** make leveling bring more

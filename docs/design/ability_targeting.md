@@ -68,6 +68,9 @@ the crosshair at the release, else to the caster.
 Hearten and Haven are caster-centred group effects (`grug_core.area.group`):
 
 - The caster is always one recipient and keeps its place at full health.
+  Hearten, an instant heal, is refused when every recipient has full health
+  (Round 80 ruling 10, [classes](classes.md) §5); Haven, a heal over time,
+  never is.
 - The others are players within the horizontal radius (Hearten 6 m,
   Haven 8 m) and **±3 m** of the caster's feet (a cylinder, since 0.53.1;
   before, a sphere) that the friendly target check accepts. There is no

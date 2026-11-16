@@ -25,7 +25,9 @@
 --      again while it plays is ignored, the other one replaces it;
 --   Q  the quickbar: Wave and Dance buttons on foot, Dance greyed (its own
 --      field, style and tooltip) while riding; a click plays the emote once
---      and closes the window; the greyed Dance keeps it open.
+--      and closes the window; the greyed Dance keeps it open. Since Round 80
+--      the buttons are icon buttons under `grug_quickbar_emote_<id>`
+--      (tools/r80_emote checks the grid).
 -- Prints "R78 EMOTE PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -171,7 +173,7 @@ do
 	local E = GV.EMOTE_CLIPS
 	local n = 0
 	for _ in pairs(E) do n = n + 1 end
-	eq(n, 2, "R two emotes")
+	eq(n, 3, "R three emotes (Round 80 adds Cheer, tools/r80_emote)")
 	check(E.wave and E.wave.stand.x == 485 and E.wave.stand.y == 544, "R wave 485-544 (2 s)")
 	check(E.wave and E.wave.sit and E.wave.sit.x == 545 and E.wave.sit.y == 604, "R wave_sit 545-604")
 	eq(E.wave and E.wave.once, true, "R wave plays once")
@@ -451,40 +453,40 @@ do
 	step(0.05)
 	local fs = QB.formspec(p)
 	has(fs, "Emotes", "Q an Emotes heading")
-	has(fs, ";grug_quickbar_wave;Wave]", "Q a Wave button")
-	has(fs, ";grug_quickbar_dance;Dance]", "Q a Dance button on foot")
-	lacks(fs, "grug_quickbar_dance_off", "Q ... not greyed on foot")
-	local wy = tonumber(fs:match("button%[[%d.]+,([%d.]+);[^%]]*grug_quickbar_wave;"))
-	local dy = tonumber(fs:match("button%[[%d.]+,([%d.]+);[^%]]*grug_quickbar_dance;"))
+	has(fs, ";grug_quickbar_emote_wave;]", "Q a Wave button")
+	has(fs, ";grug_quickbar_emote_dance;]", "Q a Dance button on foot")
+	lacks(fs, "grug_quickbar_emote_dance_off", "Q ... not greyed on foot")
+	local wy = tonumber(fs:match("button%[[%d.]+,([%d.]+);[^%]]*grug_quickbar_emote_wave;"))
+	local dy = tonumber(fs:match("button%[[%d.]+,([%d.]+);[^%]]*grug_quickbar_emote_dance;"))
 	eq(wy, dy, "Q the two buttons side by side")
 
 	grug_mounts.active[p.name] = {tier = 1}
 	fs = QB.formspec(p)
-	has(fs, ";grug_quickbar_wave;Wave]", "Q Wave stays while riding")
-	has(fs, ";grug_quickbar_dance_off;Dance]", "Q Dance greyed while riding")
-	lacks(fs, ";grug_quickbar_dance;", "Q ... with no live Dance field")
-	has(fs, "style[grug_quickbar_dance_off,grug_quickbar_dance_off:hovered,grug_quickbar_dance_off:pressed;",
-		"Q ... in the greyed style")
-	has(fs, "textcolor=#808080", "Q ... grey text")
-	has(fs, "tooltip[grug_quickbar_dance_off;Not while riding.]", "Q ... saying why")
+	has(fs, ";grug_quickbar_emote_wave;]", "Q Wave stays while riding")
+	has(fs, ";grug_quickbar_emote_dance_off;]", "Q Dance greyed while riding")
+	lacks(fs, ";grug_quickbar_emote_dance;", "Q ... with no live Dance field")
+	has(fs, "style[grug_quickbar_emote_dance_off,grug_quickbar_emote_dance_off:hovered," ..
+		"grug_quickbar_emote_dance_off:pressed;", "Q ... in the greyed style")
+	has(fs, "grug_quickbar_emote_dance_off.png", "Q ... its dimmed icon")
+	has(fs, "tooltip[grug_quickbar_emote_dance_off;Dance\nNot while riding.]", "Q ... saying why")
 
 	-- A greyed click keeps the window; nothing plays.
 	QB.open(p)
 	local closes = #closed
-	submit(p, {grug_quickbar_dance_off = "Dance"})
+	submit(p, {grug_quickbar_emote_dance_off = ""})
 	eq(#closed, closes, "Q the greyed Dance keeps the window open")
 	eq(GV.current_pose(p), nil, "Q ... and plays nothing")
 	grug_mounts.active[p.name] = nil
 
 	QB.open(p)
-	submit(p, {grug_quickbar_wave = "Wave"})
+	submit(p, {grug_quickbar_emote_wave = ""})
 	eq(#closed, closes + 1, "Q a Wave click closes the window")
 	eq(GV.current_pose(p), "wave", "Q ... and waves")
-	submit(p, {grug_quickbar_dance = "Dance"})
+	submit(p, {grug_quickbar_emote_dance = ""})
 	eq(GV.current_pose(p), "wave", "Q a click after the window closed does nothing")
 	step(1.1)
 	QB.open(p)
-	submit(p, {grug_quickbar_dance = "Dance"})
+	submit(p, {grug_quickbar_emote_dance = ""})
 	eq(GV.current_pose(p), "dance", "Q a Dance click dances")
 	eq(#toggles, 0, "Q no mount was touched")
 end

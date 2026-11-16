@@ -191,7 +191,7 @@ end)
 grug_abilities.register_ability({
 	id = "hold_ground", class = "warrior", talent_gated = true, talent = "bulwark_hold_ground",
 	kind = "cast", target_kind = "self", name = "Hold Ground",
-	description = "Spend 25 rage for a shield that absorbs damage for 5 s.",
+	description = "A shield that absorbs damage for 5 s.",
 	color = "#c89b55", cost = {rage = 25}, cooldown = 24, range = 4,
 	occupied_cast = SELF_CAST, occupied_swing = SELF_CAST,
 	values = function(user)
@@ -200,7 +200,7 @@ grug_abilities.register_ability({
 	end,
 	description_for = function(user, def)
 		local v = def.values(user)
-		return ("Spend 25 rage for a shield that absorbs %d damage for %g s."):format(
+		return ("A shield that absorbs %d damage for %g s."):format(
 			effective_support_number(v.absorb), v.duration)
 	end,
 	cast = function(user, pointed, def)
@@ -304,13 +304,13 @@ end
 grug_abilities.register_ability({
 	id = "unbroken", class = "warrior", talent_gated = true, talent = "bulwark_unbroken",
 	kind = "cast", target_kind = "self", name = "Unbroken",
-	description = "Spend 25 rage: extra armor and a shield for 8 s.",
+	description = "Extra armor and a shield for 8 s.",
 	color = "#d0a060", cost = {rage = 25}, cooldown = 60, range = 4,
 	occupied_cast = SELF_CAST, occupied_swing = SELF_CAST,
 	values = unbroken_values,
 	description_for = function(user, def)
 		local v = def.values(user)
-		return ("Spend 25 rage: +%s armor and a shield that absorbs %d damage, " ..
+		return ("+%s armor and a shield that absorbs %d damage, " ..
 			"both for %g s."):format(grug_gear.format_armor(v.armor),
 				effective_support_number(v.absorb), v.duration)
 	end,
@@ -502,10 +502,10 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "ruination", class = "warrior", talent_gated = true, talent = "ruin_ruination",
 	kind = "cast", target_kind = "self", name = "Ruination",
-	description = "Spend 20 rage: for 8 s your swings deal 15% more damage and each " ..
+	description = "For 8 s your swings deal 15% more damage and each " ..
 		"landed swing gives 2 more rage.",
 	description_for = function(user, def)
-		return ("Spend 20 rage: for %g s your swings deal 15%% more damage and each " ..
+		return ("For %g s your swings deal 15%% more damage and each " ..
 			"landed swing gives 2 more rage."):format(8 + family_bonus(user, def, "duration_add"))
 	end,
 	color = "#e8402a", cost = {rage = 20}, cooldown = 60, range = 4,

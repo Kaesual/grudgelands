@@ -120,3 +120,33 @@ The cloaks are 32×32 RGBA, fully opaque, in the format above; the wings are
 | `grug_achievements_cloak_miners_guild_2.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Miner's Guild rank 6 cloak (drop-01 p1 `cloak_guild_6.png`, lamp, pick and bronze hem); plain copy from the drop (Python/Pillow) | CC0-1.0 |
 | `grug_achievements_cloak_miners_guild_3.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Miner's Guild rank 10 cloak (drop-01 p1 `cloak_guild_10.png`, bright lamp core and double hem); plain copy from the drop (Python/Pillow) | CC0-1.0 |
 | `grug_achievements_cloak_miners_guild_3_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the rank 10 cloak's wings (drop-01 p1 `wings_guild_10.png`, bands of lamplight); plain copy from the drop (Python/Pillow) | CC0-1.0 |
+
+## The donor cloaks — Round 80
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-11-16 (donor cloak drop `drop-02`, refinements of `drop-01`, picked by
+the user on 2026-11-16): written with Python/Pillow by the two drops'
+painters kept at `tools/r80_art/src/drop-01/paint.py` and
+`tools/r80_art/src/drop-02/paint.py`; no image-generation service,
+downloaded art or third-party source pixels. The project dedicates any
+rights it holds in these originals to CC0-1.0. `tools/r80_art/assemble.py`
+repaints them and copies the picks here (`tools/r80_art/picks.json`); its
+`--check` compares them.
+
+The cloaks are 32×32 RGBA, fully opaque, in the format above; the wings are
+16×32 RGBA in the Supporter Cloak's wing format.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `grug_achievements_cloak_emberwake.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Emberwake (drop-02 `hearthkeeper_1_r1`, flames with a silver perimeter); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_emberwake_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Emberwake's wings (drop-02 `hearthkeeper_1_r1`); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_veilstream.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Veilstream (drop-02 `aurora_1_r2`, a mint ribbon on a violet night field); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_veilstream_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Veilstream's wings (drop-02 `aurora_1_r2`); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_pearlwing.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Pearlwing (drop-02 `moonsilk_2_r1`, a pearl fan with a curved hem); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_pearlwing_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Pearlwing's wings (drop-02 `moonsilk_2_r1`); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_moonfall.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Moonfall (drop-02 `moonsilk_3_r2`, an ivory crescent on lavender); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_moonfall_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Moonfall's wings (drop-02 `moonsilk_3_r2`); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_wintercourt.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Wintercourt (drop-02 `royal_ermine_1_r2`, an ermine collar on plum velvet); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_wintercourt_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Wintercourt's wings (drop-02 `royal_ermine_1_r2`); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_frost_regent.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Frost Regent (drop-02 `royal_ermine_3_r2`, an ermine frame and a silver lozenge on violet); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_frost_regent_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Frost Regent's wings, the ermine frame continued (drop-02 `royal_ermine_3_r2`); `tools/r80_art/src/drop-02/paint.py` (Python/Pillow) | CC0-1.0 |

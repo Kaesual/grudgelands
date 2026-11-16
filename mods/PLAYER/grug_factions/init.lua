@@ -94,8 +94,10 @@ local function player_level(player)
 	return 1
 end
 
+-- Whole hit points only (Round 80 ruling 11): `..` prints a fraction as is,
+-- and the hp-change refresh below once handed in a fractional prediction.
 function grug_factions.player_tag_text(name, level, hp, hp_max)
-	return name .. " [Lv " .. level .. "] " .. hp .. "/" .. hp_max
+	return ("%s [Lv %d] %d/%d"):format(name, level, math.floor(hp), math.floor(hp_max))
 end
 
 local function tag_text(player, hp)

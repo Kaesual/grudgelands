@@ -130,6 +130,12 @@ Core principles:
   player-specific rage sentence is additionally resource-gated as decided on
   2026-09-18: only a rage-resource class receives it; mana-resource and
   class-less characters retain the class-neutral swing text (§2b).
+- **Every skill states its cost** (Round 80 ruling 12) through one text,
+  `grug_abilities.cost_text`: "N% base mana (M mana)" for a share of the base
+  pool, M the whole mana the cast charges this player now (after cost
+  talents), "N rage", or "free". The tooltip's timing line and every granting
+  talent node ("Cost: …", [skill_trees.md](skill_trees.md) §2.10) use it; the
+  skill texts and node descriptions state no cost of their own.
 
 ## 1. Resources
 
@@ -943,7 +949,10 @@ the balance calculator's frozen builds; P is the class-neutral base pool,
 Q the support factor (gear Intelligence, `combat_stats.md` §2), one unit the
 spell base plus spell power before the damage fit. Every cast is instant and
 occupies the next cast for 1 s (Heal, Hearten, Haven and Final Word 1.5 s);
-support, its ticks and Word of Ruin's heal never crit.
+support, its ticks and Word of Ruin's heal never crit. The instant heals, Heal
+and Hearten, are refused at full health (Round 80 ruling 10, below); Mend and
+Haven cast at full health, since a heal over time ahead of damage is a
+tactic, and so do Shield and Word of Ruin.
 
 Skill names (Round 31 user ruling): skills that carried another game's exact
 names were renamed — the Priest's Heal, Shield and Mend and the Mage's Ice
@@ -954,10 +963,10 @@ the offhand shield items.
 | Ability | Unlock | Cost | Cooldown | Effect |
 |---------|--------|------|----------|--------|
 | Smite | starter, in Strike's place | free | 1 s cast interval | The class basic attack: current-crosshair 20 m hit for 1 unit, no enemy-memory fallback. Shares Strike's key; the held fallback fires it. |
-| Heal | starter | 10% base mana | 5 s | Heals 25% P × Q. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
+| Heal | starter | 10% base mana | 5 s | Heals 25% P × Q. Resolves currently pointed valid ally (15 m) → self. Refused while that target has full health ("Target is at full health.": no mana, no cooldown; Round 80 ruling 10). Threat: 0.5× effective healing (WP6). |
 | Shield | Mercy | 9% | 12 s | Pointed ally → self; absorbs 24% P × Q for 10 s or until consumed; any recast replaces it. |
 | Mend | Mercy | 8% | 12 s | Pointed ally → self; a `mend` status whose four ticks come 3, 6, 9 and 12 s after the cast, each 7% P × Q fixed at the cast; a recast renews it, death and leaving end it. |
-| Hearten | Mercy | 14% | 20 s | You and up to 3 friendly players within 6 m and ±3 m (no line of sight), lowest health share first: 15% P × Q each. |
+| Hearten | Mercy | 14% | 20 s | You and up to 3 friendly players within 6 m and ±3 m (no line of sight), lowest health share first: 15% P × Q each. Refused when every one of them has full health ("Everyone is at full health.": no mana, no cooldown; Round 80 ruling 10). |
 | Haven *(ultimate)* | Mercy | 22% | 60 s | You and up to 4 friendly players within 8 m and ±3 m (no line of sight) get a `haven` status: 7% P × Q every 2 s, 6 times; it stacks with Mend and keeps ticking outside the circle. |
 | Rebuke | Reckoning | 6% | 6 s | 20 m hit for 1.8 units. |
 | Word of Ruin | Reckoning | 10% | 16 s | 20 m hit for 1.6 units; heals you half the damage dealt, at most 6% P × Q (the pool cap only). |

@@ -1,11 +1,13 @@
 # Website accounts
 
-Decided 2026-11-14 and 2026-11-15 (the user's rulings); phase 1 implemented in
+Decided 2026-11-14 to 2026-11-16 (the user's rulings); phase 1 implemented in
 Round 79, version 0.79.0 (`grug_accounts`, the bridge side in `grug_bridge`,
-the account cloak in `grug_achievements`). Provenance:
-[Round 79 plan](../planning/round79-plan.md) §2 (rulings), §3.1 (coordinator
-defaults, built as written below; the user may overrule them) and its
-completion. The long-term model and the later phases:
+the account cloak in `grug_achievements`), phase 2 in Round 80, version 0.80.0
+(the donor cloaks in `grug_achievements`, the Cheer emote in `grug_quickbar`).
+Provenance: [Round 79 plan](../planning/round79-plan.md) and
+[Round 80 plan](../planning/round80-plan.md), each §2 (rulings), §3.1
+(coordinator defaults, built as written below; the user may overrule them) and
+its completion. The long-term model and the later phases:
 [accounts-concept.md](../planning/accounts-concept.md). The protocol with the
 website (fields, events, answers, refusal reasons, the password check):
 [web-accounts.md](../technical/web-accounts.md), the contract the website
@@ -38,6 +40,16 @@ builds on; it is not repeated here.
 10. **Unchanged in phase 1:** Claim Stones, character deletion and bans. No
     grace period after linking, no address setting.
 11. **The website's address** shown in the game is `grudgelands.com/play`.
+12. **Phase 2 is one emote for every website user**, no cloak for everyone
+    (2026-11-16): **Cheer**, which the website grants to every account
+    automatically (`emote:cheer`).
+13. **Donor cloaks** are for players who supported the game with money; they
+    say "premium", not "money". The administrator grants them manually per
+    account, like the Supporter Cloak, which stays the cloak for early
+    feedback. Six exist: Emberwake, Veilstream, Pearlwing, Moonfall,
+    Wintercourt and Frost Regent.
+14. **Reward cloaks always have wings** (2026-11-16): the wings mark the
+    "better" cloaks.
 
 The user's choices during Round 79 (2026-11-15), on the screenshots:
 
@@ -75,8 +87,9 @@ The user's choices during Round 79 (2026-11-15), on the screenshots:
   At most 5 link requests per character in 10 minutes (reset by a relog; the
   website limits on its own as well).
 - **Linked:** "Linked to the website account <name>." and the account's
-  rewards as rows (icon, name, kind and where to use it), or "Your account has
-  no rewards yet."
+  rewards in two columns, filled left to right (icon, name, kind and where to
+  use it), or "Your account has no rewards yet." The card holds up to 18
+  rewards at every text size.
 - **Notices** in the message feed, each once: "This character is now linked
   to the website account <name>." (a binding by password, or one made while
   the character was offline), "This character is no longer linked to a website
@@ -85,12 +98,18 @@ The user's choices during Round 79 (2026-11-15), on the screenshots:
   offline or in character creation is reported at the next join or after
   "Create character". A link by code shows its own success line instead of
   the "now linked" line.
-- **The Supporter Cloak** as an account reward appears in the Character
-  page's cloak picker of every linked character while the account holds it.
-  When the account loses it, a worn one falls back to no cloak. The
+- **An account cloak** (the Supporter Cloak, the six donor cloaks) appears in
+  the Character page's cloak picker of every linked character while the
+  account holds it. When the account loses it, a worn one falls back to no
+  cloak. The donor cloaks have no achievement; they come only from an
+  account. The
   character-bound Supporter achievement (granted with `/achievement`) and its
   cloak stay exactly as they are; a character may own the cloak both ways, and
   revoking the achievement keeps the cloak while the account still gives it.
+- **Cheer** appears in the quickbar's emotes (E) of every character whose
+  account holds `emote:cheer`, after Wave and Dance, and leaves when the
+  account loses it; an open quickbar shows the change at its next opening.
+  The server refuses an emote the character does not have.
 - **A password set on the website** applies from the next login; an online
   character reads "Your password was changed on the website. It applies from
   your next login." and plays on.
@@ -133,8 +152,7 @@ The user's choices during Round 79 (2026-11-15), on the screenshots:
 
 ## Later phases
 
-Phase 2 (a cloak and an emote for every website user), more Supporter content,
-account bans, characters created through a bridge command, character deletion
+More Supporter content (the money-cannon emote and others), account bans, characters created through a bridge command, character deletion
 and the shared Claim Stone are the
 [concept's](../planning/accounts-concept.md) §4–§5; each comes with its own
 amendment to the [contract](../technical/web-accounts.md#10-outlook-later-amendments).

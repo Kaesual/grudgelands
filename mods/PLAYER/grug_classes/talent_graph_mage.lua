@@ -58,11 +58,11 @@ graph.register_tree({
 		{id = "ember_fireball", code = "F4", name = "Fireball", type = "unlock",
 			ability = "fireball", ranks = 1, gate = 2, col = 3, requires = {"ember_fire_mastery"},
 			description = "Unlocks Fireball: 160 % of a Spark hit, and 15 % to others " ..
-				"within 2 m; 5 s cooldown, 6 % mana, 1 s recovery."},
+				"within 2 m; 5 s cooldown, 1 s recovery."},
 		{id = "ember_flame_lance", code = "F5", name = "Flame Lance", type = "unlock",
 			ability = "flame_lance", ranks = 1, gate = 6, col = 4,
 			description = "Unlocks Flame Lance: an instant heavy bolt for 220 % of a Spark " ..
-				"hit; 8 s cooldown, 10 % mana, 1.5 s recovery."},
+				"hit; 8 s cooldown, 1.5 s recovery."},
 		{id = "ember_heat_focus", code = "F6", name = "Heat Focus", type = "modifier",
 			ranks = 3, gate = 6, col = 5, requires = {"ember_flame_lance"},
 			effects = {["damage_pct:flame_lance"] = {5, 10, 15}},
@@ -74,7 +74,7 @@ graph.register_tree({
 		{id = "ember_meteor", code = "F8", name = "Meteor", type = "unlock", ability = "meteor",
 			ranks = 1, gate = 12, col = 3, requires = {"ember_fireball"},
 			description = "Unlocks Meteor: strikes the ground in your crosshair after 1.5 s " ..
-				"with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown, 14 % mana."},
+				"with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown."},
 		{id = "ember_wide_ember", code = "F9", name = "Wide Ember", type = "modifier",
 			ranks = 3, gate = 12, col = 2, requires = {"ember_fireball"},
 			effects = {fireball_splash_unit_add = {0.05, 0.10, 0.15}},
@@ -90,8 +90,8 @@ graph.register_tree({
 		{id = "ember_fire_rain", code = "F12", name = "Fire Rain", type = "ultimate",
 			ability = "fire_rain", ranks = 1, gate = 20, col = 3, requires = {"ember_meteor"},
 			description = "Unlocks Fire Rain: one shower on the ground in your crosshair " ..
-				"after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, 22 % " ..
-				"mana, 1.5 s recovery."},
+				"after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, " ..
+				"1.5 s recovery."},
 		{id = "ember_spreading_rain", code = "F13", name = "Spreading Rain", type = "modifier",
 			ranks = 3, gate = 20, col = 4, requires = {"ember_fire_rain"},
 			effects = {["radius_add:fire_rain"] = {0.25, 0.5, 0.75}},
@@ -107,7 +107,7 @@ graph.register_tree({
 	nodes = {
 		{id = "rime_cold_spark", code = "R1", name = "Cold Spark", type = "transform",
 			ability = "cold_spark", ranks = 1, gate = 0, col = 2,
-			description = "Fiery Spark becomes Cold Spark: a free frost bolt for a full " ..
+			description = "Fiery Spark becomes Cold Spark: a frost bolt for a full " ..
 				"Spark hit that slows by 12 % for 1.5 s; fire bonuses do not apply."},
 		{id = "rime_mana_reserve", code = "R2", name = "Mana Reserve", type = "modifier",
 			ranks = 4, gate = 0, col = 4, effects = {max_mana_percent_add = {5, 10, 15, 20}},
@@ -118,7 +118,7 @@ graph.register_tree({
 			description = "Cold Spark +3/6/9 % of a Spark hit; the slow stays 12 %."},
 		{id = "rime_blink", code = "R4", name = "Blink", type = "unlock", ability = "blink",
 			ranks = 1, gate = 2, col = 3,
-			description = "Unlocks Blink: a 10 m teleport; 20 s cooldown, 8 % mana."},
+			description = "Unlocks Blink: a 10 m teleport; 20 s cooldown."},
 		{id = "rime_clear_thought", code = "R5", name = "Clear Thought", type = "modifier",
 			ranks = 3, gate = 2, col = 4, effects = {["cost_pct:frost"] = {-4, -8, -12}},
 			description = "Paid frost and utility spells cost 4/8/12 % less."},
@@ -129,7 +129,7 @@ graph.register_tree({
 		{id = "rime_rime_mantle", code = "R7", name = "Rime Mantle", type = "unlock",
 			ability = "rime_mantle", ranks = 1, gate = 6, col = 5,
 			description = "Unlocks Rime Mantle: for 6 s, armor +20 % of the level's armor " ..
-				"constant and a shield of 12 % of a base health pool; 24 s cooldown, 10 % mana."},
+				"constant and a shield of 12 % of a base health pool; 24 s cooldown."},
 		{id = "rime_thick_ice", code = "R8", name = "Thick Ice", type = "modifier",
 			ranks = 3, gate = 10, col = 4, requires = {"rime_rime_mantle"},
 			effects = {rime_mantle_armor_add = {0.04, 0.08, 0.12}},
@@ -137,7 +137,7 @@ graph.register_tree({
 		{id = "rime_ice_nova", code = "R9", name = "Ice Nova", type = "transform",
 			ability = "ice_nova", ranks = 1, gate = 12, col = 3,
 			description = "Ice Wave becomes Ice Nova: 65 % of a Spark hit within 5 m around " ..
-				"you and a 2.5 s root; 18 s cooldown, 10 % mana; the cooldown is shared."},
+				"you and a 2.5 s root; 18 s cooldown; the cooldown is shared."},
 		{id = "rime_cold_shock", code = "R10", name = "Cold Shock", type = "window",
 			ranks = 3, gate = 12, col = 2, requires = {"rime_ice_nova", "rime_cold_spark"},
 			effects = {cold_shock_unit_add = {0.25, 0.50, 0.75}},
@@ -155,7 +155,7 @@ graph.register_tree({
 			ability = "winter_field", ranks = 1, gate = 20, col = 3, requires = {"rime_ice_nova"},
 			description = "Unlocks Winter Field: one blast on the ground in your crosshair " ..
 				"after 1 s, about 100 % of a Spark hit and a 40 % slow for 5 s within 4 m; " ..
-				"60 s cooldown, 18 % mana."},
+				"60 s cooldown."},
 		{id = "rime_lasting_armor", code = "R14", name = "Lasting Armor", type = "modifier",
 			ranks = 3, gate = 16, col = 5, requires = {"rime_rime_mantle"},
 			effects = {["duration_add:rime_mantle"] = {0.5, 1, 1.5}},

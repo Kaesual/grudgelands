@@ -1151,33 +1151,34 @@ function grug_abilities.register_ability(def)
 	core.register_tool(itemname, tool_def)
 end
 
-function grug_abilities.description_prefix(player, def)
-	local cost_line
-	-- With a player: the cost the player pays (the family key cost_pct and
-	-- the definition's own adjustment, effective_cost), the base-mana share
-	-- after cost_pct.
-	local cost = def.cost
-	if player and not cost.mana_percent then
-		cost = grug_abilities.effective_cost(player, def)
-	end
+-- The one text of what a skill costs (round80-plan.md ruling 12): every
+-- place that describes a skill (the hotbar and catalogue tooltip through
+-- description_prefix, the talent tree's node and strip) states it through
+-- this. "N% base mana (M mana)", "N mana", "N rage" or "free". With a player
+-- it is the cost that player pays now (effective_cost: the family key
+-- cost_pct and the definition's own adjustment), M the whole mana the cast
+-- charges; the base-mana share is shown after cost_pct. Without a player:
+-- the definition's cost, a share without its number.
+function grug_abilities.cost_text(player, def)
+	local cost = player and grug_abilities.effective_cost(player, def) or def.cost
 	if def.cost.mana_percent then
 		local percent = def.cost.mana_percent
-		if player then
-			percent = percent * (1 +
-				grug_abilities.family_bonus(player, def, "cost_pct") / 100)
+		if not player then
+			return string.format("%g%% base mana", percent)
 		end
-		cost_line = string.format("%g%% base mana", percent)
-		if player then
-			cost_line = cost_line .. " (" ..
-				grug_abilities.mana_cost(player, percent) .. " mana)"
-		end
+		percent = percent * (1 +
+			grug_abilities.family_bonus(player, def, "cost_pct") / 100)
+		return string.format("%g%% base mana (%d mana)", percent, cost.mana)
 	elseif def.cost.mana then
-		cost_line = cost.mana .. " mana"
+		return cost.mana .. " mana"
 	elseif def.cost.rage then
-		cost_line = cost.rage .. " rage"
-	else
-		cost_line = "free"
+		return cost.rage .. " rage"
 	end
+	return "free"
+end
+
+function grug_abilities.description_prefix(player, def)
+	local cost_line = grug_abilities.cost_text(player, def)
 	local timing = def._grug_timing_line
 	if player and def.kind == "swing" and def.charge then
 		timing = grug_abilities.effective_charge(player, def) .. " s charge"

@@ -1,0 +1,17 @@
+Original cloak and wing paintings, painting scripts, and local review page:
+CC0 1.0 Universal.
+
+To the extent possible under law, the authors dedicate these original works
+to the public domain and waive all copyright and related or neighboring rights.
+The works are provided without warranty. You may copy, modify, and distribute
+them, including for commercial purposes, without asking permission.
+
+License text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+SPDX-License-Identifier: CC0-1.0
+
+The cloak and wing textures contain no copied pixels, downloaded assets,
+or generated-model imagery. Every painted texel comes from src/paint.py.
+
+Model previews include the supplied game model, character skins, and back
+weapon for review. Those existing components retain their original licenses;
+this dedication applies to the new cloak/wing paintings and original source.

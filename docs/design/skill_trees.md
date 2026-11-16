@@ -168,15 +168,15 @@ Reading the tables:
 | B1 | **Retort** `bulwark_retort` | transform `retort` | 1 | 0 | — | Strike becomes Retort: when a hostile hit takes your health, your next swing within 4 s deals +25 % of a Strike hit; 6 s internal cooldown. | — |
 | B2 | **Ironbound** `bulwark_ironbound` | modifier | 4 | 0 | — | Armor +4/8/12/16 % of the level's armor constant. | `armor_percent_add` 4/8/12/16 |
 | B3 | **Weathered** `bulwark_weathered` | modifier | 3 | 0 | — | Max health +3/6/9 %. | `max_hp_percent_add` 3/6/9 |
-| B4 | **Hold Ground** `bulwark_hold_ground` | unlock `hold_ground` | 1 | 2 | — | Unlocks Hold Ground: a shield of 12 % of a base health pool for 5 s; 25 rage, 24 s cooldown. | — |
+| B4 | **Hold Ground** `bulwark_hold_ground` | unlock `hold_ground` | 1 | 2 | — | Unlocks Hold Ground: a shield of 12 % of a base health pool for 5 s; 24 s cooldown. | — |
 | B5 | **Measured Answer** `bulwark_measured_answer` | modifier | 3 | 6 | B1 | Retort's bonus rises to 30/35/40 % of a Strike hit. | `retort_bonus_add` 0.05/0.1/0.15 |
 | B6 | **Turn the Edge** `bulwark_turn_the_edge` | modifier | 3 | 6 | — | Dodge chance +2/4/6 %. | `dodge_chance_add` 2/4/6 |
-| B7 | **Taunt** `bulwark_taunt` | unlock `taunt` | 1 | 6 | — | Unlocks Taunt: the enemy in your crosshair attacks you for 3 s; free, 8 s cooldown. | — |
+| B7 | **Taunt** `bulwark_taunt` | unlock `taunt` | 1 | 6 | — | Unlocks Taunt: the enemy in your crosshair attacks you for 3 s; 8 s cooldown. | — |
 | B8 | **Recover** `bulwark_recover` | modifier | 3 | 10 | B1 | A landed Retort heals 0.7/1.3/2.0 % of a base health pool; never critical. | `retort_heal_percent` 0.7/1.3/2 |
 | B9 | **Bellow** `bulwark_bellow` | transform `bellow` | 1 | 12 | B7 | Taunt becomes Bellow: every enemy within 6 m around you; the same cooldown. | — |
 | B10 | **Layered Guard** `bulwark_layered_guard` | modifier | 3 | 12 | B4 | Hold Ground's shield +3/6/9 % of a base health pool. | `hold_ground_absorb_add` 3/6/9 |
 | B11 | **Halt** `bulwark_halt` | modifier | 3 | 12 | — | Charge's arrival also slows by 20/25/30 % for the stun and 2 s more. | `charge_slow_percent` 20/25/30 |
-| B12 | **Unbroken** `bulwark_unbroken` | ultimate `unbroken` | 1 | 20 | B4 | Unlocks Unbroken: for 8 s, armor +50 % of the level's armor constant and a shield of 15 % of a base health pool; 25 rage, 60 s cooldown. | — |
+| B12 | **Unbroken** `bulwark_unbroken` | ultimate `unbroken` | 1 | 20 | B4 | Unlocks Unbroken: for 8 s, armor +50 % of the level's armor constant and a shield of 15 % of a base health pool; 60 s cooldown. | — |
 | B13 | **Enduring Stand** `bulwark_enduring_stand` | modifier | 3 | 20 | B12 | Unbroken lasts +0.5/1.0/1.5 s. | `duration_add:unbroken` 0.5/1/1.5 |
 | B14 | **Gather Yourself** `bulwark_gather_yourself` | modifier | 3 | 16 | B4 | Hold Ground's cooldown -1/2/3 s. | `cooldown_sub:hold_ground` 1/2/3 |
 
@@ -198,10 +198,10 @@ low-health passive's `talent_rank(player, "unbroken")` at 0 by its prefix
 
 | Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
 |---|---|---|---:|---:|---|---|---|
-| U1 | **Mighty Blow** `ruin_mighty_blow` | unlock `mighty_blow` | 1 | 0 | — | Unlocks Mighty Blow: a swing for 145 % of a Strike hit when you have 25 rage, else a plain swing; no cooldown of its own. | — |
+| U1 | **Mighty Blow** `ruin_mighty_blow` | unlock `mighty_blow` | 1 | 0 | — | Unlocks Mighty Blow: a swing for 145 % of a Strike hit when you have the rage, else a plain swing; no cooldown of its own. | — |
 | U2 | **Heavy Hand** `ruin_heavy_hand` | modifier | 4 | 0 | U1 | Mighty Blow and Broadstroke hit +5/10/15/20 % of a Strike hit. | `mighty_blow_unit_add` 0.05/0.1/0.15/0.2 |
 | U3 | **Stoke** `ruin_stoke` | modifier | 3 | 0 | — | +1/2/3 rage per full swing. | `rage_per_swing_add` 1/2/3 |
-| U4 | **Hamstring** `ruin_hamstring` | unlock `hamstring` | 1 | 2 | — | Unlocks Hamstring: a swing for a full Strike hit that slows by 35 % for 3 s; 10 rage, recharges in 8 s. | — |
+| U4 | **Hamstring** `ruin_hamstring` | unlock `hamstring` | 1 | 2 | — | Unlocks Hamstring: a swing for a full Strike hit that slows by 35 % for 3 s; recharges in 8 s. | — |
 | U5 | **Keen Edge** `ruin_keen_edge` | modifier | 3 | 6 | — | Critical chance +2/4/6 %. | `crit_chance_add` 2/4/6 |
 | U6 | **Onset** `ruin_onset` | modifier | 3 | 6 | — | Charge's cooldown -0.5/1.0/1.5 s. | `cooldown_sub:charge` 0.5/1/1.5 |
 | U7 | **Broadstroke** `ruin_broadstroke` | transform `broadstroke` | 1 | 6 | U1 | Mighty Blow becomes Broadstroke: the same hit, and up to 2 others in a 100 degree, 3 m arc take 35 % of a Strike hit, critical hits allowed. | — |
@@ -209,7 +209,7 @@ low-health passive's `talent_rank(player, "unbroken")` at 0 by its prefix
 | U9 | **Clean Cut** `ruin_clean_cut` | modifier | 3 | 10 | U4 | Hamstring's slow lasts +0.5/1.0/1.5 s. | `duration_add:hamstring` 0.5/1/1.5 |
 | U10 | **Finisher** `ruin_finisher` | modifier | 3 | 12 | U1 | Mighty Blow and Broadstroke hit +8/16/24 % of a Strike hit against a target below 30 % health. | `finisher_unit_add` 0.08/0.16/0.24 |
 | U11 | **Relentless** `ruin_relentless` | modifier | 3 | 16 | U1 | Mighty Blow and Broadstroke cost 1/2/3 rage less. | `mighty_blow_cost_sub` 1/2/3 |
-| U12 | **Ruination** `ruin_ruination` | ultimate `ruination` | 1 | 20 | U1 | Unlocks Ruination: for 8 s your swings deal +15 % damage and each landed swing gives 2 more rage; 20 rage, 60 s cooldown. | — |
+| U12 | **Ruination** `ruin_ruination` | ultimate `ruination` | 1 | 20 | U1 | Unlocks Ruination: for 8 s your swings deal +15 % damage and each landed swing gives 2 more rage; 60 s cooldown. | — |
 | U13 | **Long Fury** `ruin_long_fury` | modifier | 3 | 20 | U12 | Ruination lasts +0.5/1.0/1.5 s. | `duration_add:ruination` 0.5/1/1.5 |
 | U14 | **Reach the Fight** `ruin_reach_the_fight` | modifier | 1 | 12 | — | Charge's arrival gives 5 more rage. | `charge_rage_add` 5 |
 
@@ -233,15 +233,15 @@ crit and give no rage.
 | F1 | **Fire Mastery** `ember_fire_mastery` | modifier | 4 | 0 | — | All fire damage +5/10/15/20 %. | `damage_pct:fire` 5/10/15/20 |
 | F2 | **Measured Fuel** `ember_measured_fuel` | modifier | 3 | 0 | — | Paid fire spells cost 4/8/12 % less. | `cost_pct:fire` -4/-8/-12 |
 | F3 | **Far Cast** `ember_far_cast` | modifier | 3 | 0 | — | Fiery Spark and Cold Spark reach 1/2/3 m farther. | `range_add:cold_spark` 1/2/3; `range_add:fiery_spark` 1/2/3 |
-| F4 | **Fireball** `ember_fireball` | unlock `fireball` | 1 | 2 | F1 | Unlocks Fireball: 160 % of a Spark hit, and 15 % to others within 2 m; 5 s cooldown, 6 % mana, 1 s recovery. | — |
-| F5 | **Flame Lance** `ember_flame_lance` | unlock `flame_lance` | 1 | 6 | — | Unlocks Flame Lance: an instant heavy bolt for 220 % of a Spark hit; 8 s cooldown, 10 % mana, 1.5 s recovery. | — |
+| F4 | **Fireball** `ember_fireball` | unlock `fireball` | 1 | 2 | F1 | Unlocks Fireball: 160 % of a Spark hit, and 15 % to others within 2 m; 5 s cooldown, 1 s recovery. | — |
+| F5 | **Flame Lance** `ember_flame_lance` | unlock `flame_lance` | 1 | 6 | — | Unlocks Flame Lance: an instant heavy bolt for 220 % of a Spark hit; 8 s cooldown, 1.5 s recovery. | — |
 | F6 | **Heat Focus** `ember_heat_focus` | modifier | 3 | 6 | F5 | Flame Lance deals +5/10/15 % damage. | `damage_pct:flame_lance` 5/10/15 |
 | F7 | **Afterglow** `ember_afterglow` | modifier | 3 | 6 | F4 | Fireball's hit +5/10/15 % of a Spark hit. | `fireball_unit_add` 0.05/0.1/0.15 |
-| F8 | **Meteor** `ember_meteor` | unlock `meteor` | 1 | 12 | F4 | Unlocks Meteor: strikes the ground in your crosshair after 1.5 s with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown, 14 % mana. | — |
+| F8 | **Meteor** `ember_meteor` | unlock `meteor` | 1 | 12 | F4 | Unlocks Meteor: strikes the ground in your crosshair after 1.5 s with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown. | — |
 | F9 | **Wide Ember** `ember_wide_ember` | modifier | 3 | 12 | F4 | Fireball's splash rises to 20/25/30 % of a Spark hit. | `fireball_splash_unit_add` 0.05/0.1/0.15 |
 | F10 | **Broad Impact** `ember_broad_impact` | modifier | 3 | 12 | F8 | Meteor's radius +0.25/0.50/0.75 m. | `radius_add:meteor` 0.25/0.5/0.75 |
 | F11 | **Controlled Burn** `ember_controlled_burn` | modifier | 3 | 16 | F8 | Meteor and Fire Rain cost 5/10/15 % less, on top of Measured Fuel. | `cost_pct:fire_rain` -5/-10/-15; `cost_pct:meteor` -5/-10/-15 |
-| F12 | **Fire Rain** `ember_fire_rain` | ultimate `fire_rain` | 1 | 20 | F8 | Unlocks Fire Rain: one shower on the ground in your crosshair after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, 22 % mana, 1.5 s recovery. | — |
+| F12 | **Fire Rain** `ember_fire_rain` | ultimate `fire_rain` | 1 | 20 | F8 | Unlocks Fire Rain: one shower on the ground in your crosshair after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, 1.5 s recovery. | — |
 | F13 | **Spreading Rain** `ember_spreading_rain` | modifier | 3 | 20 | F12 | Fire Rain's radius +0.25/0.50/0.75 m. | `radius_add:fire_rain` 0.25/0.5/0.75 |
 
 Consumers: `kits_mage.lua` (every Ember skill; the class keys
@@ -256,19 +256,19 @@ Fireball's splash never crit (§2.10).
 
 | Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
 |---|---|---|---:|---:|---|---|---|
-| R1 | **Cold Spark** `rime_cold_spark` | transform `cold_spark` | 1 | 0 | — | Fiery Spark becomes Cold Spark: a free frost bolt for a full Spark hit that slows by 12 % for 1.5 s; fire bonuses do not apply. | — |
+| R1 | **Cold Spark** `rime_cold_spark` | transform `cold_spark` | 1 | 0 | — | Fiery Spark becomes Cold Spark: a frost bolt for a full Spark hit that slows by 12 % for 1.5 s; fire bonuses do not apply. | — |
 | R2 | **Mana Reserve** `rime_mana_reserve` | modifier | 4 | 0 | — | Max mana +5/10/15/20 %. | `max_mana_percent_add` 5/10/15/20 |
 | R3 | **Keen Cold** `rime_keen_cold` | modifier | 3 | 0 | R1 | Cold Spark +3/6/9 % of a Spark hit; the slow stays 12 %. | `cold_spark_unit_add` 0.03/0.06/0.09 |
-| R4 | **Blink** `rime_blink` | unlock `blink` | 1 | 2 | — | Unlocks Blink: a 10 m teleport; 20 s cooldown, 8 % mana. | — |
+| R4 | **Blink** `rime_blink` | unlock `blink` | 1 | 2 | — | Unlocks Blink: a 10 m teleport; 20 s cooldown. | — |
 | R5 | **Clear Thought** `rime_clear_thought` | modifier | 3 | 2 | — | Paid frost and utility spells cost 4/8/12 % less. | `cost_pct:frost` -4/-8/-12 |
 | R6 | **Quick Step** `rime_quick_step` | modifier | 3 | 6 | R4 | Blink's cooldown -1/2/3 s. | `cooldown_sub:blink` 1/2/3 |
-| R7 | **Rime Mantle** `rime_rime_mantle` | unlock `rime_mantle` | 1 | 6 | — | Unlocks Rime Mantle: for 6 s, armor +20 % of the level's armor constant and a shield of 12 % of a base health pool; 24 s cooldown, 10 % mana. | — |
+| R7 | **Rime Mantle** `rime_rime_mantle` | unlock `rime_mantle` | 1 | 6 | — | Unlocks Rime Mantle: for 6 s, armor +20 % of the level's armor constant and a shield of 12 % of a base health pool; 24 s cooldown. | — |
 | R8 | **Thick Ice** `rime_thick_ice` | modifier | 3 | 10 | R7 | Rime Mantle's armor +4/8/12 % of the level's armor constant. | `rime_mantle_armor_add` 0.04/0.08/0.12 |
-| R9 | **Ice Nova** `rime_ice_nova` | transform `ice_nova` | 1 | 12 | — | Ice Wave becomes Ice Nova: 65 % of a Spark hit within 5 m around you and a 2.5 s root; 18 s cooldown, 10 % mana; the cooldown is shared. | — |
+| R9 | **Ice Nova** `rime_ice_nova` | transform `ice_nova` | 1 | 12 | — | Ice Wave becomes Ice Nova: 65 % of a Spark hit within 5 m around you and a 2.5 s root; 18 s cooldown; the cooldown is shared. | — |
 | R10 | **Cold Shock** `rime_cold_shock` | window | 3 | 12 | R9, R1 | When Ice Nova hits an enemy, your next Cold Spark within 4 s deals +25/50/75 % of a Spark hit; one charge. | `cold_shock_unit_add` 0.25/0.5/0.75 |
 | R11 | **Returning Cold** `rime_returning_cold` | modifier | 3 | 12 | — | Ice Wave's and Ice Nova's cooldown -1/2/3 s. | `cooldown_sub:ice_nova` 1/2/3; `cooldown_sub:ice_wave` 1/2/3 |
 | R12 | **Far Frost** `rime_far_frost` | modifier | 3 | 16 | R9 | Ice Nova's radius +0.25/0.50/0.75 m. | `radius_add:ice_nova` 0.25/0.5/0.75 |
-| R13 | **Winter Field** `rime_winter_field` | ultimate `winter_field` | 1 | 20 | R9 | Unlocks Winter Field: one blast on the ground in your crosshair after 1 s, about 100 % of a Spark hit and a 40 % slow for 5 s within 4 m; 60 s cooldown, 18 % mana. | — |
+| R13 | **Winter Field** `rime_winter_field` | ultimate `winter_field` | 1 | 20 | R9 | Unlocks Winter Field: one blast on the ground in your crosshair after 1 s, about 100 % of a Spark hit and a 40 % slow for 5 s within 4 m; 60 s cooldown. | — |
 | R14 | **Lasting Armor** `rime_lasting_armor` | modifier | 3 | 16 | R7 | Rime Mantle lasts +0.5/1.0/1.5 s. | `duration_add:rime_mantle` 0.5/1/1.5 |
 
 Consumers: `kits_mage.lua` (every Rime skill; `cold_spark_unit_add`,
@@ -294,7 +294,7 @@ support factor. Ice Wave, Ice Nova and Winter Field never crit.
 | M7 | **Patient Care** `mercy_patient_care` | modifier | 3 | 10 | M6 | Mend's ticks +0.5/1.0/1.5 % of a base health pool. | `mend_share_add` 0.5/1/1.5 |
 | M8 | **Clear Conscience** `mercy_clear_conscience` | window | 3 | 10 | — | After Heal, Shield or Mend your next Smite within 5 s deals +10/20/30 % of a base hit; 8 s internal cooldown. | `clear_conscience_add` 0.1/0.2/0.3 |
 | M9 | **Deep Reserve** `mercy_deep_reserve` | modifier | 3 | 12 | — | Max mana +4/8/12 %. | `max_mana_percent_add` 4/8/12 |
-| M10 | **Hearten** `mercy_hearten` | unlock `hearten` | 1 | 12 | — | Unlocks Hearten: you and up to 3 allies within 6 m, lowest health first, heal 15 % of a base health pool each; 20 s cooldown, 14 % mana, 1.5 s recovery. | — |
+| M10 | **Hearten** `mercy_hearten` | unlock `hearten` | 1 | 12 | — | Unlocks Hearten: you and up to 3 allies within 6 m, lowest health first, heal 15 % of a base health pool each; 20 s cooldown, 1.5 s recovery. | — |
 | M11 | **Quiet Care** `mercy_quiet_care` | modifier | 3 | 12 | — | Your healing draws 45/40/35 % threat instead of 50 %. | `heal_threat_factor_sub` 0.05/0.1/0.15 |
 | M13 | **Haven** `mercy_haven` | ultimate `haven` | 1 | 20 | M10 | Unlocks Haven: you and up to 4 allies within 8 m heal 6 times, 7 % of a base health pool every 2 s; 60 s cooldown, 1.5 s recovery. | — |
 | M14 | **Lasting Haven** `mercy_lasting_haven` | modifier | 3 | 20 | M13 | Haven heals 1/2/3 more times. | `duration_add:haven` 2/4/6 |
@@ -318,17 +318,17 @@ window `clear_conscience` opens on a committed Heal, Shield or Mend (5 s, an
 |---|---|---|---:|---:|---|---|---|
 | RK1 | **Sharpened Word** `reckoning_sharpened_word` | modifier | 3 | 0 | — | Smite +5/10/15 % of a base hit; with Steady Word only the higher counts. | `smite_sharpened_add` 0.05/0.1/0.15 |
 | RK2 | **Measured Judgment** `reckoning_measured_judgment` | modifier | 3 | 0 | — | Rebuke, Word of Ruin, Censure and Final Word cost 4/8/12 % less. | `cost_pct:censure` -4/-8/-12; `cost_pct:paid` -4/-8/-12 |
-| RK3 | **Rebuke** `reckoning_rebuke` | unlock `rebuke` | 1 | 2 | — | Unlocks Rebuke: an instant hit at the enemy in your crosshair for 180 % of a Smite hit; 6 s cooldown, 6 % mana. | — |
+| RK3 | **Rebuke** `reckoning_rebuke` | unlock `rebuke` | 1 | 2 | — | Unlocks Rebuke: an instant hit at the enemy in your crosshair for 180 % of a Smite hit; 6 s cooldown. | — |
 | RK4 | **Firm Rebuke** `reckoning_firm_rebuke` | modifier | 3 | 2 | RK3 | Rebuke +10/20/30 % of a base hit. | `rebuke_add` 0.1/0.2/0.3 |
 | RK5 | **Long Reach** `reckoning_long_reach` | modifier | 3 | 6 | — | Smite, Rebuke, Word of Ruin and Final Word reach 1/2/3 m farther. | `range_add:final_word` 1/2/3; `range_add:rebuke` 1/2/3; `range_add:smite` 1/2/3; `range_add:word_of_ruin` 1/2/3 |
-| RK6 | **Word of Ruin** `reckoning_word_of_ruin` | unlock `word_of_ruin` | 1 | 6 | — | Unlocks Word of Ruin: an instant hit for 160 % of a Smite hit that heals you for half the damage, at most 6 % of a base health pool; 16 s cooldown, 10 % mana. | — |
+| RK6 | **Word of Ruin** `reckoning_word_of_ruin` | unlock `word_of_ruin` | 1 | 6 | — | Unlocks Word of Ruin: an instant hit for 160 % of a Smite hit that heals you for half the damage, at most 6 % of a base health pool; 16 s cooldown. | — |
 | RK7 | **Resolute Word** `reckoning_resolute_word` | modifier | 3 | 10 | RK6 | Word of Ruin heals at most 7/8/9 % of a base health pool. | `word_of_ruin_cap_add` 1/2/3 |
 | RK8 | **Hard Faith** `reckoning_hard_faith` | modifier | 3 | 10 | — | Rebuke, Word of Ruin and Final Word deal +3/6/9 % damage. | `damage_pct:paid` 3/6/9 |
-| RK9 | **Censure** `reckoning_censure` | unlock `censure` | 1 | 12 | — | Unlocks Censure: strikes the ground in your crosshair after 0.75 s with a warning, 120 % of a Smite hit to the 4 nearest within 3 m; 18 s cooldown, 12 % mana. | — |
+| RK9 | **Censure** `reckoning_censure` | unlock `censure` | 1 | 12 | — | Unlocks Censure: strikes the ground in your crosshair after 0.75 s with a warning, 120 % of a Smite hit to the 4 nearest within 3 m; 18 s cooldown. | — |
 | RK10 | **Broad Judgment** `reckoning_broad_judgment` | modifier | 3 | 12 | RK9 | Censure's radius +0.25/0.50/0.75 m. | `radius_add:censure` 0.25/0.5/0.75 |
 | RK11 | **Deep Resolve** `reckoning_deep_resolve` | modifier | 3 | 12 | — | Max mana +4/8/12 %. | `max_mana_percent_add` 4/8/12 |
 | RK12 | **Press the Verdict** `reckoning_press_the_verdict` | modifier | 3 | 16 | RK3 | Rebuke's cooldown -0.5/1.0/1.5 s. | `cooldown_sub:rebuke` 0.5/1/1.5 |
-| RK13 | **Final Word** `reckoning_final_word` | ultimate `final_word` | 1 | 20 | RK3 | Unlocks Final Word: an instant hit at the enemy in your crosshair for 280 % of a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery. | — |
+| RK13 | **Final Word** `reckoning_final_word` | ultimate `final_word` | 1 | 20 | RK3 | Unlocks Final Word: an instant hit at the enemy in your crosshair for 280 % of a Smite hit; 60 s cooldown, 1.5 s recovery. | — |
 | RK14 | **Unfinished Sentence** `reckoning_unfinished_sentence` | modifier | 3 | 20 | RK13 | Final Word +10/20/30 % of a base hit. | `final_word_add` 0.1/0.2/0.3 |
 
 Consumers: `kits_priest.lua` (every Reckoning skill and
@@ -349,15 +349,15 @@ nearest within its radius) and never crits.
 | Q1 | **Bowcraft** `quarry_bowcraft` | modifier | 4 | 0 | — | Bow attacks deal +5/10/15/20 % damage, Arrowfall included. | `damage_pct:bow` 5/10/15/20 |
 | Q2 | **Quiver** `quarry_quiver` | modifier | 3 | 0 | — | Loose has a 10/20/30 % chance to keep its arrow. | `arrow_refund_chance` 10/20/30 |
 | Q3 | **Measured Breath** `quarry_measured_breath` | modifier | 3 | 0 | — | Paid bow skills cost 5/10/15 % less. | `cost_pct:bow` -5/-10/-15 |
-| Q4 | **True Draw** `quarry_true_draw` | unlock `true_draw` | 1 | 2 | — | Unlocks True Draw: an instant shot for 220 % of a base bow hit; 6 s cooldown, 6 % mana and 1 arrow, 1.35 s recovery. | — |
+| Q4 | **True Draw** `quarry_true_draw` | unlock `true_draw` | 1 | 2 | — | Unlocks True Draw: an instant shot for 220 % of a base bow hit; 6 s cooldown, 1 arrow, 1.35 s recovery. | — |
 | Q5 | **Firm Aim** `quarry_firm_aim` | modifier | 3 | 6 | Q4 | True Draw +10/20/30 % of a base bow hit. | `true_draw_add` 0.1/0.2/0.3 |
-| Q6 | **Snare Shot** `quarry_snare_shot` | unlock `snare_shot` | 1 | 6 | — | Unlocks Snare Shot: an instant shot for 45 % of a base bow hit that slows by 35 % for 3 s; 14 s cooldown, 5 % mana and 1 arrow, 0.85 s recovery. | — |
+| Q6 | **Snare Shot** `quarry_snare_shot` | unlock `snare_shot` | 1 | 6 | — | Unlocks Snare Shot: an instant shot for 45 % of a base bow hit that slows by 35 % for 3 s; 14 s cooldown, 1 arrow, 0.85 s recovery. | — |
 | Q7 | **Long View** `quarry_long_view` | modifier | 3 | 10 | — | Bow skills reach 1/2/3 m farther. | `range_add:bow` 1/2/3 |
-| Q8 | **Split Shot** `quarry_split_shot` | unlock `split_shot` | 1 | 12 | — | Unlocks Split Shot: one arrow for 90 % of a base bow hit; up to 2 others within 3 m of the target take 55 %; 10 s cooldown, 8 % mana and 1 arrow. | — |
+| Q8 | **Split Shot** `quarry_split_shot` | unlock `split_shot` | 1 | 12 | — | Unlocks Split Shot: one arrow for 90 % of a base bow hit; up to 2 others within 3 m of the target take 55 %; 10 s cooldown, 1 arrow. | — |
 | Q9 | **Broad Shot** `quarry_broad_shot` | modifier | 3 | 12 | Q8 | Split Shot's other hits +5/10/15 % of a base bow hit. | `split_shot_add` 0.05/0.1/0.15 |
 | Q10 | **Light Recovery** `quarry_light_recovery` | modifier | 3 | 16 | — | Sidestep costs 10/20/30 % less. | `cost_pct:sidestep` -10/-20/-30 |
 | Q11 | **Follow the Line** `quarry_follow_the_line` | window | 3 | 16 | Q4 | A landed True Draw readies your next Loose within 3 s, at any target: +10/20/30 % of a base bow hit. | `follow_the_line_add` 0.1/0.2/0.3 |
-| Q12 | **Arrowfall** `quarry_arrowfall` | ultimate `arrowfall` | 1 | 20 | Q4 | Unlocks Arrowfall: 4 arrows at once at the target under your crosshair, each 140 % of a base bow hit, critical hits allowed; 60 s cooldown, 16 % mana and 4 arrows, 2.5 s recovery. | — |
+| Q12 | **Arrowfall** `quarry_arrowfall` | ultimate `arrowfall` | 1 | 20 | Q4 | Unlocks Arrowfall: 4 arrows at once at the target under your crosshair, each 140 % of a base bow hit, critical hits allowed; 60 s cooldown, 4 arrows, 2.5 s recovery. | — |
 | Q13 | **Iron Hail** `quarry_iron_hail` | modifier | 3 | 20 | Q12 | Each Arrowfall arrow +4/8/12 % of a base bow hit. | `arrowfall_add` 0.04/0.08/0.12 |
 
 The Scout's kit, resource, armour, bow and the **deferred stealth work**
@@ -377,15 +377,15 @@ their own and never crit; Arrowfall's four arrows may crit.
 | V1 | **Bladecraft** `veil_bladecraft` | transform `bladecraft` | 1 | 0 | — | Loose becomes Bladecraft: left click swings your blade, right click looses an instant shot at an enemy; both share one clock. | — |
 | V2 | **Fine Edge** `veil_fine_edge` | modifier | 4 | 0 | — | Blade attacks deal +8/16/24/32 % damage. | `damage_pct:blade` 8/16/24/32 |
 | V3 | **Light Step** `veil_light_step` | modifier | 3 | 0 | — | Dodge chance +1/2/3 %. | `dodge_chance_add` 1/2/3 |
-| V4 | **Opening** `veil_opening` | unlock `opening` | 1 | 2 | V1 | Unlocks Opening: your next swing deals 135 % of a base blade hit, 180 % from behind or in Parry's window; 8 s cooldown, 5 % mana. | — |
+| V4 | **Opening** `veil_opening` | unlock `opening` | 1 | 2 | V1 | Unlocks Opening: your next swing deals 135 % of a base blade hit, 180 % from behind or in Parry's window; 8 s cooldown. | — |
 | V5 | **Deep Focus** `veil_deep_focus` | modifier | 3 | 2 | — | Paid blade skills, Parry and Close Dance cost 5/10/15 % less. | `cost_pct:blade` -5/-10/-15 |
-| V6 | **Parry** `veil_parry` | unlock `parry` | 1 | 6 | — | Unlocks Parry: a shield of 10 % of a base health pool for 2 s, and Opening's window opens for 3 s; 12 s cooldown, 4 % mana, 0.5 s recovery. | — |
+| V6 | **Parry** `veil_parry` | unlock `parry` | 1 | 6 | — | Unlocks Parry: a shield of 10 % of a base health pool for 2 s, and Opening's window opens for 3 s; 12 s cooldown, 0.5 s recovery. | — |
 | V7 | **Held Guard** `veil_held_guard` | modifier | 3 | 6 | V6 | Parry's window and shield last +0.25/0.50/0.75 s. | `duration_add:parry` 0.25/0.5/0.75 |
-| V8 | **Flourish** `veil_flourish` | unlock `flourish` | 1 | 12 | V1 | Unlocks Flourish: an instant 90 degree, 3 m sweep; the 3 nearest take 80 % of a base blade hit each; 12 s cooldown, 8 % mana. | — |
+| V8 | **Flourish** `veil_flourish` | unlock `flourish` | 1 | 12 | V1 | Unlocks Flourish: an instant 90 degree, 3 m sweep; the 3 nearest take 80 % of a base blade hit each; 12 s cooldown. | — |
 | V9 | **Wide Edge** `veil_wide_edge` | modifier | 3 | 12 | V8 | Flourish +5/10/15 % of a base blade hit per target. | `flourish_add` 0.05/0.1/0.15 |
 | V10 | **Turn the Blade** `veil_turn_the_blade` | modifier | 3 | 12 | V4, V6 | Opening in Parry's window +10/20/30 % of a base blade hit. | `opening_parry_add` 0.1/0.2/0.3 |
 | V11 | **Shake Loose** `veil_shake_loose` | modifier | 3 | 16 | — | Sidestep also frees you from slows and roots; its cooldown -1/2/3 s. | `cooldown_sub:sidestep` 1/2/3; `sidestep_frees` 1/1/1 |
-| V12 | **Close Dance** `veil_close_dance` | ultimate `close_dance` | 1 | 20 | V4, V6 | Unlocks Close Dance: for 6 s your blade swings deal +35 % of a base blade hit, and a shield of 15 % of a base health pool; 60 s cooldown, 14 % mana, 0.25 s recovery. | — |
+| V12 | **Close Dance** `veil_close_dance` | ultimate `close_dance` | 1 | 20 | V4, V6 | Unlocks Close Dance: for 6 s your blade swings deal +35 % of a base blade hit, and a shield of 15 % of a base health pool; 60 s cooldown, 0.25 s recovery. | — |
 | V13 | **Cutting Rhythm** `veil_cutting_rhythm` | modifier | 3 | 20 | V12 | Close Dance's swing bonus +5/10/15 % of a base blade hit. | `close_dance_add` 0.05/0.1/0.15 |
 | V14 | **Travel Worn** `veil_travel_worn` | modifier | 3 | 6 | — | Max health +3/6/9 %. | `max_hp_percent_add` 3/6/9 |
 
@@ -444,12 +444,17 @@ something that already grows with the level:
   shields are flat shares of P.
 
 The node tooltip on the page shows the armor and pool amounts at the
-viewer's level for every rank. A node that grants or replaces a skill appends
-that skill's current text after "At your level:", the very string of its
-hotbar stack (`grug_abilities.skill_text`), learned or not, with the ranks the
-player has (Round 69 ruling 9); the strip under the tree keeps the node's text
-and its status first and the numbers after them. Modifier nodes and skills
-without a player-specific text (Taunt, Bellow, Blink) add nothing.
+viewer's level for every rank. A node that grants or replaces a skill states
+that skill's cost after its description, "Cost: …." through the one cost text
+of every skill description (`grug_abilities.cost_text`, Round 80 ruling 12:
+"N% base mana (M mana)" with M the whole mana the cast charges this player
+now, "N rage" or "free"); the node descriptions state no cost of their own. It
+then appends that skill's current text after "At your level:", the very
+string of its hotbar stack (`grug_abilities.skill_text`), learned or not, with
+the ranks the player has (Round 69 ruling 9); the strip under the tree keeps
+the node's text, its cost and its status first and the numbers after them.
+Modifier nodes add nothing, and skills without a player-specific text
+(Taunt, Bellow, Blink) only their cost.
 
 **Crit.** Areas never crit (`opts.no_crit` of `deal_ability_damage`, the
 calculator's model): Ice Wave, Ice Nova, Meteor, Fire Rain, Winter Field,
@@ -724,6 +729,9 @@ grug_core.get_absorb(target)        -- the total
   stacking.
 - **The total is capped at the target's maximum HP**: a new contribution
   absorbs at most what the others leave below that cap.
+- **Whole points** (Round 80 ruling 11): a contribution is stored rounded
+  down, at least 1 for any positive amount, so the shield holds the number its
+  tooltip shows and the soak and the hit points it leaves are whole numbers.
 - `grug_core.get_absorb(player)` returns the sum, which the central
   hp-change modifier's soak and the `shield` status read.
 - Contributions are cleared on death and leave.

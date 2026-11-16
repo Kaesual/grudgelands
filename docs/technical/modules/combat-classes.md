@@ -206,7 +206,10 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   friendly skills always resolve through valid pointed ally → valid ally
   memory → self. WP19 also added **absorb
   shields** (`grug_core.add_absorb`, soaked in the central
-  hp modifier after dodge/fall mitigation), **race passives** as a perk
+  hp modifier after dodge/fall mitigation; since Round 80 a contribution is
+  stored in whole points, and the modifier hands its change on as the integer
+  the engine stores, truncated toward zero, so the hp loggers such as the
+  nametag never see a fraction; fixture `tools/r80_fixes`), **race passives** as a perk
   table in the grug_classes race registry (`grug_classes.get_race_perk`,
   stub-mirrored as `grug_core.get_race_perk`; elf range via per-stack
   meta `range` override) and mob slows (`grug_mobs.slow`, staticdata-safe
@@ -408,7 +411,13 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   Help page explains the model. Ability registrations may expose
   `def.values(user)`; `grug_abilities.description_for` writes the effective
   current-level values to that player's stack on kit sync, level change and
-  talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
+  talent change. Every cost text (the tooltip head, the talent tree's nodes and
+  strip) comes from `grug_abilities.cost_text(player, def)` (Round 80): "N% base
+  mana (M mana)" with M the cast's whole charge (`effective_cost`), "N mana",
+  "N rage" or "free"; skill and node descriptions name no cost of their own.
+  Instant heals with no heal-over-time part (Heal, Hearten) refuse a target at
+  full health from `cast` (`false, msg`: no mana, no cooldown; Hearten only when
+  no one it would heal is hurt). Suffocation is 5% maximum HP/s (minimum 1), with stasis and
   `noclip` exempt; lava is 20% and drowning 10% of maximum HP/s
   (`environment_damage.lua`, Round 24), and absorb does not cover fall,
   lava or drowning. `grug_core.status` is the runtime timed-effect registry and, since

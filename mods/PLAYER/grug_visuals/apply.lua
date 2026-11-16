@@ -326,10 +326,13 @@ grug_visuals.POSE_CLIPS = {
 -- The Round 78 emotes (round78-plan.md ruling 10; poses.lua play_emote),
 -- baked after the poses by the same generator: over `stand` and, for one a
 -- rider may play, over `sit` (`<emote>_sit`: the legs on the saddle). No
--- walking twin: walking ends an emote. Wave plays once, Dance loops.
+-- walking twin: walking ends an emote. Wave and Cheer (Round 80, the website
+-- account's emote) play once, Dance loops. Who may play which one is the
+-- quickbar's answer (grug_quickbar.owns_emote, poses.lua's emote gate).
 grug_visuals.EMOTE_CLIPS = {
 	wave = {stand = {x = 485, y = 544}, sit = {x = 545, y = 604}, once = true},
 	dance = {stand = {x = 605, y = 701}},
+	cheer = {stand = {x = 702, y = 761}, sit = {x = 762, y = 821}, once = true},
 }
 
 do

@@ -345,7 +345,13 @@ load("mods/PLAYER/grug_mounts/trainer.lua")
 load("mods/PLAYER/grug_mounts/shipwright.lua")
 load("mods/PLAYER/grug_home/travel.lua")
 load("mods/PLAYER/grug_keys/init.lua")
+-- Round 80: at load the quickbar hands grug_visuals its emote gate and keeps
+-- which emotes have a seated clip (Dance greyed while riding); this fixture
+-- runs without grug_visuals otherwise.
+grug_visuals = {set_emote_gate = function() end,
+	EMOTE_CLIPS = {wave = {sit = {}}, dance = {}, cheer = {sit = {}}}}
 load("mods/PLAYER/grug_quickbar/init.lua")
+grug_visuals = nil
 
 local FORMNAME = grug_quickbar.FORMNAME
 local function step()
@@ -397,14 +403,16 @@ core.get_player_window_information = nil
 has(fs, grug_core.ui.title(0.5, 0.45, "Quickbar"), "themed title")
 has(fs, "Active Hotbar", "hotbar section heading")
 has(fs, "No mounts or boats yet.", "no mount: the empty line")
-eq(count_buttons(fs, "image_button"), 0, "no mount: no mount button")
+-- Round 80: the emotes are image buttons too (Wave and Dance; no account here).
+eq(count_buttons(fs, "image_button"), 2, "no mount: no mount button, the two emote icons")
 eq(count_buttons(fs, "item_image_button"), 0, "empty belt: no item button")
 eq(count_buttons(fs, "box"), 4, "empty belt: four empty slots drawn")
 lacks(fs, "grug_quickbar_home", "no home: no Return home button")
 has(fs, "Click to use\\; the window closes.", "the hint")
 local w, h = size_of(fs)
 eq(w, 5.75, "four inventory slots wide")
--- Round 78: the Emotes section (Wave, Dance) adds 1.55 to every height.
+-- Round 78: the Emotes section (Wave, Dance) adds 1.55 to every height;
+-- Round 80's icon row 1.95.
 check(h and h > 4 and h < 9, "roughly square without a home: " .. tostring(h))
 
 ada.meta["grug_mounts:land_tier"] = 2
@@ -416,7 +424,7 @@ homes.ada = {label = "Highcourt Inn"}
 fs = grug_quickbar.formspec(ada)
 lacks(fs, "No mounts or boats yet.", "mounts owned: no empty line")
 eq(count_buttons(fs, "item_image_button"), 2, "two filled belt slots: two item buttons")
-eq(count_buttons(fs, "image_button") - 2, 4, "four owned tiers: four mount buttons")
+eq(count_buttons(fs, "image_button") - 2 - 2, 4, "four owned tiers: four mount buttons")
 for _, tier in ipairs({1, 2, 5, 6}) do has(fs, ";grug_quickbar_mount_" .. tier .. ";]", "tier " .. tier .. " button") end
 for _, tier in ipairs({3, 4}) do lacks(fs, "grug_quickbar_mount_" .. tier, "tier " .. tier .. " not owned: no button") end
 has(fs, "image_button[0.500,1.300;1,1;grug_mounts_icon_t1_accord.png;grug_quickbar_mount_1;]",
@@ -445,7 +453,7 @@ check(h2 and h2 > 6 and h2 < 11, "one mount row and a home: compact stacked sect
 -- Five owned tiers: a second row.
 ada.meta["grug_mounts:flight_tier"] = 3
 fs = grug_quickbar.formspec(ada)
-eq(count_buttons(fs, "image_button") - 2, 5, "five owned tiers: five mount buttons")
+eq(count_buttons(fs, "image_button") - 2 - 2, 5, "five owned tiers: five mount buttons")
 has(fs, "image_button[0.500,2.550;1,1;grug_mounts_icon_improved_boat.png;grug_quickbar_mount_6;]",
 	"the fifth button opens a second row")
 local _, h3 = size_of(fs)
