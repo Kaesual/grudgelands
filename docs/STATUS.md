@@ -8,7 +8,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 ## Now
 
 - **Game:** 0.81.0 (`game.conf`), Round 81 (fixes from the 2026-11 code audit,
-  compatible): squash commit and tag `round-81` follow after the merge; not pushed. Before
+  compatible), `9ae6a090`, tag `round-81`; not pushed. Before
   it: 0.80.1, Round 80.1 (character-creation pictures for the website), `73b142c4`, tag
   `round-80.1`, pushed 2026-11-16.
 - **Production:** 0.78.0 (the user, 2026-11-16).
