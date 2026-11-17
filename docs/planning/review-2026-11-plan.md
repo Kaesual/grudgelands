@@ -155,5 +155,19 @@ measurement to run, confidence, and the verifier's verdict.
 
 ## 6. Completion
 
-Written by the coordinator at the end of the run: see the README's
-"Coverage" and "Run record" sections.
+Finished 2026-11-17 at about 02:40 CET, well inside the deadline; both
+timers were left in place until then and nothing was cut. All 35 packages
+were found and verified in 51 agent runs (35 finders, 16 verifiers): 387
+findings, 0 Critical, 2 High, 96 Medium, 289 Low; 267 confirmed, 47
+corrected, 1 refuted, 73 Low left unverified by design. Numbers per package:
+[coverage](../audit-2026-11/by-topic/coverage.md); ranked results, the
+rulings the user has to make and the proposed lanes:
+[README](../audit-2026-11/README.md), whose "Run record" names the open
+ends.
+
+Deviations from this plan: the search finished in about 35 minutes instead
+of the two and a half hours the schedule allowed, because 20 agents ran at
+once instead of 12; the engine reference submodule had to be checked out
+during the run, so the first finders could not cite engine behaviour and
+the verifiers settled those claims; no second search round was started,
+to stay at the agreed number of runs.
