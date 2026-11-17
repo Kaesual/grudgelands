@@ -1,0 +1,13 @@
+# package M1: 12 files, 11396 lines
+2287	mods/MAPGEN/grug_mapgen/wp40/height.lua
+1847	mods/MAPGEN/grug_mapgen/wp40/zones.lua
+1493	mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+1124	mods/MAPGEN/grug_mapgen/wp40/terrain_field.lua
+1016	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+963	mods/MAPGEN/grug_mapgen/wp40/zone_field.lua
+887	mods/MAPGEN/grug_mapgen/wp40/index128.lua
+714	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
+321	mods/MAPGEN/grug_mapgen/wp40/terrain_data.lua
+302	mods/MAPGEN/grug_mapgen/wp40/deterministic.lua
+242	mods/MAPGEN/grug_mapgen/wp40/counting_allocator.lua
+200	mods/MAPGEN/grug_mapgen/wp40/canonical.lua

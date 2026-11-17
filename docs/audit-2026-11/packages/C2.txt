@@ -1,0 +1,15 @@
+# package C2: 14 files, 8979 lines
+3180	mods/PLAYER/grug_abilities/init.lua
+935	mods/PLAYER/grug_abilities/input.lua
+702	mods/PLAYER/grug_abilities/scout.lua
+641	mods/PLAYER/grug_abilities/kits_mage.lua
+585	mods/PLAYER/grug_abilities/kits_priest.lua
+557	mods/PLAYER/grug_abilities/kits_warrior.lua
+541	mods/PLAYER/grug_abilities/charge_path.lua
+415	mods/PLAYER/grug_abilities/charge.lua
+356	mods/PLAYER/grug_abilities/kits.lua
+316	mods/PLAYER/grug_abilities/cooldown_hud.lua
+255	mods/PLAYER/grug_abilities/cooldown_math.lua
+254	mods/PLAYER/grug_abilities/blink.lua
+220	mods/PLAYER/grug_abilities/crosshair.lua
+22	mods/PLAYER/grug_abilities/strike_delay.lua

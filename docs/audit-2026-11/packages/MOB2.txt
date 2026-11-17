@@ -1,0 +1,15 @@
+# package MOB2: 14 files, 11655 lines
+2314	mods/ENTITIES/grug_mobs/spawn_regions_core.lua
+2060	mods/ENTITIES/grug_mobs/start_npcs.lua
+1534	mods/ENTITIES/grug_mobs/spawn_regions.lua
+1221	mods/ENTITIES/grug_mobs/start_villagers.lua
+1050	mods/ENTITIES/grug_mobs/camps.lua
+951	mods/ENTITIES/grug_mobs/spawn_policy.lua
+631	mods/ENTITIES/grug_mobs/rares.lua
+489	mods/ENTITIES/grug_mobs/spawn_regions_cache.lua
+303	mods/ENTITIES/grug_mobs/pvp_garrison.lua
+301	mods/ENTITIES/grug_mobs/start_zone_families.lua
+252	mods/ENTITIES/grug_mobs/night_families.lua
+243	mods/ENTITIES/grug_mobs/spawn_abms.lua
+190	mods/ENTITIES/grug_mobs/capital_displays.lua
+116	mods/ENTITIES/grug_mobs/dawn.lua

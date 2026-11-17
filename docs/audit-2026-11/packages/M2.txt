@@ -1,0 +1,16 @@
+# package M2: 15 files, 10162 lines
+2804	mods/MAPGEN/grug_mapgen/wp40/road_layout.lua
+2338	mods/MAPGEN/grug_mapgen/wp40/water_layout.lua
+1333	mods/MAPGEN/grug_mapgen/wp40/treegen.lua
+789	mods/MAPGEN/grug_mapgen/wp40/vegetation_density.lua
+561	mods/MAPGEN/grug_mapgen/wp40/habitat_registry.lua
+412	mods/MAPGEN/grug_mapgen/wp40/tree_templates.lua
+358	mods/MAPGEN/grug_mapgen/wp40/wreck_writer.lua
+266	mods/MAPGEN/grug_mapgen/wp40/water_authored.lua
+256	mods/MAPGEN/grug_mapgen/wp40/road_writer.lua
+219	mods/MAPGEN/grug_mapgen/wp40/swamp_pools.lua
+192	mods/MAPGEN/grug_mapgen/wp40/seabed.lua
+184	mods/MAPGEN/grug_mapgen/wp40/wayposts.lua
+174	mods/MAPGEN/grug_mapgen/wp40/swamp_writer.lua
+170	mods/MAPGEN/grug_mapgen/wp40/air_chunks.lua
+106	mods/MAPGEN/grug_mapgen/wp40/wreck_shapes.lua

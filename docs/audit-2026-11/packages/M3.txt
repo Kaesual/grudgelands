@@ -1,0 +1,14 @@
+# package M3: 13 files, 9731 lines
+3738	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+1207	mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
+1054	mods/MAPGEN/grug_mapgen/wp40/planner.lua
+887	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+699	mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua
+639	mods/MAPGEN/grug_mapgen/wp40/kit_templates.lua
+509	mods/MAPGEN/grug_mapgen/wp40/placement.lua
+331	mods/MAPGEN/grug_mapgen/wp40/r6.lua
+250	mods/MAPGEN/grug_mapgen/wp40/r6_hash.lua
+213	mods/MAPGEN/grug_mapgen/wp40/r5.lua
+87	mods/MAPGEN/grug_mapgen/wp40/r63_camp_blueprint.lua
+86	mods/MAPGEN/grug_mapgen/wp40/placement_rules.lua
+31	mods/MAPGEN/grug_mapgen/wp40/r69_camp_sites.lua

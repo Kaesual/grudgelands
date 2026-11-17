@@ -1,0 +1,11 @@
+# package X1: 10 files, 3351 lines
+970	mods/CORE/grug_ambience/init.lua
+643	mods/CORE/grug_ambience/rules.lua
+396	mods/CORE/grug_sounds/init.lua
+379	mods/CORE/grug_ambience/data.lua
+270	mods/CORE/grug_text/init.lua
+192	mods/CORE/grug_text/layout.lua
+172	mods/CORE/grug_perf/init.lua
+110	mods/CORE/grug_text/surfaces.lua
+110	mods/CORE/grug_perf/monitor.lua
+109	mods/CORE/grug_perf/lines.lua

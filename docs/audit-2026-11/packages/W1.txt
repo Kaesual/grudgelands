@@ -1,0 +1,15 @@
+# package W1: 14 files, 8135 lines
+1440	mods/MAPGEN/grug_mapgen/wp13/dressing.lua
+1177	mods/MAPGEN/grug_mapgen/wp13/parts.lua
+1076	mods/MAPGEN/grug_mapgen/wp13/palette.lua
+1024	mods/MAPGEN/grug_mapgen/wp13/decor_kit.lua
+964	mods/MAPGEN/grug_mapgen/wp13/templates.lua
+568	mods/MAPGEN/grug_mapgen/wp13/city_green.lua
+484	mods/MAPGEN/grug_mapgen/wp13/city_edge.lua
+475	mods/MAPGEN/grug_mapgen/wp13/layout.lua
+278	mods/MAPGEN/grug_mapgen/wp13/dwarf_dressing.lua
+185	mods/MAPGEN/grug_mapgen/wp13/troll_palette.lua
+160	mods/MAPGEN/grug_mapgen/wp13/capital_services.lua
+119	mods/MAPGEN/grug_mapgen/wp13/gate_watch.lua
+93	mods/MAPGEN/grug_mapgen/wp13/plot_approach.lua
+92	mods/MAPGEN/grug_mapgen/wp13/precinct_ring.lua

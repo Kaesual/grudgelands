@@ -1,0 +1,27 @@
+# package P3: 26 files, 10420 lines
+1311	mods/PLAYER/grug_quests/validate.lua
+1300	mods/PLAYER/grug_inventory/equipment.lua
+801	mods/PLAYER/grug_inventory/pages.lua
+796	mods/PLAYER/grug_quests/state.lua
+562	mods/PLAYER/grug_quests/labels.lua
+548	mods/PLAYER/grug_inventory/storage.lua
+523	mods/PLAYER/grug_inventory/help.lua
+514	mods/PLAYER/grug_inventory/bags.lua
+509	mods/PLAYER/grug_inventory/ui.lua
+446	mods/PLAYER/grug_quests/npc.lua
+380	mods/PLAYER/grug_quests/use.lua
+365	mods/PLAYER/grug_quests/loader.lua
+348	mods/PLAYER/grug_quests/registry.lua
+319	mods/PLAYER/grug_quests/hud.lua
+248	mods/PLAYER/grug_money/coins.lua
+235	mods/PLAYER/grug_money/init.lua
+201	mods/PLAYER/grug_trinkets/init.lua
+195	mods/PLAYER/grug_inventory/trash.lua
+187	mods/PLAYER/grug_inventory/navigation.lua
+162	mods/PLAYER/grug_quests/npcs.lua
+133	mods/PLAYER/grug_inventory/welcome.lua
+107	mods/PLAYER/grug_inventory/hotbars.lua
+100	mods/PLAYER/grug_inventory/furnace_progress.lua
+90	mods/PLAYER/grug_inventory/inbox.lua
+21	mods/PLAYER/grug_inventory/init.lua
+19	mods/PLAYER/grug_quests/init.lua

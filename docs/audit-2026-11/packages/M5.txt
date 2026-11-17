@@ -1,0 +1,25 @@
+# package M5: 24 files, 3320 lines
+420	mods/MAPGEN/grug_mapgen/world_nodes.lua
+374	mods/MAPGEN/grug_mapgen/wp40/world_protection.lua
+356	mods/MAPGEN/grug_mapgen/wp43_handoff.lua
+305	mods/MAPGEN/grug_mapgen/wp40/world_assembly.lua
+243	mods/MAPGEN/grug_mapgen/wp40/layout_cache.lua
+204	mods/MAPGEN/grug_mapgen/wp40/world_content.lua
+199	mods/MAPGEN/grug_mapgen/camp_rewrite.lua
+158	mods/MAPGEN/grug_mapgen/wp40/mapgen_manifest.lua
+109	mods/MAPGEN/grug_mapgen/init.lua
+109	mods/MAPGEN/grug_mapgen/guild_room_nodes.lua
+108	mods/MAPGEN/grug_mapgen/wp40/preparation_source.lua
+93	mods/MAPGEN/grug_mapgen/wp40/guild_room_writer.lua
+86	mods/MAPGEN/grug_mapgen/wp40/r20_poi_catalog.lua
+84	mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua
+81	mods/MAPGEN/grug_mapgen/wp40/city_decor.lua
+80	mods/MAPGEN/grug_mapgen/camp_nodes.lua
+76	mods/MAPGEN/grug_mapgen/wp40/world_content_catalog.lua
+57	mods/MAPGEN/grug_mapgen/wp40/r20_civic.lua
+46	mods/MAPGEN/grug_mapgen/wp40/guild_room_protection.lua
+46	mods/MAPGEN/grug_mapgen/wp40/degrade.lua
+30	mods/MAPGEN/grug_mapgen/wp40/preparation_identity.lua
+20	mods/MAPGEN/grug_mapgen/jit_tuning.lua
+18	mods/MAPGEN/grug_mapgen/wp40/schemas.lua
+18	mods/MAPGEN/grug_mapgen/poi_displays.lua

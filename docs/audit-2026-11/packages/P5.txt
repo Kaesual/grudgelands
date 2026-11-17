@@ -1,0 +1,24 @@
+# package P5: 23 files, 7419 lines
+955	mods/PLAYER/grug_mail/window.lua
+682	mods/PLAYER/grug_parties/ui.lua
+674	mods/PLAYER/grug_mail/admin.lua
+568	mods/PLAYER/grug_clans/init.lua
+525	mods/PLAYER/grug_mail/api.lua
+476	mods/PLAYER/grug_parties/init.lua
+416	mods/PLAYER/grug_accounts/model.lua
+402	mods/PLAYER/grug_mail/model.lua
+357	mods/PLAYER/grug_bridge/commands.lua
+349	mods/PLAYER/grug_clans/social.lua
+311	mods/PLAYER/grug_bridge/link.lua
+284	mods/PLAYER/grug_accounts/flow.lua
+247	mods/PLAYER/grug_accounts/init.lua
+240	mods/PLAYER/grug_accounts/page.lua
+237	mods/PLAYER/grug_parties/hud.lua
+188	mods/PLAYER/grug_bridge/init.lua
+153	mods/PLAYER/grug_mail/store.lua
+105	mods/PLAYER/grug_mail/letters.lua
+67	mods/PLAYER/grug_bridge/mirror.lua
+58	mods/PLAYER/grug_mail/texts.lua
+55	mods/PLAYER/grug_mail/quest.lua
+52	mods/PLAYER/grug_bridge/bans.lua
+18	mods/PLAYER/grug_mail/init.lua

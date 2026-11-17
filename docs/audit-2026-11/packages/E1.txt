@@ -1,0 +1,10 @@
+# package E1: 9 files, 4626 lines
+1210	mods/ENTITIES/grug_traders/trade.lua
+825	mods/ENTITIES/grug_traders/vendors.lua
+551	mods/ENTITIES/grug_traders/prices.lua
+513	mods/ENTITIES/grug_traders/stock.lua
+472	mods/ENTITIES/grug_traders/price_rules.lua
+458	mods/ENTITIES/grug_projectiles/init.lua
+263	mods/ENTITIES/grug_traders/crown.lua
+199	mods/ENTITIES/grug_traders/init.lua
+135	mods/ENTITIES/grug_traders/potion.lua
