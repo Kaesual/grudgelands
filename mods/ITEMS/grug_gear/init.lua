@@ -130,17 +130,6 @@ grug_gear.MATERIALS = {
 		leather = {key = "nightscale", name = "Nightscale"}},
 }
 
--- Six bracket colours. Their one user, the metal rods of
--- grug_professions/base_recipes.lua, left the game in Round 67 (ruling 13);
--- the table stays until a later clean-up (BACKLOG). Neither weapons nor
--- armour use it: every weapon family ships one
--- sprite per material (`tools/wp13/gen_weapon_ladder.py`), and the armour art
--- carries each tier's palette (Round 54, docs/technical/armor-format.md), as
--- do the shield and spellbook icons (Round 55, offhand_image below).
--- `[multiply:#ffffff` is a no-op, so the sixth tier shows the untinted image.
-grug_gear.BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a",
-	"#e8dcb0", "#ffffff"}
-
 -- Round 11 presentation is kept beside the catalog it dresses. These are
 -- licensed inventory sprites, not gameplay identities or recipe routing.
 local BOW_IMAGE = {
@@ -748,6 +737,8 @@ end)
 -- when only the image changed, as for a stack enchanted or broken under an
 -- older registered image (0.54.1's tinted shields and shared spellbook,
 -- Round 55), which regenerate_description redraws from the current one.
+-- The second result says whether the look (an image) changed; false with a
+-- true first result means the description alone changed.
 function grug_gear.initialize_weapon_tooltip(stack, player)
 	local class_api = rawget(_G, "grug_classes")
 	local xp_api = rawget(_G, "grug_xp")
@@ -775,12 +766,14 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 	end
 	local def = stack:get_definition()
 	if not def or not def.groups or (def.groups.grug_equip_weapon or 0) <= 0 then
-		return appearance_changed or meta:get_string("description") ~= original_description
+		return appearance_changed or meta:get_string("description") ~= original_description,
+			appearance_changed
 	end
 	local caps = stack:get_tool_capabilities() or {}
 	local damage = caps.damage_groups and caps.damage_groups.fleshy or 0
 	if type(damage) ~= "number" or damage <= 0 then
-		return appearance_changed or meta:get_string("description") ~= original_description
+		return appearance_changed or meta:get_string("description") ~= original_description,
+			appearance_changed
 	end
 	local level = xp_api.get_level(player)
 	local effective = math.max(1, math.floor(
@@ -794,15 +787,20 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 	local desired = base ..
 		("\nEffective at level %d: %d damage per swing"):format(level, effective)
 	if meta:get_string("description") == desired then
-		return appearance_changed or desired ~= original_description
+		return appearance_changed or desired ~= original_description, appearance_changed
 	end
 	meta:set_string("description", desired)
-	return appearance_changed or desired ~= original_description
+	return appearance_changed or desired ~= original_description, appearance_changed
 end
 
 -- Refresh every weapon stack the player can see, including the one just moved
 -- out of the equipment slot; otherwise a traded or levelled unequipped weapon
--- would retain somebody else's effective line.
+-- would retain somebody else's effective line. A changed hand is announced:
+-- in full when its look changed (a break's image), otherwise as the narrow
+-- "durability_metadata" change, which only refreshes the swing clock's
+-- snapshot (no consumer reads the description; audit I2-01), so a level-up or
+-- a Str/Dex equip neither reruns every consumer nor restarts the swing clock.
+-- get_lists() already hands out copies (push_items), written back as they are.
 local function refresh_weapon_descriptions(player)
 	local inventory_api = rawget(_G, "grug_inventory")
 	if not inventory_api then
@@ -810,22 +808,25 @@ local function refresh_weapon_descriptions(player)
 	end
 	local inventory = player:get_inventory()
 	local lists = inventory:get_lists()
-	local equipment_changed = false
+	local hands_changed, look_changed = false, false
 	for listname, stacks in pairs(lists) do
 		for index = 1, #stacks do
-			local stack = inventory:get_stack(listname, index)
-			if grug_gear.initialize_weapon_tooltip(stack, player) then
+			local stack = stacks[index]
+			local changed, look = grug_gear.initialize_weapon_tooltip(stack, player)
+			if changed then
 				inventory:set_stack(listname, index, stack)
 				if listname == "grug_weapon" or listname == "grug_offhand" then
-					equipment_changed = equipment_changed == false and listname or true
+					hands_changed = hands_changed == false and listname or true
+					look_changed = look_changed or look == true
 				end
 			end
 		end
 	end
-	if equipment_changed then
+	if hands_changed then
 		-- One changed hand names its list; both hands are "unknown" (nil).
 		inventory_api.equipment_changed(player,
-			equipment_changed ~= true and equipment_changed or nil)
+			hands_changed ~= true and hands_changed or nil,
+			not look_changed and "durability_metadata" or nil)
 	end
 end
 

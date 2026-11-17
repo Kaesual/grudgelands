@@ -949,7 +949,10 @@ function grug_mobs.route_clear(self, owner)
 	grug_mobs.walk_clear(self, owner)
 end
 
--- What the cache holds for one settlement (the probe, the report).
+-- What the cache holds for one settlement (the probe, the report). The
+-- `stats` counters and their two get_us_time reads per search and smoothing
+-- exist for the probes and fixtures (tools/r42_*, r70_cap, hf_0431); no
+-- gameplay decision reads them.
 function grug_mobs.route_cache_stats(key)
 	local set = settlements[key]
 	if not set then return nil end

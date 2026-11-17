@@ -480,13 +480,15 @@ do
 	eq(writes, w0 + 1, "E royal guard: one write for the same output")
 	local gold = V.ROYAL_GOLD
 	V.ROYAL_GOLD = "#c0c0c0"
-	for key in pairs(V.cache) do V.cache[key] = nil end
+	-- grug_visuals.cache is no longer exported (Round 81 P1-01); clear it through the API.
+	V.clear_compose_cache()
 	eq(V.compose(royal_spec).key, old_key, "E a retuned colour keeps the compose key")
 	V.apply_entity(royal, royal_spec, write_textures)
 	eq(writes, w0 + 2, "E same key, changed output: redrawn")
 	check(has(royal.base_texture[2], "[multiply:#c0c0c0"), "E the retuned colour drawn")
 	V.ROYAL_GOLD = gold
-	for key in pairs(V.cache) do V.cache[key] = nil end
+	-- grug_visuals.cache is no longer exported (Round 81 P1-01); clear it through the API.
+	V.clear_compose_cache()
 	-- The War Commander's faction colours (armor_colors).
 	local guard_src_cmd = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/guard.lua")
 	check(has(guard_src_cmd, "spec.armor_colors = COMMANDER_COLORS[faction]"),

@@ -37,9 +37,22 @@ end
 -- not match the player's current faction counts as unset (self-heals after
 -- admin faction changes).
 --
+-- The stored strings are kept per player (Round 81 PASSES; audit C3-02:
+-- these accessors sit on the per-step input, crosshair and mob paths, and
+-- every get_meta read resolves the player again in the engine). Filled on
+-- the first read and rewritten by the one writer of each key, set_class and
+-- set_race below; keyed weakly by the ObjectRef, so a rejoin reads the meta
+-- afresh. The registry check and the race's faction test still run on every
+-- call, against the current faction, so they answer as before.
+local stored_class = setmetatable({}, {__mode = "k"}) -- player -> meta string
+local stored_race = setmetatable({}, {__mode = "k"})
 
 function grug_classes.get_class(player)
-	local id = player:get_meta():get_string(META_CLASS)
+	local id = stored_class[player]
+	if id == nil then
+		id = player:get_meta():get_string(META_CLASS)
+		stored_class[player] = id
+	end
 	return grug_classes.registered_classes[id] and id or nil
 end
 
@@ -75,6 +88,7 @@ function grug_classes.set_class(player, id)
 		return false
 	end
 	player:get_meta():set_string(META_CLASS, id)
+	stored_class[player] = id
 	-- heal_gain: a fresh character starts at full HP
 	grug_classes.apply_stats(player, true)
 	for _, func in ipairs(class_chosen_callbacks) do
@@ -84,7 +98,11 @@ function grug_classes.set_class(player, id)
 end
 
 function grug_classes.get_race(player)
-	local id = player:get_meta():get_string(META_RACE)
+	local id = stored_race[player]
+	if id == nil then
+		id = player:get_meta():get_string(META_RACE)
+		stored_race[player] = id
+	end
 	local def = grug_classes.registered_races[id]
 	if def and def.faction == grug_factions.get_faction(player) then
 		return id
@@ -112,6 +130,7 @@ function grug_classes.set_race(player, id)
 		return false
 	end
 	player:get_meta():set_string(META_RACE, id)
+	stored_race[player] = id
 	for _, func in ipairs(race_chosen_callbacks) do
 		func(player, id)
 	end

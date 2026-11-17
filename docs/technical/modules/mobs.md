@@ -20,12 +20,13 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
 
 ### mobs_redo, NPC clicks and pathfinding
 
-- **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
-  in `general_attack()` (api.lua:1853-2017) following the LotT pattern
-  (`race` field in the mob def + ally check); territory/tier gating via
-  `mobs:spawn_abm_check()`. Tiers via `hp_max`/`armor` (lower = tougher)/
-  `damage`/`view_range`/`group_attack`. Dynamic loot: `drops` can be a
-  function. Quest kill credit subscribes to the shared eligible participant event
+- **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: mobs_redo's
+  `general_attack()` asks the `_grug_ignore_player` veto, which `grug_mobs`
+  installs with the mob's `_grug_faction` (`grug_mobs/init.lua`); there is
+  no `race` field. Territory/tier gating via `mobs:spawn_abm_check()`. Tiers
+  via `hp_max`/`armor` (lower = tougher)/`damage`/`view_range`/
+  `group_attack`. Loot passes the `_item_drop_filter` gate
+  (`grug_mobs/aggro.lua`). Quest kill credit subscribes to the shared eligible participant event
   from `grug_mobs.award_kill_xp`; it must not use only the death killer.
   Quest/trader NPCs: `type="npc"`, `passive`, `on_rightclick` → formspec;
   placement via `mobs:add_mob(pos, def)`. Every NPC whose right-click opens
@@ -65,8 +66,9 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
     Kraken L70 (elite), the Round 51 sharks (Bay Shark L30, Abyssal Shark
-    L70 elite), the island dragons L70, the capital kings L70 and their royal
-    guards L60. There is no second king-specific level path.
+    L70 elite), the island dragons L70 and their whelps L60, the capital
+    kings L70 and their royal guards L60, the PvP fortress Generals L65 and
+    their bodyguards L60, and the rift boss L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     The game's max HP is the Lua field `self.hp_max`; the engine's `hp_max`
     property is u16, so it is written as at most 65535 and every reader asks
@@ -100,10 +102,19 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
     `install_nametag` ask it. Fixture `tools/r67_world`. Since Round 72 a
     faction unit has a second, foe carrier while a viewer of the other side is
     in range (`resolve_unit` in `tag_carrier.lua` works out the unit's faction
-    and kind; the pass reads each viewer's faction once per snapshot through
-    the stub `grug_core.get_player_object_faction`, which `grug_factions`
-    fills); callers keep their one handle, and text, the HP bar and the
-    visibility callbacks reach both carriers. Fixture `tools/r72_tags`.
+    and kind through the stub `grug_core.get_player_object_faction`, which
+    `grug_factions` fills); callers keep their one handle, and text, the HP
+    bar and the visibility callbacks reach both carriers. Fixture
+    `tools/r72_tags`. Since Round 81 (audit C1-04, X4-03) each player's
+    faction is read once a second on the player's join slot
+    (`grug_core.register_player_pass`), so a faction chosen later shows
+    within about two seconds; the player snapshot (positions every 1/8 s,
+    also read by `nearest_tag_player_d2`) is bucketed in 32-node cells and a
+    carrier tests only its own and the eight neighbouring cells; an observer
+    set is rebuilt and sent only when it changed; an HP bar follows a rescale
+    of its parent through `grug_core.sync_tag_carrier_box` (the tier
+    promotion in `levels.lua`) instead of reading the parent's properties on
+    every visit. Fixture `tools/r81_social`.
     Since Round 78 a player's lost carrier (gone, invalid or detached) is
     replaced in its row by the pass and by `create_tag_carrier`, which
     therefore may hand back a new handle (or, while the player's block is not
@@ -131,11 +142,18 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
 #### Runtime fields and staticdata
 
   - **Runtime field installation**: mobs_redo's `register_mob` copies an
-    EXPLICIT def-field whitelist into the entity table (api.lua:3956-4112)
-    and staticdata drops function fields — so every `_grug_*` field an
-    api.lua patch reads off `self`, and every callable, must be
-    (re-)installed from the `do_custom`/`do_punch` wrappers on each
-    activation, not written in the def.
+    EXPLICIT def-field whitelist into the entity table and staticdata drops
+    function fields — so a `_grug_*` field an api.lua patch reads off `self`
+    never comes from the def by itself. A definition-constant field (and a
+    shared method such as the empty `general_attack`) is published once on
+    the registered prototype after `mobs:register_mob`
+    (`core.registered_entities[name]`, the entity's metatable; the aggro
+    config through `grug_mobs.publish_aggro_fields`, Round 81); only
+    per-instance runtime state is written onto `self`. A value written onto
+    `self` is saved in staticdata and outlives a later retune: the speed
+    effects therefore remove a restored speed equal to the definition's
+    instead of writing it back, and the after_activate wrapper drops an older
+    save's copies of definition values (`grug_mobs.drop_prototype_copies`).
   - **`core.add_entity` stores the staticdata of that moment**
     (`ServerEnvironment::addActiveObjectRaw`): fields written after the
     call reach the mapblock only at the entity's next deactivation. A block
@@ -149,7 +167,8 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
   - **Per-step mob code allocates nothing it can avoid (Round 30 P2):** read
     a mob's collision box from `self._grug_cbox` (written wherever the box is
     set; `grug_obstacle.mob_cbox` / `object_cbox`), never `get_properties()`
-    in a step; privilege checks go through the cached `mobs.has_priv`. A*
+    in a step; privilege checks go through the cached `mobs.has_priv`
+    (since Round 81 a delegate of `grug_core.has_priv`). A*
     runs inside a per-step time budget (about 3 ms) with a negative path
     cache (`grug_obstacle.no_path_gate` / `note_search_result`). Combat
     navigates through `mobs/grug_nav.lua` (`mobs.grug_nav`, Round 42: the
@@ -229,8 +248,8 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **`GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** (122 counted
-    2026-10-04 after Round 34) — the inventory and rationale live in
+  - **`GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** (156 counted
+    2026-11-17, Round 81; the current count per file is VENDOR.md's row) — the inventory and rationale live in
     VENDOR.md; re-apply them on any mobs_redo update. Round 34 F1's four
     water sites (`grug_may_wade` in the support probe, `grug_bank_ahead` and
     `GRUG_CLIMB_RISE` in `falling()`) and S1b's two sound call-outs
@@ -321,8 +340,9 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
     names). The quest kill credit compares this name (fixture
     `tools/r38_b1`).
   - `spawn_regions.lua` (`grug_mobs.spawn_regions`) reads
-    `data/zones/<zone>.spawns.json`: a `recipe` (every shipped zone) or a
-    `palette` (the old ABM path, kept for a zone without recipe). It builds
+    `data/zones/<zone>.spawns.json`: every zone's `recipe` (a file without
+    one, or with a `palette`, fails the load: Round 81, ruling 6, removed the
+    old ABM palette path and the surface rows only it could reach). It builds
     every recipe zone's region map at server start (mods loaded) through the
     lazy `SR.map` and the pure
     `spawn_regions_core.lua`, which `tools/r28_regions` runs unchanged, so
@@ -497,7 +517,7 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
   `apply_tier_visuals`; the applied scale is the saved `_grug_visual_scale`
   and the feet are kept), the stuck cleanup (`give_up_stuck` from aggro.lua
   `give_up_target` flags; `stuck_tick` from the `do_custom` wrapper after
-  `dawn_tick` removes once nobody is within `grug_mobs.STUCK_WATCH` (32)
+  `dawn_tick` removes once nobody is within `STUCK_WATCH` (32, `room.lua`)
   nodes; `grug_mobs.mob_bound`, dawn.lua's list, stays) and the flying
   mount's summon (grug_mounts entity.lua). Fixture `tools/r67_world`.
 

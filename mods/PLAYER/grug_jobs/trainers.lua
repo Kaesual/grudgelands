@@ -165,7 +165,29 @@ local function trainer_formspec(player, profession, confirming)
 		table.concat(fs)
 end
 
-function grug_jobs.open_trainer(player, profession, position, entity)
+-- The faction a settlement's NPCs serve: its race's (the repair provider's
+-- source, grug_repair/providers.lua).
+local function settlement_faction(key)
+	for _, settlement in ipairs(grug_core.settlement_socket_settlements()) do
+		if settlement.key == key then
+			local definition = grug_classes.registered_races[settlement.race_id]
+			return definition and definition.faction
+		end
+	end
+	return nil
+end
+
+-- The live trainer of `profession` on its own socket, within talking range,
+-- for its settlement's faction (grug_core.npc_window_permitted; audit X6-03:
+-- the submit checked only the distance to the open-time position before).
+local function permitted(player, entity, profession)
+	return type(entity) == "table" and grug_core.npc_window_permitted(player, entity,
+		"trainer", settlement_faction(entity._grug_start), {profession = profession})
+end
+
+-- The third argument, the NPC's position at the click, is no longer read:
+-- every field event checks the live NPC (start_villagers.lua passes it).
+function grug_jobs.open_trainer(player, profession, _, entity)
 	if not player or not player:is_player() or not grug_jobs.PROFESSIONS[profession] then
 		return false
 	end
@@ -176,28 +198,26 @@ function grug_jobs.open_trainer(player, profession, position, entity)
 		return repair ~= nil and entity ~= nil and repair.open_trainer(player, entity) == true
 	end
 	local name = player:get_player_name()
-	sessions[name] = {profession = profession, entity = entity,
-		position = {x = position.x, y = position.y, z = position.z}}
+	sessions[name] = {profession = profession, entity = entity}
 	log_action("open", player, profession, grug_jobs.has(player, profession))
 	grug_sounds.play("npc_trainer", player)
 	core.show_formspec(name, FORMNAME, trainer_formspec(player, profession, false))
 	return true
 end
 
-local function valid_session(player, session)
-	local pos = player:get_pos()
-	if not pos or not session then return false end
-	local dx = pos.x - session.position.x
-	local dy = pos.y - session.position.y
-	local dz = pos.z - session.position.z
-	return dx * dx + dy * dy + dz * dz <= 8 * 8
-end
-
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then return false end
 	local name = player:get_player_name()
 	local session = sessions[name]
-	if not valid_session(player, session) then sessions[name] = nil return true end
+	if not session then return true end
+	if not permitted(player, session.entity, session.profession) then
+		-- Refused (walked away, the NPC gone or off its socket, another
+		-- faction, dead): the window closes, as the Steward's and the
+		-- registrar's do; Close only ends the session.
+		sessions[name] = nil
+		if not fields.quit then core.close_formspec(name, FORMNAME) end
+		return true
+	end
 	if fields.grug_jobs_repair then
 		local repair = rawget(_G, "grug_repair")
 		if repair then repair.open_trainer(player, session.entity) end

@@ -13,7 +13,7 @@
 --     grug_mobs.register_mob("grug_mobs:wolf", def)
 --
 -- Calling a helper after register_mob does nothing (mobs_redo copied the
--- def fields into the entity prototype already, api.lua:3956-4112).
+-- def fields into the entity prototype already, api.lua mobs:register_mob).
 --
 -- Which family uses what (biomes_mobs §3.1):
 --   slow_player .......... Giant Spider ("webs": 40% slow for 3 s)
@@ -44,7 +44,7 @@
 
 -- Chains `fn` behind whatever do_custom the def already has. mobs_redo
 -- treats a do_custom return of exactly `false` as "skip the rest of
--- on_step" (api.lua:3837-3938), so an earlier link vetoing the step wins and
+-- on_step" (api.lua), so an earlier link vetoing the step wins and
 -- `fn` is not run at all.
 local function chain_do_custom(def, fn)
 	local prev = def.do_custom
@@ -77,20 +77,29 @@ local function due(self, key, dtime, interval)
 	return true
 end
 
--- Players within `range` of `pos`, as a list of ObjectRefs.
--- Deliberately core.get_connected_players() + a distance test instead of
--- core.get_objects_inside_radius(): every consumer here targets PLAYERS
--- only, and the player list needs no map query at all. On a small server
--- this is a handful of vector subtractions per second per mob.
+-- Whether a player may be within `range` of `pos`: the nearest player of
+-- grug_core's player snapshot (tag_carrier.lua, refreshed every eighth of a
+-- second), so no player list and no position per player and mob (Round 81
+-- MOBRUN, X4-12). `slack` widens the test for a caller that then asks the
+-- live positions (a player moves while the snapshot ages).
+local function player_within(pos, range, slack)
+	local d2 = grug_core.nearest_tag_player_d2(pos)
+	local r = range + (slack or 0)
+	return d2 ~= nil and d2 <= r * r
+end
+
+-- The players within `range` of `pos` now, as ObjectRefs: an object query
+-- of that small radius, only once the snapshot says someone may be there.
+local PLAYER_SLACK = 4
 local function players_near(pos, range)
 	local out, n = {}, 0
-	local players = core.get_connected_players()
-	for i = 1, #players do
-		local p = players[i]
-		local pp = p:get_pos()
-		if pp and vector.distance(pp, pos) <= range then
+	if not player_within(pos, range, PLAYER_SLACK) then return out, n end
+	local objects = core.get_objects_inside_radius(pos, range)
+	for i = 1, #objects do
+		local object = objects[i]
+		if object:is_player() then
 			n = n + 1
-			out[n] = p
+			out[n] = object
 		end
 	end
 	return out, n
@@ -183,11 +192,6 @@ local function cancel_poison(player)
 end
 core.register_on_leaveplayer(cancel_poison)
 core.register_on_dieplayer(cancel_poison)
-
-function grug_mobs.is_poisoned(player)
-	if not player or not core.is_player(player) then return false end
-	return (poison_active[player:get_player_name()] or 0) > 0
-end
 
 -- Antivenom invalidates every chain in one generation change. Old callbacks
 -- observe the mismatch and cannot damage a fresh application or relog.
@@ -298,7 +302,7 @@ end
 
 -- Installs a custom_attack that runs `fn(self, target_player)` on every
 -- landed melee swing and then returns TRUE, which is mobs_redo's contract
--- for "carry on with the normal melee damage" (api.lua:2491-2819; the Kraken
+-- for "carry on with the normal melee damage" (api.lua do_states; the Kraken
 -- shows the same pattern). Used for the web slow and the serpent poison.
 --
 -- NB mobs_redo calls this as `self:custom_attack(self, p)`, so the callback
@@ -368,7 +372,7 @@ function grug_mobs.pack_hunter(def, opts)
 		self.temp.grug_pack_flee_until = now + cooldown
 		-- "returns with pack": before running, call every idle mob of the
 		-- same kind in view onto the attacker. Same shape as mobs_redo's own
-		-- group alert (api.lua:2927-3538) — do_attack on the current target.
+		-- group alert (api.lua on_punch) — do_attack on the current target.
 		-- Same kind = same entity name, or the same family (Round 28 ruling
 		-- 35, grug_mobs.alert_kin in subtypes.lua).
 		local pos = self.object and self.object:get_pos()
@@ -387,7 +391,7 @@ function grug_mobs.pack_hunter(def, opts)
 		end
 		-- ...then break off, exactly like mobs_redo's punch-flee: yaw away
 		-- (rot = 3 rad ~ opposite direction) and hand over to the "runaway"
-		-- state, which owns the movement from here (api.lua:2176-2864).
+		-- state, which owns the movement from here (api.lua do_states).
 		local tpos = target:get_pos()
 		if tpos then
 			self:yaw_to_pos(tpos, 3, 4)
@@ -402,10 +406,10 @@ end
 -- Stalk (Panther: "silent approach, pounce burst")
 --
 -- The SILENT half is a def decision, not code: mobs_redo plays
--- sounds.war_cry on 90% of all target acquisitions (api.lua:265-296) and we
+-- sounds.war_cry on 90% of all target acquisitions (api.lua do_attack) and we
 -- must not patch do_attack, so a stalker's def simply leaves
 -- `sounds.war_cry` unset — then mob_sound() returns immediately
--- (api.lua:246-261) and the approach is silent. Roster tasks own that.
+-- (api.lua mob_sound) and the approach is silent. Roster tasks own that.
 --
 -- The POUNCE half is here: while closing on a target between min_dist and
 -- max_dist with line of sight, throw the mob at it once per cooldown.
@@ -480,8 +484,8 @@ end
 -- numbers (small view_range + high run_velocity).
 --
 -- mobs_redo's `order = "stand"` is a hard halt: set_velocity() zeroes the
--- mob outright while it is set (api.lua:401-437), and the "stand" state stops
--- picking random walks (api.lua:2176-2864). Target ACQUISITION is unaffected —
+-- mob outright while it is set (api.lua set_velocity), and the "stand" state stops
+-- picking random walks (api.lua do_states). Target ACQUISITION is unaffected —
 -- general_attack never looks at `order` — so the lurking croc still sees
 -- players. That also means the order MUST be released the moment a target
 -- is acquired, otherwise the mob would freeze mid-attack; that release is
@@ -519,8 +523,7 @@ function grug_mobs.ambusher(def, opts)
 		if not pos then
 			return
 		end
-		local _, count = players_near(pos, trigger_range)
-		self.order = count > 0 and "" or "stand"
+		self.order = player_within(pos, trigger_range) and "" or "stand"
 	end)
 end
 
@@ -615,10 +618,9 @@ end
 -- Damage goes through object:punch from the MOB, so armor groups, the
 -- dodge roll and absorb shields all apply exactly as for a melee swing.
 --
--- Budget: one players_near() scan per second per active ooze — no map
--- query at all (see players_near), just a distance test per connected
--- player. Oozes are a swamp-only family with a low active_object_count, so
--- this is a rounding error even with a dozen of them loaded.
+-- Budget: one players_near() per second per active ooze — the snapshot's
+-- nearest player, and an object query of the aura's radius only while a
+-- player is close (see players_near).
 function grug_mobs.damage_aura(def, opts)
 	opts = opts or {}
 	local radius = opts.radius or 2
@@ -653,7 +655,7 @@ end
 
 -- Stamp the SHOOTER's current damage onto a freshly created arrow. Meant to
 -- be used as the def's `arrow_override` (mobs_redo calls it as
--- `self.arrow_override(ent, self)`, api.lua:2842-2849), which is the only hook
+-- `self.arrow_override(ent, self)`, api.lua do_states), which is the only hook
 -- that sees both the arrow entity and the mob. Damage therefore comes from
 -- the level engine's `mob.damage` (levels.lua) at FIRE time — an arrow def
 -- never carries a hand-written number.
@@ -863,7 +865,7 @@ function grug_mobs.register_simple_arrow(name, opts)
 		velocity = opts.velocity or 14,
 		glow = opts.glow,
 		lifetime = opts.lifetime,
-		-- mobs_redo wants tail == 1, not a boolean (api.lua:4515-4643).
+		-- mobs_redo wants tail == 1, not a boolean (api.lua mobs:register_arrow).
 		tail = opts.tail and 1 or nil,
 		tail_texture = opts.tail_texture or opts.texture,
 		hit_player = hit,
@@ -886,18 +888,18 @@ end
 -- reasons attached (api.lua line numbers against our vendored copy):
 --
 --   * `passive = false` is what makes retaliation exist at all. on_punch's
---     tail (api.lua:3506-3515) reads `if not self.passive ... then self:do_attack(
+--     tail (api.lua on_punch) reads `if not self.passive ... then self:do_attack(
 --     hitter)` and additionally alerts same-name mobs with group_attack —
 --     a `passive = true` mob has no code path that can ever hit back.
 --   * `attack_players = false` is what removes aggro on sight. It is read in
---     exactly ONE place, general_attack's candidate filter (api.lua:1853-2017),
+--     exactly ONE place, general_attack's candidate filter (api.lua),
 --     which is the on-sight acquisition loop; nothing in the attack STATE
 --     consults it. So a prey animal never picks a target itself, and the
 --     target do_punch hands it is unaffected. `attack_npcs` goes with it
 --     (default true) so faction NPCs are not hunted either; attack_animals
---     and attack_monsters are already false by default (api.lua:157-218).
+--     and attack_monsters are already false by default (api.lua's mob_class defaults).
 --   * `runaway` must be OFF. It is not merely redundant with retaliation,
---     the two collide: on_punch's runaway block (api.lua:3506-3515) sets
+--     the two collide: on_punch's runaway block (api.lua) sets
 --     `state = "runaway"` a dozen lines BEFORE the retaliation block resets
 --     it to "" and calls do_attack — so the flee would be overwritten every
 --     time and the field would only ever survive as a lie in the def. A
@@ -906,18 +908,18 @@ end
 --     verb forgot (WP36 review, HIGH). `passive = false` is necessary but
 --     not sufficient: it buys the mob a `state = "attack"` and an
 --     `self.attack` reference, and the attack STATE MACHINE is what turns
---     those into a fight. do_states' attack branch (api.lua:2176-2864)
---     dispatches on exactly three predicates — `"explode"` (:2408),
---     `"dogfight"`/`"dogshoot"` (:2491), `"shoot"`/`"dogshoot"` (:2821) —
---     with NO else, and mobs.mob_class carries no default (api.lua:157-218),
---     so an unset attack_type matched nothing. The retaliating grazer then:
---     dealt no damage (the punch at api.lua:2491-2819 lives inside the dogfight
---     branch), played no "punch" clip (api.lua:2491-2819, same branch), issued no
---     set_velocity at all — falling() only writes the y axis (api.lua:2874-2923),
---     so it coasted on the knockback of api.lua:3455-3490 in a straight line —
+--     those into a fight. do_states' attack branch (api.lua)
+--     dispatches on exactly three predicates — `"explode"`,
+--     `"dogfight"`/`"dogshoot"`, `"shoot"`/`"dogshoot"` —
+--     with NO else, and mobs.mob_class carries no default (api.lua's
+--     mob_class defaults), so an unset attack_type matched nothing. The
+--     retaliating grazer then: dealt no damage (the punch lives inside
+--     do_states' dogfight branch), played no "punch" clip (same branch),
+--     issued no set_velocity at all — falling() only writes the y axis
+--     (api.lua), so it coasted on on_punch's knockback in a straight line —
 --     and was locked out of wander/stand as well, because on_step calls
---     do_states LIVE while `state == "attack"` (api.lua:3837-3938) and
---     general_attack early-returns on it (api.lua:1853-1858). Net effect: being
+--     do_states LIVE while `state == "attack"` (api.lua on_step) and
+--     general_attack early-returns on it (api.lua). Net effect: being
 --     prey made a grazer strictly EASIER to kill than the 3 s `runaway`
 --     flee it replaced, which is the exact inverse of §3.0's intent.
 --     Two more systems read the field as "can this thing fight at all" and
@@ -927,8 +929,8 @@ end
 --     `dogfight` is the melee family and the right one here: prey has no
 --     `arrow`, so `shoot`/`dogshoot` would fire nothing, and `explode` is
 --     the creeper family. The dogfight branch needs `reach` (3, the
---     mob_class default), `punch_interval` (1, api.lua:4087),
---     `damage_group` (nil -> "fleshy", api.lua:2491-2819) and `self.damage`,
+--     mob_class default), `punch_interval` (1, api.lua mobs:register_mob),
+--     `damage_group` (nil -> "fleshy", api.lua do_states) and `self.damage`,
 --     which levels.lua's apply_stats already sets from the field formula —
 --     all four are in place, so this is one field and no new tuning.
 --     Written as `def.attack_type or "dogfight"` so a def may still choose
@@ -938,7 +940,7 @@ end
 -- lives in general_attack alone, and `attack_players = false` removes every
 -- player candidate there before an attack_type is ever consulted (the field
 -- is not read in that function at all). The other do_attack callers are all
--- provocation: on_punch's own retaliation, the group alert (api.lua:2927-3538 —
+-- provocation: on_punch's own retaliation, the group alert (api.lua —
 -- needs `group_attack`, which no prey def sets), threat/taunt (both only
 -- reachable once the mob has been hit), and our pack/swarm verbs (not
 -- applied to prey). See `no_acquire` in init.lua/aggro.lua, which turns the
@@ -985,7 +987,7 @@ end
 --
 -- SO THE VETO IS A PROPERTY OF THE TARGET, not a narrowing of the attacker.
 -- `attack_npcs` cannot express it: it is one boolean over the whole
--- `type = "npc"` family (api.lua:1906, the one place it is read), and the
+-- `type = "npc"` family (api.lua general_attack, the one place it is read), and the
 -- family holds both the guards a hostile may fight and the civilians it may
 -- not. `_grug_noncombatant` splits the family instead, and a GRUG PATCH in
 -- general_attack's own candidate filter drops such an entity before any
@@ -996,7 +998,7 @@ end
 --
 -- WHY THE FIELD IS INSTALLED AT ACTIVATION AND NOT LEFT IN THE DEF: mobs_redo
 -- copies an EXPLICIT def-field whitelist into the entity prototype
--- (api.lua:3956-4112), so a `_grug_*` def field reaches neither `self` nor
+-- (api.lua mobs:register_mob), so a `_grug_*` def field reaches neither `self` nor
 -- `core.registered_entities[name]` -- AGENTS.md's WP6 runtime-field rule. So
 -- this verb wraps the definition's own `after_activate`, which mob_activate
 -- calls on every activation, and writes the field there. It is a plain
@@ -1015,7 +1017,7 @@ function grug_mobs.noncombatant(def)
 	def._grug_noncombatant = true
 	local inner = def.after_activate
 	-- mob_activate calls `def.after_activate(self, staticdata, def, dtime)`
-	-- (api.lua:3760-3762) -- four arguments, the definition itself third. Forwarded
+	-- (api.lua mob_activate) -- four arguments, the definition itself third. Forwarded
 	-- verbatim so a wrapped callback sees exactly what an unwrapped one does.
 	def.after_activate = function(self, staticdata, entity_def, dtime)
 		self._grug_noncombatant = true

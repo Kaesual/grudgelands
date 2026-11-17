@@ -72,6 +72,12 @@ dofile("mods/CORE/grug_core/hud_layout.lua")
 dofile("mods/CORE/grug_core/item_names.lua")
 dofile("mods/CORE/grug_core/combat.lua")
 dofile("mods/CORE/grug_core/death_messages.lua")
+-- Round 81: environment damage reads the cached player body (combat_ray.lua)
+-- and grug_core's privilege cache.
+dofile("mods/CORE/grug_core/privs.lua")
+dofile("mods/CORE/grug_core/combat_ray.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile("tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile("mods/CORE/grug_core/environment_damage.lua")
 eq(#hp_modifiers, 1, "one central hp-change modifier")
 local modifier = hp_modifiers[1]

@@ -5,13 +5,6 @@
 -- Inventory as after closing the old Map tab.
 local PAGE = "grug_map:atlas"
 
--- Settlements, camps, points of interest, kings and dragons are baked into
--- the base image for everyone since Round 44 (bake.lua, ruling 5); they are
--- no markers.
-function grug_map.register_marker_provider(name, callback)
-	return grug_map.atlas.register_marker_provider(name, callback)
-end
-
 local function back_home(name)
 	local player = core.get_player_by_name(name)
 	if player and sfinv.get_page(player) == PAGE and not sfinv.inventory_suspended(player) then

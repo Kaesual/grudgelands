@@ -23,15 +23,41 @@ local READ_KEY = "grug_mail:broadcasts_read"
 local function now() return os.time() end
 S.now = now
 
+-- One mailbox click reads the same box up to five times (Round 81 P5-02).
+-- The last few keys read keep their stored string and an untouched copy of
+-- what it decoded to: a read whose stored string is unchanged copies that
+-- instead of decoding the string again. Every read still hands out a fresh
+-- table (callers write to it and save it, or throw it away), and a save
+-- changes the string, so the next read decodes. At most DECODED_KEYS keys
+-- are kept (a click reads two or three: the box, the broadcasts).
+local DECODED_KEYS = 4
+local decoded, decoded_keys = {}, 0
+
+local function copy(value, seen)
+	if type(value) ~= "table" then return value end
+	if seen[value] then return seen[value] end
+	local out = {}
+	seen[value] = out
+	for k, v in pairs(value) do out[copy(k, seen)] = copy(v, seen) end
+	return out
+end
+
 local function load(key)
 	local raw = storage:get_string(key)
 	if raw == "" then return nil end
+	local entry = decoded[key]
+	if entry and entry.raw == raw then return copy(entry.value, {}) end
 	local value = core.deserialize(raw)
 	if type(value) ~= "table" then
 		core.log("error", "[grug_mail] unreadable mod storage key " .. key ..
 			"; it starts empty")
 		return nil
 	end
+	if not entry then
+		if decoded_keys >= DECODED_KEYS then decoded, decoded_keys = {}, 0 end
+		decoded_keys = decoded_keys + 1
+	end
+	decoded[key] = {raw = raw, value = copy(value, {})}
 	return value
 end
 

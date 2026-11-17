@@ -419,17 +419,12 @@ local function materials_content(player, context)
 	return table.concat(fs)
 end
 
--- A field value without control characters, trimmed and cut to `limit`
--- characters (cut first: a client may send a huge field).
-local function clean_field(value, limit)
-	local text = tostring(value):sub(1, 4 * limit):gsub("[%c]", "")
-	return (text:match("^%s*(.-)%s*$") or ""):sub(1, limit)
-end
-
 -- The Materials sub-page's events; true when one was handled.
 local function materials_fields(context, fields)
 	local st = material_state(context)
-	if fields[MAT.search] then st.typed = clean_field(fields[MAT.search], 40) end
+	-- Without control characters, trimmed, 40 bytes; the raw field is cut
+	-- first (grug_core.text.clean_field: a client may send a huge field).
+	if fields[MAT.search] then st.typed = grug_core.text.clean_field(fields[MAT.search], 40) end
 	if fields[MAT.clear] then
 		st.typed, st.query, st.page = "", "", 1
 		return true
@@ -448,8 +443,6 @@ local function materials_fields(context, fields)
 	end
 	return false
 end
-grug_inventory._help_materials_fields = materials_fields
-grug_inventory._help_materials_content = materials_content
 
 -- The Sound sub-page's controls: grug_ambience builds them per player.
 local function sound_controls(player)

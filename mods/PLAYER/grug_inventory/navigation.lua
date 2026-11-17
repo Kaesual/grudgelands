@@ -12,15 +12,15 @@ end
 
 -- Compact captions keep every page visible; tooltips retain full titles.
 local captions = {
-    ["grug_classes:talents"] = {"Talents", "talents"},
-    ["grug_inventory:inventory"] = {"Inventory", "inventory"},
-    ["grug_inventory:character"] = {"Character", "character"},
-    ["sfinv:crafting"] = {"Crafting", "crafting"},
-    ["grug_parties:group"] = {"Social", "party"},
-    ["grug_map:atlas"] = {"Map & Quests", "map"},
-    ["grug_inventory:help"] = {"Help", "help"},
-    ["grug_mail:admin"] = {"Admin Mail", "mail"},
-    ["grug_accounts:account"] = {"Account", "emblem"},
+    ["grug_classes:talents"] = "Talents",
+    ["grug_inventory:inventory"] = "Inventory",
+    ["grug_inventory:character"] = "Character",
+    ["sfinv:crafting"] = "Crafting",
+    ["grug_parties:group"] = "Social",
+    ["grug_map:atlas"] = "Map & Quests",
+    ["grug_inventory:help"] = "Help",
+    ["grug_mail:admin"] = "Admin Mail",
+    ["grug_accounts:account"] = "Account",
 }
 
 -- `selected` (optional) is the page being drawn: the Creative category row
@@ -86,7 +86,7 @@ function grug_inventory.navigation(player, context, selected, width, layout)
         local weight = 0
         local function label(index)
             if not categories and ids[index]:match("^creative:") then return "Creative" end
-            return captions[ids[index]] and captions[ids[index]][1] or titles[index]
+            return captions[ids[index]] or titles[index]
         end
         for _, index in ipairs(indices) do weight = weight + caption_weight(label(index)) end
         local x, available = 0.25, width - 0.5 - (#indices - 1) * gap

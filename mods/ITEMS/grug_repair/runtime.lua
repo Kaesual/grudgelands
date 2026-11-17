@@ -82,7 +82,7 @@ end
 
 -- Current synchronous actions wear the concrete equipped slots. Delayed
 -- projectiles must publish one shared action id before allowing a weapon swap;
--- SCOUT uses capture_action/settle_captured_action below for that case.
+-- SCOUT uses capture_action/cancel_action below for that case.
 function grug_repair.wear_outgoing(player, action_id)
 	if not remember(player, action_id) then return false end
 	local rows = type(action_id) == "table" and action_id.item_ids or nil
@@ -92,10 +92,13 @@ function grug_repair.wear_outgoing(player, action_id)
 		for bag = 1, grug_inventory.BAG_COUNT do
 			lists[#lists + 1] = grug_inventory.content_list(bag)
 		end
+		-- Slot by slot (Round 81 I2-09): the captured bow is nearly always
+		-- still in the weapon slot, so main and the bags are rarely read.
 		for _, row in ipairs(rows) do
 			local found = false
 			for _, list in ipairs(lists) do
-				for index, stack in ipairs(inv:get_list(list) or {}) do
+				for index = 1, inv:get_size(list) do
+					local stack = inv:get_stack(list, index)
 					if stack:get_meta():get_string(ITEM_ID) == row then
 						wear_stack(player, list, index)
 						found = true
@@ -143,10 +146,6 @@ end
 
 function grug_repair.cancel_action(player, action_id)
 	-- Capture receipts are inert values until settlement.
-end
-
-function grug_repair.settle_captured_action(player, receipt, kind)
-	grug_core.run_settled_outgoing_action(player, receipt, kind)
 end
 
 grug_core.register_on_settled_outgoing_action(function(player, action_id, kind)

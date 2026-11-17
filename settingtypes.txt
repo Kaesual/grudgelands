@@ -7,6 +7,14 @@
 #
 # This file is read by the main menu, not by the server: each runtime default
 # lives in the `core.settings:get_bool` call that reads its setting.
+#
+# Deliberately not listed (Round 81): the test and measurement switches,
+# namely grug_core/world_version.lua's migration test hook (bool, default
+# false), `grug_mapgen_r8_native_baseline` (bool, default false) and
+# `grug_mapgen_r8_cave_writer_disabled` (bool, default true), both in
+# grug_mapgen/wp40; and the vendored mobs fork's own `mobs_spawn`,
+# `mob_nospawn_range` and `enable_peaceful_player`, which grug_mobs reads too
+# (the game's minetest.conf sets mob_nospawn_range).
 
 [Atmosphere]
 
@@ -158,3 +166,14 @@ grug_perf_profile_minutes (Save the engine profile every N minutes) int 0 0 1440
 #    character is moved to the starting town of its race at its next join
 #    and keeps everything else. A claimed home goes with the old map.
 grug_reset_world (Map reset counter, set by the hosting platform) int 0 0
+
+#    The web bridge (docs/technical/web-bridge.md): the base URL of the
+#    hosting platform's bridge the server talks to. Set by the
+#    platform together with the token below; empty leaves the bridge off.
+#    The bridge mod must also be listed in secure.http_mods. Read when the
+#    server starts.
+grug_bridge.url (Web bridge endpoint, set by the hosting platform) string
+
+#    The web bridge's shared secret, set by the hosting platform; never
+#    share it. Empty leaves the bridge off. Read when the server starts.
+grug_bridge.token (Web bridge token, set by the hosting platform) string

@@ -27,8 +27,8 @@
 --      dismount (Round 56 ruling 7); apply_stats
 --      lowering hp_max through the engine clamp keeps the rider up;
 --   F  the PvP Strike fallback (CMB-01): with Loose or a cast skill wielded
---      the claimed swing lands the transaction's scaled damage (with
---      melee_damage_add), settles one outgoing action (weapon wear), one
+--      the claimed swing lands the transaction's scaled damage, settles
+--      one outgoing action (weapon wear), one
 --      trinket proc and the rage; an unclaimed packet lands nothing;
 --   N  knockback per source (ruling 2.1.3): refused punch, ally, unflagged
 --      player, nested punch, PvP cast or player arrow, nil hitter push 0;
@@ -222,6 +222,8 @@ grug_core = {}
 -- Round 40: combat.lua plays its crit and absorb through the particle helper.
 grug_core.particles = {play = function() end}
 assert(loadfile(ROOT .. "/mods/CORE/grug_core/combat.lua"))()
+-- Round 81: the per-player passes register through grug_core.
+dofile(ROOT .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 assert(loadfile(ROOT .. "/mods/CORE/grug_core/environment_damage.lua"))()
 function grug_core.is_stunned() return false end
 function grug_core.feed() return true end
@@ -252,7 +254,8 @@ do
 		"\n(function grug_inventory%.get_melee_weapon%(.-\nend)\n", "get_melee_weapon"),
 		"slot cache")
 	run(cut("mods/ITEMS/grug_quality/init.lua",
-		"\n(local original_equipment_changed = .-\ngrug_inventory%.invalidate_armor = grug_inventory%.equipment_changed)\n",
+		-- Round 81 (DEAD): the wrapper's end, invalidate_armor is gone.
+		"\n(local original_equipment_changed = .-\nend)\n",
 		"quality wrapper"), "quality wrapper")
 	function grug_core.get_melee_weapon(player) return grug_inventory.get_melee_weapon(player) end
 
@@ -527,6 +530,8 @@ do
 	grug_classes = {}
 	local max_hp = 80
 	grug_classes.get_max_hp = function() return max_hp end
+	-- Round 81: apply_stats keeps the hp_max it sets (a local table of stats.lua).
+	rawset(_G, "applied_hp_max", {})
 	run(cut("mods/PLAYER/grug_classes/stats.lua", "\n(function grug_classes%.apply_stats%(.-\nend)\n",
 		"apply_stats"), "apply_stats")
 	cid._hp, cid._props.hp_max = 100, 100
@@ -592,7 +597,7 @@ do
 	local handled = handler(enemy, scout, 1.0, caps, nil, 10)
 	grug_core.end_authoritative_swing(token)
 	check(handled == true, "F the claimed fallback swing is handled")
-	eq(100 - enemy._hp, 15, "F it lands the transaction's 15 (melee_damage_add included)")
+	eq(100 - enemy._hp, 15, "F it lands the transaction's 15")
 	eq(settled, 1, "F one settled outgoing action: the weapon wears")
 	eq(procs, 1, "F the trinket proc (Battlebeat) fires")
 	eq(rage, 12, "F the swing's rage")

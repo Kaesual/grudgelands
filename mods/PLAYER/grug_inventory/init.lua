@@ -1,6 +1,6 @@
 -- Character screen & bags (WP15, spec: docs/design/inventory_equipment.md).
 -- Equipment and bags are player-inventory lists (auto-persisted); the UI
--- consists of sfinv pages, with the character page as the new homepage.
+-- consists of sfinv pages, with the Inventory page as the homepage.
 
 grug_inventory = {}
 
@@ -11,6 +11,10 @@ dofile(modpath .. "/hotbars.lua")
 dofile(modpath .. "/equipment.lua")
 dofile(modpath .. "/bags.lua")
 dofile(modpath .. "/inbox.lua")
+-- The bound-item seam (Round 81): soulbound items and skills register their
+-- rules; every detached inventory created from here on (the trash box's
+-- included) is wrapped at creation.
+dofile(modpath .. "/bound.lua")
 dofile(modpath .. "/trash.lua")
 dofile(modpath .. "/ui.lua")
 dofile(modpath .. "/navigation.lua")

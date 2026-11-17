@@ -1,0 +1,43 @@
+kept rows 33
+row grug_mobs:zombie {active_object_count=4,chance=1600,interval=20,max_height=-1,max_light=7,min_height=-31000,name=grug_mobs:zombie,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:rabbit {active_object_count=3,chance=1800,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:rabbit,nodes={default:dirt_with_grass,grug_nodes:mud_with_wet_grass,default:sand,default:dirt_with_coniferous_litter,grug_nodes:dirt_with_silver_litter,grug_nodes:dirt_with_forest_litter,default:gravel,default:snowblock,grug_nodes:mud,grug_nodes:mud_dry,grug_nodes:mud_mottled}}
+row grug_mobs:hare {active_object_count=3,chance=1800,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:hare,nodes={default:dry_dirt_with_dry_grass,grug_nodes:blight_dirt,default:dirt_with_rainforest_litter,grug_nodes:mud,grug_nodes:mud_dry,grug_nodes:mud_mottled,grug_nodes:mud_with_wet_grass,default:sand}}
+row grug_mobs:giant_spider {active_object_count=4,chance=1800,interval=20,max_height=-1,max_light=7,min_height=-31000,name=grug_mobs:giant_spider,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:stone_golem {active_object_count=1,chance=9000,interval=30,max_height=-1,min_height=-31000,name=grug_mobs:stone_golem,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:mesa_golem {active_object_count=1,chance=9000,interval=30,max_height=-1,min_height=-31000,name=grug_mobs:mesa_golem,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:parrot {active_object_count=2,chance=2500,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:parrot,nodes={default:dirt_with_rainforest_litter}}
+row grug_mobs:kraken {active_object_count=1,chance=9231,interval=60,max_height=4,min_height=-10,name=grug_mobs:kraken,neighbors={air},nodes={default:water_source}}
+row grug_mobs:reed_angelfish {active_object_count=2,chance=4000,interval=30,max_height=600,min_height=-30,name=grug_mobs:reed_angelfish,neighbors={default:sand},nodes={default:water_source}}
+row grug_mobs:bay_shark {active_object_count=1,chance=9231,interval=60,max_height=4,min_height=-10,name=grug_mobs:bay_shark,neighbors={air},nodes={default:water_source}}
+row grug_mobs:abyssal_shark {active_object_count=1,chance=92308,interval=60,max_height=4,min_height=-10,name=grug_mobs:abyssal_shark,neighbors={air},nodes={default:water_source}}
+row grug_mobs:goby {active_object_count=2,chance=4000,interval=30,max_height=0,min_height=-30,name=grug_mobs:goby,neighbors={default:sand},nodes={default:water_source}}
+row grug_mobs:gull {active_object_count=2,chance=2500,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:gull,nodes={default:sand}}
+row grug_mobs:cave_bat {active_object_count=2,chance=2200,interval=20,max_height=-1,max_light=7,min_height=-31000,name=grug_mobs:cave_bat,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:cave_crawler {active_object_count=1,chance=2200,interval=20,max_height=-1,max_light=7,min_height=-31000,name=grug_mobs:cave_crawler,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:song_bird {active_object_count=2,chance=2200,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:song_bird,nodes={grug_nodes:dirt_with_silver_litter}}
+row grug_mobs:spiderling {active_object_count=3,chance=2400,interval=20,max_height=-1,max_light=7,min_height=-100,name=grug_mobs:spiderling,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:blood_bat {active_object_count=4,chance=2200,interval=20,max_height=-101,max_light=7,min_height=-300,name=grug_mobs:blood_bat,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:stone_mite {active_object_count=5,chance=2000,interval=20,max_height=-700,max_light=7,min_height=-31000,name=grug_mobs:stone_mite,nodes={group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:wild_turkey {active_object_count=2,chance=2100,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:wild_turkey,nodes={default:dirt_with_grass}}
+row grug_mobs:giant_rat {active_object_count=4,chance=1800,interval=20,max_height=-1,max_light=7,min_height=-300,name=grug_mobs:giant_rat,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:goblin_miner {active_object_count=3,chance=2200,interval=20,max_height=-100,max_light=7,min_height=-300,name=grug_mobs:goblin_miner,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:goblin_miner_slinger {active_object_count=2,chance=2600,interval=20,max_height=-100,max_light=7,min_height=-300,name=grug_mobs:goblin_miner_slinger,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:oerkki {active_object_count=3,chance=2500,interval=20,max_height=-300,max_light=7,min_height=-700,name=grug_mobs:oerkki,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:glowwing {active_object_count=3,chance=2400,interval=20,max_height=-300,max_light=7,min_height=-500,name=grug_mobs:glowwing,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:crystal_shard {active_object_count=2,chance=2600,interval=20,max_height=-300,max_light=7,min_height=-700,name=grug_mobs:crystal_shard,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:dungeon_master {active_object_count=2,chance=3200,interval=20,max_height=-500,max_light=7,min_height=-1000,name=grug_mobs:dungeon_master,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:lava_flan {active_object_count=3,chance=2200,interval=20,max_height=-700,max_light=7,min_height=-31000,name=grug_mobs:lava_flan,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:ember_wisp {active_object_count=3,chance=2400,interval=20,max_height=-700,max_light=7,min_height=-31000,name=grug_mobs:ember_wisp,nodes={default:stone,group:grug_stratum},on_spawn=function spawn_policy.lua}
+row grug_mobs:rift_spawn {active_object_count=3,chance=4000,day_toggle=false,interval=30,max_height=600,max_light=5,min_height=0,name=grug_mobs:rift_spawn,nodes={default:gravel,default:snowblock,grug_nodes:dirt_with_bone_litter,default:dirt_with_rainforest_litter,grug_nodes:dirt_with_canopy_litter}}
+row grug_mobs:bone_weevil {active_object_count=2,chance=2933,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:bone_weevil,nodes={grug_nodes:dirt_with_bone_litter},on_spawn=function bone_weevil.lua}
+row grug_mobs:bone_weevil {active_object_count=2,chance=2933,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:bone_weevil,nodes={grug_nodes:blight_dirt},on_spawn=function bone_weevil.lua}
+row grug_mobs:bog_fowl {active_object_count=2,chance=2933,day_toggle=true,interval=20,max_height=600,min_height=0,min_light=10,name=grug_mobs:bog_fowl,nodes={grug_nodes:mud,grug_nodes:mud_dry,grug_nodes:mud_mottled,grug_nodes:mud_with_wet_grass,grug_nodes:dirt_with_moss,grug_nodes:swamp_moss}}
+abm grug_mobs surface spawning interval 20 chance 248 y 0..600
+  nodes {default:dirt_with_grass,grug_nodes:mud_with_wet_grass,default:sand,default:dry_dirt_with_dry_grass,grug_nodes:blight_dirt,default:dirt_with_rainforest_litter,grug_nodes:dirt_with_bone_litter,grug_nodes:dirt_with_canopy_litter,grug_nodes:dirt_with_moss,grug_nodes:swamp_moss,default:dirt_with_coniferous_litter,grug_nodes:dirt_with_silver_litter,grug_nodes:dirt_with_forest_litter,default:gravel,default:snowblock,grug_nodes:mud,grug_nodes:mud_dry,grug_nodes:mud_mottled}
+  neighbors {air}
+abm grug_mobs underground spawning interval 20 chance 135 y -31000..-1
+  nodes {default:stone,group:grug_stratum}
+  neighbors {air}
+abm grug_mobs water spawning interval 30 chance 1629 y -30..600
+  nodes {default:water_source}
+  neighbors {air,default:sand}

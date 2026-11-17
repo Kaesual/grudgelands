@@ -124,7 +124,8 @@ return function(api)
 	-- hit no object: then it is taken as still empty (an idle player), and the
 	-- aim of that last ray stays the recent aim. Every other refresh replaces
 	-- the recent aim or clears it.
-	function C.state(player)
+	-- `item`: the wielded item's name when the caller has read it.
+	function C.state(player, item)
 		local name = player:get_player_name()
 		aims[name] = nil
 		if player:get_hp() <= 0 then return nil end
@@ -137,7 +138,7 @@ return function(api)
 			interact, walled = input.aims_at_interactive(player, eye)
 		end
 		if walled then aims[name] = {at = now, blocked = true} end
-		local def = api.selected(player)
+		local def = api.selected(player, item)
 		if def and (def.target_kind == "hostile" or def.target_kind == "friendly")
 				and grug_abilities.is_unlocked(player, def.id) then
 			local look = player:get_look_dir()
@@ -175,11 +176,11 @@ return function(api)
 		return nil
 	end
 
-	-- The 0.15 s refresh (init.lua).
-	function C.update(player)
+	-- The 0.15 s refresh (init.lua), with the pass's wielded item name.
+	function C.update(player, item)
 		local rec = huds[player:get_player_name()]
 		if not rec then return end
-		local state = C.state(player)
+		local state = C.state(player, item)
 		show(player, rec.state, state and STATE_TEXTURE[state] or "")
 	end
 

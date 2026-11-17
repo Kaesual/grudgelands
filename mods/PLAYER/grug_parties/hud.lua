@@ -150,7 +150,20 @@ local function draw_invite(player, record, info)
 	end
 end
 
-local function refresh(player)
+-- The party's view; with `views` (the poll's, party id -> view) built once
+-- for every member the poll refreshes on this step.
+local function party_view(player, views)
+	if not views then return grug_parties.view(player) end
+	local id = grug_parties.party_id(player)
+	local view = id and views[id]
+	if view == nil then
+		view = grug_parties.view(player)
+		if id then views[id] = view or false end
+	end
+	return view or nil
+end
+
+local function refresh(player, views)
 	local name = player:get_player_name()
 	local record = huds[name]
 	if not record then return end
@@ -158,7 +171,7 @@ local function refresh(player)
 	draw_invite(player, record, not in_party and grug_parties.newest_invitation(name) or nil)
 	-- Most players have no party: no rows to keep and nothing to read.
 	if #record.rows == 0 and not in_party then return end
-	local view = grug_parties.hud_enabled(player) and grug_parties.view(player)
+	local view = grug_parties.hud_enabled(player) and party_view(player, views)
 	if not view then remove_rows(player,record,0); record.layout = nil; return end
 	local count = #view.members
 	remove_rows(player,record,count)
@@ -203,8 +216,15 @@ end
 -- Each player is polled every SLOTS x SLOT_PERIOD = 0.5 s, in one of SLOTS
 -- phases by join order, so many players never refresh in the same step
 -- (Round 32, perf review R2; the quest tracker's pattern, grug_quests/hud.lua).
+-- A party's members share their party's phase (Round 81, audit P5-03): the
+-- poll builds the party's view once for all of them, so its members' HP,
+-- maximum, level and class are read once per 0.5 s, not once per member.
 local SLOTS, SLOT_PERIOD = 5, 0.1
 local slot_of, joined, current_slot = {}, 0, 0
+local function poll_slot(name, own)
+	local id = grug_parties.party_id(name)
+	return id and (tonumber(id) or 0) % SLOTS + 1 or own
+end
 
 core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
@@ -228,10 +248,11 @@ core.register_globalstep(function(dtime)
 	elapsed=elapsed-SLOT_PERIOD
 	if elapsed > SLOT_PERIOD then elapsed=0 end
 	current_slot = current_slot % SLOTS + 1
+	local views = {}
 	for name, slot in pairs(slot_of) do
-		if slot == current_slot then
+		if poll_slot(name, slot) == current_slot then
 			local player = core.get_player_by_name(name)
-			if player then refresh(player) end
+			if player then refresh(player, views) end
 		end
 	end
 end)

@@ -1,5 +1,8 @@
--- Round 8 package 3: the six start-zone identity families and their first
--- outward routes. Level, HP, damage, armor and XP stay owned by levels.lua.
+-- Round 8 package 3: the six start-zone identity families. Level, HP,
+-- damage, armor and XP stay owned by levels.lua. Since Round 81 (ruling 6)
+-- only the Wild Turkey (a recipe critter) and the Pit Rat's cave row spawn
+-- from ABM rows here; the other families are the bases of the recipes'
+-- sub-types, which the spawn regions place.
 
 local function ground_defaults(def)
 	def.reach = def.reach or 3
@@ -17,26 +20,10 @@ local function ground_defaults(def)
 	return def
 end
 
-local function start_band(min_level)
-	return function(pos)
-		local zone = grug_zones.id_at(pos.x, pos.z)
-		if zone == "elandor_hearthpine_vale" or
-				zone == "elandor_dawnmere_fields" or
-				zone == "elandor_silverleaf_glades" or
-				zone == "kragmar_stillgrave_hollow" or
-				zone == "kragmar_sunscar_flats" or
-				zone == "kragmar_kapok_cradle" then
-			return grug_zones.mob_level_at(pos) >= min_level
-		end
-		return true
-	end
-end
-
 local fox = ground_defaults({
 	description = "Fox", clock = "day", type = "monster",
 	_grug_voice = "canine",
 	attack_players = true, group_attack = false, view_range = 12,
-	_grug_spawn_check = start_band(4),
 	visual = "mesh", mesh = "grug_mobs_fox.b3d",
 	textures = {{"grug_mobs_fox.png"}},
 	visual_size = {x = 10, y = 10},
@@ -72,19 +59,12 @@ grug_mobs.melee_rider(fox, function(self, target)
 	end
 end)
 grug_mobs.register_mob("grug_mobs:fox", fox)
-mobs:spawn({
-	name = "grug_mobs:fox",
-	nodes = {"default:dirt_with_grass", "default:dirt_with_coniferous_litter",
-		"grug_nodes:dirt_with_silver_litter"},
-	interval = 20, chance = 1900, active_object_count = 3,
-	min_height = 0, max_height = 600,
-})
 
 local ibex = ground_defaults({
 	description = "Ibex", clock = "day", type = "animal",
 	_grug_voice = "grazer",
 	attack_players = false, attack_npcs = false, group_attack = false,
-	view_range = 14, _grug_spawn_check = start_band(4),
+	view_range = 14,
 	visual = "mesh", mesh = "grug_mobs_ibex.b3d",
 	textures = {{"grug_mobs_ibex.png"}}, visual_size = {x = 1, y = 1},
 	-- Bound the visible body and horns; keep the locomotion collision footprint.
@@ -105,13 +85,6 @@ local ibex = ground_defaults({
 })
 grug_mobs.passive_prey(ibex)
 grug_mobs.register_mob("grug_mobs:ibex", ibex)
-mobs:spawn({
-	name = "grug_mobs:ibex",
-	nodes = {"default:dirt_with_coniferous_litter", "default:gravel",
-		"default:snowblock"},
-	interval = 20, chance = 1900, active_object_count = 3,
-	min_height = 0, max_height = 600,
-})
 
 local function critter(description, mesh, texture, size, box, animation)
 	return ground_defaults({
@@ -165,15 +138,11 @@ local runner = ground_defaults({
 })
 grug_mobs.passive_prey(runner)
 grug_mobs.register_mob("grug_mobs:plains_runner", runner)
-mobs:spawn({name = "grug_mobs:plains_runner",
-	nodes = {"default:dry_dirt_with_dry_grass"}, interval = 20, chance = 2100,
-	active_object_count = 2, min_height = 0, max_height = 600})
 
 local tapir = ground_defaults({
 	description = "Tapir", clock = "day", type = "animal",
 	_grug_voice = "grazer",
 	attack_players = false, attack_npcs = false, view_range = 12,
-	_grug_spawn_check = start_band(4),
 	visual = "mesh", mesh = "grug_mobs_tapir.b3d",
 	textures = {{"grug_mobs_tapir.png"}}, visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
@@ -194,10 +163,6 @@ local tapir = ground_defaults({
 })
 grug_mobs.passive_prey(tapir)
 grug_mobs.register_mob("grug_mobs:tapir", tapir)
-mobs:spawn({name = "grug_mobs:tapir",
-	nodes = {"default:dirt_with_rainforest_litter",
-		"grug_nodes:dirt_with_canopy_litter"}, interval = 20, chance = 1900,
-	active_object_count = 3, min_height = 0, max_height = 600})
 
 local rat = ground_defaults({
 	description = "Pit Rat", clock = "night", type = "monster",
@@ -220,22 +185,14 @@ local rat = ground_defaults({
 grug_mobs.camp_swarm(rat, {range = 12})
 grug_mobs.register_mob("grug_mobs:giant_rat", rat)
 mobs:spawn({name = "grug_mobs:giant_rat",
-	nodes = {"default:dirt_with_grass", "default:dirt_with_coniferous_litter",
-		"grug_nodes:dirt_with_silver_litter", "grug_nodes:blight_dirt",
-		"default:dry_dirt_with_dry_grass", "default:dirt_with_rainforest_litter"},
-	interval = 20, chance = 1600, active_object_count = 4,
-	min_height = 0, max_height = 600})
-mobs:spawn({name = "grug_mobs:giant_rat",
 	nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
 	interval = 20, chance = 1800, active_object_count = 4,
 	min_height = -300, max_height = -1})
 
-local function poison_family(description, mesh, texture, size, box, animation,
-		spawn_check, clock)
+local function poison_family(description, mesh, texture, size, box, animation)
 	local def = ground_defaults({
-		description = description, clock = clock, type = "monster",
+		description = description, clock = "night", type = "monster",
 		attack_players = true, group_attack = false, view_range = 10,
-		_grug_spawn_check = spawn_check,
 		visual = "mesh", mesh = mesh, textures = {{texture}},
 		visual_size = size, collisionbox = box, makes_footstep_sound = false,
 		animation = animation,
@@ -257,25 +214,9 @@ local scorpion = poison_family("Scorpion", "grug_mobs_scorpion.b3d",
 		walk_start = 100, walk_end = 200, walk_speed = 55,
 		run_start = 100, run_end = 200, run_speed = 90,
 		punch_start = 200, punch_end = 300, punch_speed = 70,
-	-- Night everywhere; in Sunscar around the clock (Round 24 ruling 31: the
-	-- start zone's bands 2 and 3 get a day hostile). `sunscar_day` only names
-	-- the day row below; start_band keeps both rows to band 2 and up.
-	}, start_band(4), {scorpion = "night",
-		["zone:kragmar_sunscar_flats"] = "any", sunscar_day = "day"})
+	})
 scorpion._grug_voice = "insect"
 grug_mobs.register_mob("grug_mobs:scorpion", scorpion)
-mobs:spawn({name = "grug_mobs:scorpion", _grug_clock_palette = "scorpion",
-	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
-	interval = 20, chance = 1800, active_object_count = 4,
-	min_height = 0, max_height = 600})
--- The Sunscar day row: the night row's values and one shared aoc cap. The row
--- is daylight-only (min_light 10 and day_toggle, prepare_spawn_row); the spawn
--- policy admits a daylight scorpion only where the zone clock is "any"
--- (Sunscar). At night the night row covers every zone.
-mobs:spawn({name = "grug_mobs:scorpion", _grug_clock_palette = "sunscar_day",
-	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
-	interval = 20, chance = 1800, active_object_count = 4,
-	min_height = 0, max_height = 600})
 
 local viper = poison_family("Viper", "grug_mobs_viper.b3d",
 	"grug_mobs_viper.png", {x = 0.6, y = 0.6},
@@ -285,17 +226,6 @@ local viper = poison_family("Viper", "grug_mobs_viper.b3d",
 		walk_start = 300, walk_end = 420, walk_speed = 60,
 		run_start = 300, run_end = 420, run_speed = 90,
 		punch_start = 200, punch_end = 300, punch_speed = 70,
-	-- Night everywhere; in Kapok around the clock (Round 24 ruling 31), the
-	-- same two-row pattern as the Scorpion.
-	}, start_band(4), {viper = "night",
-		["zone:kragmar_kapok_cradle"] = "any", kapok_day = "day"})
+	})
 viper._grug_voice = "reptile"
 grug_mobs.register_mob("grug_mobs:viper", viper)
-mobs:spawn({name = "grug_mobs:viper", _grug_clock_palette = "viper",
-	nodes = {"default:dirt_with_rainforest_litter"},
-	interval = 20, chance = 1800, active_object_count = 4,
-	min_height = 0, max_height = 600})
-mobs:spawn({name = "grug_mobs:viper", _grug_clock_palette = "kapok_day",
-	nodes = {"default:dirt_with_rainforest_litter"},
-	interval = 20, chance = 1800, active_object_count = 4,
-	min_height = 0, max_height = 600})

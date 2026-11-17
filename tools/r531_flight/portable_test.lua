@@ -361,6 +361,12 @@ local function new_player(name, pos)
 		local item = self.wield
 		return {get_name = function() return item end}
 	end
+	-- Each test item sits in its own hotbar slot, so a new held item is a
+	-- slot switch (Round 81: the minimap reads the held name again on a new
+	-- wield index, else every 0.5 s).
+	function p:get_wield_index()
+		return self.wield == "" and 1 or self.wield == "grug_housing:claim_stone" and 2 or 3
+	end
 	function p:get_meta()
 		return {get_string = function(_, k) return meta[k] or "" end,
 			set_string = function(_, k, value) meta[k] = value end}

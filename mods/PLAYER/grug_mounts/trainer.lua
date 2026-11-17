@@ -20,26 +20,12 @@ local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
 end
 
+-- grug_core.npc_window_permitted: the NPC's role is one of SERVICES and the
+-- capital's faction is the one served.
 local function permitted(player, entity)
-	if not player or not player.is_player or not player:is_player() or
-			player:get_hp() <= 0 or not entity or
-			not SERVICES[entity._grug_socket_role] or not entity.object then
-		return false
-	end
-	local faction = CAPITAL_FACTION[entity._grug_start]
-	if not faction or grug_factions.get_faction(player) ~= faction then return false end
-	local pos, npc = player:get_pos(), entity.object:get_pos()
-	if not pos or not npc then return false end
-	local dx, dy, dz = pos.x - npc.x, pos.y - npc.y, pos.z - npc.z
-	if dx * dx + dy * dy + dz * dz > 64 then return false end
-	for _, socket in ipairs(grug_core.settlement_sockets_at(entity._grug_start)) do
-		if socket.id == entity._grug_socket and socket.role == entity._grug_socket_role then
-			local sx, sy, sz = npc.x - socket.pos.x, npc.y - socket.pos.y,
-				npc.z - socket.pos.z
-			return sx * sx + sy * sy + sz * sz <= 4
-		end
-	end
-	return false
+	if type(entity) ~= "table" or not SERVICES[entity._grug_socket_role] then return false end
+	return grug_core.npc_window_permitted(player, entity, entity._grug_socket_role,
+		CAPITAL_FACTION[entity._grug_start])
 end
 
 -- Every tier is listed with its state (Round 28 ruling 19), so a player sees

@@ -177,12 +177,46 @@ end
 -- The Character page's gear box prints the total beside the slot in every
 -- mode, so a changed quiver re-renders a cached Character page (pages.lua).
 -- Nothing else is re-sent.
-local function quiver_changed(player, inventory)
+--
+-- The player's own inventory actions (`own`) re-send at once. A shot, a
+-- refund and an arrow pickup (Round 81 P3-02) re-send at once too when the
+-- page was not re-sent for the quiver in the last QUIVER_RESEND seconds;
+-- within that window they only mark it, and the window's end re-sends once
+-- (and opens the next window). A Scout shooting steadily re-sends the page
+-- about once a second, not per shot and refund.
+local QUIVER_RESEND = 1
+local quiver_resend = {}
+
+local function quiver_window(name)
+	local window = {}
+	quiver_resend[name] = window
+	core.after(QUIVER_RESEND, function()
+		if quiver_resend[name] ~= window then return end
+		quiver_resend[name] = nil
+		local player = window.dirty and core.get_player_by_name(name)
+		if player and grug_inventory.refresh_character(player) then
+			quiver_window(name)
+		end
+	end)
+end
+
+local function quiver_changed(player, inventory, own)
 	normalize_quiver(inventory)
-	if grug_inventory.refresh_character then
-		grug_inventory.refresh_character(player)
+	if not grug_inventory.refresh_character then return end
+	local name = player:get_player_name()
+	local window = quiver_resend[name]
+	if window and not own then
+		window.dirty = true
+		return
+	end
+	if grug_inventory.refresh_character(player) then
+		if window then window.dirty = false else quiver_window(name) end
 	end
 end
+
+core.register_on_leaveplayer(function(player)
+	quiver_resend[player:get_player_name()] = nil
+end)
 
 function grug_inventory.quiver_count(player)
 	local inv = player and player:get_inventory()
@@ -190,8 +224,9 @@ function grug_inventory.quiver_count(player)
 end
 
 -- Put arrows into the Scout's quiver as far as it has room. Returns the
--- leftover (all of it for a non-Scout or a non-arrow).
-function grug_inventory.add_to_quiver(player, stack)
+-- leftover (all of it for a non-Scout or a non-arrow). `own`: the player's
+-- own inventory action (absorb_into_quiver), which re-sends the page at once.
+local function add_arrows(player, stack, own)
 	stack = ItemStack(stack)
 	local inv = player and player:get_inventory()
 	if not inv or not is_arrow(stack) or not grug_inventory.has_quiver(player) then
@@ -208,8 +243,12 @@ function grug_inventory.add_to_quiver(player, stack)
 	moving:set_count(count)
 	local accepted = count - inv:add_item(QUIVER_LIST, moving):get_count()
 	stack:set_count(stack:get_count() - accepted)
-	quiver_changed(player, inv)
+	quiver_changed(player, inv, own)
 	return stack
+end
+
+function grug_inventory.add_to_quiver(player, stack)
+	return add_arrows(player, stack)
 end
 
 -- A move into the quiver: up to `count` arrows of the source stack go in,
@@ -223,8 +262,7 @@ function grug_inventory.absorb_into_quiver(player, inventory, from_list,
 	end
 	local moving = ItemStack(source)
 	moving:set_count(math.min(count, source:get_count()))
-	local accepted = moving:get_count() -
-		grug_inventory.add_to_quiver(player, moving):get_count()
+	local accepted = moving:get_count() - add_arrows(player, moving, true):get_count()
 	if accepted <= 0 then
 		return -- a full quiver: nothing changes hands
 	end
@@ -248,7 +286,7 @@ function grug_inventory.unload_quiver(player, count)
 	if moved > 0 then
 		first:set_count(first:get_count() - moved)
 		inv:set_stack(QUIVER_LIST, 1, first)
-		quiver_changed(player, inv)
+		quiver_changed(player, inv, true)
 	end
 	return moved
 end
@@ -494,7 +532,7 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 	-- Arrows taken out of the quiver: refill its visible cell.
 	if (action == "move" and info.from_list == QUIVER_LIST) or
 			(action ~= "move" and info.listname == QUIVER_LIST) then
-		quiver_changed(player, inventory)
+		quiver_changed(player, inventory, true)
 	end
 
 	-- The overflow of a removed or smaller bag moves before the list

@@ -236,9 +236,10 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
 ## The recipe
 
 `mods/ENTITIES/grug_mobs/data/zones/<zone_id>.spawns.json` holds
-`{"zone", "recipe"}`; a zone without a recipe would hold `{"zone",
-"palette"}` (the palette spawning of before Round 28; every zone has a recipe
-since then). Every load error names the zone and the path.
+`{"zone", "recipe"}` (and optional `notes`). A file without a recipe is a
+load error, and so is a `palette` key: the palette spawning of before
+Round 28 kept a path for a zone without a recipe until Round 81 (ruling 6)
+removed it. Every load error names the zone and the path.
 
 ```json
 "recipe": {

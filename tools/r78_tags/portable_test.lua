@@ -142,6 +142,9 @@ _G.core = {
 }
 
 _G.grug_core = {
+	-- Round 81: tag_carrier.lua reads factions on the join slots
+	-- (player_slots.lua, not loaded here); the test seam reads them afresh.
+	register_player_pass = function() end,
 	factions = {accord = {name = "Accord"}, throng = {name = "Throng"}},
 	zone_authority_installed = function() return true end,
 	start_identities = function()

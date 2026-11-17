@@ -9,6 +9,15 @@ framing revision is frozen at `48d69ef0`; its game adoption is now implemented
 on `round75.5` in the same worktree, see the [integration plan](../../docs/planning/round75.5-plan.md).
 The original study and earlier iterations remain at `28231c5e`.
 
+**Frozen (Round 81).** The study is finished and is not rebuilt. Its
+screenshots (`captures/`, `previous/`, `overview-desktop.png`,
+`overview-mobile.png`) and `contact_sheets/` left the tracked tree; they are
+in history at [`4cb49044`](https://github.com/Kaesual/grudgelands/tree/4cb49044/tools/city_architecture_rollout)
+(`git show 4cb49044:tools/city_architecture_rollout/<path>`). `index.html`
+now opens without its thumbnails; `compare.html` still works offline.
+`audit.json`, `catalog.json`, `rules.py` and the build code stay: live tools
+read them (`r75_5_architecture`, `city_architecture_specials`).
+
 ## Open and rebuild
 
 `index.html` starts with four representative building forms, comparing the
@@ -17,11 +26,12 @@ Each card opens the coupled
 3D original/proposal comparison in `compare.html`. Filter by culture, search
 for a town/building, or show only the seven cases with structural inspection
 notes. The deferred placement rows and their reasons are listed below it.
-The comparison works offline; the overview needs its adjacent capture files.
+The comparison works offline; the overview needs its adjacent capture files
+(in history only since Round 81, see above).
 
 Rebuild the study only from a checkout of `48d69ef0`: its source hashes and
 old-role assertions deliberately refer to the pre-integration templates. The
-committed pages and captures still open directly in the current checkout. Do
+committed pages still open directly in the current checkout. Do
 not regenerate them from the adopted game templates. To verify adoption, use
 [the integration proof](../r75_5_architecture/README.md).
 
@@ -96,11 +106,13 @@ recheck these instead of assuming that other agents have not changed them.
   hashes of every screenshot. It checks all scenes and textures, paired camera
   movement/presets on a representative set and all structural exceptions,
   narrow layout, navigation, direct links and JavaScript errors.
-- `captures/`: every proposal, paired screenshots for the references and seven
-  structural notes, plus a mobile view.
-- `contact_sheets/`: compact sheets used to visually inspect every proposal.
-- `previous/`: four unchanged captures from `a4579cf1`, with a source/hash
-  manifest, used only for the overview comparison.
+- `captures/` (in history at `4cb49044`): every proposal, paired screenshots
+  for the references and seven structural notes, plus a mobile view.
+- `contact_sheets/` (in history at `4cb49044`): compact sheets used to
+  visually inspect every proposal.
+- `previous/` (in history at `4cb49044`): four unchanged captures from
+  `a4579cf1`, with a source/hash manifest, used only for the overview
+  comparison.
 - `structure-check.json`: checks decoded delivered scene cells, exact reference
   deltas and the reported defects (continuous thin posts/ties, masonry high
   walls, actual timber gables, troll clay and the continuous elf accent).

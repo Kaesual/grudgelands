@@ -1,8 +1,9 @@
 -- The world version, the start guard and the online migration work (Round 43;
 -- the hosting platform's migration contract R6 and R7,
--- docs/technical/upgrade-contract.md). Loaded first in grug_core, before any
--- of this game's code reads or writes saved state (the map-reset clears
--- included); the mods that can load before grug_core write none at load.
+-- docs/technical/upgrade-contract.md). Loaded early in grug_core (only the UI
+-- files, the prepend join callback and migrations.lua come before it), before any of this
+-- game's code reads or writes saved state (the map-reset clears included);
+-- the mods that can load before grug_core write none at load.
 --
 -- The record: this mod's storage, key "world_version", a major.minor.patch
 -- string. A missing record on an existing world is 0.41.0, the baseline; a

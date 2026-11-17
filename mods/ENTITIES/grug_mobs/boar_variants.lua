@@ -1,13 +1,7 @@
 -- Boar tints (docs/design/biomes_mobs.md §3.1, "Boar ... per-biome tint:
 -- Plague Boar in blight, Jungle Boar east"). Same family, same verb
 -- ("charges", the stalker impulse — see boar.lua), same drop table — only the
--- baked texture, the display name and the one biome top node differ.
---
--- The base Boar (boar.lua) lost those two tops in the same change, so every
--- settled biome carries exactly ONE boar. §4 budgets its calibration row per
--- ENTITY NAME (mobs_redo's active_object_count is counted per registered
--- name, api.lua count_mobs), which is why all three boars get the full
--- interval 20 / chance 1500 / aoc 5 without exceeding the per-biome budget.
+-- baked texture and the display name differ.
 
 -- One def shape for both variants; kept as a builder so the two
 -- registrations cannot drift apart (§3.2: the boar table is identical
@@ -81,53 +75,9 @@ end
 grug_mobs.register_mob("grug_mobs:plague_boar",
 	boar_def("Plague Boar", "grug_mobs_boar_plague.png"))
 
-mobs:spawn({
-	name = "grug_mobs:plague_boar",
-	nodes = {
-		"grug_nodes:blight_dirt", "grug_nodes:mud", "grug_nodes:mud_dry",
-		"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass",
-		"grug_nodes:dirt_with_bone_litter",
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 1500,
-	active_object_count = 5,
-	min_height = 0,
-	max_height = 600,
-})
-
 --
 -- Jungle Boar — grug_jungle_edge (Troll settled band, Throng east)
---
--- NB the rainforest litter also carries the Accord-side grug_jungle_fringe,
--- and the canopy litter carries the Throng grug_deep_jungle (§1.3), but those
--- are outer/coast biomes and the zone gate above (core, inner) keeps the
--- Jungle Boar out of them wherever they sit that far out.
---
--- The canopy litter is the §4 "core/inner day filler" slot for the deep
--- jungle: the wild deep-jungle cuboid starts at x 801, which the radial field
--- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
--- puts wild patches inside the settled rings anyway. The boar tint carries it
--- rather than plain grug_mobs:boar because §3.1 assigns the east band the
--- Jungle Boar. Deep jungle carries no CRITTER (same rule as the badlands,
--- §3.1), so the Hare's list is deliberately left alone.
 --
 
 grug_mobs.register_mob("grug_mobs:jungle_boar",
 	boar_def("Jungle Boar", "grug_mobs_boar_jungle.png"))
-
-mobs:spawn({
-	name = "grug_mobs:jungle_boar",
-	nodes = {
-		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
-		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle patches
-		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass",
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 1500,
-	active_object_count = 5,
-	min_height = 0,
-	max_height = 600,
-})

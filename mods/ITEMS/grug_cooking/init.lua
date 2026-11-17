@@ -92,8 +92,6 @@ for group, members in pairs(INGREDIENT_GROUPS) do
 	for index = 1, #members do add_item_group(members[index], group) end
 end
 
-grug_cooking.INGREDIENT_GROUPS = INGREDIENT_GROUPS
-
 local function dish(id, description, tier, role, inputs)
 	return {id = id, item = "grug_cooking:" .. id, description = description,
 		tier = tier, role = role, inputs = inputs,
@@ -265,15 +263,6 @@ assert(grug_food.register_item("grug_cooking:bread", 1, "dish", "plain"),
 	"grug_cooking: failed to register bread")
 core.register_craft({type = "cooking", output = "grug_cooking:bread",
 	recipe = C .. "wild_grain", cooktime = 5})
-
-grug_cooking.REFINEMENTS = {
-	{tier = 1, input = MEAT, output = "mobs:meat", station = "furnace",
-		hint = "Furnace"},
-	{tier = 1, input = FISH, output = "grug_fishing:cooked_fish",
-		station = "furnace", hint = "Furnace"},
-	{tier = 1, input = C .. "wild_grain", output = "grug_cooking:bread",
-		station = "furnace", hint = "Furnace"},
-}
 
 -- Simple meat, fish and bread conversions are universal Basics recipes.
 -- Raw profession dishes award progress only at their preparation.

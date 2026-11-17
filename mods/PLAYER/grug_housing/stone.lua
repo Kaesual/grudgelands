@@ -226,13 +226,39 @@ end
 
 -- Expiry and stone variants, every few seconds (no map loading apart from an
 -- expired draft: an unloaded stone is set right by the first check after its
--- block loads).
+-- block loads). Round 81 (audit P4-02, X4-11): every CHECK_SECONDS cycle
+-- starts with the draft and expiry scans (the registry keeps what can be due,
+-- so they walk no claim when nothing is), and the stones' node check is
+-- spread over SLICES ticks of the cycle, a slice of the id-ordered claims
+-- each (the ordered list is copied again only when a claim came or went).
+-- Each claim is still checked once per cycle, in id order; a claim placed
+-- during a cycle is first checked in the next one, so a vanished stone may be
+-- noticed up to one cycle later than before. The rule holds for every claim
+-- whether its owner is online or not: visitors see the stone, and the
+-- vanished-stone rule does not ask for the owner.
 local CHECK_SECONDS = 5
-local elapsed = 0
-core.register_globalstep(function(dtime)
-	elapsed = elapsed + dtime
-	if elapsed < CHECK_SECONDS then return end
-	elapsed = 0
+local SLICES = 8
+local TICK = CHECK_SECONDS / SLICES
+local elapsed, tick = 0, 0
+local order, order_version, slice = {}, nil, 0
+
+local function check_stone(claim)
+	local node = core.get_node_or_nil(claim.center)
+	if node then
+		if STONE_NODES[node.name] then
+			grug_housing.sync_stone_node(claim)
+		else
+			-- The stone is gone from a loaded block without a dig or a
+			-- pick-up: the claim goes with it.
+			model.remove(claim, "destroyed")
+			grug_housing.notify_claim_changed(claim, "destroyed")
+			core.log("warning", ("[grug_housing] Claim Stone %d of %s vanished"):format(
+				claim.id, claim.owner))
+		end
+	end
+end
+
+local function start_cycle()
 	local drafts = model.draft_scan()
 	for index = 1, #drafts do expire_draft(drafts[index]) end
 	local expired = model.expiry_scan()
@@ -240,21 +266,27 @@ core.register_globalstep(function(dtime)
 		grug_housing.sync_stone_node(expired[index])
 		grug_housing.notify_claim_changed(expired[index], "expired")
 	end
-	local claims = model.all_claims()
-	for index = 1, #claims do
-		local claim = claims[index]
-		local node = core.get_node_or_nil(claim.center)
-		if node then
-			if STONE_NODES[node.name] then
-				grug_housing.sync_stone_node(claim)
-			else
-				-- The stone is gone from a loaded block without a dig or a
-				-- pick-up: the claim goes with it.
-				model.remove(claim, "destroyed")
-				grug_housing.notify_claim_changed(claim, "destroyed")
-				core.log("warning", ("[grug_housing] Claim Stone %d of %s vanished"):format(
-					claim.id, claim.owner))
-			end
+	local version = model.claim_set_version()
+	if version ~= order_version then
+		order, order_version = model.all_claims(), version
+	end
+	slice = math.ceil(#order / SLICES)
+end
+
+-- A long (lagging) step serves every tick it covered, at most SLICES.
+core.register_globalstep(function(dtime)
+	elapsed = elapsed + dtime
+	if elapsed < TICK then return end
+	local due = math.min(SLICES, math.floor(elapsed / TICK))
+	elapsed = elapsed - due * TICK
+	if elapsed >= TICK then elapsed = elapsed % TICK end
+	for _ = 1, due do
+		tick = tick % SLICES + 1
+		if tick == 1 then start_cycle() end
+		for index = (tick - 1) * slice + 1, math.min(tick * slice, #order) do
+			local claim = order[index]
+			-- A claim removed since the list was made is no longer checked.
+			if model.claim_by_id(claim.id) == claim then check_stone(claim) end
 		end
 	end
 end)

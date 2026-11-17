@@ -92,8 +92,9 @@ quest with the welcome and level letters. Seams and storage: the
   next join when there is room). **Discard** clears the letter and gives the
   stacks back.
 - Text limits: subject 60 characters (required), message 4,000 (0.49.1;
-  counted after cleaning). Control characters (colour codes among them) are
-  removed. Write and To the admin show "Up to 4,000 characters." under the
+  counted after cleaning). Control characters (colour codes among them) and
+  malformed UTF-8 (a lead byte with the wrong number of continuation bytes,
+  0.81.0) are removed. Write and To the admin show "Up to 4,000 characters." under the
   message field. A longer message is **not sent**: the text stays as typed,
   nothing is charged, the attachments stay in their slots, and the status
   line names the length ("Too long, please shorten it (5,723 characters,
@@ -222,8 +223,10 @@ quest with the welcome and level letters. Seams and storage: the
   - The **Housing Steward's letter** at level **20**, only while the
     character never had a Claim Stone.
   - The **Expedition Registrar's letter** ("A line in the guild's ledger")
-    at level **20**, always (Round 72): it sends the player to the waystone
-    plaza of their race's capital (the guild house before 0.73.1) ([expeditions](expeditions.md)).
+    at level **20**, always (Round 72): it sends the player to the door of the
+    great hall of their race's capital (the waystone plaza before 0.81.0, the
+    guild house before 0.73.1) ([expeditions](expeditions.md)); a letter
+    already delivered keeps its old text.
   A jump over both levels (14 → 21) sends all three. A character that is past
   the level when 0.48.0 (the Registrar's: 0.72.0) arrives gets the letter at
   its next join, but only while it is still useful; a letter that is no

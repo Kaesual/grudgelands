@@ -84,20 +84,3 @@ local bog_ooze = {
 -- Verb BEFORE register_mob (verbs.lua contract).
 grug_mobs.damage_aura(bog_ooze, {radius = 2, damage = 2, effect = "ooze_aura"})
 grug_mobs.register_mob("grug_mobs:bog_ooze", bog_ooze)
-
--- §4 row "Bog Ooze | mud | 20 | 2000 | 3 | any | outer".
--- "any light" = no min_light/max_light and no day_toggle: 24 h (§3.1).
-mobs:spawn({
-	name = "grug_mobs:bog_ooze",
-	-- the swamp's mixed ground (Round 47); moss soil too (the user,
-	-- 2026-10-13), and the swamp's own moss (Round 51): these spawns are
-	-- zone-gated to the swamp family
-	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss",
-		"grug_nodes:swamp_moss"}, -- grug_swamp
-	interval = 20,
-	chance = 2000,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})

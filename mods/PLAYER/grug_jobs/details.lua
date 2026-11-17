@@ -45,7 +45,6 @@ local LINE = 0.36
 local D = {back = "grug_craft_dback", open = "grug_craft_dopen_",
 	kinds = "grug_craft_dkinds_", select = "grug_craft_dselect",
 	prev = "grug_craft_dprev", next = "grug_craft_dnext"}
-grug_jobs.DETAILS_FIELDS = D
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -287,7 +286,6 @@ local function knows(player, recipe)
 	return grug_jobs.has(player, recipe.area) and
 		recipe.tier <= grug_jobs.profession_level(player, recipe.area)
 end
-grug_jobs.details_knows = knows
 
 -- Whether `recipe` (which makes `item`) is the exact inverse of a recipe
 -- of `item`: its one ingredient is made only from `item` (a block unpacked

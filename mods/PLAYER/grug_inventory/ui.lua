@@ -5,10 +5,8 @@
 --
 -- Shared real-coordinate body for every inventory page. Map owns its larger
 -- frame; all other pages use the same 20 x 13.5 body below the navigation.
--- Slots stay native-size. The legacy constants remain only for consumers
--- that still name historical coordinates; new fragments use real coordinates.
-grug_inventory.UI = {width = 10.4, height = 11.1, inventory_y = 7.2,
-	content_bottom = 7.0}
+-- Slots stay native-size.
+grug_inventory.UI = {}
 local UI = grug_inventory.UI
 UI.frame_w, UI.frame_h = 20, 13.5
 

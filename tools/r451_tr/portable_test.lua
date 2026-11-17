@@ -24,7 +24,10 @@
 --      dropdown, checkbox or scrollbar and no set_focus, so the engine's
 --      initial focus (guiFormSpecMenu.cpp setInitialFocus: the last button
 --      when there is no edit box or table) is Close. Real key handling is
---      GUI-only; the checklist covers it.
+--      GUI-only; the checklist covers it;
+--   X  (Round 81, audit X6-03) a field event re-checks the live trainer on
+--      its socket, the faction, life and reach (grug_core/npc_window.lua);
+--      a refused one changes nothing and ends the session.
 -- Prints "R451 TR PORTABLE PASS checks=<n>" or the failures (exit 1).
 
 local ROOT = arg and arg[1] or "."
@@ -64,6 +67,8 @@ core = {
 	register_on_leaveplayer = function() end,
 	register_on_dieplayer = function() end,
 	chat_send_player = function() end,
+	-- Round 81 GUARDS: a refused trainer event closes the window.
+	close_formspec = function() end,
 }
 
 -- The real wrap_text, cut out of grug_inventory/ui.lua.
@@ -117,6 +122,32 @@ grug_mobs = {register_start_socket_role = function() end}
 rawset(_G, "grug_core", {})
 core.colorize = function(_, text) return text end
 dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+-- Round 81 (audit X6-03): every field event checks the live trainer on its
+-- socket through the shared NPC-window check. One settlement (human, so the
+-- Accord's) with a trainer socket per profession at x = 1.
+dofile(ROOT .. "/mods/CORE/grug_core/npc_window.lua")
+local factions = {}
+grug_core.get_player_object_faction = function(player)
+	return factions[player:get_player_name()] or "accord"
+end
+grug_core.settlement_socket_settlements = function() return {{key = "town", race_id = "human"}} end
+grug_core.settlement_sockets_at = function(key)
+	local out = {}
+	if key ~= "town" then return out end
+	for id in pairs(grug_jobs.PROFESSIONS) do
+		out[#out + 1] = {id = "t_" .. id, role = "trainer", profession = id, pos = {x = 1, y = 0, z = 0}}
+	end
+	return out
+end
+grug_classes = {registered_races = {human = {faction = "accord"}}}
+local function trainer(profession)
+	local entity = {_grug_socket_role = "trainer", _grug_start = "town",
+		_grug_socket = "t_" .. profession, _grug_profession = profession}
+	entity.object = {pos = {x = 1, y = 0, z = 0}, alive = true,
+		get_pos = function(self) return self.alive and self.pos or nil end,
+		get_luaentity = function(self) return self.alive and entity or nil end}
+	return entity
+end
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/trainers.lua")
 
 -- grug_repair: the service seam service.lua defines, the real providers.
@@ -247,7 +278,9 @@ local function new_player(name)
 	local player = {}
 	function player:get_player_name() return name end
 	function player:is_player() return true end
-	function player:get_pos() return {x = 0, y = 0, z = 0} end
+	player.pos, player.hp = {x = 0, y = 0, z = 0}, 20
+	function player:get_pos() return self.pos end
+	function player:get_hp() return self.hp end
 	players[name] = player
 	return player
 end
@@ -332,7 +365,7 @@ local function states(profession, with_repair)
 	local label = profession .. (with_repair and " +repair" or "")
 	local player = new_player("p_" .. label:gsub("%W", "_"))
 	local primary = grug_jobs.PROFESSIONS[profession].class == "primary"
-	check(grug_jobs.open_trainer(player, profession, {x = 1, y = 0, z = 0}, {}),
+	check(grug_jobs.open_trainer(player, profession, {x = 1, y = 0, z = 0}, trainer(profession)),
 		label .. ": opens")
 	trainer_check(player, profession, label .. " not learned",
 		"grug_jobs_learn" .. repair .. " grug_jobs_close")
@@ -363,7 +396,7 @@ local function states(profession, with_repair)
 	send(player, {quit = "true"})
 	-- A fresh window of a learned profession shows the Crafting tab hint.
 	state[player:get_player_name()].known[profession] = true
-	grug_jobs.open_trainer(player, profession, {x = 1, y = 0, z = 0}, {})
+	grug_jobs.open_trainer(player, profession, {x = 1, y = 0, z = 0}, trainer(profession))
 	local form = trainer_check(player, profession, label .. " reopened learned",
 		(primary and "grug_jobs_unlearn " or "") .. (with_repair and "grug_jobs_repair " or "") ..
 		"grug_jobs_close")
@@ -384,7 +417,7 @@ do
 	repair_allowed = true
 	for _, profession in ipairs(TRAINERS) do
 		local player = new_player("picked_" .. profession)
-		grug_jobs.open_trainer(player, profession, {x = 1, y = 0, z = 0}, {})
+		grug_jobs.open_trainer(player, profession, {x = 1, y = 0, z = 0}, trainer(profession))
 		local entry = last_spec(player:get_player_name())
 		local form = trainer_check(player, profession, "picked " .. profession,
 			"grug_jobs_learn grug_jobs_repair grug_jobs_close")
@@ -403,7 +436,7 @@ do
 	local player = new_player("full")
 	state.full.known = {tailor = true, goldsmith = true}
 	state.full.primary = {"tailor", "goldsmith"}
-	grug_jobs.open_trainer(player, "woodcarver", {x = 1, y = 0, z = 0}, {})
+	grug_jobs.open_trainer(player, "woodcarver", {x = 1, y = 0, z = 0}, trainer("woodcarver"))
 	local form = trainer_check(player, "woodcarver", "slots full",
 		"grug_jobs_learn grug_jobs_repair grug_jobs_close")
 	check(find_label(form, "Two primary professions already learned.") ~= nil, "slots full: status")
@@ -437,11 +470,62 @@ do
 	eq(#grug_jobs.GREETINGS.tailor, 200, "G the long greeting is 200 characters")
 	repair_allowed = true
 	local player = new_player("long")
-	grug_jobs.open_trainer(player, "tailor", {x = 1, y = 0, z = 0}, {})
+	grug_jobs.open_trainer(player, "tailor", {x = 1, y = 0, z = 0}, trainer("tailor"))
 	trainer_check(player, "tailor", "long greeting", "grug_jobs_learn grug_jobs_repair grug_jobs_close")
 	send(player, {grug_jobs_learn = "Learn"})
 	trainer_check(player, "tailor", "long greeting learned", "grug_jobs_unlearn grug_jobs_repair grug_jobs_close")
 	grug_jobs.GREETINGS.tailor = saved
+end
+
+------------------------------------------------------------------------------
+-- X (Round 81, audit X6-03): a field event re-checks the live trainer on its
+-- socket, the player's faction, life and reach; a refused event changes
+-- nothing and ends the session (the next one finds none).
+------------------------------------------------------------------------------
+do
+	repair_allowed = true
+	local function learns(label, setup)
+		local player = new_player("x_" .. label:gsub("%W", "_"))
+		local npc = trainer("tailor")
+		check(grug_jobs.open_trainer(player, "tailor", {x = 1, y = 0, z = 0}, npc),
+			"X " .. label .. ": opens")
+		setup(player, npc)
+		send(player, {grug_jobs_learn = "Learn"})
+		return grug_jobs.has(player, "tailor")
+	end
+	eq(learns("in reach", function() end), true, "X a learn at the trainer applies")
+	eq(learns("7.9 nodes", function(p) p.pos = {x = 8.9, y = 0, z = 0} end), true,
+		"X ...within 8 nodes of it")
+	eq(learns("walked away", function(p) p.pos = {x = 9.5, y = 0, z = 0} end), false,
+		"X a learn from more than 8 nodes away is refused")
+	eq(learns("dead", function(p) p.hp = 0 end), false, "X a dead player's learn is refused")
+	eq(learns("other faction", function(p) factions[p:get_player_name()] = "throng" end), false,
+		"X a learn after a faction change is refused")
+	eq(learns("removed", function(_, npc) npc.object.alive = false end), false,
+		"X a learn at a removed trainer is refused")
+	eq(learns("off socket", function(_, npc) npc.object.pos = {x = 1, y = 2.5, z = 0} end), false,
+		"X a learn at a trainer pushed off its socket is refused")
+	eq(learns("other socket", function(_, npc) npc._grug_socket = "t_goldsmith" end), false,
+		"X a learn at a trainer on another profession's socket is refused")
+	-- The open-time position no longer counts: the trainer itself is checked.
+	local player = new_player("x_npc_moved")
+	local npc = trainer("tailor")
+	grug_jobs.open_trainer(player, "tailor", {x = 100, y = 0, z = 0}, npc)
+	send(player, {grug_jobs_learn = "Learn"})
+	eq(grug_jobs.has(player, "tailor"), true, "X the reach is measured to the live trainer")
+	-- A refused event ends the session: the next one is ignored too.
+	player = new_player("x_ended")
+	grug_jobs.open_trainer(player, "tailor", {x = 1, y = 0, z = 0}, trainer("tailor"))
+	player.pos = {x = 20, y = 0, z = 0}
+	send(player, {grug_jobs_learn = "Learn"})
+	player.pos = {x = 0, y = 0, z = 0}
+	send(player, {grug_jobs_learn = "Learn"})
+	eq(grug_jobs.has(player, "tailor"), false, "X a refused event ends the session")
+	-- A window opened without the NPC (no caller does) teaches nothing.
+	player = new_player("x_no_npc")
+	check(grug_jobs.open_trainer(player, "tailor", {x = 1, y = 0, z = 0}), "X opens without an NPC")
+	send(player, {grug_jobs_learn = "Learn"})
+	eq(grug_jobs.has(player, "tailor"), false, "X ...but teaches nothing")
 end
 
 ------------------------------------------------------------------------------

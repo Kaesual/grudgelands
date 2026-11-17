@@ -148,7 +148,7 @@
 --   here is mortal (every other family cancels every punch).
 --
 --   AND A MARKER IS NEVER LEFT STANDING ALONE. `on_die` is reached only from
---   `check_for_death` (api.lua:887-975), so it is not the only way an entity
+--   `check_for_death` (api.lua), so it is not the only way an entity
 --   can leave: `/clearobjects` and a shutdown between the mod-storage flush
 --   and the map flush end with a marker and no NPC (the `mob_active_limit`
 --   removal no longer touches NPCs since Round 37), and without a
@@ -159,7 +159,7 @@
 --   the second gate.
 --
 -- WHY `core.add_entity` AND NOT `grug_mobs.add_mob`: `mobs:add_mob` refuses
--- whenever no player is inside the active area (api.lua:4121-4213,
+-- whenever no player is inside the active area (api.lua count_mobs,
 -- `count_mobs` -> `is_pla`) because it is the ABM spawner's own gate. Authored
 -- settlement content decides its own position -- the same rule the start
 -- footprint refusal states for camps, guards and rares -- and the whole point
@@ -1402,8 +1402,6 @@ end
 
 grug_mobs.quest_socket_title = quest_socket_title
 
-grug_mobs.install_profession_trainer_name = install_profession_trainer_name
-
 function grug_mobs.install_profession_trainer(entity, slot)
 	entity._grug_profession = slot.profession
 	install_profession_trainer_name(entity, slot.profession)
@@ -1476,7 +1474,7 @@ local function install(entity, row, slot)
 			entity._grug_npc_name
 	end
 	-- The facing to re-assert on every activation: mob_activate hands every mob
-	-- a random yaw (api.lua:3638-3769), so an authored one has to be written back.
+	-- a random yaw (api.lua mob_activate), so an authored one has to be written back.
 	-- The two families with a tick of their own do it there; the quest shell has
 	-- none and restores it from `after_activate`.
 	entity._grug_face_yaw = slot.yaw
@@ -1703,9 +1701,9 @@ end
 -- exactly the old "the ready pass never frees anything", without a flag.
 --
 -- THE MARKER IS NOT ALLOWED TO OUTLIVE ITS NPC, and `on_die` alone does not
--- guarantee that: it is reached only from `check_for_death` (api.lua:887-975),
+-- guarantee that: it is reached only from `check_for_death` (api.lua),
 -- so `/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
--- (api.lua:3638-3769) and a shutdown between the mod-storage flush and the map
+-- (api.lua mob_activate) and a shutdown between the mod-storage flush and the map
 -- flush all leave a marker with nothing standing on it -- and that socket would
 -- then never refill again for the life of the world.
 --
@@ -1892,25 +1890,46 @@ local function serve_ready_settlements(served)
 	end
 end
 
-local accumulator = 0
+-- The heartbeat is cut into HEARTBEAT_SLICES slices of PLACE_INTERVAL
+-- (Round 81 SPAWN, audit MOB2-02; AGENTS.md "No pass handles every player or
+-- zone in one step"): a slice serves the rows whose index falls in it, so
+-- each row still comes up once per PLACE_INTERVAL and a server step serves a
+-- twentieth of the settlements. The readiness pass opens each heartbeat, as
+-- before. A long step serves the slices it owes, at most one whole heartbeat
+-- (the old cost of one step); time beyond that is dropped, never caught up.
+local HEARTBEAT_SLICES = 20
+local SLICE_STEP = PLACE_INTERVAL / HEARTBEAT_SLICES
+local accumulator, slice = 0, 0
+local served = {}
 
-core.register_globalstep(function(dtime)
-	accumulator = accumulator + dtime
-	if accumulator < PLACE_INTERVAL then return end
-	accumulator = 0
-	local served = {}
-	serve_ready_settlements(served)
-	for index = 1, #rows do
+local function serve_slice()
+	if slice == 0 then
+		served = {}
+		serve_ready_settlements(served)
+	end
+	for index = slice + 1, #rows, HEARTBEAT_SLICES do
 		local row = rows[index]
 		-- Every row, every heartbeat, and not only the ones with something
 		-- pending: a full row is exactly where a marker without an NPC hides.
-		-- A row the readiness pass has just served in this same heartbeat is
+		-- A row the readiness pass has served in this same heartbeat is
 		-- skipped -- one identity scan per settlement per heartbeat is the
 		-- budget.
 		if not served[row.key] then
 			local new, freed = serve(row)
 			if new > 0 or freed > 0 then log_row(row, new) end
 		end
+	end
+	slice = (slice + 1) % HEARTBEAT_SLICES
+end
+
+core.register_globalstep(function(dtime)
+	accumulator = accumulator + dtime
+	local due = math.min(math.floor(accumulator / SLICE_STEP), HEARTBEAT_SLICES)
+	if due == 0 then return end
+	accumulator = accumulator - due * SLICE_STEP
+	if accumulator >= SLICE_STEP then accumulator = 0 end
+	for _ = 1, due do
+		serve_slice()
 	end
 end)
 

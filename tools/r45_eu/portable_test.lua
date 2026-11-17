@@ -413,6 +413,8 @@ local function permissive(base)
 	return setmetatable(base, {__index = function() return function() end end})
 end
 grug_core = permissive({
+	-- Round 81: the shared text rules (grug_jobs' field cleaner).
+	text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"),
 	feed = function(_, _, text)
 		feed_lines[#feed_lines + 1] = text
 		return true

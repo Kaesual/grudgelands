@@ -9,7 +9,9 @@ per round in [tools/README.md](../../tools/README.md). A fixture named here
 runs through `tools/run_fixtures.sh <folder>` under the fixture rule of the
 round workflow (only the strictly needed ones). Commands marked "through the
 queue" run LuaJIT for a while and go through the shared Lua queue
-(`~/projects/grudgelands-orchestration/r45/lua_run.sh`).
+(`~/projects/grudgelands-orchestration/r45/lua_run.sh` on the user's
+workstation; elsewhere an installed copy of
+[the template](templates/lua_run.sh), AGENTS.md "Lua & Luanti environment").
 
 | Changed | Run |
 |---|---|
@@ -41,5 +43,6 @@ queue" run LuaJIT for a while and go through the shared Lua queue
 | The gathering catalogue (herbs) | the fixture `r60_herbs` (`luajit tools/r60_herbs/portable_test.lua . --table` prints the reach and the mob-loot gaps) |
 | Building templates, layouts, rosters, palettes or their loader (`wp13/templates.lua`) | `python3 tools/building_templates/check.py` (the hard gate; it runs the game's loader and builds every town and capital; also a round-end gate; it warns about 11 unreachable points, checker false positives that `tools/r62_templatefix` walks in the built towns, and the known-defects list is empty) and `check.py --self-test`; `python3 tools/building_templates/viewer/test_templates.py` (the viewer's reader); `python3 tools/r56_editor/test_editor.py` (the editor; LuaJIT inside, about 1.5 minutes, through the queue); `python3 tools/check_upgrade.py` (a template change needs a declared map reset). `building_templates/export.py --check` is retired and prints RETIRED |
 | Decor rows or a composition's bounds | the fixture `r36_w` (every composition against `baseline.tsv`) |
+| A file `mods/MAPGEN/grug_mapgen/wp40/preparation_identity.lua` lists (the full-preparation authority, even a comment) or that list | `python3 tools/check_upgrade.py`: it names the changed files and wants a new `map_reset` entry, or for a release without one a line naming `grug_prepare_full_world` in the new version's CHANGELOG section (worlds in full preparation mode stop until a map reset; [upgrade contract](../technical/upgrade-contract.md) §5.9) |
 | World generation: terrain, placement, footprints, the world writer | the seed fleet `tools/seed_fleet/run.sh quick` ([round workflow §3](round-workflow.md#3-gates)); a change that only places, swaps or turns nodes needs no run |
 | `tools/migrate.py` or `tools/migration/` | the test of every declared step in the `debian:trixie` container and the unit tests, `tools/r43_mt/container_test.sh` ([round workflow §3](round-workflow.md#3-gates)) |

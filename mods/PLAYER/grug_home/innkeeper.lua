@@ -1,13 +1,12 @@
 local dialogs, serial = {}, 0
+-- The home row of the live innkeeper on its own socket (the row's position),
+-- within talking range, for the row's faction (grug_core.npc_window_permitted).
 local function permitted(player, entity)
- if not player or not player:is_player() or player:get_hp() <= 0 or not entity or
-   entity._grug_socket_role ~= "innkeeper" or not entity.object then return nil end
+ if type(entity) ~= "table" then return nil end
  local row = grug_home.location(entity._grug_start)
  if not row or row.socket ~= entity._grug_socket or
-   row.faction ~= grug_factions.get_faction(player) then return nil end
- local pos, npc = player:get_pos(), entity.object:get_pos()
- if not pos or not npc or vector.distance(pos,npc) > 8 or
-   vector.distance(npc,row.pos) > 2 or entity.object:get_luaentity() ~= entity then return nil end
+   not grug_core.npc_window_permitted(player, entity, "innkeeper", row.faction,
+    {socket_pos = row.pos}) then return nil end
  return row
 end
 local function form(player,row)

@@ -37,12 +37,11 @@ leash; bound actors: leash and give-up distance).
   the Human starting fields, so nearby grass cannot spread across the enclosure.
   Its dedicated Riding Trainer stands in front of four protected displays of the existing mount appearances
   available to that race, one for each tier in §1.1: 24 displays across six cities.
-  CAP authors separate bounded movement/rest regions for all four sockets.
+  Each of the four sockets has its own bounded movement and rest region.
   Ground mounts take short slow walks and pauses inside their safe region;
   flying appearances stay grounded with verified idle animation. Full-size
   posed meshes, the trainer approach and neighboring displays remain clear
-  throughout the allowed movement. GAME owns throttled movement and persistence;
-  CAP owns the roof, enclosure and socket geometry. These displays have no
+  throughout the allowed movement. These displays have no
   combat AI, attacks, loot, flight or visible teleport resets and cannot be
   ridden or yield items.
   Trainer, stable and displays use the authored settlement activation identities;
@@ -159,8 +158,9 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   has one button there, the summon/dismount action; a click acts and closes
   the window. Nothing hands out a mount item. The six items of earlier
   versions (`grug_mounts:apprentice_mount` … `grug_mounts:improved_boat`)
-  stay registered as inert items (no use; still kept to `main` and the own
-  bags, a drop deletes them) until the 0.44.0 migration step removes them.
+  left player inventories with the 0.44.0 migration step; since Round 81
+  each name is an alias of nothing, so a stack left in a crafting station's
+  grid is cleared when it loads.
 - A click on foot creates one ephemeral mount entity at the player's
   exact position and rotation. The entity takes over that position as the
   movement and collision authority, and the player's visible character is
@@ -271,9 +271,7 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   level/XP engine (AGENTS.md, WP6 patterns) and would give a horse a
   level, a health bar and a con colour.
 - **Dismounting** detaches the player, removes the ephemeral mount and places
-  the player on a free neighbouring node where geography permits — the
-  `mobs.detach` / `find_free_pos` pattern of the vendored
-  `mods/ENTITIES/mobs/mount.lua`.
+  the player on a free neighbouring node where geography permits.
 - **Death, logout and server shutdown dismount automatically.** The shared
   mount cleanup removes controller, visible child, warning and runtime status
   exactly once, even when vendored attachment cleanup runs first. Logout and
@@ -300,7 +298,9 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   within 4 nodes takes the rider instead; with lava all round, or nothing
   found after 30 seconds, the rider is released where they are (the last
   resort). A rider who mounts during the hold (the quickbar) keeps that
-  ride. A player who leaves again while held keeps the key for the next
+  ride. A rider moved more than a node across meanwhile (a teleport such as
+  `/home`) is released where they are, never set back; a death ends the
+  restore, so a respawn is not set back either. A player who leaves again while held keeps the key for the next
   login (or the ride they mounted meanwhile). A server crash runs no teardown: that rider
   starts on foot as before.
 - **Entering a no-mount zone dismounts you** (§4) — via the same detach and
@@ -443,16 +443,12 @@ long-cooldown abilities and nothing permanent or cheap. The
 4.4 < 4.6), and a mount keeps paying for its permanent 6.4–12 nodes/s with the
 dismount rule above.
 
-**And it stops being a formality once ranged attackers exist.** Today a
-rider mostly has to walk into a melee swing to lose the mount, but
-skeleton archers already fight at range (`dogshoot`, `combat_stats.md`
-§3), bows are fully catalogued as a Phase-2 enabler
-(`items_crafting.md` §9) and a ranged/stealth class direction is deferred
-Phase-2 work (`classes.md` §6). From that point on a rider crossing
-hostile or enemy ground can be **brought down at range**, which is
-exactly the counterplay a permanent speed buff needs — and in PvP it is
-the counterplay to mounts, since a player's damage dismounts like any
-other.
+**Ranged attackers make it more than a formality.** The ranged mob
+families fight at range (`dogshoot`, `combat_stats.md` §3) and the Scout
+shoots a bow (`scout.md`), so a rider crossing hostile or enemy ground can
+be **brought down at range**, which is exactly the counterplay a permanent
+speed buff needs — and in PvP it is the counterplay to mounts, since a
+player's damage dismounts like any other.
 
 ## 4. Where riding is forbidden
 
@@ -636,40 +632,8 @@ nodes/s, guards 4.6, so on foot the guards catch up.
 
 ## 5. Reference implementations & licences
 
-Three vendored reference projects carry a ride/attach pattern worth
-adapting. Licence verdicts per AGENTS.md "Licenses" (project code is
-GPL-3.0-or-later):
-
-| Source | What to take | Code licence | Verdict |
-|---|---|---|---|
-| **mobs_redo** (already vendored as `mods/ENTITIES/mobs`) | the complete ride API | MIT (`reference_projects/mobs_redo/license.txt:1`) | ✓ compatible |
-| **Lord-of-the-Test** `lottmobs/horse.lua` | mount-as-purchasable-item pattern | LGPL 2.1 (`Lord-of-the-Test/LICENSE.txt:1`; per-file heritage in `mods/lottmobs/license.txt`: PilzAdam WTFPL, TenPlus1 MIT, LGPL 2.1 contributions) | ✓ compatible |
-| **VoxeLibre** `mcl_mobs/mount.lua`, `mobs_mc/horse.lua` | a maintained fork of the same API | GPL-3.0-or-later (`VoxeLibre/LEGAL.md`); `mobs_mc/README.md` names GPLv3 for that mod, and LEGAL.md's dual-licence clause lets us take the game's GPL-3.0-or-later terms instead | ✓ compatible |
-
-- **mobs_redo is the base**: `mount.lua` is already vendored and loaded
-  (`mods/ENTITIES/mobs/init.lua`). Its four public helpers are
-  `mobs.attach(entity, player)`, `mobs.detach(player)`,
-  `mobs.drive(entity, moving_anim, stand_anim, can_fly, dtime)` and
-  `mobs.fly(entity, dtime, speed, moving_anim, stand_anim)`; the local
-  `force_detach` and the leave/shutdown/die handlers sit at the top of
-  `mount.lua`. `drive`'s `can_fly` flag and `fly` are exactly the land /
-  flying split of §1.1, and the speed cap is the entity's own
-  `max_speed_forward` (read in `mobs.drive`). It **requires the
-  `player_api` mod** (the head of `mount.lua` stubs the whole API out
-  otherwise) — we vendor it as `mods/BASE/player_api`, so the
-  precondition holds.
-- **Lord of the Test** shows the acquisition half we need and mobs_redo
-  does not have: `lottmobs:register_horse(name, craftitem, horse)`
-  (`Lord-of-the-Test/mods/lottmobs/horse.lua:26`) registers a
-  **craftitem whose `on_place` spawns the mount entity** (`:31-41`) next
-  to a plain `core.register_entity` mount (`:305`) with attach/detach on
-  right-click (`:200-222`). Reuse only the item-to-entity registration shape:
-  Grudgelands uses the persistent, non-consuming toggle lifecycle of §3 and
-  removes the ephemeral entity on every dismount. It must not copy a placed,
-  parked or consumed-horse lifecycle.
-- **VoxeLibre**'s `mcl_mobs/mount.lua` (`mcl_mobs.attach` at `:52`,
-  `detach` `:82`, `drive` `:89`, `fly` `:222`) is the same lib_mount
-  ancestry, better maintained; `mobs_mc/horse.lua:226` is the reference
-  call site. Use it to cross-check fixes, not as a second base — mixing
-  GPL-3.0 code into the MIT-licensed vendored copy would relicense it
-  for no gain.
+`grug_mounts` uses its own controller entity (`entity.lua`, the player
+attached with `set_attach`) and none of the ride APIs of mobs_redo, Lord of
+the Test or VoxeLibre. The references studied before the build and their
+licence verdicts are archived:
+[mounts references](../archive/design/mounts-references.md).

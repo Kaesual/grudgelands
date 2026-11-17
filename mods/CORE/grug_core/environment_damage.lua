@@ -1,13 +1,26 @@
 -- Environmental player damage (combat_stats.md "Environmental damage").
 --
--- Suffocation and drowning: one head-node read per living player per second.
+-- Suffocation and drowning: one head-node read per living player per second;
+-- the eye height and box come from grug_core.player_body (combat_ray.lua),
+-- the pool from get_properties() only when a tick deals damage, and the
+-- `noclip` privilege (grug_core.has_priv, cached) only for a head node that
+-- would suffocate.
 -- Character-creation stasis is engine-immortal and explicitly exempt.
 -- Lava is settled in the central hp-change modifier (combat.lua), which
 -- replaces the engine's flat node damage with the amount computed here.
 -- Players only: mobs_redo applies its own node damage to mobs.
 
+-- The pass visits each player once a second on its join slot (Round 81
+-- PASSES; audit X4-05), each visit up to a server step early or late. A
+-- visit deals its `elapsed` rounded to whole ticks: one at steady steps of
+-- up to 0.25 s whatever the join moment (on a server lagging above that the
+-- slot period stretches and the rounding drifts), the seconds a stall
+-- covered at once, and at
+-- most one on the join visit (0 to 1 s after the join), as the shared
+-- accumulator's first firing. No per-player carry: one that starts at a
+-- join moment can settle near a whole tick, where step jitter makes visits
+-- of 0 and 2 ticks.
 local CHECK_INTERVAL = 1
-local elapsed = 0
 
 -- Round 24 ruling 24: shares of the ACTUAL pool per second.
 local LAVA_PERCENT = 20
@@ -127,15 +140,15 @@ end
 -- of 0.3); a rider's eye height is the camera's, up to 3.5 nodes over the
 -- mount's feet (grug_mounts camera, 0.45.1), so the sit box's top (1.0, inside
 -- the mount's body) stands in for it and a mount fits every gap its body fits.
-local function head_node_def(player, properties)
+local function head_node_def(player, body)
 	local pos = player:get_pos()
 	if not pos then
 		return nil
 	end
-	local box = properties.collisionbox
+	local box = body.collisionbox
 	local head = {
 		x = pos.x,
-		y = pos.y + math.min(properties.eye_height or 1.47, box and box[5] or math.huge),
+		y = pos.y + math.min(body.eye_height or 1.47, box and box[5] or math.huge),
 		z = pos.z,
 	}
 	local node = core.get_node(head)
@@ -150,43 +163,33 @@ local function drowning_flag(player)
 	return not flags or flags.drowning ~= false
 end
 
-core.register_globalstep(function(dtime)
-	elapsed = elapsed + dtime
-	if elapsed < CHECK_INTERVAL then
-		return
-	end
-	local ticks = math.floor(elapsed / CHECK_INTERVAL)
-	elapsed = elapsed - ticks * CHECK_INTERVAL
-	for _, player in ipairs(core.get_connected_players()) do
-		if player:get_hp() > 0 and not in_creation_stasis(player) then
-			local properties = player:get_properties()
-			local def = head_node_def(player, properties)
-			-- One privilege lookup per player per check, never per engine
-			-- step. The fallback is only for standalone fixtures; Luanti always
-			-- provides get_player_privs.
-			local privs = def and core.get_player_privs and
-				core.get_player_privs(player:get_player_name()) or {}
-			if grug_core.should_suffocate(def, false, privs.noclip == true) then
-				local per_second = grug_core.suffocation_damage(properties.hp_max)
-				player:set_hp(math.max(0, player:get_hp() - per_second * ticks), {
-					type = "set_hp",
-					from = "mod",
-					custom_type = "grug_core:suffocation",
-				})
-			end
-			-- The engine's own drown tick (every 2 s, flat node `drowning`)
-			-- is cancelled in the central hp-change modifier; this per-second
-			-- tick replaces it. Breath depletion stays the engine's.
-			if def and (tonumber(def.drowning) or 0) > 0 and player:get_hp() > 0 and
-					grug_core.should_drown(def, player:get_breath(),
-						(player:get_armor_groups().immortal or 0) ~= 0,
-						drowning_flag(player)) then
-				local per_second = grug_core.drowning_damage(properties.hp_max)
-				player:set_hp(math.max(0, player:get_hp() - per_second * ticks), {
-					type = "drown",
-					custom_type = grug_core.DROWNING_CUSTOM_TYPE,
-				})
-			end
+grug_core.register_player_pass(CHECK_INTERVAL, function(player, elapsed)
+	local ticks = math.floor(elapsed / CHECK_INTERVAL + 0.5)
+	if ticks >= 1 and player:get_hp() > 0 and not in_creation_stasis(player) then
+		local def = head_node_def(player, grug_core.player_body(player))
+		-- should_suffocate with `noclip` asked only for a node that would
+		-- suffocate: the same answer as asking first.
+		if grug_core.should_suffocate(def, false, false) and
+				not grug_core.has_priv(player:get_player_name(), "noclip") then
+			local per_second = grug_core.suffocation_damage(player:get_properties().hp_max)
+			player:set_hp(math.max(0, player:get_hp() - per_second * ticks), {
+				type = "set_hp",
+				from = "mod",
+				custom_type = "grug_core:suffocation",
+			})
+		end
+		-- The engine's own drown tick (every 2 s, flat node `drowning`)
+		-- is cancelled in the central hp-change modifier; this per-second
+		-- tick replaces it. Breath depletion stays the engine's.
+		if def and (tonumber(def.drowning) or 0) > 0 and player:get_hp() > 0 and
+				grug_core.should_drown(def, player:get_breath(),
+					(player:get_armor_groups().immortal or 0) ~= 0,
+					drowning_flag(player)) then
+			local per_second = grug_core.drowning_damage(player:get_properties().hp_max)
+			player:set_hp(math.max(0, player:get_hp() - per_second * ticks), {
+				type = "drown",
+				custom_type = grug_core.DROWNING_CUSTOM_TYPE,
+			})
 		end
 	end
 end)

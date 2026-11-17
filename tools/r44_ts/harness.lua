@@ -417,7 +417,8 @@ return function(repo, hidden)
 	core.get_modpath = function(mod) return repo .. "/mods/PLAYER/" .. mod end
 	load("grug_classes", "PLAYER/grug_classes", {"talent_graph_ui.lua"})
 	core.get_modpath = get_modpath
-	load("grug_inventory", "PLAYER/grug_inventory", {"ui.lua", "navigation.lua"})
+	-- Round 81: bound.lua, the seam grug_skills/bound_items.lua registers with.
+	load("grug_inventory", "PLAYER/grug_inventory", {"bound.lua", "ui.lua", "navigation.lua"})
 	load("grug_skills", "PLAYER/grug_skills", {"init.lua"})
 	for _, fn in ipairs(registered.mods_loaded) do fn() end
 

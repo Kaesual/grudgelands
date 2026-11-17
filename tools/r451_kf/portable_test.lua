@@ -169,6 +169,8 @@ grug_pvp = {
 }
 grug_sounds = {play = function() end}
 load_mod("grug_parties", "PLAYER/grug_parties", "ui.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 load_mod("grug_pvp", "PLAYER/grug_pvp", "page.lua")
 load_mod("grug_inventory", "PLAYER/grug_inventory", "help.lua")
 

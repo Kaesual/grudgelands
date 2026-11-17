@@ -336,6 +336,8 @@ local inventory = {
 }
 
 grug_core = {
+	-- Round 81: the input gate asks grug_core's privilege cache.
+	has_priv = function() return true end,
 	combat_eye_pos = function() return vector.new(0, 1.47, 0) end,
 	combat_actor = function(ref) return ref end,
 	-- The aiming ray (grug_core.aim_raycast, tested in tools/r35_t): the

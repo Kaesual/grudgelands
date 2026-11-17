@@ -207,13 +207,22 @@ local function show(player, session)
 	core.show_formspec(player:get_player_name(), session.formname, form(player, session))
 end
 
+-- The window holds no entity (vendors.lua opens it with the NPC's position
+-- and faction), so it keeps this check rather than
+-- grug_core.npc_window_permitted. The second result is the line a refusal
+-- says when the window closes.
 local function permitted(player, session)
 	if not player or not player:is_player() or player:get_hp() <= 0 then
 		return false
 	end
 	local pos = player:get_pos()
-	if not pos or vector.distance(pos, session.pos) > RANGE then return false end
-	return grug_factions.serves(session.faction, player)
+	if not pos or vector.distance(pos, session.pos) > RANGE then
+		return false, "You walked away from the Crownbinder."
+	end
+	if not grug_factions.serves(session.faction, player) then
+		return false, grug_factions.refusal("Crownbinder", session.faction)
+	end
+	return true
 end
 
 -- Opened by the NPC (vendors.lua): `faction` is the faction it serves.
@@ -236,8 +245,17 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
 	local session = sessions[name]
 	if not session or session.formname ~= formname then return true end
-	if fields.quit or not permitted(player, session) then
+	if fields.quit then
 		sessions[name] = nil
+		return true
+	end
+	-- No longer permitted: the window closes and says why, as the trade
+	-- window does (trade.lua), instead of ignoring every later click.
+	local allowed, reason = permitted(player, session)
+	if not allowed then
+		sessions[name] = nil
+		core.close_formspec(name, formname)
+		if reason then core.chat_send_player(name, reason) end
 		return true
 	end
 	-- One action per packet, from the rows actually rendered.

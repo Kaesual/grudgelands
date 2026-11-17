@@ -312,7 +312,8 @@ do
 			return o
 		end,
 	}
-	_G.grug_core = {}
+	-- Round 81: the join slots (player_slots.lua) are not loaded here.
+	_G.grug_core = {register_player_pass = function() end}
 	dofile(repo .. "/mods/CORE/grug_core/tag_carrier.lua")
 	local step = globalsteps[1]
 	local calls = {}
@@ -563,6 +564,10 @@ do
 		display_name = function() return "The Accord" end}
 	local players = {viewer}
 	core.get_connected_players = function() return players end
+	-- Round 81: the per-player passes register through grug_core, and the
+	-- frame's own ray takes the eye from grug_core's body cache.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
+	grug_core.player_body = function(player) return {eye_height = player:get_properties().eye_height} end
 	dofile(repo .. "/mods/ENTITIES/grug_mobs/target_frame.lua")
 	joins[#joins](viewer)
 	local frame_step = globalsteps[#globalsteps]
@@ -604,7 +609,8 @@ do
 	-- init.lua: the crosshair refresh has its own 0.15 s beat.
 	local init = assert(io.open(repo .. "/mods/PLAYER/grug_abilities/init.lua")):read("*a")
 	check(init:find("local CROSSHAIR_STEP = 0.15", 1, true) ~= nil and
-		init:find("if crosshair_due then grug_abilities.crosshair.update(player) end", 1, true) ~= nil,
+		-- Round 81: the pass hands the crosshair its one read of the held item.
+		init:find("if crosshair_due then grug_abilities.crosshair.update(player, item) end", 1, true) ~= nil,
 		"X: the crosshair refresh runs every 0.15 s, input and ready ring every pass")
 	_G.core, _G.grug_core, _G.grug_abilities, _G.vector = nil, nil, nil, nil
 	_G.grug_mobs, _G.grug_xp, _G.grug_factions = nil, nil, nil

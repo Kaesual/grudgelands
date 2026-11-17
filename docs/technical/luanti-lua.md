@@ -66,11 +66,13 @@ next agent can re-verify.
   the **bundled PUC Lua** — `cmake/Modules/FindLua.cmake:4-28`.
 - The bundled interpreter is **Lua 5.1.5** (`lib/lua/src/lua.h:20`), patched
   with a custom `lua_atccall` hook so C++ exceptions can cross the Lua stack
-  (`src/script/cpp_api/s_base.cpp:105-110`); system-wide PUC Lua is rejected
-  at configure time for that reason (`src/CMakeLists.txt:908-921`).
-- LuaJIT: anything older than ~March 2021 only warns
-  (`src/CMakeLists.txt:890-906`). Luanti links a *system* LuaJIT, so
-  compile-time LuaJIT flags are set by the distro, not by us.
+  (`src/script/cpp_api/s_base.cpp:137` in 5.18.0); without LuaJIT the build
+  always uses this bundled copy and never looks for a system PUC Lua
+  (`cmake/Modules/FindLua.cmake`).
+- LuaJIT: one older than March 2021 is a configure error in 5.18.0
+  (`src/CMakeLists.txt` `HAVE_RECENT_LJ`, `FATAL_ERROR`). Luanti links a
+  *system* LuaJIT, so compile-time LuaJIT flags are set by the distro, not
+  by us.
 - **Practical consequence: write code that runs on plain Lua 5.1.5.** Both
   configurations ship in the wild (aarch64/macOS builds regularly use the
   bundled Lua), and the engine's own builtin code stays 5.1-compatible —
@@ -203,9 +205,12 @@ globals** (`doc/lua_api.md:7617-7621`).
   (`doc/lua_api.md:8304-8313`, `builtin/common/metatable.lua:3-19`; `vector`
   is pre-registered as `__builtin:vector`).
 
-## Sandbox (`secure.enable_security`, default true)
+## Sandbox (always on; `--insecure-no-sandbox` disables it)
 
-Default `true` (`builtin/settingtypes.txt:1936-1939`). The engine builds a
+Always on in 5.18.0: the old `secure.enable_security` setting is gone and
+ignored (a warning when it is set to false,
+`src/script/scripting_server.cpp`); only the `--insecure-no-sandbox`
+command-line flag switches it off (`src/main.cpp`). The engine builds a
 fresh global table and copies only whitelisted names into it
 (`src/script/cpp_api/s_security.cpp:122-336`):
 
@@ -372,13 +377,18 @@ checkout.
   server walks Chebyshev shells of 16-node blocks around each player
   (`src/server/clientiface.cpp`, `getNextBlocks`): it generates only up to
   `max_block_generate_distance` (default 10 blocks), sends up to
-  `max_block_send_distance` (12), and never sends an all-air block beyond
-  `block_send_optimize_distance` (4; `:339`). While a block in view at
+  `max_block_send_distance` (13 in 5.18.0, `src/defaultsettings.cpp`; 12 in
+  5.17), and never sends an all-air block beyond
+  `block_send_optimize_distance` (4; `:337`). While a block in view at
   distance d waits for its emerge, the next pass restarts at d. So
   ungenerated air or stone near a player delays sending the prepared surface
-  further out, and a generate distance below the send distance minus 2
-  freezes loading for good, because requests for blocks the server may not
-  generate are dropped and asked again every step. **Lowering
+  further out. A request for a block beyond the generate distance does not
+  create it (`src/emerge.cpp`, `EMERGE_CANCELLED`) and is asked again every
+  step, so the send front stops at a missing block there: read in 5.17
+  (send 12, generate 10) as "a generate distance below the send distance
+  minus 2 freezes loading". 5.18.0's defaults leave three shells (11 to 13)
+  beyond the generate distance; whether that stalls in play was not
+  measured. The game's `minetest.conf` sets neither key. **Lowering
   `max_block_generate_distance` is not a lever for loading speed.** Flying
   mounts reach y = 600 and generate air chunks on demand.
 - **More than one emerge thread loses ores and caves** at chunk edges in v7
@@ -407,7 +417,8 @@ compatibility or mapgen check.
 
 `luac51 -p` parses without emitting bytecode; `-l -p` lists opcodes, so
 `SETGLOBAL` is the plain-5.1 equivalent of `luajit -bl … | grep GSET` for
-the strict.lua check — expect exactly one line, the mod table.
+the strict.lua check — expect exactly one line, the mod table. The
+listing is read by hand: `check_lua.sh` prints it and never fails on it.
 
 ### Escapes are a *silent* divergence — only grep finds them
 
@@ -471,7 +482,12 @@ confirmed for the repository in Round 37). LuaJIT owns every executable run.
    repository root, Lua under `tools/` included: the `luac51 -p` parser, the
    `SETGLOBAL` listing, the five grep sweeps above and sweep 6 (`x ^ 2` /
    `math.pow` under `mods/MAPGEN`). It needs ripgrep and fails fast without
-   it. This is the whole plain-5.1 gate during development.
+   it. This is the whole plain-5.1 gate during development. What it checks
+   of the do-not-write list: items 1, 2, 3 (but not `__len` or `__pairs`), 4,
+   5 (the parser; not integers above 2^53−1), 6 (but not bytecode loading,
+   which the sandbox refuses at run time), 12 and, under `mods/MAPGEN`, 13;
+   item 9 only as the printed `SETGLOBAL` listing. The others are review
+   items.
 2. **Every executable check** (fixtures, seed fleet, probes, populations,
    benchmarks) runs under LuaJIT. A new harness with non-trivial runtime
    defaults to LuaJIT; one hardwired to PUC is a defect.

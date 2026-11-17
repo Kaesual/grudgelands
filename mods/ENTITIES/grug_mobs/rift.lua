@@ -11,8 +11,9 @@
 --     site's POI core, never a prop, the central actor clearance or the box's
 --     outer ring (rift_core.lua). The one deliberate, recorded exception to
 --     "runtime effects never change a POI";
---   * dark particles over the crack while a player is near (per player, one
---     spawner per crack stretch every few seconds; rift_core.lua's budget);
+--   * dark particles over the crack while a player is near (one 1 s spawner
+--     per crack stretch every second through grug_core's particle helper;
+--     rift_core.lua's budget);
 --   * the rift boss: a demonic level-60 elite on the Dungeon Master's mesh,
 --     spawned like a leader when a player who may fight him comes near (the
 --     finale in his quest log or done, rift_core.lua's eligible), bound to the site by
@@ -33,10 +34,10 @@ local storage = grug_mobs.storage
 local catalog = dofile(core.get_modpath("grug_mapgen") .. "/wp40/r20_poi_catalog.lua")
 
 -- Lane A's art (round36-plan.md §4.9, story bible §3): every texture of the
--- rift is named here and nowhere else.
+-- rift is named here, but for its particle (grug_mobs_rift_particle.png),
+-- which the rift effects of grug_core/particle_effects.lua name (Round 81).
 local TEXTURES = {
 	void = "grug_mobs_rift_void.png",
-	particle = "grug_mobs_rift_particle.png",
 	boss = "grug_mobs_isquarre.png",
 	bolt = "grug_mobs_rift_bolt.png",
 }
@@ -89,7 +90,7 @@ local function current_site()
 	local cells = R.crack_cells(art, R.CANDIDATES[R.SITE])
 	site = {key = R.SITE, art = art, id = R.boss_id(R.SITE),
 		anchor = {x = anchor.x, y = anchor.y, z = anchor.z},
-		cells = cells, nodes = R.crack_nodes(cells, anchor)}
+		cells = cells}
 	-- The particle stretches: runs of about eight crack cells, each one
 	-- spawner's box.
 	site.stretches = {}
@@ -171,24 +172,19 @@ local function write_crack(s)
 end
 
 --
--- Particles: one spawner per stretch for each near player, every
--- PARTICLE_PERIOD seconds, sent to that player only.
+-- Particles: one 1 s spawner per stretch every second while a player is
+-- near, through the one particle path (Round 81 MOBRUN, MOB3-03): an
+-- unattached spawner of at most 1 s goes only to the players in range, and
+-- grug_particle_scale applies. Every near player sees the same motes.
 --
-local function emit_particles(s, name)
+local function emit_particles(s)
 	if #s.stretches == 0 then return end
-	local per = math.max(1, math.floor(R.PARTICLE_AMOUNT / #s.stretches + 0.5))
+	local per = math.max(1, math.floor(R.PARTICLE_RATE / #s.stretches + 0.5))
 	local y = s.anchor.y + 0.6
 	for _, box in ipairs(s.stretches) do
-		core.add_particlespawner({
-			amount = per, time = R.PARTICLE_PERIOD, playername = name,
-			pos = {min = {x = box.x0 - 0.5, y = y, z = box.z0 - 0.5},
-				max = {x = box.x1 + 0.5, y = y + 0.4, z = box.z1 + 0.5}},
-			vel = {min = {x = -0.15, y = 0.4, z = -0.15},
-				max = {x = 0.15, y = 1.1, z = 0.15}},
-			exptime = {min = R.PARTICLE_LIFE[1], max = R.PARTICLE_LIFE[2]},
-			size = {min = 1.5, max = 3.5},
-			texture = TEXTURES.particle, glow = 3,
-		})
+		grug_core.particles.play("rift_crack", {
+			caster = {x = box.x0 - 0.5, y = y, z = box.z0 - 0.5},
+			size = {box.x1 - box.x0 + 1, box.z1 - box.z0 + 1}, n = per})
 		grug_mobs.rift_stats.spawners = grug_mobs.rift_stats.spawners + 1
 		grug_mobs.rift_stats.particles = grug_mobs.rift_stats.particles + per
 	end
@@ -232,15 +228,10 @@ local function boss_alive()
 	return false
 end
 
-local function pulse_particles(pos, radius, amount, time)
-	core.add_particlespawner({
-		amount = amount, time = time,
-		pos = {min = {x = pos.x - radius, y = pos.y, z = pos.z - radius},
-			max = {x = pos.x + radius, y = pos.y + 1.5, z = pos.z + radius}},
-		vel = {min = {x = -1, y = 0.5, z = -1}, max = {x = 1, y = 2.5, z = 1}},
-		exptime = {min = 0.5, max = 1.2}, size = {min = 2, max = 4},
-		texture = TEXTURES.particle, glow = 6,
-	})
+-- The boss's motes: "rift_pulse_windup", "rift_pulse" and "rift_rise"
+-- (grug_core/particle_effects.lua), `amount` for the probe's counter.
+local function pulse_particles(pos, effect, amount)
+	grug_core.particles.play(effect, {caster = pos})
 	grug_mobs.rift_stats.particles = grug_mobs.rift_stats.particles + amount
 end
 
@@ -294,7 +285,7 @@ local function boss_tick(self, dtime)
 			if pos then
 				grug_mobs.boss_hit_players(self, PULSE_RADIUS, PULSE_MULT, false,
 					PULSE_KNOCKBACK, nil)
-				pulse_particles(pos, PULSE_RADIUS, 40, 0.4)
+				pulse_particles(pos, "rift_pulse", 40)
 			end
 			t.grug_rift_pulse = PULSE_INTERVAL
 		end
@@ -320,7 +311,7 @@ local function boss_tick(self, dtime)
 	t.grug_telegraph = true
 	if self.update_tag then self:update_tag() end
 	self:set_animation("punch", true)
-	pulse_particles(pos, 1.5, 30, PULSE_WINDUP)
+	pulse_particles(pos, "rift_pulse_windup", 30)
 end
 
 local function boss_died(self)
@@ -358,7 +349,6 @@ grug_mobs.register_mob("grug_mobs:rift_boss", {
 	walk_velocity = 1.2, run_velocity = 4.6, walk_chance = 0,
 	jump = true, jump_height = 4, stepheight = 1.1, fear_height = 4,
 	view_range = 20, dogshoot_switch = 1,
-	dogshoot_count_max = 6, dogshoot_count2_max = 3,
 	arrow = "grug_mobs:rift_bolt", arrow_override = grug_mobs.stamp_arrow_damage,
 	shoot_interval = 2.5, shoot_offset = 1.4,
 	visual = "mesh", mesh = "grug_mobs_dungeon_master.b3d", glow = 3,
@@ -409,7 +399,7 @@ local function spawn_boss(s, players)
 	grug_mobs.boss_attempt_reset(s.id)
 	live = object
 	grug_mobs.rift_stats.spawns = grug_mobs.rift_stats.spawns + 1
-	pulse_particles(pos, 2, 60, 1.5)
+	pulse_particles(pos, "rift_rise", 60)
 	for _, player in ipairs(players) do
 		core.chat_send_player(player:get_player_name(),
 			BOSS_NAME .. " rises from the rift.")
@@ -441,11 +431,10 @@ local function any_eligible(players)
 	return false
 end
 
-local clock, particle_clock = 0, {}
+local clock = 0
 core.register_globalstep(function(dtime)
 	clock = clock + dtime
 	if clock < 1 then return end
-	local elapsed = clock
 	clock = 0
 	local s = current_site()
 	if not s then return end
@@ -457,22 +446,9 @@ core.register_globalstep(function(dtime)
 			near[#near + 1] = player
 		end
 	end
-	if #near == 0 then
-		particle_clock = {}
-		return
-	end
+	if #near == 0 then return end
 	if not write_crack(s) then return end
-	local next_clock = {}
-	for _, player in ipairs(near) do
-		local name = player:get_player_name()
-		local left = (particle_clock[name] or 0) - elapsed
-		if left <= 0 then
-			emit_particles(s, name)
-			left = R.PARTICLE_PERIOD
-		end
-		next_clock[name] = left
-	end
-	particle_clock = next_clock
+	emit_particles(s)
 	local due = tonumber(storage:get_string(due_key(R.SITE))) or 0
 	if R.may_spawn(boss_alive(), due, os.time()) and any_eligible(near) then
 		spawn_boss(s, near)

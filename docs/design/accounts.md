@@ -6,8 +6,9 @@ the account cloak in `grug_achievements`), phase 2 in Round 80, version 0.80.0
 (the donor cloaks in `grug_achievements`, the Cheer emote in `grug_quickbar`).
 Provenance: [Round 79 plan](../planning/round79-plan.md) and
 [Round 80 plan](../planning/round80-plan.md), each §2 (rulings), §3.1
-(coordinator defaults, built as written below; the user may overrule them) and
-its completion. The long-term model and the later phases:
+(coordinator defaults, built as written below; whether the user confirms them
+is open in [BACKLOG](../../BACKLOG.md#open-questions-for-the-user)) and its
+completion. The long-term model and the later phases:
 [accounts-concept.md](../planning/accounts-concept.md). The protocol with the
 website (fields, events, answers, refusal reasons, the password check):
 [web-accounts.md](../technical/web-accounts.md), the contract the website

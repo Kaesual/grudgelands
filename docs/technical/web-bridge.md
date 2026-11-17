@@ -48,8 +48,10 @@ Content-Type: application/json
 - Any other answer than `200` with a readable body of this `protocol` counts as a
   failed request.
 - A request body is at most 256 KiB. A response is at most 1 MiB.
-- All times are Unix seconds. All text is UTF-8: a stray byte in an event, which a
-  modified client can put into a ticket, arrives as U+FFFD.
+- All times are Unix seconds. All text is UTF-8: invalid UTF-8 in an event arrives as
+  U+FFFD (a modified client can still put an overlong form or a surrogate
+  into a ticket, and a ticket stored before 0.81.0 may hold stray bytes; the
+  cleaner drops only a lead byte with the wrong number of continuation bytes).
 - Both sides accept `null` wherever an empty array is expected, because
   `core.write_json` writes an empty Lua table as `null`.
 

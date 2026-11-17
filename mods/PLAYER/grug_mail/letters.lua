@@ -44,7 +44,6 @@ local LEVEL_LETTERS = {
 	{flag = "grug_mail:letter_registrar", level = 20, from = "Expedition Registrar",
 		text = TEXTS.registrar, useful = function() return true end},
 }
-grug_mail.LEVEL_LETTERS = LEVEL_LETTERS
 
 -- The display name of the player's race capital (the settlement in the
 -- capital slot of the player's race), read once per race.
@@ -60,7 +59,6 @@ local function capital_of(player)
 	end
 	return capitals[grug_classes.get_race(player) or ""] or "your capital"
 end
-grug_mail.capital_of = capital_of
 
 -- {player} and {capital} filled at send time (never a fixed place in the
 -- text, the quest-text rule).
@@ -69,7 +67,6 @@ local function fill(text, player)
 	return (text:gsub("{player}", function() return name end)
 		:gsub("{capital}", function() return capital_of(player) end))
 end
-grug_mail.fill_letter = fill
 
 local function send(player, kind, from, text)
 	return grug_mail.send_system(player:get_player_name(), kind, from, fill(text.subject, player),

@@ -29,7 +29,6 @@ local floor, min, max = math.floor, math.min, math.max
 local MARGIN = 0.05
 local FOOTING = 0.5
 local FULL = {{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}}
-grug_mobs.ROOM_FOOTING = FOOTING
 
 local function node_boxes(pos)
 	local node = core.get_node_or_nil(pos)
@@ -156,7 +155,7 @@ end
 --
 local STUCK_WATCH = 32
 local STUCK_INTERVAL = 1
-grug_mobs.STUCK_WATCH = STUCK_WATCH
+-- Counters for the probes and fixtures (tools/r67_world), not gameplay state.
 grug_mobs.stuck_stats = {flagged = 0, removed = 0}
 
 function grug_mobs.mob_stuck(self)

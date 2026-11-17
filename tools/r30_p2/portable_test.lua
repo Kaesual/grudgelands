@@ -14,8 +14,9 @@
 --    from above; an end still walkable is no search).
 -- B. general_attack, cut out of the vendored api.lua: the mob's eye stays at
 --    its own position + 1 for every candidate and its position is not moved.
--- C. the privilege cache, cut out of api.lua: one lookup per player and
---    privilege, dropped on grant, revoke and leave.
+-- C. mobs.has_priv and mobs.is_creative, cut out of api.lua, answer from
+--    grug_core.has_priv (since Round 81 the cache is grug_core/privs.lua;
+--    its cases moved to tools/r81_hot).
 -- D. spawn_abms.lua, the real file, on a fake engine: rows of one node set
 --    merge into one ABM whose trigger rate times each row's probability is
 --    the row's own rate; a row runs only on its own nodes, in its own y range
@@ -23,9 +24,8 @@
 --    trigger, the probabilities adding up to at most 1; a retired row
 --    registers nothing.
 -- E. spawn_policy.lua, the real file: which rows stay (underground, Kraken /
---    Angelfish, the recipes' critters, the Rift Spawn's surface row; a
---    palette zone keeps all), and the Rift Spawn's surface row keeps its
---    stated chance and cap.
+--    Angelfish, the recipes' critters, the Rift Spawn's surface row), and
+--    the Rift Spawn's surface row keeps its stated chance and cap.
 -- F. aggro.lua give_up_target: an ordinary mob runs the leash reset, a
 --    no-leash actor only drops the target, a king hands it to the boss rules
 --    (Round 72 BOSSRESET, boss_floor.lua), a given-up player is ignored
@@ -237,50 +237,35 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- C. privilege cache (cut out of api.lua)
+-- C. privilege answers from grug_core (cut out of api.lua). Round 81 HOT
+-- moved the cache to grug_core/privs.lua (tools/r81_hot tests it); here
+-- only the delegation.
 -- ---------------------------------------------------------------------------
 do
 	local api = read("mods/ENTITIES/mobs/api.lua")
-	local block = api:match("\n(local grug_priv_cache = {}.-\nfunction mobs.is_creative%(name%).-\nend\n)")
-	check(block ~= nil, "C privilege cache block found")
-	local lookups = 0
-	local privs = {anna = {peaceful_player = true}}
-	local grants, revokes, leaves = {}, {}, {}
+	local block = api:match("\n(function mobs.has_priv%(name, priv%).-\nend\n)")
+	local creative = api:match("\n(function mobs.is_creative%(name%).-\nend\n)")
+	check(block ~= nil and creative ~= nil, "C delegation blocks found")
+	local asked = {}
 	local env = {
 		creative_cache = false,
 		mobs = {},
-		core = {
-			check_player_privs = function(name, priv)
-				lookups = lookups + 1
-				return (privs[name] or {})[priv] == true
-			end,
-			register_on_priv_grant = function(f) grants[#grants + 1] = f end,
-			register_on_priv_revoke = function(f) revokes[#revokes + 1] = f end,
-			register_on_leaveplayer = function(f) leaves[#leaves + 1] = f end,
-		},
+		grug_core = {has_priv = function(name, priv)
+			asked[#asked + 1] = name .. ":" .. priv
+			return name == "anna"
+		end},
 	}
-	local chunk = assert(loadstring(block))
-	setfenv(chunk, setmetatable(env, {__index = _G}))
-	chunk()
+	for _, source in ipairs({block, creative}) do
+		local chunk = assert(loadstring(source))
+		setfenv(chunk, setmetatable(env, {__index = _G}))
+		chunk()
+	end
 	local M = env.mobs
-	check(M.has_priv("anna", "peaceful_player") == true, "C first answer")
-	check(M.has_priv("anna", "peaceful_player") == true and lookups == 1,
-		"C second answer from the cache")
-	check(M.has_priv("bert", "peaceful_player") == false and lookups == 2,
-		"C another player looks up")
-	check(M.is_creative("bert") == false and M.is_creative("bert") == false
-		and lookups == 3, "C creative cached too")
-	privs.bert = {creative = true}
-	check(grants[1]("bert", "admin", "creative") == true,
-		"C the grant callback returns true (later callbacks still run)")
-	check(M.is_creative("bert") == true and lookups == 4, "C a grant drops the cache")
-	privs.anna = {}
-	revokes[1]("anna", "admin", "peaceful_player")
-	check(M.has_priv("anna", "peaceful_player") == false, "C a revoke drops the cache")
-	local n = lookups
-	leaves[1]({get_player_name = function() return "anna" end})
-	M.has_priv("anna", "peaceful_player")
-	check(lookups == n + 1, "C leaving drops the cache")
+	check(M.has_priv("anna", "peaceful_player") == true and
+		M.has_priv("bert", "peaceful_player") == false, "C answers from grug_core")
+	check(M.is_creative("anna") == true and asked[#asked] == "anna:creative",
+		"C creative asks grug_core too")
+	check(not api:find("grug_priv_cache", 1, true), "C no second cache in api.lua")
 end
 
 -- ---------------------------------------------------------------------------
@@ -431,7 +416,6 @@ do
 	local recipe = {zone_a = true, zone_b = true}
 	local function load_policy()
 		_G.grug_mobs = {spawn_regions = {
-			fallback_palettes = function() return {}, {}, {} end,
 			zone_ids = function()
 				local ids = {}
 				for id in pairs(recipe) do ids[#ids + 1] = id end
@@ -462,8 +446,10 @@ do
 	check(not G.spawn_row_kept("grug_mobs:shore_crab", 20), "E the shore crab retired")
 	check(not G.spawn_row_kept("grug_mobs:stone_golem", 300),
 		"E a surface golem row retired")
+	-- (Round 81, ruling 6: the palette zone case is retired with the layer;
+	-- a zone without a recipe keeps no surface row.)
 	recipe.zone_b = false
-	check(G.spawn_row_kept("grug_mobs:wolf", 600), "E a palette zone keeps every row")
+	check(not G.spawn_row_kept("grug_mobs:wolf", 600), "E no palette zone: no surface hunter")
 	recipe.zone_b = true
 	-- The Rift Spawn's surface row keeps its stated chance and cap; an
 	-- ordinary ambient night row still gets the Round 16 scaling.

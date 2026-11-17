@@ -429,5 +429,4 @@ core.register_on_mods_loaded(function()
 	end
 end)
 
-grug_jobs._item_name = item_name
 grug_jobs._flatten_inputs = flatten_inputs

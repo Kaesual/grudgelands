@@ -47,38 +47,13 @@ local table_copy = table.copy
 
 local creative_cache = core.settings:get_bool("creative_mode")
 
--- GRUG PATCH (Round 30 P2, perf review 2026-10 #17): privilege answers are
--- cached per player and privilege. check_player_privs cost 35 us on average
--- under combat load, once per target candidate and per hit. Every privilege
--- change runs the grant/revoke callbacks (builtin auth.lua set_privileges,
--- also behind core.set_player_privs), which drop that player's answers; so
--- does leaving. The callbacks return true: run_priv_callbacks stops at the
--- first one that returns nothing.
-local grug_priv_cache = {}
-
+-- GRUG PATCH (Round 81 HOT; Round 30 P2, perf review 2026-10 #17): privilege
+-- answers come from grug_core's privilege cache (grug_core/privs.lua: per
+-- player and privilege, dropped on a grant, a revoke and a leave), which
+-- this file kept itself until Round 81.
 function mobs.has_priv(name, priv)
-	local privs = grug_priv_cache[name]
-	if not privs then
-		privs = {}
-		grug_priv_cache[name] = privs
-	end
-	local answer = privs[priv]
-	if answer == nil then
-		answer = core.check_player_privs(name, priv) == true
-		privs[priv] = answer
-	end
-	return answer
+	return grug_core.has_priv(name, priv)
 end
-
-local function grug_forget_privs(name)
-	grug_priv_cache[name] = nil
-	return true
-end
-core.register_on_priv_grant(grug_forget_privs)
-core.register_on_priv_revoke(grug_forget_privs)
-core.register_on_leaveplayer(function(player)
-	grug_priv_cache[player:get_player_name()] = nil
-end)
 
 function mobs.is_creative(name)
 	return creative_cache or mobs.has_priv(name, "creative")
@@ -2420,8 +2395,8 @@ function mob_class:do_states(dtime)
 		-- the soft de-aggro below and combat_stats.md §3/§4's chase model were
 		-- unreachable code: the spec wants the chase to PERSIST (at walk speed)
 		-- past 25 m and the 40 m / 15 s leash of grug_mobs/aggro.lua to own the
-		-- reset. `_grug_chase_range` is installed on every grug_mobs mob at
-		-- runtime (45 = leash 40 + hysteresis margin, apply_aggro_fields);
+		-- reset. `_grug_chase_range` is published on every grug_mobs mob's
+		-- prototype (45 = leash 40 + hysteresis margin, publish_aggro_fields);
 		-- vanilla mobs_redo mobs have no such field and keep view_range exactly.
 		-- NB this also bounds mob-vs-NPC chases at 45 for our mobs (the leash
 		-- only governs player chases) — intended: it caps the "guard chases the
@@ -2453,7 +2428,9 @@ function mob_class:do_states(dtime)
 		local target_pos = grug_obstacle.copy_pos(self.attack:get_pos())
 		if not target_pos then self:stop_attack() ; return end
 		local ground_melee = self.attack_type == "dogfight" and not self.fly
-		local in_sight = grug_obstacle.target_visible(self, s, target_pos,
+		-- GRUG PATCH (Round 81 MOBRUN, X4-04): the ray at most every third
+		-- step, never reused for a strike or a fuse (grug_obstacle.attack_sight).
+		local in_sight = grug_obstacle.attack_sight(self, s, target_pos,
 				ground_melee)
 		-- GRUG PATCH (Round 78 BOSS): the melee distance, gap, reach and stop
 		-- gap of this step, edge to edge for a ground mob
@@ -4530,23 +4507,15 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 			return
 		end
 
-		-- custom checks for mob spawning
-		if mobs:spawn_abm_check(pos, node, name) then
-			return
-		end
-
-		local num_mob, is_pla = count_mobs(pos, name)
-
-		if not is_pla then
---print("--- no players within active area, will not spawn " .. name)
-			return
-		end
-
-		if num_mob >= aoc then
---print("--- too many " .. name .. " in area", num_mob .. "/" .. aoc)
-			return
-		end
-
+		-- GRUG PATCH (Round 81 SPAWN, MOB2-01): the cheap tests first. The day
+		-- toggle and the height and light of the cell above the node (where the
+		-- mob would stand) run before the spawn policy and the area scans.
+		-- Every test here is a pure predicate on this attempt, so each attempt
+		-- ends the same way; a refused one is only cheaper. The repellent scan
+		-- (a 33x33x33 find_nodes_in_area, which the engine walks in full even
+		-- for an unknown name) runs only while some mod registers the node or
+		-- an alias of it; this game registers neither
+		-- (grug_materials/content_curation.lua).
 		if day_toggle ~= nil then
 
 			local tod = (core.get_timeofday() or 0) * 24000
@@ -4565,7 +4534,39 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 			end
 		end
 
-		if #core.find_nodes_in_area(
+		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
+
+		if above.y > max_height or above.y < min_height then
+--print("--- height limits not met", name, above.y)
+			return
+		end
+
+		local light = core.get_node_light(above)
+		if not light or light > max_light or light < min_light then
+--print("--- light limits not met", name, light)
+			return
+		end
+
+		-- custom checks for mob spawning
+		if mobs:spawn_abm_check(pos, node, name) then
+			return
+		end
+
+		local num_mob, is_pla = count_mobs(pos, name)
+
+		if not is_pla then
+--print("--- no players within active area, will not spawn " .. name)
+			return
+		end
+
+		if num_mob >= aoc then
+--print("--- too many " .. name .. " in area", num_mob .. "/" .. aoc)
+			return
+		end
+
+		if (core.registered_nodes["mobs:mob_repellent"] or
+				core.registered_aliases["mobs:mob_repellent"]) and
+				#core.find_nodes_in_area(
 				{x = pos.x - 16, y = pos.y - 16, z = pos.z - 16},
 				{x = pos.x + 16, y = pos.y + 16, z = pos.z + 16},
 				{"mobs:mob_repellent"}) > 0 then
@@ -4574,17 +4575,6 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 		end
 
 		pos.y = pos.y + 1 -- change position to above node
-
-		if pos.y > max_height or pos.y < min_height then
---print("--- height limits not met", name, pos.y)
-			return
-		end
-
-		local light = core.get_node_light(pos)
-		if not light or light > max_light or light < min_light then
---print("--- light limits not met", name, light)
-			return
-		end
 
 		-- check if mob/monster can be spawned inside protected areas
 		if core.is_protected(pos, "") then

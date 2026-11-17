@@ -202,6 +202,8 @@ function grug_inventory.content_list(i) return "grug_bag" .. i .. "_content" end
 function grug_inventory.add_to_quiver(_, stack) return stack end
 function grug_inventory.has_quiver() return false end
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/storage.lua")
+-- Round 81: the bound-item seam soulbound.lua registers its rule with.
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/bound.lua")
 local I = grug_inventory
 
 -- grug_housing: the REAL api.lua (registry model) and soulbound.lua.

@@ -293,6 +293,8 @@ local fake_core = with_any({
 })
 
 local fake_grug_core = with_any({
+	-- Round 81: the input gate asks grug_core's privilege cache.
+	has_priv = function() return true end,
 	get_melee_weapon = function(p) return p.melee and ItemStack(p.melee) or ItemStack("") end,
 	get_equipped_weapon = function(p) return p.bow and ItemStack(p.bow) or nil end,
 	equipment_is_broken = function() return false end,

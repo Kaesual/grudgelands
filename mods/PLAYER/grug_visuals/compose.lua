@@ -5,7 +5,8 @@
 -- ONE function composes what a humanoid looks like -- players and mobs alike
 -- -- so the two can never fight over the model's texture list. It is pure,
 -- deterministic and cached by its own key string: the same spec always yields
--- the same table, and the same table is handed back on a repeat call.
+-- the same table, and the same table is handed back on a repeat call while
+-- it is cached (the cache is capped, below; a recomposed entry is equal).
 --
 -- CALLERS MUST TREAT THE RESULT AS READ-ONLY. It is the cache entry, not a
 -- copy; the engine copies `textures` into the object properties, which is the
@@ -89,9 +90,6 @@ local SLOTS = grug_visuals.SLOTS
 local ARMOR_RANK_LINE = {"cloth", "leather", "metal"}
 local LINE_ART = {cloth = "cloth", leather = "leather", metal = "metal"}
 
-grug_visuals.ARMOR_RANK_LINE = ARMOR_RANK_LINE
-grug_visuals.LINE_ART = LINE_ART
-
 -- The model's armor and weapon slots when nothing is worn or shown: the
 -- engine's builtin transparent texture, like the cloak's "No cloak".
 grug_visuals.ARMOR_NONE = "blank.png"
@@ -173,8 +171,6 @@ local function normalize_bracket(bracket, level)
 	return bracket
 end
 
-grug_visuals.normalize_bracket = normalize_bracket
-
 --
 -- What an equipped item looks like. Built ONCE from the real item registry
 -- (`grug_visuals.index_armor`) rather than parsed out of item names: the line
@@ -202,9 +198,7 @@ function grug_visuals.index_armor(items)
 	end
 	-- Every cached composition was built against the OLD index; a re-index
 	-- that kept them would hand back a skin the registry no longer describes.
-	for key in pairs(grug_visuals.cache) do
-		grug_visuals.cache[key] = nil
-	end
+	grug_visuals.clear_compose_cache()
 	local count = 0
 	for name, def in pairs(items) do
 		local groups = type(def) == "table" and def.groups or nil
@@ -301,10 +295,28 @@ end
 -- it), so there is nothing per frame and nothing the web build has to do
 -- differently.
 --
-local cache = {}
+-- The cache in two generations (Round 81 P1-01): NPCs keep rolling new looks
+-- over a long uptime, so a full generation of CACHE_LIMIT entries becomes
+-- the old one and a new one starts; a hit in the old generation moves to
+-- the new one, and the generation before is dropped. Callers compare results
+-- by `key` and `digest`, never by table identity across calls, so a dropped
+-- entry that is composed again is equivalent.
+local CACHE_LIMIT = 2048
+local cache, old_cache, cached = {}, {}, 0
 local warned_race = {}
 
-grug_visuals.cache = cache
+function grug_visuals.clear_compose_cache()
+	cache, old_cache, cached = {}, {}, 0
+end
+
+local function remember(key, result)
+	if cached >= CACHE_LIMIT then
+		old_cache, cache, cached = cache, {}, 0
+	end
+	cache[key] = result
+	cached = cached + 1
+	return result
+end
 
 local function warn_unknown_race(race)
 	local id = tostring(race)
@@ -514,6 +526,11 @@ function grug_visuals.compose(spec)
 	if hit then
 		return hit
 	end
+	hit = old_cache[key]
+	if hit then
+		old_cache[key] = nil
+		return remember(key, hit)
+	end
 
 	-- Every piece in its own parentheses, on the atlas and (but the head) on
 	-- the skin.
@@ -561,6 +578,5 @@ function grug_visuals.compose(spec)
 		result.textures = {texture}
 	end
 	result.digest = digest(result.textures)
-	cache[key] = result
-	return result
+	return remember(key, result)
 end

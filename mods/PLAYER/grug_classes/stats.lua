@@ -136,36 +136,44 @@ end
 
 -- Raw chances are presentation accessors: the Talents page must show points
 -- above the ordinary cap rather than making them look lost. Combat continues
--- to consume the capped accessors below. Lane X3 owns the time-limited cap
--- overrides and will make those consumers use their raised caps.
+-- to consume the capped accessors below.
 -- Dexterity gives 0.05 points of Crit and 0.1 of Dodge per point
 -- (item_tiers.md §1.0).
 function grug_classes.get_crit_chance_raw(player)
 	return 0.05 + 0.0005 * grug_classes.get_attributes(player).dex
 		+ 0.01 * (grug_classes.get_talent_bonus(player, "crit_chance_add")
-			+ grug_classes.get_talent_bonus(player, "crit_chance_add_window")
 			+ grug_core.status_modifier_sum(player, "crit_percent"))
 end
 
 function grug_classes.get_dodge_chance_raw(player)
 	return 0.001 * grug_classes.get_attributes(player).dex
 		+ 0.01 * (grug_classes.get_talent_bonus(player, "dodge_chance_add")
-			+ grug_classes.get_talent_bonus(player, "dodge_chance_window")
 			+ grug_core.absorb_modifier(player, "dodge_percent")
-			+ grug_core.status_modifier_sum(player, "dodge_percent")
 			+ grug_classes.get_scout_dodge_add(player))
 end
 
 -- Chances in 0..1; flat caps, no diminishing returns (combat_stats.md §2).
+local CRIT_CAP = 0.30
+
 function grug_classes.get_crit_chance(player)
-	local cap = math.max(30,
-		grug_classes.get_talent_bonus(player, "crit_cap_override"))
-	return math.min(cap / 100, grug_classes.get_crit_chance_raw(player))
+	return math.min(CRIT_CAP, grug_classes.get_crit_chance_raw(player))
 end
 
 function grug_classes.get_dodge_chance(player)
 	return math.min(grug_classes.get_scout_dodge_cap(player) / 100,
 		grug_classes.get_dodge_chance_raw(player))
+end
+
+-- apply_stats is the one writer of a player's hp_max property, so the value
+-- it leaves is kept (weakly, by ObjectRef) for the readers on the hp-change
+-- path, the HUD life bar and the nametag (Round 81 PASSES; audit C2-03,
+-- C3-04: get_properties builds the whole property table).
+local applied_hp_max = setmetatable({}, {__mode = "k"})
+
+-- The hp_max apply_stats last set on this player; nil before the first
+-- apply_stats of the session (the property is then the engine's default).
+function grug_classes.applied_max_hp(player)
+	return applied_hp_max[player]
 end
 
 -- Recomputes hp_max from level + class. fill_hp fills a living character to
@@ -180,6 +188,10 @@ end
 function grug_classes.apply_stats(player, fill_hp)
 	local max_hp = grug_classes.get_max_hp(player)
 	local old_max = player:get_properties().hp_max
+	-- Kept before the write: a lower maximum clamps HP inside set_properties,
+	-- whose hp-change callbacks already read it (c_content.cpp
+	-- read_object_properties); the engine stores it as a u16.
+	applied_hp_max[player] = math.max(0, math.min(65535, max_hp))
 	if old_max ~= max_hp then
 		player:set_properties({hp_max = max_hp})
 	end

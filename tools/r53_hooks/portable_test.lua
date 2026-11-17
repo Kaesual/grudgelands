@@ -435,7 +435,7 @@ do
 		shipped = shipped + 1
 		local p = new_player("u_" .. id, def.class or "warrior")
 		local same = G.effective_cost(p, def)
-		local old = G.cost_for(p, def.cost, def.id)
+		local old = G.cost_for(p, def.cost) -- Round 81 (DEAD): no ability_id parameter
 		check(same.mana == old.mana and same.rage == old.rage, "U " .. id .. ": the cost as on main")
 		eq(G.effective_cooldown(p, def), def.cooldown or 0, "U " .. id .. ": the cooldown as on main")
 		eq(G.get_range(p, def), def.range or 4, "U " .. id .. ": the range as on main")
@@ -837,6 +837,8 @@ do
 	grug_inventory = {HOTBAR_STORE = "grug_hotbar_store"}
 	rawset(_G, "ItemStack", function() return {get_tool_capabilities = function() return {} end} end)
 	grug_core = {
+		-- Round 81: the input gate asks grug_core's privilege cache.
+		has_priv = function() return true end,
 		combat_eye_pos = function() return vector.copy(EYE) end,
 		combat_actor = function(ref) return ref end,
 		aim_raycast = function(o, d, liquids) return core.raycast(o, d, true, liquids) end,

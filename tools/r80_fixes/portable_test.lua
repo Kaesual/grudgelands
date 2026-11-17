@@ -71,6 +71,8 @@ grug_core.particles = {play = noop}
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 dofile(repo .. "/mods/CORE/grug_core/combat.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
 eq(#modifiers, 1, "one central hp-change modifier")
 

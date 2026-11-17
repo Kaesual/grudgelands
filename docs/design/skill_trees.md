@@ -692,7 +692,7 @@ since Round 53 (Hold Ground's went with the old trees). The rules (ruling
 - **Mounts stay outside the aggregator** (`mounts.md`): a mount's speed is
   its entity's velocity.
 
-API: `grug_core.set_move_modifier`, `clear_move_modifier`, `set_root`,
+API: `grug_core.set_move_modifier`, `set_root`,
 `set_move_immunity`, `clear_move_immunity`, `hold_movement`,
 `release_movement`, `set_move_stance`, `clear_move_stance`,
 `get_move_stance`. The original sizing and the writer audit are in the
@@ -961,7 +961,7 @@ superseded by the graph of §1 under the user's rulings of 2026-10-19 and
 
 None in this file. The balance fix round after the user's first playtest
 of the new kits and the round's open notes are in
-[BACKLOG](../planning/round53-plan.md#carry-overs) "Round 53 carry-overs";
+[the Round 53 plan's carry-overs](../planning/round53-plan.md#carry-overs);
 open questions about talents (for example the "Word" names, BACKLOG DP-06)
 under "Audit 2026-10 open questions". The closed decision record of revision 2 is in the
 [delivery record](../archive/design/skill-trees-wp11-delivery.md) §6.

@@ -37,14 +37,6 @@ function grug_mail.unread_count(name)
 	return M.unread(box, S.broadcasts(), S.read_set(player), S.now())
 end
 
-local count_callbacks = {}
-
--- func(name, count): after every unread change of an online player (the
--- open mailbox window refreshes its tab captions here).
-function grug_mail.register_on_count(func)
-	count_callbacks[#count_callbacks + 1] = func
-end
-
 -- Recomputes an online player's count and hands it to the minimap's mail
 -- icon (lane HUD's grug_map.minimap.set_mail_count, looked up at call time:
 -- it may merge after this mod).
@@ -55,7 +47,6 @@ function grug_mail.refresh_count(name)
 	if minimap and type(minimap.set_mail_count) == "function" then
 		minimap.set_mail_count(name, count)
 	end
-	for _, func in ipairs(count_callbacks) do func(name, count) end
 	return count
 end
 

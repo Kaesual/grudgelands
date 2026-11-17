@@ -309,7 +309,7 @@ local function run_cast(index, label, pitch, build, expect_ok, dz, talents)
 	local def = grug_abilities.registered.blink
 	check(grug_abilities.is_unlocked(ref, "blink"), label .. ": Blink unlocked for a mage")
 	grug_abilities.restore_mana(ref, 1000000)
-	local cost = grug_abilities.cost_for(ref, def.cost, "blink").mana or 0
+	local cost = grug_abilities.cost_for(ref, def.cost).mana or 0
 	local mana = grug_abilities.get_mana(ref)
 	local ok = grug_abilities.try_cast(ref, def, nil, function() end)
 	local pos = ref:get_pos()

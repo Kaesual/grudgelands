@@ -751,16 +751,13 @@ def build(args):
     for zid, f in zone_facts.items():
         camps = []
         for a in f["anchors"]:
-            if a["kind"] in ("bandit_home", "bandit_frontier"):
-                ct = camp_types["bandit"]
+            if a["kind"] in ("bandit_home", "bandit_frontier", "mirefolk"):
+                # The bandit and mirefolk camp types are gone (Round 81
+                # MOB2-05): these anchors are POIs a recipe camp may stand on,
+                # and the recipe gives the roster.
                 camps.append({"anchor": a["id"], "name": a["name"], "x": a["x"], "z": a["z"],
-                              "type": "bandit", "mobs": [ct["mob"], ct.get("variant")],
-                              "count": [ct["count_min"], ct["count_max"]], "radius": ct["radius"],
-                              "respawn_s": [ct["respawn_min"], ct["respawn_max"]],
-                              "level_at_anchor": a["level_at"]})
-            elif a["kind"] == "mirefolk":
-                camps.append({"anchor": a["id"], "name": a["name"], "x": a["x"], "z": a["z"],
-                              "type": "mirefolk", "note": "EMPTY today: no camp fire is placed (anchor roster lists only capital, outpost and bandit populations)",
+                              "type": "mirefolk" if a["kind"] == "mirefolk" else "bandit",
+                              "note": "recipe camp POI: the zone's spawn recipe places the camp",
                               "level_at_anchor": a["level_at"]})
             elif a["kind"] == "outpost":
                 faction = "accord" if zones[zid]["macro_region"] == "elandor_mainland" else "throng"
@@ -1011,9 +1008,9 @@ def zone_markdown(f, zones, settlement_by_key):
     if f["camps"]:
         w("**Camps and guard posts:**\n")
         for c in f["camps"]:
-            if c["type"] == "mirefolk":
-                w("- %s %s at %d, %d: mirefolk camp, %s (level there L%s)." % (
-                    c["anchor"], c["name"], c["x"], c["z"], c["note"], c["level_at_anchor"]))
+            if c["type"] != "guard post":
+                w("- %s %s at %d, %d: %s camp, %s (level there L%s)." % (
+                    c["anchor"], c["name"], c["x"], c["z"], c["type"], c["note"], c["level_at_anchor"]))
             else:
                 w("- %s %s at %d, %d: %s, %s × %d-%d, respawn %d-%d s, level there L%s." % (
                     c["anchor"], c["name"], c["x"], c["z"], c["type"],

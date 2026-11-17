@@ -21,9 +21,11 @@ local function refuse_mounted_attack(player)
 	return grug_core.refuse_mounted_attack and
 		grug_core.refuse_mounted_attack(player) == true
 end
-local swing_input_latch = {} -- player name -> one direct hostile object click
 
 local mana = {} -- player name -> current mana (fractional)
+-- player name -> the mana pool the last refill, clamp, restore or
+-- regeneration tick measured; a leave keeps no mana that reached it.
+local mana_pool = {}
 local rage = {} -- player name -> current rage (fractional)
 -- player name -> {cooldown key -> {expiry = us time, duration = seconds}}. The
 -- duration is stored per cast, not looked up from the def, because the
@@ -75,6 +77,7 @@ end
 function grug_abilities.restore_mana(player, amount)
 	local name = player:get_player_name()
 	local maximum = math.max(0, grug_classes.get_max_mana(player))
+	mana_pool[name] = maximum
 	local current = mana[name] or 0
 	local before = math.max(0, math.min(maximum, current))
 	local after = math.min(maximum,
@@ -96,8 +99,8 @@ end
 -- lower the income and add decay: a landed full swing grants 8 instead of 12,
 -- a hit taken 3 instead of 4, and rage bleeds 5/s (it was 2/s) while
 -- grug_core.in_combat is false. The numbers are named here because three swing
--- grant sites and one hit-taken site share them, and the talents Stoke and Spite add
--- to them (skill_trees.md §2.1/§2.2).
+-- grant sites and one hit-taken site share them, and the talent Stoke adds to
+-- the swing grant (rage_per_swing_add, skill_trees.md §2.2).
 --
 -- Round 46 ruling 9: RAGE_PER_SWING is the grant of a swing on the reference
 -- interval (1 s, a sword). A landed swing grants it times the weapon's BASE
@@ -132,7 +135,9 @@ function grug_abilities.add_rage(player, amount)
 end
 
 local function refill_mana(player)
-	mana[player:get_player_name()] = grug_classes.get_max_mana(player)
+	local name = player:get_player_name()
+	mana[name] = grug_classes.get_max_mana(player)
+	mana_pool[name] = mana[name]
 end
 
 -- Every callback that can change maximum mana goes through this one clamp.
@@ -141,24 +146,23 @@ end
 local function clamp_mana(player)
 	local name = player:get_player_name()
 	local maximum = math.max(0, grug_classes.get_max_mana(player))
+	mana_pool[name] = maximum
 	mana[name] = math.max(0, math.min(maximum, mana[name] or 0))
 end
 
 -- Absolute mana per second. Out of combat the deliberately linear curve keeps
 -- food relevant at high level. In combat a maximum-mana floor prevents that
--- curve from falling too far behind the growing pool. Cold Focus raises the
--- in-combat rate by 0.4 of itself per rank (x3 at 5/5, Round 35).
-function grug_abilities.mana_regen_rate(player, in_combat)
+-- curve from falling too far behind the growing pool.
+-- `max_mana` (optional) is the pool the caller has just measured.
+function grug_abilities.mana_regen_rate(player, in_combat, max_mana)
 	local level = math.max(1, grug_core.get_player_level(player))
 	local rate = 1 + 0.15 * level
 	local trinket = grug_core.trinket_mana_regen and
 		grug_core.trinket_mana_regen(player) or 0
 	if in_combat then
-		local bonus = grug_classes.get_talent_bonus(player,
-			"combat_mana_regen_add")
 		local combat_rate = math.max(rate * 0.25,
-			grug_classes.get_max_mana(player) * 0.0025)
-		return combat_rate * (1 + 2 * bonus) + trinket
+			(max_mana or grug_classes.get_max_mana(player)) * 0.0025)
+		return combat_rate + trinket
 	end
 	return rate *
 		(grug_classes.get_race_perk(player, "ooc_regen_mult") or 1) + trinket
@@ -203,9 +207,7 @@ end
 -- `cost_pct` (optional) changes the cost by that many percent (negative is
 -- cheaper): a base-mana share before it becomes mana, a flat amount
 -- rounded to whole points. Without it the cost is today's exactly.
--- `ability_id` is kept for the callers; since Round 53 no cost depends on it
--- (the old Whitehot and Recompense cases went with the old talents).
-function grug_abilities.cost_for(player, cost, ability_id, cost_pct)
+function grug_abilities.cost_for(player, cost, cost_pct)
 	local scale = 1 + (cost_pct or 0) / 100
 	if cost.mana_percent then
 		return {mana = grug_abilities.mana_cost(player, cost.mana_percent * scale)}
@@ -226,7 +228,7 @@ end
 -- cost to pay (Relentless' rage off Mighty Blow and Broadstroke). It gets a
 -- copy, never the definition's table.
 function grug_abilities.effective_cost(player, def)
-	local cost = grug_abilities.cost_for(player, def.cost, def.id,
+	local cost = grug_abilities.cost_for(player, def.cost,
 		grug_abilities.family_bonus(player, def, "cost_pct"))
 	if def.cost_adjust then
 		local copy = {}
@@ -253,7 +255,10 @@ local function spend(player, cost)
 		end
 		rage[name] = rage[name] - cost.rage
 	end
-	hud_update(player)
+	-- A free cast changes no bar (audit C2-03).
+	if cost.mana or cost.rage then
+		hud_update(player)
+	end
 	return true
 end
 
@@ -390,9 +395,6 @@ end
 function grug_abilities.get_range(player, def)
 	local base = (def.range or 4)
 		+ grug_abilities.family_bonus(player, def, "range_add")
-	if def.range_talent then
-		base = base + grug_classes.get_talent_bonus(player, def.range_talent)
-	end
 	if def.melee then
 		return base
 	end
@@ -427,12 +429,13 @@ local bar_huds = {}
 -- The secondary resource as a bar: value, maximum, colour. Nothing (a
 -- character with no class yet) returns nil, which reserves the row without
 -- drawing in it.
-local function hud_state(player)
+-- `max_mana` (optional): the pool the 0.5 s pass has just measured.
+local function hud_state(player, max_mana)
 	local layout = grug_core.hud_layout
 	local res = resource_of(player)
 	if res == "mana" then
 		return grug_abilities.get_mana(player),
-			grug_classes.get_max_mana(player), layout.COLOR.mana
+			max_mana or grug_classes.get_max_mana(player), layout.COLOR.mana
 	elseif res == "rage" then
 		return grug_abilities.get_rage(player), 100, layout.COLOR.rage
 	end
@@ -484,32 +487,44 @@ local predicted_hp = {}
 
 -- `authoritative` is what the 0.5 s pass passes: the engine has stored
 -- whatever it was going to store, so the prediction goes and the real hit
--- points are read.
-hud_update = function(player, authoritative)
+-- points are read; so are hp_max and breath_max, with one properties read.
+-- The other draws (every hp change, rage gain and spend) take hp_max from
+-- grug_classes.apply_stats, its one writer, and breath_max from the last
+-- pass, which no mod writes (Round 81 PASSES; audit C2-03). `max_mana`
+-- (optional) is the pool the pass has just measured.
+hud_update = function(player, authoritative, max_mana)
 	local name = player:get_player_name()
-	if not bar_huds[name] then
+	local recs = bar_huds[name]
+	if not recs then
 		return
 	end
+	local max_hp, max_breath
 	if authoritative then
 		predicted_hp[name] = nil
+		local props = player:get_properties()
+		max_hp, max_breath = props.hp_max or 0, props.breath_max or 0
+		recs.breath_max = max_breath
+	else
+		max_hp, max_breath = grug_classes.applied_max_hp(player), recs.breath_max
+		if not max_hp or not max_breath then
+			local props = player:get_properties()
+			max_hp = max_hp or props.hp_max or 0
+			max_breath = max_breath or props.breath_max or 0
+		end
 	end
 	local layout = grug_core.hud_layout
-	-- One properties read for both hp_max and breath_max.
-	local props = player:get_properties()
 
-	local max_hp = props.hp_max or 0
 	local hp = predicted_hp[name] or player:get_hp()
 	hp = math.max(0, math.min(max_hp, hp))
 	draw_bar(player, name, "life", hp, max_hp, layout.COLOR.life)
 
-	local value, maximum, color = hud_state(player)
+	local value, maximum, color = hud_state(player, max_mana)
 	draw_bar(player, name, "secondary", value or 0, maximum, color)
 
 	-- Breath is the one value with no change callback in the Lua API, so it
 	-- rides the shared pass. Builtin's own rule for showing the bubbles is
 	-- "breath is not full" (`builtin/game/hud.lua:208-210`); the bar uses
 	-- the same one, which also covers the refill after surfacing.
-	local max_breath = props.breath_max or 0
 	local breath = player:get_breath()
 	if max_breath > 0 and breath < max_breath then
 		draw_bar(player, name, "breath", breath, max_breath,
@@ -609,45 +624,43 @@ core.register_on_player_inventory_action(function(player)
 	dirty[player:get_player_name()] = true
 end)
 
-local function watch_wield()
-	for _, player in ipairs(core.get_connected_players()) do
-		local name = player:get_player_name()
-		local rec = wield_watch[name]
-		local idx = player:get_wield_index()
-		if not rec then
-			-- Join already initialises (below); this is the belt-and-braces
-			-- first sight: record without any feedback.
-			dirty[name] = nil
-			wield_watch[name] = {
-				index = idx,
-				item = player:get_wielded_item():get_name(),
-			}
-		elseif rec.index ~= idx or dirty[name] then
-			dirty[name] = nil
-			-- The one inventory read of the change path, and the read that
-			-- makes a same-index content swap visible.
-			local item = player:get_wielded_item():get_name()
-			wield_watch[name] = {index = idx, item = item}
-			if item == rec.item then
-				-- Dirty from an unrelated action (bag rearranging): the
-				-- wielded stack is untouched, nothing to do.
-			elseif item_defs[item] then
-				-- An ability item was selected: name it. Native LMB reads the
-				-- selected swing skill live on each due server swing, so no combat state or
-				-- inventory write belongs in this watcher.
-				show_skill_name(player, item_defs[item].name)
-			end
+local function watch_wield(player)
+	local name = player:get_player_name()
+	local rec = wield_watch[name]
+	local idx = player:get_wield_index()
+	if not rec then
+		-- Join already initialises (below); this is the belt-and-braces
+		-- first sight: record without any feedback.
+		dirty[name] = nil
+		wield_watch[name] = {
+			index = idx,
+			item = player:get_wielded_item():get_name(),
+		}
+	elseif rec.index ~= idx or dirty[name] then
+		dirty[name] = nil
+		-- The one inventory read of the change path, and the read that
+		-- makes a same-index content swap visible.
+		local item = player:get_wielded_item():get_name()
+		wield_watch[name] = {index = idx, item = item}
+		if item == rec.item then
+			-- Dirty from an unrelated action (bag rearranging): the
+			-- wielded stack is untouched, nothing to do.
+		elseif item_defs[item] then
+			-- An ability item was selected: name it. Native LMB reads the
+			-- selected swing skill live on each due server swing, so no combat state or
+			-- inventory write belongs in this watcher.
+			show_skill_name(player, item_defs[item].name)
 		end
-		local entry = swing_progress and swing_progress[name]
-		local selected
-		if entry then
-			selected = item_defs[player:get_wielded_item():get_name()]
-		end
-		if entry and not entry.inactive
-				and (not selected or selected.kind ~= "swing") then
-			-- Crossing out of the swing-item family is a real attack-clock boundary.
-			reset_swing_boundary(player)
-		end
+	end
+	local entry = swing_progress and swing_progress[name]
+	local selected
+	if entry then
+		selected = item_defs[player:get_wielded_item():get_name()]
+	end
+	if entry and not entry.inactive
+			and (not selected or selected.kind ~= "swing") then
+		-- Crossing out of the swing-item family is a real attack-clock boundary.
+		reset_swing_boundary(player)
 	end
 end
 
@@ -1183,9 +1196,8 @@ function grug_abilities.description_prefix(player, def)
 	if player and def.kind == "swing" and def.charge then
 		timing = grug_abilities.effective_charge(player, def) .. " s charge"
 	elseif player and def.kind == "cast" and not def.cast_interval then
-		-- The cooldown this player's cast earns (the family key cooldown_sub,
-		-- Second Skin, Swift Word, Grudge, Quick Step ...); refreshed with
-		-- every talent change.
+		-- The cooldown this player's cast earns (the family key cooldown_sub:
+		-- Onset, Quick Step ...); refreshed with every talent change.
 		local cooldown = grug_abilities.effective_cooldown(player, def)
 		timing = cooldown > 0 and string.format("%g s cooldown", cooldown)
 			or "no cooldown"
@@ -1400,18 +1412,13 @@ end
 
 -- The cooldown this player's cast actually earns. Same reason as get_range
 -- above: `cooldown` in a kit table is a load-time constant with no player in
--- scope, so the talents that shorten one (Grudge, Onset, Quick Step, Swift
--- Word, Second Skin, Slip Away -- skill_trees.md §3.2) are read HERE, at the one
--- arm_cooldown(user, def, def.cooldown) call the game has, with the family
--- key cooldown_sub (Round 53). Without a ranked talent this returns
--- def.cooldown exactly.
+-- scope, so the talents that shorten one (the family key cooldown_sub:
+-- Onset, Quick Step ...; Round 53) are read HERE, at the one
+-- arm_cooldown(user, def, def.cooldown) call the game has. Without a ranked
+-- talent this returns def.cooldown exactly.
 function grug_abilities.effective_cooldown(player, def)
 	local cooldown = (def.cooldown or 0)
 		- grug_abilities.family_bonus(player, def, "cooldown_sub")
-	if def.cooldown_talent then
-		cooldown = cooldown
-			- grug_classes.get_talent_bonus(player, def.cooldown_talent)
-	end
 	if cooldown < 0 then
 		cooldown = 0
 	end
@@ -1435,8 +1442,10 @@ function grug_abilities.arm_cooldown(player, def, duration)
 	cooldown_hud.track(player, def.cooldown_key, rec)
 end
 
--- End a running cooldown now (Last Word resets Word of Ruin's, Round 35).
--- The overlay holds the same record and drops it on its next pass.
+-- End a running cooldown now. No shipped skill calls it since its one user
+-- (Last Word) went with the old talents; kept as a fixture seam (audit
+-- 2026-11 X3-03). The overlay holds the same record and drops it on its next
+-- pass.
 function grug_abilities.clear_cooldown(player, id)
 	local def = grug_abilities.registered[id]
 	local cds = cooldowns[player:get_player_name()]
@@ -1452,8 +1461,10 @@ end
 -- is not selected (a timestamp needs no ticking): several skills come up
 -- during a fight and are spent in consecutive swings. Charges do not stack
 -- (one maximum), a full charge never decays, the start state is CHARGED
--- (join/grant/class switch = no record = ready), and the ONLY reset is a
--- fired proc (kits.lua). Runtime-only, never persisted.
+-- (grant/class switch/a server run's first join = no record = ready; a
+-- relog in the same run gets the running timers back, Round 81 ruling 2),
+-- and the ONLY reset is a fired proc (kits.lua). Runtime-only, never
+-- persisted.
 --
 
 -- player name -> {cooldown key -> {expiry = ready_at us time, duration = s}},
@@ -1461,12 +1472,7 @@ end
 local charges = {}
 
 function grug_abilities.effective_charge(player, def)
-	local duration = def.charge or 0
-	if def.charge_talent then
-		duration = duration - grug_classes.get_talent_bonus(player,
-			def.charge_talent)
-	end
-	return math.max(0, duration)
+	return math.max(0, def.charge or 0)
 end
 
 -- A def WITHOUT def.charge is always ready (Mighty Blow: limited by its
@@ -1498,8 +1504,7 @@ end
 -- Authoritative swing clock (classes.md §2b). Native object punches from a
 -- swing item only acquire the target and signal the initial click; this clock
 -- is the sole damage cadence for both that click and held LMB. Releasing LMB
--- stops held repeats immediately; only a direct hostile-object packet already
--- received by the server gets one latch for the next throttled attack pass.
+-- stops held repeats immediately.
 -- `next_due` deliberately survives release, so click-spamming cannot
 -- manufacture extra full swings. Swing-skill selection and non-swing/cast
 -- selection do not reset the weapon clock; lifecycle/class reset it, while a
@@ -1523,7 +1528,6 @@ local SWING_CATCHUP = CLOCK_CATCHUP
 clear_swing_progress = function(player)
 	local name = player:get_player_name()
 	swing_progress[name] = nil
-	swing_input_latch[name] = nil
 	set_ready_reticle(player, false)
 end
 
@@ -1533,7 +1537,6 @@ end
 reset_swing_boundary = function(player)
 	local name = player:get_player_name()
 	local entry = swing_progress[name]
-	swing_input_latch[name] = nil
 	set_ready_reticle(player, false)
 	if entry then
 		entry.inactive = true
@@ -1544,8 +1547,9 @@ grug_core.register_on_stun(function(player)
 	clear_swing_progress(player)
 end)
 
-local function selected_swing_def(player)
-	local def = item_defs[player:get_wielded_item():get_name()]
+-- `item`: the wielded item's name when the caller has read it.
+local function selected_swing_def(player, item)
+	local def = item_defs[item or player:get_wielded_item():get_name()]
 	return (def and def.kind == "swing" and
 		grug_abilities.is_unlocked(player, def.id)) and def or nil
 end
@@ -1567,7 +1571,7 @@ function grug_abilities.register_on_swing(func)
 end
 
 -- A plain swing of `def` before the one scaling pass: the weapon, the melee
--- bonus, the flat talent add and the damage_pct by the swing definition's id
+-- bonus and the damage_pct by the swing definition's id
 -- and tags (Fine Edge on Strike and Bladecraft: a share of its untalented
 -- damage). The swing passes what it already read; a tooltip passes neither
 -- and gets the equipped melee weapon's.
@@ -1575,7 +1579,6 @@ function grug_abilities.plain_swing_raw(player, def, weapon_damage, melee_bonus)
 	weapon_damage = weapon_damage or grug_abilities.swing_stats(player)
 	melee_bonus = melee_bonus or grug_classes.get_melee_bonus(player)
 	return weapon_damage + melee_bonus
-		+ grug_classes.get_talent_bonus(player, "melee_damage_add")
 		+ (weapon_damage + melee_bonus)
 		* grug_abilities.family_bonus(player, def, "damage_pct") / 100
 end
@@ -1719,7 +1722,7 @@ end
 -- One due full swing against the current server eye/look ray. Aim misses leave
 -- `next_due` untouched; the first live hostile consumes it before punch and
 -- then enters WP38's exact claim-once/two-phase settlement unchanged.
-attempt_swing = function(player, selected, held, latched)
+attempt_swing = function(player, selected)
 	local name = player:get_player_name()
 	if player:get_hp() <= 0 or grug_core.is_stunned(player) then
 		if swing_progress[name] then
@@ -1731,9 +1734,6 @@ attempt_swing = function(player, selected, held, latched)
 		if swing_progress[name] and not swing_progress[name].inactive then
 			reset_swing_boundary(player)
 		end
-		return false
-	end
-	if not held and not latched then
 		return false
 	end
 	if refuse_mounted_attack(player) then
@@ -1760,9 +1760,7 @@ attempt_swing = function(player, selected, held, latched)
 	entry.inactive = nil
 	if grug_core.combat_debug_due(name, "swing:readiness", 0.25) then
 		grug_core.combat_debug_log(name, "swing_readiness",
-			"held=" .. tostring(held == true) ..
-			" latched=" .. tostring(latched == true) ..
-			" ready=" .. tostring(now >= entry.next_due) ..
+			"ready=" .. tostring(now >= entry.next_due) ..
 			" now=" .. now .. " next_due=" .. entry.next_due ..
 			" fpi=" .. fpi)
 	end
@@ -1818,8 +1816,6 @@ attempt_swing = function(player, selected, held, latched)
 		punch_attack_uses = 0,
 	}
 	local melee_bonus = grug_classes.get_melee_bonus(player)
-	local melee_damage_add = grug_classes.get_talent_bonus(player,
-		"melee_damage_add")
 	local raw_damage = grug_abilities.plain_swing_raw(player, selected,
 		weapon_damage, melee_bonus)
 	local proc
@@ -1840,7 +1836,6 @@ attempt_swing = function(player, selected, held, latched)
 			weapon_damage = weapon_damage,
 			fpi = fpi,
 			melee_bonus = melee_bonus,
-			melee_damage_add = melee_damage_add,
 		})
 		if proc_damage ~= nil then
 			raw_damage = proc_damage
@@ -1939,6 +1934,8 @@ end)
 -- (input.lua), which asks before it reaches the dispatcher. The second
 -- result names the reason ("class", "locked", "cooldown", "interval",
 -- "busy", "cost"): the held fallback skips "interval" and "busy" (K8).
+-- With no refusal the third result is the cost the cast pays
+-- (effective_cost), so try_cast does not resolve it twice.
 local function cast_refusal(user, def)
 	-- Universal abilities have no class to be (E1) — without this a Mage
 	-- using the universal Strike was told "You are no Warrior".
@@ -1963,7 +1960,7 @@ local function cast_refusal(user, def)
 	if not affordable(user, cost) then
 		return "Not enough " .. (cost.mana and "mana" or "rage") .. ".", "cost"
 	end
-	return nil
+	return nil, nil, cost
 end
 
 -- `notify(message)` receives every refusal message; without it they flash.
@@ -1989,12 +1986,11 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 	end
 	-- Cast skills: class, unlock, ready and affordable checks, cast, spend,
 	-- arm the cooldown. No GCD anywhere (classes.md core principles, WP38).
-	local refusal = cast_refusal(user, def)
+	local refusal, _, effective_cost = cast_refusal(user, def)
 	if refusal then
 		notice(refusal)
 		return
 	end
-	local effective_cost = grug_abilities.effective_cost(user, def)
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
 	-- cooldown. def is passed through for the target-lock helpers
 	-- (range checks). The cast succeeded, so it arms the one cooldown it
@@ -2433,7 +2429,6 @@ grug_core.register_on_equipment_change(function(player, listname, reason)
 				weapon = ItemStack(weapon),
 				next_due = core.get_us_time() + fpi * 1e6,
 			}
-			swing_input_latch[name] = nil
 			set_ready_reticle(player, false)
 		end
 	end
@@ -2874,7 +2869,7 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 
 	-- The claimed token is the swing (Round 37, CMB-01): the Strike fallback
 	-- with Loose or a cast skill wielded is the same transaction as a wielded
-	-- swing skill, with its melee_damage_add, weapon wear and trinket proc.
+	-- swing skill, with its damage_pct, weapon wear and trinket proc.
 	-- The transaction was scaled once before target:punch.
 	local proc_context = grug_core.prepare_native_melee(hitter, player,
 		authoritative_token)
@@ -2924,8 +2919,7 @@ end)
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change < 0 and reason.type == "punch" then
 		grug_abilities.add_rage(player, grug_abilities.RAGE_PER_HIT_TAKEN
-			+ (grug_classes.get_race_perk(player, "rage_per_hit_taken_bonus") or 0)
-			+ grug_classes.get_talent_bonus(player, "rage_per_hit_taken_add"))
+			+ (grug_classes.get_race_perk(player, "rage_per_hit_taken_bonus") or 0))
 	end
 end, false)
 
@@ -2963,11 +2957,18 @@ core.register_globalstep(function(dtime)
 	local crosshair_due = crosshair_acc >= CROSSHAIR_STEP
 	if crosshair_due then crosshair_acc = crosshair_acc % CROSSHAIR_STEP end
 	for _, player in ipairs(core.get_connected_players()) do
-		grug_abilities.input.step(player)
-		set_ready_reticle(player, weapon_clock_ready(player, selected_swing_def(player)))
+		-- One wielded-item read per player for the whole pass (Round 81;
+		-- audit X4-02, C2-02: a copy of the stack each). The step's own
+		-- writes keep the name (the range meta, Bladecraft's look); only
+		-- eating the last portion empties the hand, and food and an empty
+		-- hand both select no skill, so the ready ring and the crosshair
+		-- below see what a read after the step would see.
+		local item = player:get_wielded_item():get_name()
+		grug_abilities.input.step(player, nil, item)
+		set_ready_reticle(player, weapon_clock_ready(player, selected_swing_def(player, item)))
 		-- Target/interaction crosshair state: one hand-reach ray, plus one
 		-- skill ray while a targeted skill is selected; packets only on change.
-		if crosshair_due then grug_abilities.crosshair.update(player) end
+		if crosshair_due then grug_abilities.crosshair.update(player, item) end
 	end
 end)
 
@@ -2981,55 +2982,83 @@ end)
 -- (currently often 0.09 s).
 --
 
-local acc = 0
-
-core.register_globalstep(function(dtime)
-	acc = acc + dtime
-	if acc < 0.5 then
-		return
-	end
-	local elapsed = acc
-	acc = 0
-	watch_wield()
-	for _, player in ipairs(core.get_connected_players()) do
-		local name = player:get_player_name()
-		local res = resource_of(player)
-		if res == "mana" then
-			local max = grug_classes.get_max_mana(player)
-			local cur = math.min(mana[name] or 0, max)
-			local rate = grug_abilities.mana_regen_rate(player,
-				grug_core.in_combat(player))
-			local new = math.min(max, cur + rate * elapsed)
-			if math.floor(new) ~= math.floor(mana[name] or 0) then
-				mana[name] = new
-				hud_update(player)
-			else
-				mana[name] = new
-			end
-		elseif res == "rage" and not grug_core.in_combat(player) then
-			local cur = rage[name] or 0
-			if cur > 0 then
-				local new = math.max(0, cur
-					- grug_abilities.RAGE_DECAY_PER_SECOND * elapsed)
-				rage[name] = new
-				if math.floor(new) ~= math.floor(cur) then
-					hud_update(player)
-				end
-			end
+-- Every player every 0.5 s, one join slot at a time (Round 81 PASSES; audit
+-- X4-05, C2-03). `elapsed` is the game time since this player's last visit,
+-- so the regeneration and decay sums stay those of one shared clock. The
+-- pool is measured once per visit and handed to the rate and the bar.
+grug_core.register_player_pass(0.5, function(player, elapsed)
+	watch_wield(player)
+	local name = player:get_player_name()
+	local res = resource_of(player)
+	local max
+	if res == "mana" then
+		max = grug_classes.get_max_mana(player)
+		mana_pool[name] = max
+		local cur = math.min(mana[name] or 0, max)
+		local rate = grug_abilities.mana_regen_rate(player,
+			grug_core.in_combat(player), max)
+		mana[name] = math.min(max, cur + rate * elapsed)
+	elseif res == "rage" and not grug_core.in_combat(player) then
+		local cur = rage[name] or 0
+		if cur > 0 then
+			rage[name] = math.max(0, cur
+				- grug_abilities.RAGE_DECAY_PER_SECOND * elapsed)
 		end
-		-- The HUD bars ride this existing pass rather than a second
-		-- globalstep (AGENTS.md's throttling rule). It is what makes the
-		-- breath bar possible at all -- breath has no change callback in the
-		-- Lua API -- and it is the authority that corrects the hit-point
-		-- prediction the hpchange logger draws. Every write inside is gated
-		-- on the drawn value, so an unchanged player costs zero packets.
-		hud_update(player, true)
 	end
+	-- The HUD bars ride this existing pass rather than a second
+	-- globalstep (AGENTS.md's throttling rule). It is what makes the
+	-- breath bar possible at all -- breath has no change callback in the
+	-- Lua API -- and it is the authority that corrects the hit-point
+	-- prediction the hpchange logger draws. Every write inside is gated
+	-- on the drawn value, so an unchanged player costs zero packets; it
+	-- also draws the new mana or rage (the bar shows whole points).
+	hud_update(player, true, max)
 end)
 
 --
 -- Player lifecycle
 --
+
+-- Relog keeps cooldowns (Round 81 ruling 2, BACKLOG CMB-10): a leave keeps
+-- the player's running cooldowns and charges and the mana value by name in
+-- memory, as the talent windows keep their internal cooldowns; the join
+-- puts them back and hands the timers to the cooldown overlay again. The
+-- records hold monotonic get_us_time values of this server run, so a
+-- server restart starts every character over. Death and respawn are
+-- unchanged (a death keeps the cooldowns, a respawn fills mana); rage, the
+-- cast intervals and the action clock still start afresh at a join. A full
+-- pool is not kept (the join fills it anyway), and a record with no mana
+-- and no running timer is not made, or dropped at a later leave once its
+-- timers have run out, so the table holds only what a join would restore.
+-- player name -> {cooldowns = {key -> rec}, charges = {...}, mana, last},
+-- `last` the latest expiry of its timers
+local kept = {}
+
+-- The records still running at `now` (nil if none) and their latest expiry.
+local function running(records, now, last)
+	local out
+	for key, rec in pairs(records or {}) do
+		if rec.expiry > now then
+			out = out or {}
+			out[key] = rec
+			if rec.expiry > last then last = rec.expiry end
+		end
+	end
+	return out, last
+end
+
+local function restore_timers(player, name, record)
+	for _, field in ipairs({"cooldowns", "charges"}) do
+		local records = record and running(record[field], core.get_us_time(), 0)
+		if records then
+			local live = field == "cooldowns" and cooldowns or charges
+			live[name] = records
+			for key, rec in pairs(records) do
+				cooldown_hud.track(player, key, rec)
+			end
+		end
+	end
+end
 
 core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
@@ -3050,8 +3079,17 @@ core.register_on_joinplayer(function(player)
 		layout.image_element("reticle", {text = "",
 			z_index = grug_abilities.crosshair.Z_READY}))}
 	rage[name] = 0
-	refill_mana(player)
+	local record = kept[name]
+	kept[name] = nil
+	if record and record.mana then
+		mana[name] = record.mana
+		clamp_mana(player)
+	else
+		refill_mana(player)
+	end
 	grug_abilities.normalize_kit(player)
+	-- After the kit sync: the overlay reads the hotbar the player plays with.
+	restore_timers(player, name, record)
 	-- Watcher baseline AFTER the kit sync, so the snapshot is the post-grant
 	-- wielded slot. Recording is feedback-free by design: nothing changed,
 	-- so no "Strike" popup on login.
@@ -3089,7 +3127,25 @@ core.register_on_leaveplayer(function(player)
 	-- Reconnecting with the same name creates a new combat identity for locks.
 	invalidate_target_locks(player)
 	clear_swing_progress(player)
+	local now = core.get_us_time()
+	for other, record in pairs(kept) do
+		if not record.mana and record.last <= now then
+			kept[other] = nil
+		end
+	end
+	local kept_cooldowns, last = running(cooldowns[name], now, 0)
+	local kept_charges
+	kept_charges, last = running(charges[name], now, last)
+	local value, pool = mana[name], mana_pool[name]
+	if value and pool and value >= pool then
+		value = nil
+	end
+	if kept_cooldowns or kept_charges or value then
+		kept[name] = {cooldowns = kept_cooldowns, charges = kept_charges,
+			mana = value, last = last}
+	end
 	mana[name] = nil
+	mana_pool[name] = nil
 	rage[name] = nil
 	cooldowns[name] = nil
 	cast_intervals[name] = nil
@@ -3135,7 +3191,9 @@ dofile(core.get_modpath(core.get_current_modname()) .. "/charge.lua")(
 -- the ring.
 grug_abilities.crosshair = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/crosshair.lua")({
-	selected = function(player) return item_defs[player:get_wielded_item():get_name()] end,
+	selected = function(player, item)
+		return item_defs[item or player:get_wielded_item():get_name()]
+	end,
 })
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")
@@ -3144,8 +3202,10 @@ dofile(core.get_modpath(core.get_current_modname()) .. "/scout.lua")
 -- or digging implementation is introduced by contextual dispatch.
 grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/input.lua")({
-	selected = function(player) return item_defs[player:get_wielded_item():get_name()] end,
-	swing = function(player, def) return attempt_swing(player, def, true, false) end,
+	selected = function(player, item)
+		return item_defs[item or player:get_wielded_item():get_name()]
+	end,
+	swing = function(player, def) return attempt_swing(player, def) end,
 	-- Refusal messages (nil = go): the input gate asks these before it
 	-- reaches try_cast or the swing, so it reports the reason itself.
 	cast_refusal = cast_refusal,

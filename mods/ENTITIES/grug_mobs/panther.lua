@@ -4,9 +4,9 @@
 -- contract).
 --
 -- The SILENT half is a def decision, not code (verbs.lua header): mobs_redo
--- plays sounds.war_cry on 90% of all target acquisitions (api.lua:265-296) and we
+-- plays sounds.war_cry on 90% of all target acquisitions (api.lua do_attack) and we
 -- must not patch do_attack, so a stalker's def simply carries no
--- sounds.war_cry — mob_sound() then returns immediately (api.lua:246-261). This
+-- sounds.war_cry — mob_sound() then returns immediately (api.lua). This
 -- def has no `sounds` table at all, because WP6/T4 imported no audio (the
 -- freesound-derived animalworld/mobs_mc files need per-file verification,
 -- LICENSE-media.md header). So the panther is silent today for two reasons;
@@ -77,24 +77,3 @@ local panther = {
 
 grug_mobs.stalker(panther, {})
 grug_mobs.register_mob("grug_mobs:panther", panther)
-
--- §4 row "Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer,
--- coast". Night mob (§3.1): max_light 5 plus day_toggle = false, the same
--- pair spider.lua uses.
-mobs:spawn({
-	name = "grug_mobs:panther",
-	-- Two nodes since WP36 (§1.3): grug_deep_jungle has its own top now, and
-	-- the panther is the Throng jungle's outer/coast NIGHT row — without the
-	-- second name that cell would have had no night mob at all.
-	nodes = {
-		"default:dirt_with_rainforest_litter", -- jungle edge / jungle fringe
-		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 4,
-	min_height = 0,
-	max_height = 600,
-})

@@ -24,6 +24,17 @@ local function collisionbox_equals(collisionbox, other_collisionbox)
 	return true
 end
 
+-- GRUG PATCH (Round 81 HOT): grug_core caches each player's eye height and
+-- collision box (combat_ray.lua grug_core.player_body); both writes below
+-- report the change. player_api does not depend on grug_core, so the call is
+-- looked up when it runs.
+local function grug_body_changed(player)
+	local grug = rawget(_G, "grug_core")
+	if grug and grug.player_body_changed then
+		grug.player_body_changed(player)
+	end
+end
+
 function player_api.register_model(name, def)
 	models[name] = def
 	def.visual_size = def.visual_size or {x = 1, y = 1}
@@ -96,6 +107,7 @@ function player_api.set_model(player, model_name)
 			stepheight = 0.6,
 			eye_height = 1.625,
 		})
+		grug_body_changed(player)
 	end
 end
 
@@ -198,6 +210,7 @@ function player_api.set_animation(player, anim_name, speed, loop, restart)
 			collisionbox = anim.collisionbox,
 			eye_height = anim.eye_height
 		})
+		grug_body_changed(player)
 	end
 end
 

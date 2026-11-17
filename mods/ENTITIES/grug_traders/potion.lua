@@ -39,14 +39,27 @@ grug_traders.POTION_COOLDOWN = 30 -- seconds (Round 78 ruling 1)
 
 local META_POTION_CD = "grug_traders:potion_cd"
 
+-- The stored expiry per player (Round 81 PASSES; audit E1-09: the status
+-- source below asks on every status pass of every player). Read from the
+-- meta once, rewritten by start_potion_cooldown, the key's one writer; keyed
+-- weakly by the ObjectRef, so a rejoin reads the meta afresh. false = ready.
+local stored_expiry = setmetatable({}, {__mode = "k"})
+
 -- Remaining seconds of the shared instant-potion cooldown; 0 = ready.
 function grug_traders.potion_cooldown_left(player)
 	if not player or not player.is_player or not player:is_player() then
 		return 0
 	end
-	-- Empty (never set), garbage or NaN all mean "ready".
-	local expiry = tonumber(player:get_meta():get_string(META_POTION_CD))
-	if not expiry or expiry ~= expiry then
+	local expiry = stored_expiry[player]
+	if expiry == nil then
+		-- Empty (never set), garbage or NaN all mean "ready".
+		expiry = tonumber(player:get_meta():get_string(META_POTION_CD))
+		if not expiry or expiry ~= expiry then
+			expiry = false
+		end
+		stored_expiry[player] = expiry
+	end
+	if not expiry then
 		return 0
 	end
 	local left = expiry - os.time()
@@ -61,8 +74,9 @@ function grug_traders.start_potion_cooldown(player)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
-	player:get_meta():set_string(META_POTION_CD,
-		tostring(os.time() + grug_traders.POTION_COOLDOWN))
+	local expiry = os.time() + grug_traders.POTION_COOLDOWN
+	player:get_meta():set_string(META_POTION_CD, tostring(expiry))
+	stored_expiry[player] = expiry
 	-- The status row shows it at once, not at its next half-second pass.
 	if grug_core.refresh_status_hud then grug_core.refresh_status_hud(player) end
 end

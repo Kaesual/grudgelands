@@ -57,13 +57,17 @@ function grug_money.bag_amount(stack)
 	return math.max(0, stack:get_meta():get_int(AMOUNT_KEY))
 end
 
+-- The bytes of a withdraw field that are read (the cut before the trim,
+-- grug_core.text.cut): a whole number of copper never needs more.
+local AMOUNT_BYTES = 32
+
 -- The withdraw dialog's three fields as copper, or nil and a reason. Each
 -- field is empty or a whole number of at least 0; the sum is at least 1.
 function grug_money.parse_amount(gold, silver, copper)
 	local total = 0
 	for _, row in ipairs({{gold, COPPER_PER_GOLD}, {silver, COPPER_PER_SILVER},
 			{copper, 1}}) do
-		local text = tostring(row[1] or ""):trim()
+		local text = grug_core.text.cut_trim(row[1], AMOUNT_BYTES)
 		if text ~= "" then
 			if not text:match("^%d+$") then
 				return nil, "Enter whole numbers of gold, silver and copper."
@@ -232,6 +236,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.grug_money_cancel then
 		back_to_inventory(player)
 	elseif fields.grug_money_confirm or fields.key_enter then
+		-- The raw fields cut first: parsed and shown again only as cut.
+		local cut = grug_core.text.cut
+		fields = {grug_money_gold = cut(fields.grug_money_gold, AMOUNT_BYTES),
+			grug_money_silver = cut(fields.grug_money_silver, AMOUNT_BYTES),
+			grug_money_copper = cut(fields.grug_money_copper, AMOUNT_BYTES)}
 		local copper, reason = grug_money.parse_amount(fields.grug_money_gold,
 			fields.grug_money_silver, fields.grug_money_copper)
 		local ok = false

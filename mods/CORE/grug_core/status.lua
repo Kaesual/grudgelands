@@ -38,7 +38,6 @@ local huds = {} -- player name -> {slots = {{icon, caption, ...last sent}}}
 local modifier_callbacks = {}
 local sources = {}
 local sequence = 0
-local accumulator = 0
 
 local function player_name(player)
 	if not player or not player.is_player or not player:is_player() then
@@ -84,18 +83,6 @@ function grug_core.register_on_status_modifiers_changed(callback)
 	end
 	modifier_callbacks[#modifier_callbacks + 1] = callback
 	return true
-end
-
-function grug_core.status_modifier_sum(player, key)
-	if not MODIFIER_KEYS[key] then
-		return 0
-	end
-	local total = 0
-	local ordered = grug_core.each_status(player)
-	for index = 1, #ordered do
-		total = total + (ordered[index].modifiers[key] or 0)
-	end
-	return total
 end
 
 function grug_core.set_status(player, id, definition)
@@ -214,10 +201,13 @@ local function keep_order(a, b)
 	return a.id < b.id
 end
 
-function grug_core.each_status(player, callback)
+-- The active statuses in row order, after removing the expired ones (their
+-- on_expire runs); the second result is true when any expired.
+local function sweep(player)
 	local name = player_name(player)
 	local per_player = name and statuses[name]
 	local ordered = {}
+	local any_expired = false
 	if per_player then
 		local now = core.get_us_time()
 		local expired = {}
@@ -231,14 +221,65 @@ function grug_core.each_status(player, callback)
 		for index = 1, #expired do
 			remove_status(player, expired[index], true)
 		end
+		any_expired = #expired > 0
 	end
 	table.sort(ordered, status_order)
+	return ordered, any_expired
+end
+
+function grug_core.each_status(player, callback)
+	local ordered = sweep(player)
 	if callback then
 		for index = 1, #ordered do
 			callback(ordered[index])
 		end
 	end
 	return ordered
+end
+
+-- The sum of `key` over the active statuses (Round 81 HOT; audit C1-03: it
+-- runs in every crit roll, armour rating and spell-damage read). Expired
+-- records go as in each_status, without building and sorting the whole
+-- list: only two or more records that carry `key` are sorted, so the float
+-- sum adds in each_status' order, the same answer to the last bit.
+function grug_core.status_modifier_sum(player, key)
+	if not MODIFIER_KEYS[key] then
+		return 0
+	end
+	local name = player_name(player)
+	local per_player = name and statuses[name]
+	if not per_player then
+		return 0
+	end
+	local now = core.get_us_time()
+	local expired, first, carriers
+	for id, record in pairs(per_player) do
+		if should_expire(record, now) then
+			expired = expired or {}
+			expired[#expired + 1] = id
+		elseif record.modifiers[key] then
+			if not first then
+				first = record
+			else
+				carriers = carriers or {first}
+				carriers[#carriers + 1] = record
+			end
+		end
+	end
+	if expired then
+		for index = 1, #expired do
+			remove_status(player, expired[index], true)
+		end
+	end
+	if carriers then
+		table.sort(carriers, status_order)
+		local total = 0
+		for index = 1, #carriers do
+			total = total + carriers[index].modifiers[key]
+		end
+		return total
+	end
+	return first and 0 + first.modifiers[key] or 0
 end
 
 -- A status source reports effects owned elsewhere, for display only.
@@ -280,10 +321,20 @@ end
 -- Every active, visible effect in row order: stored statuses and source
 -- entries. A value function returning false hides its status (Sprint cleared
 -- early, an empty shield). Each entry: {id, kind, texture, caption, name,
--- detail, value, untimed, remaining_us}.
-function grug_core.status_effects(player)
+-- detail, value, untimed, remaining_us}. `ordered` (optional) is each_status'
+-- list from the caller's own sweep in this step (the status pass); a record
+-- that has expired since sends it through each_status again.
+function grug_core.status_effects(player, ordered)
 	local now = core.get_us_time()
-	local ordered = grug_core.each_status(player)
+	if ordered then
+		for index = 1, #ordered do
+			if should_expire(ordered[index], now) then
+				ordered = nil
+				break
+			end
+		end
+	end
+	ordered = ordered or grug_core.each_status(player)
 	local entries, taken = {}, {}
 	for index = 1, #ordered do
 		entries[index] = ordered[index]
@@ -325,8 +376,9 @@ function grug_core.status_effects(player)
 end
 
 -- What the icon row shows, in row order and at most STATUS_LIMIT long.
-function grug_core.status_display(player)
-	local visible = grug_core.status_effects(player)
+-- `ordered` as in status_effects.
+function grug_core.status_display(player, ordered)
+	local visible = grug_core.status_effects(player, ordered)
 	-- More statuses than slots: debuffs are kept first, then neutral states,
 	-- then buffs -- what harms the player must never fall off the row.
 	if #visible > layout.STATUS_LIMIT then
@@ -355,8 +407,13 @@ local function clear_runtime_statuses(player)
 	end
 end
 
+-- One pass for a player: expire, run the due ticks, and sweep again only
+-- when a tick ran or a record went (a final tick lets its record expire; an
+-- on_tick or on_expire may set or clear statuses), until a sweep changes
+-- nothing (Round 81 PASSES; audit C1-02, X4-14: the pass swept three times
+-- per player). Returns the last sweep's list for the icon row.
 local function advance_statuses(player, now)
-	local ordered = grug_core.each_status(player)
+	local ordered, changed = sweep(player)
 	for index = 1, #ordered do
 		local record = ordered[index]
 		if record.on_tick and record.next_tick_us <= record.expiry_us and
@@ -367,9 +424,13 @@ local function advance_statuses(player, now)
 			local skipped = math.floor((due_until - record.next_tick_us) /
 				interval_us) + 1
 			record.next_tick_us = record.next_tick_us + skipped * interval_us
+			changed = true
 		end
 	end
-	grug_core.each_status(player)
+	while changed do
+		ordered, changed = sweep(player)
+	end
+	return ordered
 end
 
 local ICON_SCALE = layout.STATUS_ICON / 64
@@ -391,13 +452,14 @@ end
 -- Every slot exists from join on; an unused one has an empty texture and
 -- caption, which the engine skips without drawing (src/client/hud.cpp:489).
 -- Only changed fields are written: hud_change sends a packet on every call.
-local function refresh_hud(player)
+-- `ordered` as in status_effects.
+local function refresh_hud(player, ordered)
 	local name = player_name(player)
 	local hud = name and huds[name]
 	if not hud then
 		return
 	end
-	local shown = grug_core.status_display(player)
+	local shown = grug_core.status_display(player, ordered)
 	local window = #shown > 0 and core.get_player_window_information and
 		core.get_player_window_information(name) or nil
 	for index = 1, #hud.slots do
@@ -461,15 +523,8 @@ core.register_on_leaveplayer(function(player)
 	statuses[name] = nil
 end)
 
-core.register_globalstep(function(dtime)
-	accumulator = accumulator + dtime
-	if accumulator < STATUS_STEP then
-		return
-	end
-	accumulator = accumulator % STATUS_STEP
-	local now = core.get_us_time()
-	for _, player in ipairs(core.get_connected_players()) do
-		advance_statuses(player, now)
-		refresh_hud(player)
-	end
+-- Every player every STATUS_STEP, one join slot at a time (Round 81 PASSES;
+-- audit X4-05, C1-02): no step handles every player.
+grug_core.register_player_pass(STATUS_STEP, function(player)
+	refresh_hud(player, advance_statuses(player, core.get_us_time()))
 end)

@@ -351,7 +351,8 @@ local function new_player(name, ready)
 	return player
 end
 
-_G.grug_core = {feed = function(player, kind, text)
+-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+_G.grug_core = {text = dofile(repo .. "/mods/CORE/grug_core/text.lua"), feed = function(player, kind, text)
 	world.feed[#world.feed + 1] = {player:get_player_name(), kind, text}
 end}
 _G.grug_money = {BAG = "grug_money:bag_of_coins",

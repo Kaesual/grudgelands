@@ -157,7 +157,7 @@ local function looked_at_target(player)
 		return nil
 	end
 	local eye = vector.offset(pos, 0,
-		player:get_properties().eye_height or 1.5, 0)
+		grug_core.player_body(player).eye_height or 1.5, 0)
 	local dest = vector.add(eye, vector.multiply(player:get_look_dir(), RANGE))
 	for pointed in grug_core.aim_raycast(eye, dest, false) do
 		if pointed.type == "node" then
@@ -218,20 +218,12 @@ local function update(player, frame)
 	end
 end
 
-local timer = 0
-
-core.register_globalstep(function(dtime)
-	timer = timer + dtime
-	if timer < INTERVAL then
-		return
-	end
-	timer = 0
-	local players = core.get_connected_players()
-	for i = 1, #players do
-		local frame = frames[players[i]:get_player_name()]
-		if frame then
-			update(players[i], frame)
-		end
+-- Every player every INTERVAL, one join slot at a time (Round 81 PASSES;
+-- audit X4-05: a ray per player).
+grug_core.register_player_pass(INTERVAL, function(player)
+	local frame = frames[player:get_player_name()]
+	if frame then
+		update(player, frame)
 	end
 end)
 

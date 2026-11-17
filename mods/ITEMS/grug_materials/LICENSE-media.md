@@ -292,7 +292,9 @@ sheets keep the vendored torch files' pixel layout (the mesh UV interface).
 Source: `tools/r47_art/anthracite/generate.py` (run with `python3
 tools/r47_art/anthracite/generate.py`, Pillow 12.3.0), with its own ledger
 `tools/r47_art/LICENSE-media.md` (branch `r47-art`, commit `ce79f5b3`). The
-files are copied unchanged and renamed with this mod's prefix.
+files are copied unchanged and renamed with this mod's prefix. The set's
+ceiling and wall sheets, which no mesh samples, stay in
+`tools/r47_art/anthracite/` only (Round 81).
 
 | File | Lane ART source | Use | Author and licence |
 |---|---|---|---|
@@ -300,8 +302,6 @@ files are copied unchanged and renamed with this mod's prefix.
 | `grug_materials_mineral_anthracite.png` | `anthracite/mineral_anthracite.png` | ore overlay over `default_stone.png` (§2) | GPT-6 Astra — CC0-1.0 |
 | `grug_materials_anthracite_torch_on_floor.png` | `anthracite/anthracite_torch_on_floor.png` | torch inventory and wield image | GPT-6 Astra — CC0-1.0 |
 | `grug_materials_anthracite_torch_on_floor_animated.png` | `anthracite/anthracite_torch_on_floor_animated.png` | the tile of the floor, wall and ceiling meshes (16 frames, 3.3 s) | GPT-6 Astra — CC0-1.0 |
-| `grug_materials_anthracite_torch_on_ceiling_animated.png` | `anthracite/anthracite_torch_on_ceiling_animated.png` | not sampled by the current meshes (the vendored ceiling sheet's layout) | GPT-6 Astra — CC0-1.0 |
-| `grug_materials_anthracite_torch_animated.png` | `anthracite/anthracite_torch_animated.png` | not sampled by the current meshes (the vendored wall sheet's layout) | GPT-6 Astra — CC0-1.0 |
 
 ## 11. Round 68 bar, gem and storage-block icons — CC0 1.0
 

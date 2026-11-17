@@ -18,12 +18,6 @@ local function raider_def(description)
 		_grug_voice = "skeleton",
 		clock = "night",
 		type = "monster",
-		-- The war coast is not its own biome (§1.2 / §8.1), so the zone does all
-		-- of the gating and every node of the row below is allowed. Unlike
-		-- skeleton_archer.lua no _grug_spawn_check is needed: that family lives
-		-- in the outer ring AND on the war coast and therefore needs a per-ROW
-		-- rule; this one is war-coast-only.
-		_grug_spawn_domains = {"contested"},
 		-- HP/damage/XP/armor: engine-owned (levels.lua). The war-coast cap of
 		-- grug_zones.mob_level_at keeps this family at 20-30 — which is also why
 		-- the two Captain Bonerattle rares (rares.lua) are ~L28.
@@ -36,7 +30,7 @@ local function raider_def(description)
 
 		-- Ranged loadout, identical to skeleton_archer.lua: dogshoot_switch = 1
 		-- opens in the RANGED mode, which follows the distance since Round 78
-		-- (golem.lua; the count fields are no longer read).
+		-- (golem.lua).
 		arrow = "grug_mobs:arrow_entity",
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 2.5,
@@ -44,8 +38,6 @@ local function raider_def(description)
 		-- lands at the target's feet.
 		shoot_offset = 1.5,
 		dogshoot_switch = 1,
-		dogshoot_count_max = 10,
-		dogshoot_count2_max = 3,
 
 		-- §3.1 speed column of the skeleton family: 4.0 in combat, a calm walk
 		-- while roaming (Round 24 ruling 20; skeleton_archer.lua does the same).
@@ -120,7 +112,6 @@ grug_mobs.register_mob("grug_mobs:skeleton_raider", raider_def("Skeleton Raider"
 --
 local nemm = raider_def("Auditor Nemm")
 nemm.clock = "any"
-nemm._grug_spawn_domains = nil
 -- x14 since Round 73 BOSSHP (the user, 2026-11-10; it was x20).
 nemm._grug_hp_scale = 14
 nemm.walk_chance = 0
@@ -152,46 +143,3 @@ nemm.do_custom = function(self, dtime)
 end
 
 grug_mobs.register_mob("grug_mobs:auditor_nemm", nemm)
-
--- §4 has no own Skeleton Raider row; it is the war-coast half of the
--- skeleton family, so the numbers are the Skeleton Archer's
--- (interval 20 / chance 2000 / aoc 3 / max light 5) — §3.1 "night" gives the
--- light gate and day_toggle = false.
---
--- Nodes: the six settled tops of §1.3 (the war coast wears whichever settled
--- biome its band has) PLUS sand, because the ocean mask puts the actual
--- strait-facing beach inside the war-coast zone (§1.5) and a battlefield
--- shore without its dead would be odd. ONE row, so blight_dirt can be listed
--- here without a second ABM doubling up on it.
-mobs:spawn({
-	name = "grug_mobs:skeleton_raider",
-	-- ALL land tops plus sand — the night counterpart of the Carrion Crow's
-	-- list, and for the same reason (read that file's note): the war coast
-	-- carries whatever the local band's voronoi produces, wild patches
-	-- included. The common named-zone `war` palette plus the contested-domain
-	-- check keeps the wider list out of every other named zone.
-	nodes = {
-		"default:dirt_with_grass", -- grug_meadows
-		"default:dirt_with_coniferous_litter", -- grug_pine_hills
-		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
-		"default:dry_dirt_with_dry_grass", -- grug_savanna
-		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
-		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (WP36 top)
-		"grug_nodes:blight_dirt", -- grug_blight
-		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
-		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
-		"grug_nodes:mesa_clay", -- grug_badlands
-		"default:gravel", -- grug_crags
-		"default:snowblock", -- grug_crags_snowy
-		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", -- grug_swamp
-		"default:sand", -- beach cells inside explicit war zones
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 2000,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})

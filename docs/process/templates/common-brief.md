@@ -5,7 +5,11 @@ practised Round 79 brief. Copy to
 ~/projects/grudgelands-orchestration/r<NN>/common-brief.md, replace <NN>, the
 round summary, the plan sections and the lists marked <...>, delete what the
 round does not use (contract, release details, vendored code, sound,
-art, measuring runs) and this comment. -->
+art, measuring runs) and this comment.
+The paths are the user's workstation layout: the repository at
+~/projects/grudgelands, the private orchestration folder at
+~/projects/grudgelands-orchestration (AGENTS.md "Lua & Luanti environment");
+replace both on another machine. -->
 
 Project: Grudgelands, an MMO-inspired Luanti game in Lua. Round <NN> is **<the
 round in one sentence>**. Lanes: <lanes and waves>. Release **0.<NN>.0**,

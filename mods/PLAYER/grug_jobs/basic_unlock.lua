@@ -22,9 +22,11 @@
 --   - at join (the first-login scan) and before the Crafting tab is built
 --     (ui.lua, quiet: the build shows the result);
 --   - in the player's slot of SLOTS x SLOT_PERIOD = 0.5 s after an
---     inventory action, a dug node or a crafted delivery (jobs.lua), and
---     every SWEEP seconds for items that arrived otherwise (pickups,
---     rewards, trades); a step visits one slot's players only, never all.
+--     inventory action, a crafted delivery (jobs.lua) or an item through
+--     grug_inventory.give (dug drops, pickups, rewards) that names a token
+--     the held set lacks (Round 81; a creative player's dug node always),
+--     and every SWEEP seconds for items that arrived otherwise; a step
+--     visits one slot's players only, never all.
 -- A scan that unlocks recipes writes one feed line: "New recipe: X", or
 -- "New recipes: X and N more", and resends an open Crafting page.
 --
@@ -52,7 +54,7 @@
 --   grug_jobs.needed_basic(profession, tier) -> the Basic recipe ids (a list)
 --   grug_jobs.unlock_basic_tiers(player, profession, from, to[, quiet])
 --                                          -> the number of recipes it added
---   grug_jobs.HELD_KEY, grug_jobs.HELD_STARTER, grug_jobs.BASIC_UNLOCKED_KEY
+--   grug_jobs.HELD_KEY, grug_jobs.BASIC_UNLOCKED_KEY
 
 local HELD_KEY = "grug_jobs:held"
 local UNLOCKED_KEY = "grug_jobs:basic_unlocked"
@@ -64,7 +66,6 @@ local STARTER = {"default:stick", "grug_materials:pick_wood", "grug_materials:ax
 	"grug_materials:shovel_wood", "grug_farming:hoe", "grug_fishing:rod"}
 
 grug_jobs.HELD_KEY = HELD_KEY
-grug_jobs.HELD_STARTER = STARTER
 grug_jobs.BASIC_UNLOCKED_KEY = UNLOCKED_KEY
 
 --
@@ -117,7 +118,8 @@ end
 local function read_set(player, key)
 	local set = {}
 	local first = true
-	for word in player:get_meta():get_string(key):gmatch("%S+") do
+	local raw = player:get_meta():get_string(key)
+	for word in raw:gmatch("%S+") do
 		-- The format word first; an unknown format reads as an empty set.
 		if first then
 			if word ~= FORMAT then break end
@@ -126,7 +128,7 @@ local function read_set(player, key)
 			set[word] = true
 		end
 	end
-	return set
+	return set, raw
 end
 
 local function write_set(player, key, set)
@@ -137,18 +139,24 @@ local function write_set(player, key, set)
 	player:get_meta():set_string(key, table.concat(words, " "))
 end
 
-local cached, unlocked_cache = {}, {}
+-- `unscanned`: the names whose stored held set was missing when it was
+-- read (the first scan is still to come), kept so the scan never reads the
+-- stored string again (Round 81 P2-04: it grows to several KB).
+local cached, unlocked_cache, unscanned = {}, {}, {}
 local function load(player)
 	local name = player:get_player_name()
 	local held = cached[name]
 	if held then return held end
-	held = read_set(player, HELD_KEY)
+	local raw
+	held, raw = read_set(player, HELD_KEY)
 	cached[name] = held
+	unscanned[name] = raw == "" or nil
 	return held
 end
 
 local function save(player, held)
 	write_set(player, HELD_KEY, held)
+	unscanned[player:get_player_name()] = nil
 end
 
 local function load_unlocked(player)
@@ -191,8 +199,8 @@ end
 function grug_jobs.scan_held(player, quiet)
 	local inv = player:get_inventory()
 	if not inv then return 0 end
-	local first = player:get_meta():get_string(HELD_KEY) == ""
 	local held = load(player)
+	local first = unscanned[player:get_player_name()] == true
 	local new = {}
 	for _, list in pairs(inv:get_lists()) do
 		for _, stack in ipairs(list) do
@@ -385,15 +393,35 @@ core.register_on_leaveplayer(function(player)
 	local slot = slot_of[name]
 	if slot then members[slot][name] = nil end
 	cached[name], slot_of[name], dirty[name], visits[name] = nil, nil, nil, nil
-	unlocked_cache[name] = nil
+	unlocked_cache[name], unscanned[name] = nil, nil
 end)
 
 core.register_on_player_inventory_action(function(player)
 	grug_jobs.held_dirty(player)
 end)
 
+-- An item arriving through grug_inventory.give (dug drops, pickups, rewards)
+-- marks the player only when it names a token the held set lacks (Round 81
+-- P2-04): a miner whose stone is held long since is not scanned per node.
+grug_inventory.register_on_give(function(player, item)
+	local name = player:get_player_name()
+	if not slot_of[name] then return end
+	local held = load(player)
+	for _, token in ipairs(tokens_of(item)) do
+		if not held[token] then
+			dirty[name] = true
+			return
+		end
+	end
+end)
+
+-- A creative player's drops skip the give helper (grug_inventory/storage.lua):
+-- every dug node marks them, as before.
 core.register_on_dignode(function(_, _, digger)
-	if digger and digger.is_player and digger:is_player() then grug_jobs.held_dirty(digger) end
+	if digger and digger.is_player and digger:is_player() and
+			core.is_creative_enabled(digger:get_player_name()) then
+		grug_jobs.held_dirty(digger)
+	end
 end)
 
 core.register_globalstep(function(dtime)

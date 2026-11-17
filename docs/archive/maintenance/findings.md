@@ -64,7 +64,7 @@ GUI and first-public-release gates remain open where recorded.
 
 ## Coverage and limits
 
-[Baseline inventory](../../maintenance/inventory-baseline.tsv) lists every tracked Markdown file
+[Baseline inventory](inventory-baseline.tsv) lists every tracked Markdown file
 at baseline with provisional purpose, line count and SHA256. Its coverage column
 records initial assignment, not a fabricated per-file certification. Final topic
 coverage is documented by the [items](../../research/docs20-items-audit.md),

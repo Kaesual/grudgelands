@@ -487,16 +487,17 @@ check(back._grug_base_texture[1] == "grug_mobs_boar_jungle.png"
 	and back.base_texture[1] == "grug_mobs_boar_jungle.png^[colorize:#ffa800:80",
 	"pristine texture stays the zone tint after reload, gold on top")
 
--- Authored identity beats the base family's spawn roll (the bear row's
--- 1-in-10 Elder Bear: rename + set_tier elite before the first tick).
-local elder_roll = w.rows["grug_mobs:bear"] and w.rows["grug_mobs:bear"].on_spawn
-check(type(elder_roll) == "function", "bear spawn row carries the elder roll")
+-- Authored identity beats the base family's spawn roll (the 1-in-10 Elder
+-- Bear: rename + set_tier elite before the first tick). Since Round 81
+-- (ruling 6) the roll is the base definition's after_activate, which spawn()
+-- runs with empty staticdata (a fresh entity); it was the retired ABM row's
+-- on_spawn before.
+check(type(R["grug_mobs:bear"].after_activate) == "function",
+	"the bear definition carries the elder roll")
 local real_random = math.random
 math.random = function() return 1 end
 local cub = spawn(w, "grug_mobs:bear_cub")
-elder_roll(cub)
 local plain = spawn(w, "grug_mobs:bear")
-elder_roll(plain)
 math.random = real_random
 grug_mobs.ensure_init(cub)
 R["grug_mobs:bear_cub"].do_custom(cub, 0.1)

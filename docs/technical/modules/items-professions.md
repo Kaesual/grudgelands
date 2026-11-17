@@ -232,7 +232,7 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
   sorted tokens a Basic recipe names, item names and `group:<name>`,
   space-separated; read once per session, written when it grows; about
   4.7 KB once every ingredient was held). `recipe_known(player, recipe)`
-  (true outside Basic and for the starter outputs `HELD_STARTER`:
+  (true outside Basic and for the starter outputs, `basic_unlock.lua` `STARTER`:
   the stick, the four wooden tools and, since Round 66, the fishing rod),
   `scan_held(player[, quiet])` (every
   list; returns the recipes it unlocked and feeds
@@ -251,8 +251,13 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
   `recipe_known` reads both sets
   `held_dirty(player)` (jobs.lua after a delivery). When: at the join,
   before the Crafting tab's build, and in the player's slot (5 slots of
-  0.1 s, one slot's players per step) when an inventory action, a dug node
-  or a delivery marked it, else every 10 s. Fixtures `tools/r47_cr`,
+  0.1 s, one slot's players per step) when an inventory action or a
+  delivery marked it, or an item placed by `grug_inventory.give` (dug
+  drops, pickups, rewards; its `register_on_give` seam) names a token the
+  held set lacks (Round 81 P2-04; a creative player's dug node, which
+  skips the give helper, always marks), else every 10 s. The scan never
+  reads the stored string again: whether the first scan is still due is
+  kept from the session's one read. Fixtures `tools/r47_cr`,
   `tools/r57_craft` (the tier unlock); the
   list filter in `tools/r45_ui`.
 
@@ -317,8 +322,11 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
   activation LBM; a job checks one nearby. Digging or blasting a player-placed
   station releases every list its node meta still holds (an old crafting
   grid, an old stand's mixture, fuel and output) and every saved workspace
-  record. A lit brewing stand left by the old automatic brewing goes out at
-  its next node timer. Automatic furnace/dual processing is
+  record. A workspace record (node meta `grug_jobs:workspace:<name>`) is
+  stored only while it holds an item or fuel left; an empty one is deleted
+  at the save, and empty ones stored before Round 81 go at the station's
+  first opening in a server run (P2-03). A lit brewing stand left by the
+  old automatic brewing goes out at its next node timer. Automatic furnace/dual processing is
   universal and grants no progress. Stations and workspaces are
   `docs/design/inventory_equipment.md` §4 and `professions.md` §1.5, named
   tiered enchantments (including trinkets) `items_crafting.md` §6b, equipment
@@ -355,7 +363,8 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
 
 - **Crop registration**: `grug_nodes` registers complete `grug_farming:soil` and
   `soil_wet` definitions before synchronous mapgen compilation, and exports
-  `crop_visual(key, stage, sounds)` and `bind_crop_soil_callbacks`. FARM binds
+  `crop_visual(key, stage, sounds, context)` (the context: the mode and
+  segment of a multi-node crop) and `bind_crop_soil_callbacks`. FARM binds
   its real callbacks once and owns the 18 crop families, timers and current-world
   activation. Mapgen has no FARM dependency; do not defer world authority.
   Tall crops keep state, timers and drops on the root; hidden helpers never own
@@ -381,8 +390,9 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
 
 - **Fishing (Round 14):** transient bobber, manual reel in a 1.5-second bite
   window, missed bites rearm; only successful catches wear the returned rod.
-  `grug_abilities.notify` shares the neutral latest-message HUD token, no catch
-  chat spam. Death, leave, shutdown, invalid water/rod and distance clean up.
+  A catch writes one line to the message feed (`grug_core.feed(player,
+  "fish", notice)`), no catch chat spam. A rod wears `floor(65535 / 64)` per
+  catch, so it breaks on the 65th. Death, leave, shutdown, invalid water/rod and distance clean up.
 
 ## Trinkets
 
@@ -552,8 +562,8 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     in player meta (100c = 1s, 100s = 1g, conversion display-only);
     `get/set/add/take` (take is atomic and never goes negative) plus
     `register_on_change`. **Never read or write the meta key directly** —
-    the clamp, the HUD refresh and the change callbacks all live in
-    those functions. `PlayerMetaRef:set_int` is a real 32-bit signed
+    the clamp and the change callbacks (the Inventory page's refresh is
+    one) all live in those functions; there is no money HUD. `PlayerMetaRef:set_int` is a real 32-bit signed
     store, hence the hard ceiling `grug_money.MAX`.
 
 ### The Bag of Coins
@@ -632,15 +642,13 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     `type = "npc"` is what makes them permanent (it exempts them from
     all three mobs_redo removal paths); a **truthy `do_punch` return**
     is what makes them invulnerable (the api.lua precedence gotcha
-    above). WP7's placement was a throttled globalstep against fixed capital
-    offsets, whose presence gate must stay inside the object-activation
-    radius or duplicates spawn forever. **Since WP13 that is only the
-    fallback**: a settlement's vendors stand on the `vendor` sockets its
+    above). A settlement's vendors stand on the `vendor` sockets its
     blueprint exports (`grug_core/settlement_sockets.lua`, placed by
-    `grug_mobs/start_npcs.lua`), and the offsets serve only a capital whose
-    core has not been built — an empty set since all six cores landed.
-    `grug_traders/vendors.lua` reads which capitals are socketed from the
-    registry, never from a hard-coded list. The twelve **profession shop**
+    `grug_mobs/start_npcs.lua`); WP7's fixed capital offsets and their
+    placement pass are gone (Round 81). At mods-loaded
+    `grug_traders/vendors.lua` reads from the registry, never from a
+    hard-coded list, whether every capital is socketed, and logs an error
+    for one that is not (that capital then has no traders). The twelve **profession shop**
     vendors (butcher, smith, fishmonger, baker, tailor, mason, brewer,
     bowyer, herbalist, armourer, tanner, embalmer) are socket-only, carry no
     race of their own — the settlement key answers that — and only `smith`
@@ -661,9 +669,9 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     (the window shows `grug_items.crown_preview`; a worn item the wearer
     could no longer wear afterwards is not offered); the payment is one
     `grug_money.take_with_inventory` with the fee `grug_traders.CROWN_FEE`
-    (14 700c, checked by `income.py --check`), one Fallen Crown and the
+    (14 800c, checked by `income.py --check`), one Fallen Crown and the
     crowned item. The Decor Merchant's shelf is `grug_decor`'s harvested kit
-    (`stock.lua` `culture`, four price bands); vendors sell blue ×3 and gold
+    (`stock.lua` `culture`, four price bands); vendors buy blue ×3 and gold
     ×6 of the Common payout (`grug_traders.stack_sell_price`,
     `price_rules.QUALITY_FACTOR`).
 
@@ -688,10 +696,9 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     mode in the same vendor session. It uses a server-owned repair quote and
     `grug_repair.quote_formspec`; serial-prefixed actions reject replay after
     a quote refresh, and every action rechecks the authored provider socket
-    through `grug_repair.can_open_camp_vendor`. The standalone
-    `grug_repair.open_camp_vendor` API remains available for the same socket
     (`grug_traders.open`'s fifth argument `origin = {settlement, socket}`,
-    plain strings from the entity's `_grug_start`/`_grug_socket`). The
+    plain strings from the entity's `_grug_start`/`_grug_socket`) through
+    `grug_repair.provider_permitted`. The
     Miner's Guild Exchange (`grug_traders:guild_exchange`) takes over each
     capital's `capital_services.GUILD_HALL.exchange` socket as the service
     role `guild_exchange` (`grug_core` `SERVICE_ROLES`), like the
@@ -702,9 +709,13 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     (`stoneN_<index>`, `stoneall_<index>`), made by
     `grug_guild.stonewright_make`.
     The Expedition Registrar has its own core socket `expedition_registrar`
-    at each capital's waystone plaza approach (0.73.1, map reset;
-    `grug_expeditions/registrar.lua`), a villager like the Housing Steward;
-    the guild clerk stays an ordinary resident.
+    a few nodes outside each capital's great hall door (0.75.3, map reset;
+    at the waystone plaza approach from 0.73.1; the six
+    `wp13/<capital>.lua` compositions; `grug_expeditions/registrar.lua`), a
+    villager like the Housing Steward; the guild clerk stays an ordinary
+    resident. Its window, like the other service windows, stays open only
+    while the player is within 8 nodes and the NPC within 2 nodes of its
+    socket (`grug_core.npc_window_permitted`, Round 81).
 
 ### No detached inventories in trade UIs
 

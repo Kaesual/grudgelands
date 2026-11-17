@@ -404,8 +404,15 @@ do
 		soulbound_allow = fn
 		register(fn)
 	end
+	-- Round 81: the rule belongs to grug_inventory's bound-item seam
+	-- (bound.lua, whose one allow callback this is) and registers once every
+	-- mod has loaded; here that is at once.
+	local mods_loaded = core.register_on_mods_loaded
+	core.register_on_mods_loaded = function(fn) fn() end
 	grug_housing = {}
+	dofile(repo .. "/mods/PLAYER/grug_inventory/bound.lua")
 	dofile(repo .. "/mods/PLAYER/grug_housing/soulbound.lua")
+	core.register_on_mods_loaded = mods_loaded
 	core.register_allow_player_inventory_action = register
 	local p = player("g_stone")
 	wait(1)

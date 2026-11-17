@@ -107,8 +107,6 @@ local function talent_content(player, context)
 	})
 end
 
-grug_classes.talent_formspec_content = talent_content
-
 -- The skill catalog row under the tree (spec §3.4, Round 44 plan ruling 4):
 -- grug_skills, which depends on this mod, installs a function(player, y,
 -- context) that returns its formspec part in real coordinates from y down

@@ -1,0 +1,14 @@
+# Read by ripgrep and fd (not by git): tracked files that stay in the
+# repository but only mislead a code search. Each is an old copy or a
+# proposal of a shipped game file under the shipped file's name or content;
+# the shipped file is under mods/. Search them explicitly with `rg -uu` or
+# `--no-ignore` (an explicit `-g` glob also overrides this file).
+# Audit 2026-11 T1-03, Round 81.
+
+# Construction-camp candidates named like the shipped camp_site_<race>.tpl
+# (tools/r69_camp_art/README.md); none is byte-identical to a shipped one.
+/tools/r69_camp_art/candidates/**/*.tpl
+
+# Castle candidates, the picked one installed under the capitals' hall names
+# (tools/r70_castle/INSTALL.md) and changed since.
+/tools/r70_castle/candidates/**/*.tpl

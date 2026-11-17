@@ -1,7 +1,8 @@
 #!/bin/bash
 # Template (docs/process/round-workflow.md "Templates"), from the practised
 # Round 79 script: copy to ~/projects/grudgelands-orchestration/r<NN>/ and set
-# NN (or pass ROUND=<NN>).
+# NN (or pass ROUND=<NN>); GRUG_REPO names the repository when it is not
+# ~/projects/grudgelands.
 #
 # usage: lane_merge.sh <lane> "<subject>": merge r<NN>-<lane> into round<NN>
 # with --no-ff in the round branch's worktree. Line conflicts in the
@@ -10,7 +11,7 @@
 NN="${ROUND:-<NN>}"
 APPEND_ONLY="tools/README.md"
 COAUTHOR="${COAUTHOR:-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>}"
-cd "$HOME/projects/grudgelands/.claude/worktrees/round$NN" || exit 1
+cd "${GRUG_REPO:-$HOME/projects/grudgelands}/.claude/worktrees/round$NN" || exit 1
 l=$1; msg="$2"
 [ -n "$l" ] && [ -n "$msg" ] || { echo "usage: lane_merge.sh <lane> \"<subject>\"" >&2; exit 2; }
 if git merge --no-ff -q "r$NN-$l" -m "$msg

@@ -139,6 +139,8 @@ do
 	}
 	grug_mobs = {is_noncombatant = function(ent) return ent._grug_noncombatant == true end}
 	grug_core = {
+		-- Round 81: the input gate asks grug_core's privilege cache.
+		has_priv = function() return true end,
 		get_player_faction = function(name) return factions[name] end,
 		pvp_can_harm = function(a, b) return grug_pvp.can_harm(a, b) end,
 		is_stunned = function() return false end,
@@ -430,6 +432,8 @@ do
 	local nudges = 0
 	core = {is_player = function(o) return type(o) == "table" and o.is_player_ref == true end}
 	grug_core = {
+		-- Round 81: the input gate asks grug_core's privilege cache.
+		has_priv = function() return true end,
 		mono_time = function() return now end,
 		recheck_switch = function() end,
 		prune_engagement = function() end,
@@ -548,6 +552,8 @@ do
 	setmetatable(core, {__index = function() return function() end end})
 	grug_sounds = {play = function() end}
 	grug_core = {
+		-- Round 81: the input gate asks grug_core's privilege cache.
+		has_priv = function() return true end,
 		hud_layout = {COLOR = {xp = 0}},
 		banner = function(_, text) banners[#banners + 1] = text end,
 		feed_xp = function() end,
@@ -593,8 +599,12 @@ do
 	grug_classes = {get_talent_bonus = function() return bonus end}
 	grug_abilities = {mana_cost = function() return 10 end,
 		effective_charge = function() return 2 end,
-		-- Round 53 (HOOKS): no family keys here; the cost as defined.
-		family_bonus = function() return 0 end,
+		-- Round 53 (HOOKS): the cost as defined. Round 81 (DEAD): the
+		-- per-definition cooldown_talent is gone, so the shortening comes
+		-- through the family key cooldown_sub.
+		family_bonus = function(_, _, family)
+			return family == "cooldown_sub" and bonus or 0
+		end,
 		-- Round 80 (SKILLS): the head's mana number is the cast's charge.
 		effective_cost = function(_, def)
 			return def.cost.mana_percent and {mana = 10} or def.cost
@@ -608,7 +618,7 @@ do
 	run(cut(init, "\n(function grug_abilities%.description_prefix%(.-\nend)\n",
 		"description_prefix"), "description_prefix")
 	local taunt = {name = "Taunt", kind = "cast", cost = {rage = 10}, cooldown = 8,
-		cooldown_talent = "taunt_cooldown_sub", _grug_owner_line = "Warrior",
+		_grug_owner_line = "Warrior",
 		_grug_timing_line = "8 s cooldown"}
 	local player = {}
 	eq(grug_abilities.description_prefix(nil, taunt), "Taunt (Warrior)\n10 rage, 8 s cooldown\n",
@@ -617,7 +627,7 @@ do
 		"C no talent: the base cooldown")
 	bonus = 2
 	eq(grug_abilities.description_prefix(player, taunt), "Taunt (Warrior)\n10 rage, 6 s cooldown\n",
-		"C Grudge 2 s: 6 s")
+		"C cooldown_sub 2 s: 6 s")
 	bonus = 1.5
 	eq(grug_abilities.description_prefix(player, taunt), "Taunt (Warrior)\n10 rage, 6.5 s cooldown\n",
 		"C 1.5 s: 6.5 s")

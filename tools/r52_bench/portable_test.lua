@@ -527,6 +527,8 @@ do
 	fake_grug_core.hud_layout = {STATUS_ICON = 64, STATUS_LIMIT = 8,
 		anchors = {status_row = {position = {x = 0, y = 0}}},
 		status_slot = function() return {x = 0, y = 0}, {x = 0, y = 0} end}
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(ROOT .. "/tools/r81_passes/all_players_pass.lua")(fake_grug_core, status_env.core)
 	setfenv(assert(loadfile(ROOT .. "/mods/CORE/grug_core/status.lua")), status_env)()
 	check(fake_grug_core.set_status ~= nil and s_callbacks.globalstep ~= nil,
 		"M the real status.lua loads")

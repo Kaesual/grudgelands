@@ -132,7 +132,9 @@ grug_visuals = {
 	register_cloak_source = function(fn) cloak_source = fn end,
 	apply = function(player) applied[#applied + 1] = player:get_player_name() end,
 }
-sfinv = {set_player_inventory_formspec = function() end}
+-- Round 81 (P2-01): progress re-sends the tab only when its last build
+-- showed the counter (the rows record them in the sfinv context).
+sfinv = {set_player_inventory_formspec = function() end, contexts = {}}
 grug_mobs = {
 	register_on_eligible_kill = function(fn) eligible_kill = fn end,
 	register_on_boss_kill = function(fn) boss_kill = fn end,
@@ -185,7 +187,11 @@ eq(A.selected_cloak(anna), "none", "D wears No cloak")
 eq(cloak_source(anna), nil, "D cloak source: no texture")
 check(next(meta_a.data) == nil, "D a new character stores nothing")
 
--- K + U: counters per character, unlock on threshold.
+-- K + U: counters per character, unlock on threshold. Anna's rows show
+-- every counter (as if her Achievements tab showed them all).
+local shown_all = {}
+for _, ach in ipairs(book.achievements) do shown_all[ach.counter] = true end
+sfinv.contexts.anna = {grug_achievement_counters = shown_all}
 kill(anna, "grug_mobs:boar", 20)
 kill(anna, "grug_mobs:young_boar", 19)    -- a sub-type counts as its base
 kill(anna, "grug_mobs:plague_boar", 5)    -- a regional boar is a boar
@@ -233,6 +239,25 @@ check(R.has_cloak(book, meta_a, "hunter_2") and not R.has_cloak(book, meta_a, "h
 check(feed_count("anna", "Achievement: Hunter II") == 1, "U Hunter II's line")
 check(not R.has_cloak(book, meta_b, "hunter_1"), "U bert has no Hunter cloak")
 check(tab_refreshed > 0, "K progress re-sends the Achievements tab")
+-- Round 81 (P2-01): one re-send per kill however many counters it feeds,
+-- and none for a counter the shown rows do not count (a third character,
+-- so anna's and bert's counts below stay as they were).
+do
+	local cara = new_player("cara", new_meta())
+	join(cara)
+	sfinv.contexts.cara = {grug_achievement_counters = shown_all}
+	tab_refreshed = 0
+	kill(cara, "grug_mobs:boar")
+	eq(tab_refreshed, 1, "K a boar (kill:animal and kill:family:boar): one re-send")
+	sfinv.contexts.cara.grug_achievement_counters = {["kill:zombie"] = true}
+	kill(cara, "grug_mobs:boar")
+	eq(tab_refreshed, 1, "K a boar while the rows show other counters: no re-send")
+	kill(cara, "grug_mobs:zombie")
+	eq(tab_refreshed, 2, "K a zombie while its row is shown: one re-send")
+	sfinv.contexts.cara = nil
+	kill(cara, "grug_mobs:zombie")
+	eq(tab_refreshed, 2, "K no Achievements rows built: no re-send")
+end
 eligible_kill(anna, {name = "grug_mobs:skeleton_raider", _grug_rare_id = "bonerattle_north"})
 check(R.has_cloak(book, meta_a, "no_more_orders_1"), "K Captain Bonerattle by rare id")
 eq(R.count(meta_a, "kill:family:skeleton"), 1, "K ... who is also a skeleton")
@@ -244,7 +269,9 @@ check(R.has_cloak(book, meta_a, "final_notice_1"), "K Final Notice")
 -- B: boss ledger kills.
 boss_kill(anna, "king:human")
 eq(R.count(meta_a, "boss:king"), 1, "B a King kill")
-eq(R.count(meta_a, "boss:king:human"), 1, "B per boss id")
+-- Round 81 (DEAD, P2-10): a per-boss counter is written only while an
+-- achievement asks for it; none asks for boss:king:human.
+eq(R.count(meta_a, "boss:king:human"), 0, "B no per-id counter nothing asks for")
 check(R.has_cloak(book, meta_a, "kingslayer_1"), "B Kingslayer's cloak")
 for _ = 1, 4 do boss_kill(anna, "king:orc") end
 check(R.has_cloak(book, meta_a, "kingslayer_2") and not R.has_cloak(book, meta_a, "kingslayer_3"),
@@ -254,7 +281,8 @@ check(R.has_cloak(book, meta_a, "wyvernslayer_1"), "B Wyvernslayer's cloak")
 check(not R.has_cloak(book, meta_a, "dragonslayer_1"), "B the Wyvern is not the Ice Dragon")
 boss_kill(bert, "dragon:wyrmglass")
 check(R.has_cloak(book, meta_b, "dragonslayer_1"), "B Dragonslayer's cloak for bert")
-eq(R.count(meta_b, "boss:dragon"), 1, "B bert's dragon kills")
+-- Round 81 (DEAD, P2-10): no achievement asks for boss:dragon, so it is not written.
+eq(R.count(meta_b, "boss:dragon"), 0, "B no boss:dragon counter nothing asks for")
 check(not R.has_cloak(book, meta_b, "kingslayer_1"), "B bert killed no King")
 
 -- P: grug_pvp's guard counter.

@@ -9,12 +9,13 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
 
 ## Factions and character creation
 
-- **Factions**: pattern from Lord of the Test `lottclasses` — faction as a
-  **privilege** + ally matrix + predicates (`*_same_race_or_ally`),
-  selection formspec on join, starter-kit dispatch. Our creation flow differs
-  (Round 35): `grug_classes/selection.lua` owns one window
-  (`grug_classes:create`: faction, race, class and the look panel
-  grug_visuals registers) and the waiting screen (`grug_classes:loading`).
+- **Factions**: a character's faction is a player-meta id
+  (`grug_factions:faction`) validated against `grug_core.factions`; there is
+  no faction privilege and no ally matrix. The creation flow (Round 35):
+  `grug_classes/selection.lua` owns one window
+  (`grug_classes:create`: race, whose faction follows, class and the look
+  panel grug_visuals registers; the races are listed under their two
+  faction headings) and the waiting screen (`grug_classes:loading`).
   The choices are a session-only draft (`session.draft`, checked again at
   Create); "Create character" calls `set_faction`, `set_race`, the panel's
   `store` and `set_class` at once and sets `grug_classes:arriving`, which
@@ -93,8 +94,9 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   Round 28 ([progression.md](../../design/progression.md)): `grug_xp.mob_xp(L)`
   is the kill-equivalent unit `M(L) = 25 + 5L`, `level_xp(L)` the XP from L
   to L + 1, `xp_for_level(L)` the cumulative start of L, and
-  `quest_reward(level, weight)` turns a quest weight into XP; kill XP
-  (`mob_xp × tier`) lives in `grug_mobs/levels.lua`. Positive grants feed
+  `quest_reward(level, weight)` turns a quest weight into XP; kill XP is
+  `grug_xp.kill_xp(mob_level, player_level, tier)` (the level-difference
+  share of `mob_xp` × tier, Round 46), which `grug_mobs.kill_xp` calls. Positive grants feed
   `grug_core.feed_xp` unless the caller passes `quiet`. Since Round 36 the
   level-up banner's second line counts the talent points the jump earned
   through `grug_classes.talent_points_at(level)`, the one point rule (read
@@ -253,7 +255,10 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   wear/remainder/capability bookkeeping and first persistent action identity.
   Forward that third argument through every wrapper (including quality).
   Since Round 37 it is pure wear only, its own cheap event: the use that
-  breaks an item notifies a full change (reason nil). On the reason the
+  breaks an item notifies a full change (reason nil). Since Round 81 grug_gear
+  also uses it when it rewrites only a hand's "Effective at level" line (a
+  level-up, a Str/Dex equip), so neither reruns every consumer nor restarts
+  the swing clock; a changed look (image) stays a full change. On the reason the
   armour and affix caches stay (only the named slot's cached copy is
   dropped), and the stats, look, Character page and ability mana/HUD/
   description/skin consumers return at once; grug_repair writes only the
@@ -402,16 +407,77 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   melee/projectile/aura/DoT/ground attack paths exactly once; environment/fall
   and player damage remain unchanged. See `round17-plan.md` and living specs.
 
+### Shared per-player reads and passes
+
+  Round 81 (lane HOT; audit X4-01, C1-05, X4-05) put three small helpers
+  into grug_core for the per-step and per-hit paths:
+
+  - **The privilege cache** (`grug_core/privs.lua`):
+    `grug_core.has_priv(name, priv)` answers as `core.check_player_privs`
+    does, kept per player name and privilege; the grant and revoke callbacks
+    (behind `/grant`, `/revoke` and `core.set_player_privs`), leaving and
+    `core.auth_reload` drop the answers. The engine has none: every uncached
+    check is an auth-database read. The contextual input's `interact` test,
+    environment damage's `noclip` (asked only for a head node that would
+    suffocate) and `mobs.has_priv` go through it.
+  - **The player body** (`combat_ray.lua`): `grug_core.player_body(player)`
+    is `{eye_height, collisionbox}` read once with `get_properties()` and
+    kept (weakly, by ObjectRef) until `grug_core.player_body_changed(player)`.
+    The writers of either property for players are closed: player_api's
+    `set_animation` on a new animation class and `set_model`'s fallback
+    (GRUG PATCH, [VENDOR.md](../../../VENDOR.md) "Round 81 HOT") and
+    `grug_mounts.apply_camera`; a new writer must call
+    `player_body_changed`. `combat_eye_pos`, environment damage's head point
+    and the homing aim at a player read it; the homing aim at a mob reads
+    its `_grug_cbox`.
+  - **Join slots** (`grug_core/player_slots.lua`):
+    `grug_core.register_player_pass(period, fn)` (at load time) calls
+    `fn(player, elapsed)` for every connected player once per `period`,
+    one of eight slots per `period / 8`, so no step handles every player.
+    A player joins the slot with the fewest players and keeps it;
+    `elapsed` is the game time since this pass last visited the player
+    (since the join at first), so a pass that adds up over time keeps its
+    sums. A server step serves up to two ticks, so a period down to
+    0.36 s keeps its cadence at 0.09 s steps, and a stall collapses to two
+    ticks, which the next `elapsed` covers.
+    `grug_core.player_pass_slot(name)` names a player's slot. On it since
+    Round 81 (lane PASSES): the status row (0.5 s), the regeneration and
+    HUD-bar pass of grug_abilities (0.5 s), the target frame (0.5 s), the
+    PvP location sample and the PvP page refresh, the Character page's 1 s
+    refresh, the day-night ratio, environment damage (each visit's `elapsed`
+    rounded to whole ticks) and the wield poll (1 s each). The vegetation renewal
+    already services its players round-robin and is not on it.
+
+  The input pass reads the wielded item once per player and pass and hands
+  the name to the step, the ready ring and the crosshair (Round 81).
+
+  **The identity cache** (Round 81, lane PASSES; audit C3-02): the stored
+  XP and level (`grug_xp.get_xp`, `get_level`, so
+  `grug_core.get_player_level`), class and race (`grug_classes.get_class`,
+  `get_race`) and faction (`grug_factions.get_faction`) are read from player
+  meta once and kept per ObjectRef (weak), so a rejoin reads afresh. Each
+  key's one writer rewrites its entry: `grug_xp.set_xp` (every XP grant goes
+  through `add_xp`), `grug_classes.set_class` and `set_race`,
+  `grug_factions.set_faction`. Meta stays the authority; the registry check
+  and the race's faction test still run on every call. A new writer of one
+  of these keys must go through its setter; a fixture that writes the meta
+  directly must do so before the first read of that player. The same
+  pattern keeps `grug_classes.applied_max_hp(player)` (the hp_max
+  `apply_stats` last set; the life bar and the nametag read it) and the
+  potion cooldown's expiry (`grug_traders`).
+
 ### Pools, environment damage, statuses and food
 
   Round 6 centralizes player scaling in `grug_core.base_pool`: max HP and mana,
   percentage mana costs, pool-derived heals/absorbs and the damage-only
   `level_scale` fit follow `combat_stats.md` §2; Strength and Intelligence are
   damage secondaries only. The Character page displays maximum pools and its
-  Help page explains the model. Ability registrations may expose
-  `def.values(user)`; `grug_abilities.description_for` writes the effective
-  current-level values to that player's stack on kit sync, level change and
-  talent change. Every cost text (the tooltip head, the talent tree's nodes and
+  Help page explains the model. An ability definition may expose
+  `def.description_for(player, def)` (often reading a kit helper such as
+  `def.values`, whose signature the kit chooses);
+  `grug_abilities.update_stack_description(stack, def, player)` writes that
+  text with the effective current-level values to the player's stack on kit
+  sync, level change and talent change. Every cost text (the tooltip head, the talent tree's nodes and
   strip) comes from `grug_abilities.cost_text(player, def)` (Round 80): "N% base
   mana (M mana)" with M the cast's whole charge (`effective_cost`), "N mana",
   "N rage" or "free"; skill and node descriptions name no cost of their own.
@@ -420,7 +486,8 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   no one it would heal is hurt). Suffocation is 5% maximum HP/s (minimum 1), with stasis and
   `noclip` exempt; lava is 20% and drowning 10% of maximum HP/s
   (`environment_damage.lua`, Round 24), and absorb does not cover fall,
-  lava or drowning. `grug_core.status` is the runtime timed-effect registry and, since
+  lava or drowning. `grug_core/status.lua` (`set_status`, `clear_status`,
+  `get_status`, `status_modifier_sum`) is the runtime timed-effect registry and, since
   Round 26, the bottom-centre status icon row (at most 10 icons, 0.5 s pass;
   pictures and frame kinds in `grug_core/status_icons.lua`) that also feeds
   the Character page's Effects tab; the combat state is not a status but
@@ -440,7 +507,7 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   retain their instant channel and shared persistent cooldown.
   `grug_cooking` owns the mapgen-free plant items, the 18 dish recipes, the six
   raw assembled dishes (Cooking recipes since Round 45) and their engine
-  furnace routes. `grug_fishing.table_for(pos)`
+  furnace routes. `grug_fishing.band_at(pos)`
   selects one of six catch tables through `grug_core.mob_level_at(pos)`; water
   salinity never gates fishing.
 
@@ -455,8 +522,8 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   makes or uses them). Capital
   personal workspaces derive from terrain-resolved,
   rotated `public_station` sockets in the themed outer premises.
-  `grug_jobs.register_public_position(station, pos)` owns the shared registry;
-  `grug_brewing.register_public_position(pos)` delegates the brewing stand.
+  `grug_jobs.register_public_position(station, pos)` owns the shared registry
+  (the brewing stand included).
   No fixed capital-core position is authoritative. Potions share
   `grug_traders`' persistent clock (`grug_traders.POTION_COOLDOWN` = 30 s in
   `potion.lua` since Round 78, shown in the status row as `potion_cooldown`, which also owns the vendor's Weak Healing Potion; every

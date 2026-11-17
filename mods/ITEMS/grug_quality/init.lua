@@ -130,7 +130,6 @@ local CURVES = {
 	dodge_percent = {a = 1.5, b = 0.032, c = 0, minimum = 0},
 	armor_rating = {a = 0, b = 0.08, c = 0, minimum = 0.5},
 }
-grug_items.ENCHANT_CURVES = CURVES
 
 function grug_items.enchant_value(stat, ilvl, tier)
 	local curve = CURVES[stat]
@@ -1200,7 +1199,6 @@ grug_inventory.equipment_changed = function(player, listname, reason)
 	end
 	return original_equipment_changed(player, listname, reason)
 end
-grug_inventory.invalidate_armor = grug_inventory.equipment_changed
 
 grug_classes.get_equipment_pool_percent = function(player, pool)
 	local totals = equipment_totals(player)

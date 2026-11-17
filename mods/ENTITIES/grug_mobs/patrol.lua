@@ -10,11 +10,11 @@
 -- around. Only the storage of the route and of the waypoint index differs, so
 -- the caller passes both in.
 --
--- We do NOT use mobs_redo's mob_class:go_to(pos) (api.lua:1833-1840). It works by
+-- We do NOT use mobs_redo's mob_class:go_to(pos) (api.lua). It works by
 -- spawning a temporary "mobs:_pos" entity and calling do_attack(obj, true) on
 -- it — i.e. it puts the mob into state "attack" with a dummy target. Three
 -- things break for us: general_attack() bails out entirely while
--- state == "attack" (api.lua:1853-1858), so a patrolling mob would be BLIND to
+-- state == "attack" (api.lua general_attack), so a patrolling mob would be BLIND to
 -- players; our threat/leash logic would see an attack state with a non-player
 -- target; and the telegraph would count the dummy as melee combat. A yaw +
 -- walk-velocity nudge once a second is all an amble needs.
@@ -110,10 +110,10 @@ end
 --
 -- MAKE A MOB FACE ONE DIRECTION AND KEEP IT.
 --
--- `set_yaw(yaw, 0)` alone is not enough, and the reason is api.lua:3638-3781:
+-- `set_yaw(yaw, 0)` alone is not enough, and the reason is api.lua mob_activate:
 -- `mob_activate` gives every mob a RANDOM yaw with a SIX-STEP smooth rotation,
 -- and the step function keeps feeding that pending target
--- (api.lua:3638-3781) until the six steps are spent. An instant yaw written
+-- (api.lua mob_activate) until the six steps are spent. An instant yaw written
 -- while such a rotation is pending is turned away again over the next half
 -- second. Overwriting `target_yaw` first makes the pending rotation a no-op
 -- (`shortest_rotation(yaw, yaw) == 0`), so the facing sticks.
@@ -488,18 +488,15 @@ local function report_give_up(self)
 	end
 end
 
--- Is nobody watching? Every connected player is an active object, so
--- `get_objects_inside_radius` answers exactly the question the user's ruling
--- asks. Only ever called for a mob that is already stuck.
+-- Is nobody watching? The nearest player from grug_core's player snapshot
+-- (tag_carrier.lua, refreshed every eighth of a second), like room.lua's
+-- `watched`, instead of every mob and item within the range (Round 81
+-- MOBRUN, MOB1-06). Only ever called for a mob that is already stuck, and a
+-- refused snap is retried 10 s later.
 function grug_mobs.unwatched(pos, range)
-	local objects = core.get_objects_inside_radius(pos,
-		range or SNAP_PLAYER_RANGE)
-	for index = 1, #objects do
-		if objects[index]:is_player() then
-			return false
-		end
-	end
-	return true
+	range = range or SNAP_PLAYER_RANGE
+	local d2 = grug_core.nearest_tag_player_d2(pos)
+	return d2 == nil or d2 > range * range
 end
 
 --

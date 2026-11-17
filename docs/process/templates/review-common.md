@@ -3,7 +3,11 @@
 <!-- Template (docs/process/round-workflow.md "Templates"), resynced with the
 practised Round 79 brief. Copy to
 ~/projects/grudgelands-orchestration/r<NN>/review-common.md, replace <NN> and
-the inputs, delete the bullets the round does not use and this comment. -->
+the inputs, delete the bullets the round does not use and this comment.
+The paths are the user's workstation layout: the repository at
+~/projects/grudgelands, the private orchestration folder at
+~/projects/grudgelands-orchestration (AGENTS.md "Lua & Luanti environment");
+replace both on another machine. -->
 
 You review another agent's branch; you did not write it. Repository:
 `/home/jan/projects/grudgelands`. Review the branch diff against its base

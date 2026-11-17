@@ -910,3 +910,28 @@ register("rift_spawn_burst", {
 		shape = {"box", {-0.5, 0, -0.5}, {0.5, 1.5, 0.5}}, vel = {{-3, 0, -3}, {3, 5, 3}},
 		exp = {0.3, 0.8}, size = {2, 5}, glow = 5}),
 })
+
+-- The rift's dark motes (Round 36, on the helper since Round 81 MOBRUN,
+-- MOB3-03: 1 s spawners, grug_particle_scale), its own texture with its
+-- look. The crack: one spawner per stretch of it every second while a
+-- player is near (rift.lua), caster = the stretch's corner, frame.size its
+-- {x, z} extent, frame.n the motes of that second (rift_core.lua's rate).
+local RIFT_MOTE = "grug_mobs_rift_particle.png"
+register("rift_crack", function(frame)
+	local size = frame.size or {8, 1}
+	return {spawner(math.max(1, math.min(128, frame.n or 4)), 1, {tex = RIFT_MOTE, fade = false,
+		shape = {"box", {0, 0, 0}, {size[1], 0.4, size[2]}},
+		vel = {{-0.15, 0.4, -0.15}, {0.15, 1.1, 0.15}}, exp = {2, 3}, size = {1.5, 3.5}, glow = 3})}
+end)
+
+-- The rift boss: a burst of motes rising in a box of half-width r round it.
+local function rift_burst(n, time, r, after)
+	return spawner(n, time, {tex = RIFT_MOTE, fade = false, after = after,
+		shape = {"box", {-r, 0, -r}, {r, 1.5, r}}, vel = {{-1, 0.5, -1}, {1, 2.5, 1}},
+		exp = {0.5, 1.2}, size = {2, 4}, glow = 6})
+end
+-- The void pulse's 2 s wind-up as two 1 s pieces, then the pulse itself.
+register("rift_pulse_windup", {rift_burst(15, 1, 1.5), rift_burst(15, 1, 1.5, 1)})
+register("rift_pulse", {rift_burst(40, 0.4, 6)})
+-- The boss rising from the rift: 1.5 s as a 1 s and a 0.5 s piece.
+register("rift_rise", {rift_burst(40, 1, 2), rift_burst(20, 0.5, 2, 1)})

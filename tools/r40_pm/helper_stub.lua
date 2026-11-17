@@ -33,6 +33,12 @@ return function(repo, scale)
 			add_particlespawner = engine("add_particlespawner"),
 			yaw_to_dir = function(yaw) return vector.new(-math.sin(yaw), 0, math.cos(yaw)) end,
 			log = function() end,
+			-- A deferred emitter (`after`) goes to the fixture's core.after, if
+			-- it has one (Round 81: the rift's two-piece effects).
+			after = function(...)
+				local fake = rawget(_G, "core")
+				if fake and fake.after then return fake.after(...) end
+			end,
 		},
 	}, {__index = _G})
 	for _, file in ipairs({"particles.lua", "particle_effects.lua"}) do

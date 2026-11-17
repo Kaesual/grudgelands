@@ -192,6 +192,8 @@ local inventory = {
 grug_mobs = {disposition = function(ent) return ent._grug_disposition end,
 	evade_notice = function() end}
 grug_core = {
+	-- Round 81: the input gate asks grug_core's privilege cache.
+	has_priv = function() return true end,
 	combat_eye_pos = function() return vector.copy(EYE) end,
 	combat_actor = function(ref) return ref end,
 	-- The aiming ray (grug_core.aim_raycast, tested in tools/r35_t): the

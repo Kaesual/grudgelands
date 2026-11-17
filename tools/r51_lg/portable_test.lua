@@ -7,7 +7,7 @@
 --      picked art byte for byte (tools/r51_land);
 --   B. the swamp moss: the moss soil's groups and sounds, drops mud, and is
 --      in every non-mapgen host list (gathering catalog, natural ground
---      list, the three swamp mobs, the spawn-region ground, the root ground);
+--      list, the Bog Fowl's row, the spawn-region ground, the root ground);
 --   C. the clay bands: mesa clay's groups, drop mesa clay, natural ground;
 --   D. the sand: default:sand and both rooted sand beds wear the 32 px sand,
 --      and no registered node keeps default_sand.png;
@@ -217,12 +217,19 @@ for _, source in ipairs(catalog.p9g_sources()) do
 	check(soil_host == moss_host, source.id .. ": the swamp moss hosts where the moss soil does in the swamp")
 end
 check(with_soil > 0 and with_moss == with_soil, "gathering sources host on the swamp moss (" .. with_moss .. ")")
--- the swamp mobs: the spawn list naming the moss soil names the swamp moss
-for _, file in ipairs({"bog_ooze", "bog_fowl", "crocodile"}) do
+-- the swamp mobs: the spawn list naming the moss soil names the swamp moss.
+-- Round 81 SPAWN (ruling 6): the Bog Ooze's and the Crocodile's surface rows,
+-- retired at load since Round 30, are deleted; they spawn only through the
+-- swamp zones' recipes, on the spawn-region ground checked below.
+for _, file in ipairs({"bog_fowl"}) do
 	local source = read(repo .. "/mods/ENTITIES/grug_mobs/" .. file .. ".lua")
 	local list = source:match('nodes = (%b{})[^\n]*grug_swamp')
 	check(list ~= nil and list:find('"grug_nodes:dirt_with_moss"', 1, true) and
 		list:find('"grug_nodes:swamp_moss"', 1, true), file .. "'s swamp spawn takes the swamp moss")
+end
+for _, file in ipairs({"bog_ooze", "crocodile"}) do
+	local source = read(repo .. "/mods/ENTITIES/grug_mobs/" .. file .. ".lua")
+	check(not source:find("mobs:spawn(", 1, true), file .. " spawns only through the spawn regions")
 end
 local regions = read(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions.lua")
 local ground = regions:match("local GROUND = (%b{})")

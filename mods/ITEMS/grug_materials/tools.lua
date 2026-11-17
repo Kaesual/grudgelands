@@ -60,10 +60,8 @@ for _, row in ipairs({{"wood", "group:wood"}, {"stone", "group:stone"}}) do
 		{mat, mat}, {mat, "group:stick"}, {"", "group:stick"},
 	}})
 end
-for _, row in ipairs({{"pick", 6}, {"shovel", 4}, {"axe", 6}}) do
-	core.register_craft({type = "fuel",
-		recipe = "grug_materials:" .. row[1] .. "_wood", burntime = row[2]})
-end
+-- No engine fuel rows for the wooden tools: the furnaces read only
+-- grug_jobs/automatic.lua FURNACE_FUELS and the tree and leaves groups.
 
 -- The four tiers `default` never had (WP13 round 2, items_crafting.md
 -- §3.0.3). Iron (T2) is a full material tier with its own tier rock and pick

@@ -167,7 +167,14 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   0.5 s in one of five 0.1 s slots (`slot_of`, assigned at join), skips a
   player without a party through `grug_parties.in_party` (membership only,
   no view built) and recomputes the row layout only on a window change
-  (fixture `tools/r32_f4`). Current geometry and offline presentation:
+  (fixture `tools/r32_f4`). Since Round 81 (audit P5-03) a party's members
+  share their party's slot (`grug_parties.party_id`) and the poll builds
+  the party's view once for all of them; the Party HUD switch and the
+  health colours are read from player meta once per session and kept by
+  their setters; a level change is told to the player's party, the player
+  and the holders of its invitations only (P5-04; the Social tab follows
+  the roster change). `grug_parties.member_names` gives the names alone,
+  without a view's engine reads. Current geometry and offline presentation:
   [parties.md](../../design/parties.md). Since Round 67 the same poll draws
   the invitation box for a player without a party who holds invitations
   (`grug_parties.newest_invitation`, a read of the session table; geometry
@@ -235,7 +242,10 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   per-player read set of the broadcasts is player meta
   `grug_mail:broadcasts_read` (written only while the player is online).
   Expired entries (30 days, `os.time()`) are pruned whenever a key is read;
-  there is no pass over every player. Not map-bound: no
+  there is no pass over every player. A read hands out a fresh table; the
+  last four keys read keep their stored string and an untouched decoded
+  copy, so a read of an unchanged string copies instead of decoding again
+  (Round 81: one mailbox click reads the box up to five times). Not map-bound: no
   `grug_core.map_reset.clear` ([upgrade contract](../upgrade-contract.md) §3.2).
   Stored attachments are item strings (`ItemStack:to_string()`), so item
   meta survives; a future item-removal step scans them and the list
@@ -277,8 +287,7 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   - `unread_count(name)` (unread letters plus, for an online player, unread
     broadcasts) and `refresh_count(name)`, which hands the count to
     `grug_map.minimap.set_mail_count(name, n)` when that function exists
-    (lane HUD) and to `register_on_count(fn(name, count))` listeners; called
-    at every change and at join.
+    (lane HUD); called at every change and at join.
   - Tickets: `send_ticket(player, topic, subject, body, mailbox)`,
     `report_letter(player, id, reason, note, mailbox)` (a "Player report"
     ticket with a frozen `report` copy of the letter), `tickets()`,
@@ -312,8 +321,8 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   migrations never touch it, and no detached inventory is involved (a
   disconnect loses nothing). The existing allow callbacks refuse what must
   not go there: `grug_housing/soulbound.lua` (only `main` and the bags) and
-  `grug_skills/bound_items.lua` (skills only on the hotbar, mount items only
-  in `main` and the bags); the fixture runs both. The Write tab rings
+  `grug_skills/bound_items.lua` (skills only on the hotbar); the fixture
+  runs both. The Write tab rings
   `grug_mail_out` → the shift-click inbox → `main`, and each bag into the
   slots.
 
@@ -330,7 +339,8 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   from `grug_xp.register_on_level_change` (once per jump and at every join
   with `old_level = nil`), the riding letter while
   `grug_mounts.owned_tier_ids` holds none of `RIDING_TIERS`, the steward's
-  while `grug_housing.player_claim(name)` is "never". `quest.lua` registers
+  while `grug_housing.player_claim(name)` is "never", and the Expedition
+  Registrar's at level 20 always (Round 72). `quest.lua` registers
   the system quest `mailbox_visit` (`STARTER_QUEST`), grants it at arrival
   and join (`grant_starter_quest`) and turns it in from its own
   `register_on_mailbox_open` callback, posting the completion line to the
@@ -338,7 +348,8 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   character (`character_ready`: class and faction). One player-meta flag
   each, set once done or no longer useful (the quest's also when the log
   was full): `grug_mail:quest_granted`, `grug_mail:welcome_sent`,
-  `grug_mail:letter_riding`, `grug_mail:letter_housing`. Fixture
+  `grug_mail:letter_riding`, `grug_mail:letter_housing`,
+  `grug_mail:letter_registrar`. Fixture
   `tools/r48_quest`.
 
 ### The mailbox window
@@ -360,7 +371,7 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
 ### The Admin Mail tab
 
 - **The Admin Mail tab** (`admin.lua`, lane ADMIN): the privilege
-  `mail_admin` (`grug_mail.ADMIN_PRIV`; `give_to_admin`, not
+  `mail_admin` (`give_to_admin`, not
   `give_to_singleplayer`) and the sfinv page `grug_mail:admin`
   (`grug_mail.ADMIN_PAGE`), last in `grug_inventory.TAB_ORDER`, `is_in_nav`
   only with the privilege, no inventory view (`show_inv = false`). The
@@ -421,7 +432,13 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     world queries validate asks).
   - `stone.lua`, `stone_form.lua`, `protection.lua`, `soulbound.lua`: the
     stone and draft nodes with draft and fuel expiry, the stone forms, the
-    `is_protected` wrapper with the arrival cube, the soulbound items.
+    `is_protected` wrapper with the arrival cube, the soulbound items. The
+    5 s pass (Round 81, audit P4-02) starts each cycle with the draft and
+    expiry scans, which the registry answers from its draft set and the
+    next possible expiry without walking every claim, and checks the stones
+    in eight slices of the id-ordered claims (copied again only after a
+    claim came or went); each claim is checked once per cycle, a new one
+    from the next cycle on.
   - `admin.lua` (Round 26): `/claim_remove <player> | here | orphans`
     (`server` privilege).
   - `packed.lua`, `recovered.lua` (Round 50): the soulbound
@@ -463,8 +480,10 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   sockets (six capitals, six start pads and, since Round 31, the two PvP
   fortresses' sockets, registered after the twelve home locations; seven
   stones per faction), discovers a stone by proximity
-  (once a second) or right-click, keeps the per-character list in player
-  meta (`grug_home.known_waypoints`) and opens the travel form
+  (once a second, on the player's join slot since Round 81) or right-click,
+  keeps the per-character list in player meta (decoded once per session
+  and kept by `discover`, its only writer; `grug_home.known_waypoints`)
+  and opens the travel form
   (`grug_home.use_waystone`); the refusals are pure rules in
   `waypoints_core.lua`. Since Round 72 the form has the tabs Waystones and
   Expeditions; the second is filled by `grug_expeditions` through
@@ -519,19 +538,20 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   2 nodes; another tier's summon replaces the active mount or boat
   (`grug_mounts.toggle`). Since Round 44 the quickbar (`grug_quickbar`, E)
   is the only summon path: one button per `owned_tier_ids` entry calls
-  `toggle`; no mount item is handed out (`items.lua` keeps the six retired
-  items registered and inert until the 0.44.0 migration step). The Riding Trainer dialogue is one service format
+  `toggle`; no mount item is handed out (`items.lua` aliases the six retired
+  names to nothing, Round 81). The Riding Trainer dialogue is one service format
   (`grug_mounts.SERVICES`); `shipwright.lua` serves the `shipwright` socket
   role of the capital stable. Prices: `grug_mounts.PRICES` (E4,
   `tools/r29_e4/income.py --check`). Fixture `tools/r29_b` (boats, and since
   Round 30 section H the riding-tier purchases at the shipped prices). The
   flight-border sweep reads the faction once and each column's zone id
   (`grug_zones.id_at`), never a copied zone record per sample (Round 30).
-  Since Round 72 `grug_mounts.enemy_town_at(faction, x, z)` (`entity.lua`) is
-  the one enemy-town rule (mounts.md §4.4): a lazily built table from the hard
-  `town` footprints to their settlement's faction, asked by `summon_position`
-  after the summon guards and by the mount's step when it enters another
-  column. Fixture `tools/r72_mounts`.
+  Since Round 72 `grug_mounts.enemy_town_at(faction, x, z, y)` (`entity.lua`)
+  is the one enemy-town rule (mounts.md §4.4): a lazily built table from the
+  hard `town` footprints to their settlement's faction, with a node at most
+  `UNDER_TOWN` below the column's ground counting as in the town (without
+  `y` the column alone), asked by `summon_position` after the summon guards
+  and by the mount's step whenever it enters another node. Fixture `tools/r72_mounts`.
 
 ## Atlas
 
@@ -541,21 +561,21 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   other inventory pages ([presentation contract](../ui-presentation.md)). Keep the zoom's wanted centre (since 0.45.1 the soft lock on
   the player until the player scrolls, `atlas.zoom_view` and
   `atlas.scroll_event`, [world_map.md](../../design/world_map.md#atlas-navigation)),
-  fixed-size markers, clipping and hit bounds in the same transform. A new tab visit resets zoom/scroll; live
-  updates preserve them. Stable byte-encoded IDs own marker identity. Only open
-  Map sessions refresh, at most every 2 s since Round 30 (`page.lua`): a cheap
-  signature (zoom, selection, location, minimap switch, arrows on a 0.02-unit
-  grid, the quest markers' version, the home, the waystones) is compared and
-  the form is built and sent only when it changed; clicks rebuild at once.
-  Anything a marker draws must be in that signature, or it goes stale.
-  Since Round 32 (perf review R1) the poll runs every 0.1 s and reads at
-  most `CHECKS_PER_PASS` (8) signatures and builds at most
-  `BUILDS_PER_PASS` (2) forms per pass, the longest-waiting viewers first,
-  so open tabs keep their own phase and never rebuild together (beyond
-  about 40 viewers whose maps change at once the 2 s interval stretches;
-  fixture `tools/r32_f4`).
-  Scrolling defers rebuilds until a 0.5 s quiet interval. Closing resets to
-  Character; leave/death clean up. Return home lives on the Character page
+  fixed-size markers, clipping and hit bounds in the same transform. Live
+  updates preserve zoom and scroll. Stable byte-encoded IDs own marker
+  identity. Since Round 44 the map is its own window (`window.lua`; the Map
+  tab's page, `page.lua`, only opens it, and the inventory goes back to its
+  homepage). Its refresh is event-driven: a click, zoom, layer click, quest
+  selection or quest change sends the window again, at most once per
+  `SEND_GAP_US` (1 s) per player, an event inside the gap going out when it
+  ends; in a party the arrows are checked every `PARTY_US` (1 s) and the
+  window sent only when a member's arrow moved. A pass every 0.1 s does at
+  most `CHECKS_PER_PASS` (8) party checks and `BUILDS_PER_PASS` (2) sends,
+  the longest-waiting first (fixture `tools/r32_f4`). A scrollbar move never
+  sends and holds every send for `QUIET_US` (0.5 s). The window counts as
+  open until its quit or until any other form is shown (the death screen and
+  the inventory too); its state (zoom, scroll, follow, selection, layer) is
+  kept between opens until the player leaves. Return home lives on the Character page
   since Round 30 (`grug_inventory/pages.lua`, its 1 s pass re-sends that page
   only while the button text changes).
 
@@ -573,14 +593,16 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
 
 ### Baked icons and the minimap
 
-  Since Round 44 the pure `bake.lua` draws the settlement, point-of-interest,
-  king and dragon icons and the region names (pixel font, dark halo) into
-  the Map tab's image and the small icons alone into the minimap's copy;
-  the art is Lua data (`baked_art.lua`, generated from
+  Since Round 44 the pure `bake.lua` draws into the map images: since
+  Round 47 the world map's image carries only the region names (pixel font,
+  dark halo; the window draws the places in its marker layers,
+  `layers.lua`), and since Round 64 the minimap's copy carries no icons (its
+  icons are separate shared 32 px markers). The art is Lua data (`baked_art.lua`, generated from
   `grug_map/art/*.png` by `tools/r44_mb/gen_baked_art.py`, `--check`), since
   the engine decodes no PNG for Lua. The cache key covers `bake.lua` (the
-  layout), the art and font versions and every icon's kind and place
-  (fixture `tools/r44_mb`); `minimap.lua` (HUD state, marker slots, change-only
+  layout), the art and font versions and every icon's kind and place (the
+  icon list is still built though no image draws it; audit P1-05; fixture
+  `tools/r44_mb`); `minimap.lua` (HUD state, marker slots, change-only
   `hud_change` per whole screen pixel; every server step only a cheap test,
   and the map, markers or party arrows placed again only when what they
   show changed, Round 37) and the pure
@@ -597,8 +619,9 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   location line are handled every 0.5 s or on a window change, and the
   static markers are re-asked on `grug_quests.register_on_markers_changed`
   and, when their key (quest version, home, waystones, faction) changed, at
-  a 5 s check. The minimap asks only the quest, service, home and (since Round 29)
-  waypoint marker providers (`atlas.collect_markers(player, only)`);
+  a 5 s check. The minimap asks the quest, service, home, waypoint (since
+  Round 29), settlement, poi, boss and pvp marker providers
+  (`minimap.lua` `PROVIDERS`, `atlas.collect_markers(player, only)`);
   since Round 44 trainers show one icon per profession
   (`grug_map.trainer_icon`); the
   `waypoint` provider shows the player's discovered waystones on both maps.

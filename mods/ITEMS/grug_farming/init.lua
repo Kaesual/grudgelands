@@ -236,22 +236,26 @@ local function owned_helper(node_name, root_pos, pos, row)
 		pos.y - helper.level == root_pos.y
 end
 
-local function protection_ok(pos, player_name)
+-- `silent`: growth (the crop timer, the geometry LBM) is no player action, so
+-- its refusal records no protection violation; the planter would otherwise be
+-- flashed the claim's line every retry, wherever they are (audit I1-01). A
+-- harvest or a dig still records one.
+local function protection_ok(pos, player_name, silent)
 	if not core.is_protected(pos, player_name) then return true end
-	if player_name ~= "" then core.record_protection_violation(pos, player_name) end
+	if player_name ~= "" and not silent then core.record_protection_violation(pos, player_name) end
 	return false
 end
 
-local function transition_crop(pos, state, next_stage, player_name)
+local function transition_crop(pos, state, next_stage, player_name, silent)
 	local row = state.crop
 	local old_height = height_for(row, state.stage)
 	local new_height = height_for(row, next_stage)
 	local maximum = math.max(old_height, new_height)
-	if not protection_ok(pos, player_name) then return false end
+	if not protection_ok(pos, player_name, silent) then return false end
 	for level = 1, maximum - 1 do
 		local upper = copy_pos(pos, level)
 		local node = core.get_node_or_nil(upper)
-		if not node or not protection_ok(upper, player_name) then return false end
+		if not node or not protection_ok(upper, player_name, silent) then return false end
 		local owned = owned_helper(node.name, pos, upper, row)
 		if level < new_height and not owned then
 			local definition = core.registered_nodes[node.name]
@@ -309,7 +313,7 @@ local function crop_timer(pos, elapsed)
 		return false
 	end
 	local player_name = core.get_meta(pos):get_string(CROP_PLANTER_META)
-	if not transition_crop(pos, state, next_stage, player_name) then
+	if not transition_crop(pos, state, next_stage, player_name, true) then
 		core.get_meta(pos):set_float(CROP_PROGRESS_META, seconds - SOIL_INTERVAL)
 		core.get_node_timer(pos):set(seconds, seconds - SOIL_INTERVAL)
 		return false
@@ -586,7 +590,7 @@ core.register_lbm({
 		if not state or not state.crop.profile.heights then return end
 		if whole_crop_positions(pos, state) then return end
 		transition_crop(pos, state, state.stage,
-			core.get_meta(pos):get_string(CROP_PLANTER_META))
+			core.get_meta(pos):get_string(CROP_PLANTER_META), true)
 	end,
 })
 
@@ -627,7 +631,6 @@ do
 	local renewal = dofile(core.get_modpath(core.get_current_modname()) ..
 		"/renewal.lua")(api)
 	grug_farming.renewal = renewal
-	grug_farming.RENEWAL = renewal.constants
 
 	-- Natural: air, generated ground and ores (grug_natural), liquids, every
 	-- node the generator places as vegetation (vegetation_density.lua) and

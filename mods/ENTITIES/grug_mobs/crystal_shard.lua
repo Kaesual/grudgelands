@@ -15,7 +15,6 @@ local shard = {
 	reach = 3, pathfinding = 1, walk_velocity = 1.5, run_velocity = 4.6,
 	jump = true, jump_height = 8, stepheight = 2.1, fear_height = 6,
 	view_range = 16, dogshoot_switch = 1,
-	dogshoot_count_max = 8, dogshoot_count2_max = 2,
 	arrow = "grug_mobs:crystal_shard_entity",
 	arrow_override = grug_mobs.stamp_arrow_damage,
 	shoot_interval = 1.6, shoot_offset = 0.75,

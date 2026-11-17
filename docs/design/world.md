@@ -115,7 +115,7 @@ region's clouds. Roads, civic envelopes and structures apply their own
 grading afterward. Full contract: `world_zones.md` §7.6.
 
 Every capital sits centrally in its own city zone with four cardinal gates.
-Toward the outer side lies a level-10–20 neighbor, laterally along the capital
+Toward the outer side lies a level-11–20 neighbor, laterally along the capital
 axis medium-level heartland, and toward the faction front high-level
 territory. Roads connect capitals, starts and villages and reach into each
 contested frontier zone; they follow the terrain, branch at T or Y junctions
@@ -235,6 +235,13 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     stays protected for everyone, the claim owner included: world protection
     wins over claim permissions. A claim keeps 16 nodes from every POI,
     village and camp core box (`housing.md` §2, §9; Round 25 ruling 27).
+  - **Water stays out** of these corridors and boxes (Round 81 ruling 3):
+    water poured beside them does not flow in; the water guard refuses the
+    flow and restores flooded air as the water barrier, as in R1's
+    hard-protected volumes. Only a flood is set back there: water that lay
+    on a road or in a core before 0.81.0 drains away and does not come back.
+    Planned river and canal flow still passes, and water inside a claim off
+    these corridors flows as before.
   - **Future fire and explosions** spare these corridors and boxes as well as
     the hard-protected content of R1 (user decision 2026-09-29,
     [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
@@ -480,7 +487,7 @@ from y = −501.
 - Its guards and important faction NPCs are level 60; the killable race king
   is the explicit level-70 elite exception and is protected by two level-60
   elite royal guards (`world_zones.md` §12).
-- Its center has four cardinal gates facing level 10–20 home territory,
+- Its center has four cardinal gates facing level 11–20 home territory,
   medium-level heartland and the high-level contested front; roads reach it
   through them (`world_zones.md` §§3, 9).
 - New characters use their race's outer level-1–10 starting settlement.
@@ -591,8 +598,8 @@ visible:
 Every stationary NPC population (outpost guards, capital watch, bandit/
 mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 
-- **Place-bound NPCs** are bound to their anchor (guard banner, camp
-  fire, mine, platform): after losing aggro they **evade home** —
+- **Place-bound NPCs** are bound to their anchor (guard banner, mine,
+  platform): after losing aggro they **evade home** —
   untouchable, running at 1.5× run speed, normal again on arrival;
   a blocked run finds its way round on a short local search and falls
   back to a teleport snap after ~40 s (combat_stats.md §4 carries the
@@ -677,7 +684,11 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   arrival 2 spawn at once (⌊15/7⌋), the third ~6 min later. The clock is
   **world time** (it runs while players are elsewhere, stands still
   while the server is off) and it starts when the anchor **notices** the
-  death — an anchor cannot count losses in an area nobody was in.
+  death — an anchor cannot count losses in an area nobody was in. A recipe
+  camp, whose members may be culled while their blocks are unloaded, starts
+  the refills of members it finds missing after an absence at its last look
+  instead (Round 81), and it counts only while a player is near enough that
+  its centre is active (biomes_mobs.md §4.2).
 
 ## 4b. Apex world bosses (dragons & kin)
 
@@ -801,7 +812,8 @@ combat damage for the ordinary five-second combat window.
   dragon's timer; players may still join repeat kills without another reward,
   and the other dragon remains independently eligible.
 - Dragon personal loot uses the same participation bounds as a royal
-  encounter: a living ledger participant must be within **60 nodes** of the
+  encounter (a hit on a whelp enters the dragon's ledger as a hit on a royal
+  guard enters the king's, Round 81): a living ledger participant must be within **60 nodes** of the
   dragon at death, while a ledger participant slain during the active attempt
   by the encounter, another encounter NPC or an enemy player retains
   eligibility for **60 seconds**. Proximity alone never adds a player, and a
@@ -855,9 +867,11 @@ contact there is intended.
   level, like lava's share rule, `combat_stats.md`; armour does not reduce
   it) and swims up and steps out at the edge. Mobs avoid it like any
   damaging node (one that ends up in it takes a flat 300 per second).
-- **Particles:** dark motes over the crack for each player within 48 nodes,
-  one spawner per stretch of the crack every 5 s, about 80 particles per
-  player and period, about 50 alive at once per player.
+- **Particles:** dark motes over the crack while a player is within 48
+  nodes: one 1 s spawner per stretch of the crack every second through the
+  game's particle helper (Round 81), about 20 motes a second living 2–3 s,
+  about 50 alive at once, the same motes for every player in range; the
+  server's particle scale applies.
 - **The rift boss, Isquarre the Tithe-Eater:** a demonic level-60 elite (`biomes_mobs.md`, Round 8
   bosses table), sized for two or three level-60 players. It appears on the
   site's centre like a leader when a player is within 48 nodes and none
@@ -896,8 +910,8 @@ belongs in the mapgen environment and uses a y-range fast path above the band.
 
 Deep mining pays in raw materials rather than a separate gear-drop layer. The
 first resource-calibration pass uses these bounded density multipliers for
-ordinary continental ores, Diamond (the only gem below −1000) and Abyssal
-Crystal:
+ordinary continental ores, the T6 gems (Diamond, and the thinner Ruby and
+Sapphire) and Abyssal Crystal:
 
 | Depth | Resource density |
 |---|---:|
@@ -1202,8 +1216,9 @@ local compositions need not mirror.
 - Dragon lairs only at the contested level-60 ocean endpoints (§4b).
 
 The 24 outpost anchors and 12 bandit camps are live, and since WP40 R7 they
-are no longer ring-derived: their positions come from the authored anchor
-layout (`grug_mobs/camps.lua`, `grug_core.outpost_at`). WP13 is delivered:
+are no longer ring-derived: their anchors come from the authored roster and
+are placed per world (`world_zones.md` §8.5; `grug_mobs/camps.lua`,
+`grug_core.outpost_at`). WP13 is delivered:
 the full regional roster (villages, outposts, camps, mines, clash sites,
 arenas, apex camps and rare pads) is in `settlements.md` "Round 20 authored
 regional places", the Round 31 PvP fortresses and camps in
@@ -1261,6 +1276,6 @@ opened the connections from the other side; the Nether's world bosses are its lo
 - **Portal activation:** the first portal is unlocked by a quest (a story beat), the rest
   are always on.
 - **The gating requirement:** two-way portals must not become a safe bypass around the
-  authored land fronts or the PvP eligibility rules. An enemy-side exit lands in a
-  contested zone, forces a visible PvP state, or uses another explicitly authored
-  interception rule; which one is open (`TODO-design-nether.md`).
+  authored land fronts or the PvP eligibility rules: an enemy-side exit is
+  intercepted by an explicitly authored rule (the candidates are in
+  `TODO-design-nether.md`).

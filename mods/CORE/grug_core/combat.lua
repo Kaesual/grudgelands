@@ -161,12 +161,12 @@ end
 -- The one final floor keeps multiplication order from creating two rounding
 -- losses. Players have no mob level and therefore receive no malus.
 function grug_core.scale_player_damage(player, target, amount)
-	local mult = grug_core.level_scale(grug_core.get_player_level(player))
+	local level = grug_core.get_player_level(player)
+	local mult = grug_core.level_scale(level)
 	if target and not target:is_player() then
 		local ent = target:get_luaentity()
 		if ent and ent._grug_level then
-			mult = mult * grug_core.level_malus(
-				grug_core.get_player_level(player), ent._grug_level)
+			mult = mult * grug_core.level_malus(level, ent._grug_level)
 		end
 	end
 	amount = amount or 0
@@ -517,7 +517,19 @@ end
 -- already removed mob creates nothing (its death boundary has run): the
 -- killing blow's after-punch bonus threat must not re-engage.
 function grug_core.engage_mob(mob_ent, player)
-	if not core.is_player(player) or player:get_hp() <= 0 then
+	if not core.is_player(player) then
+		return
+	end
+	-- An existing edge first (Round 81 HOT; audit C1-13): every accepted hit
+	-- calls this two or three times. Only a tracked mob gets edges, and with
+	-- an edge every test below returns without a change, so the engine reads
+	-- are skipped with the same outcome.
+	local temp = mob_ent and mob_ent.temp
+	local edges = temp and temp.grug_engaged
+	if edges and edges[player:get_player_name()] then
+		return
+	end
+	if player:get_hp() <= 0 then
 		return
 	end
 	if not grug_core.is_tracked_mob(mob_ent) then
@@ -1280,7 +1292,8 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		grug_core.mark_in_combat(attacker)
 	end
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
-	-- flag set (that would silently kill rage generation server-wide).
+	-- flag set (that would silently kill rage generation server-wide); the
+	-- error is reported below.
 	local previous_punch, previous_action, previous_level, previous_settlement =
 		grug_core.in_ability_punch, ability_action_id, ability_attacker_level, ability_settlement
 	local settlement = {attacker = attacker, target = target}
@@ -1314,7 +1327,17 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	ability_settlement = previous_settlement
 	grug_core.in_ability_punch = previous_punch
 	if not ok then
-		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
+		-- After the flag restore: the punch's pipeline (damage, death
+		-- settlement, XP and loot, the hit callbacks) stopped half way, which
+		-- an administrator must see (AGENTS.md, Round 81 ruling 11). Once per
+		-- error site in chat: the first "<file>.lua:<line>" in the text, which
+		-- the engine wraps for an entity's on_punch ("Runtime error from mod
+		-- '...' in callback luaentity_Punch(): <file>.lua:<line>: ...",
+		-- s_entity.cpp, c_internal.cpp); every failure in the log with its
+		-- whole text.
+		local details = tostring(err)
+		grug_core.severe.report("grug_core", "ability punch failed", details,
+			"grug_core:ability_punch:" .. (details:match("([^%s\"'()]+%.lua:%d+)") or "other"))
 		return 0
 	end
 	if target:is_player() and target:get_hp() < hp_before then

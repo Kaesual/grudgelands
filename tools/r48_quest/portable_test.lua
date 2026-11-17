@@ -361,6 +361,8 @@ end
 ------------------------------------------------------------------------------
 local QUEST_POS = {x = 120, y = 10, z = 100}
 grug_core = {
+	-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+	text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"),
 	feed = function(player, kind, text, key)
 		feed_lines[#feed_lines + 1] = {name = player:get_player_name(), kind = kind,
 			text = text, key = key}
@@ -693,7 +695,8 @@ do
 	eq(registrar[1].subject, "A line in the guild's ledger", "L the Registrar's subject")
 	eq(registrar[1].body, (TEXTS.registrar.body:gsub("{player}", "Rider"):gsub("{capital}", "Dur Brannoc")),
 		"L the Registrar's text, {player} and {capital} filled")
-	has(registrar[1].body, "Come to the waystone plaza in Dur Brannoc and ask for me;",
+	-- Round 81 (DD4-01): the Registrar stands at the great hall door since 0.75.3.
+	has(registrar[1].body, "Come to the door of the great hall in Dur Brannoc and ask for me;",
 		"L the Registrar names the race capital")
 	join(rider)
 	level_change(rider, 21, 22)

@@ -63,10 +63,12 @@ Expert, Master — never as "T4". The ladders are independent;
 - **One item per concept** (decided 2026-08-07, binding): no two items
   may fill the same role. The vendor bracket catalog *is* the base craft
   ladder, and both are material-named (§3.0.3).
-- **Everyone crafts the base items of every material tier**; professions
-  enchant and upgrade them and hold a few exclusive recipes (bags,
-  spellbooks, trinkets, settings and cut gems, potions, dishes; §3.3–§3.7,
-  §6b).
+- **Professions craft the base gear of their families at every material
+  tier** (weapons, shields and armour; Round 45,
+  [professions.md](professions.md) §1); **everyone crafts the tools**.
+  Professions also enchant and upgrade gear and hold a few exclusive
+  recipes (bags, spellbooks, trinkets, settings and cut gems, potions,
+  dishes; §3.3–§3.7, §6b).
 
 ## 3. Materials, curves and the profession catalogs
 
@@ -299,7 +301,8 @@ caves and 5 or less at night, so it keeps cave spawns away within 6 nodes
 forms as the Coal torch.
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
-the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
+the **dual furnace** (ported from LotT,
+[items history](../archive/design/items-history.md) §1.1) does two-input alloys.
 
 | Output | Recipe | Node |
 |---|---|---|
@@ -366,24 +369,22 @@ from `grug_gear`. Consequences, all binding:
   stack stored under the old name *Scaled …* takes the new one at its next
   rebuild (an equipment or level change). The leather material of that
   grade stays *Scaled Hide* (§3.4).
-- **Everyone can craft the base items of every material tier** — tools,
-  weapons, armor. This is the deliberate block-crafting feel, and it is what
-  makes mining and smelting worth doing for a player with no crafting
-  profession at all.
-  Four wood sticks use the familiar two-plank vertical recipe; the old
-  one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick (the
-  same-tier metal rod the handle slot also took left the game in Round 67,
-  ruling 13; a migration step refunded held rods as bars, two rods for one). Pickaxes, axes, shovels and the
-  hoes use their familiar grid shapes; axes and hoes
-  accept both mirrored orientations. The project's own shapes are dagger = one
-  material over one handle; greataxe = five material units symmetrically around
-  two vertical handles. Wands and staves use ordinary sticks, matching metal
-  bars and the approved mob component; bows use sticks, metal and Thread.
-  Their exact shapes and ingredient ladder are below
-  ([plain caster weapons and bows](#plain-caster-weapons-and-bows)). No
-  base recipe adds a gem or professional component beyond those stated shapes.
-  **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
-  iron+ picks are smith products" (see the marked line there).
+- **Everyone crafts the tools** of every material tier (pickaxe, axe,
+  shovel, hoe) as Basic recipes, with sticks and arrows; every weapon,
+  shield and armour piece is a recipe of the profession that owns its
+  family, at the item's tier with that profession's station nearby
+  (Round 45, `grug_professions/base_recipes.lua`). The universal tools keep
+  the block-crafting feel and make mining and smelting worth doing for a
+  player with no crafting profession at all.
+  Four wood sticks take two planks; the old one-plank shortcut is removed.
+  A base sword takes two same-tier bars and a stick (the same-tier metal
+  rod the handle also took left the game in Round 67, ruling 13; a
+  migration step refunded held rods as bars, two rods for one), a dagger
+  one bar and a stick, a greataxe five bars and two sticks. Wands and
+  staves use ordinary sticks, matching metal bars and the approved mob
+  component; bows use sticks, metal and Thread. Their ingredient ladder is
+  below ([plain caster weapons and bows](#plain-caster-weapons-and-bows)).
+  No base recipe adds a gem or professional component beyond those stated.
 - **`default`'s tool ladder is replaced** by the six-tier ladder: wood
   and stone stay, bronze/iron/steel/silversteel/embersteel/abyssal steel
   replace the rest, and the **mese and diamond tool tiers are deleted**
@@ -513,7 +514,7 @@ none.
   dig through `grug_pick_level` at the profile's ordinary time, which the
   engine prefers as the faster capability.
 - **Resources:** every pick's `grug_resource` capability carries one ordinary
-  time for all five harvest ratings; the level gate alone decides access.
+  time for all six harvest ratings; the level gate alone decides access.
   Descriptions read "<Resource> Ore / Requires a T<N> pick", Iron Ore's
   "Requires a Bronze pick".
 
@@ -711,7 +712,7 @@ tier's armor values are the line evaluated at that tier's ilvl anchor —
 already does it. Nothing is re-derived and no coefficient changes; the
 tier columns above stay the authority at their four ilvls.
 
-**Base recipes.** `default` ships no armor (§1.2), so the four shapes are
+**Base recipes.** `default` ships no armor, so the four shapes are
 ours. Material costs use the canonical shapes — chest 8 / legs 7 / head 5 / feet 4 per
 piece — for the lead metal of the tier, and the same shapes serve the
 leather and cloth lines with cured leather and bolts in place of bars.
@@ -802,8 +803,17 @@ and lifetime; no professional refinement step exists.
 
 ### 3.4 Leatherworker (tanning rack) — leather armour, bows and leather bags
 
-**Material chain**: hide + thread → leather, 1:1 per grade, as Basic
-recipes (no profession, no progress). Authored grades are
+**Material chain** (intended, Round 81 ruling 9): each grade is a Basic
+recipe (no profession, no progress) of one Thread and the grade below:
+T1 light leather from a raw hide (`mobs:leather`), T2 cured leather from
+light, T3 heavy leather from cured and T4 scaled hide from heavy; T5 sleek
+leather takes a sleek pelt and a Thread, T6 nightscale leather scaled hide
+and a sleek pelt (`grug_jobs/basic_recipes.lua`). So one T1 light leather
+and three Threads make a T4 scaled hide (from a raw hide, four Threads);
+heavy leather and scaled hide also drop. Apart from the Tailor's T4
+silkweave bolt (heavy bolt, spider silk and a Thread), leather is the one
+ladder that climbs this way: the alloys above Steel
+and the wood grades take their own inputs, never the grade below. Authored grades are
 **T1 light leather, T2 cured leather, T3 heavy leather and T4 scaled hide**;
 decided 2026-08-13: **T5 sleek leather** (from the panther's sleek pelt —
 `biomes_mobs.md` §3.1/§6, both continents via jungle fringe/deep jungle) and
@@ -831,7 +841,7 @@ upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md)
 **Material chain**: 2 cloth + thread → bolt, as Basic recipes (no
 profession, no progress). Authored grades are **T1 linen
 scrap → patch bolt** (start-zone zombies, L3+ and mostly by night, the start
-camps' outlaws and the tailor shop's 3c scrap — Tailors start in safe
+camps' outlaws — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
 bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
 item `grug_mobs:spider_silk`, shown as **Raw Silk** because T5/T6 outlaws drop
@@ -1136,7 +1146,7 @@ main profession slot (professions.md §1).
   | T5 | raw meat + Stormkelp + Salt Crust | Kelp-Wrapped Roast |
   | T6 | 2 raw meat + Wild Cocoa + Salt Crust | Grand Feast |
 
-  Fishing remains universal. `grug_fishing.table_for(pos)` maps the
+  Fishing remains universal. `grug_fishing.band_at(pos)` maps the
   authoritative mob level at the cast position to six ten-level tables; each
   table is 90% its band fish and 10% papyrus (no sticks since Round 29). Fresh and salt water
   use the same table for the same level.
@@ -1366,8 +1376,6 @@ enchant of that tier (§6.3); only its stats are rolled.
 Vendors buy a blue item at **×3** and a gold item at **×6** of its Common
 buy-back ([economy.md](economy.md) §2).
 
-Whether a found-gear versus crafted-demand audit is still wanted after WP5 is
-open ([BACKLOG](../../BACKLOG.md#audit-2026-10-open-questions), DI-10).
 
 
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
@@ -1419,8 +1427,8 @@ invulnerable.
 - A successful award starts that King's rolling 24-hour wall-clock Crown
   lockout for the character. Other enemy Kings remain independently rewarding;
   repeat kills during one lockout may proceed but grant no Crown.
-- The Crown is the Crownbinder's input for crowning one item (§2,
-  [item_tiers.md](item_tiers.md) §4); it stays unsellable. Royal provenance
+- The Crown is the Crownbinder's input for crowning one item
+  ([item_tiers.md](item_tiers.md) §4); it stays unsellable. Royal provenance
   supplies visual identity.
 - No universal bar, pick, profession-level advancement or ordinary base gear requires a
   Crown, and no power-bearing recipe is Crown-only. Royal guards drop no gear
@@ -1614,7 +1622,7 @@ not add a fourth channel; no such placeholder ships now.
 The shared trinket owner rebuilds an event-driven per-character equipment cache
 when equipment changes. Hot mana, heal, hit, kill and potion paths read that
 cache and never rescan equipment per tick or event. It enforces the
-same-identity-per-character exclusion and every cap/cooldown above.
+every cap, cooldown and two-slot rule above.
 
 ### 6.3 Found-item enchant tier and value
 
@@ -1828,7 +1836,7 @@ dual-licences every mod, `LEGAL.md:25-28`, and both are on `AGENTS.md`'s
 permitted list ✓; media: **textures CC BY-SA 4.0**, sounds **two CC0** plus
 **one CC BY 3.0** (`mcl_bows_hit_player.ogg`, tim.kahn) — so exactly **one**
 attribution-requiring sound, not two; port ≈ 1000 lines incl.
-`vl_projectile`, §1.2). The item/ammunition foundation and Scout ability
+`vl_projectile`; [items history](../archive/design/items-history.md) §1.2). The item/ammunition foundation and Scout ability
 consumer are active:
 
 - **Bow family on the weapon curve**: bow damage = the 1H curve

@@ -6,10 +6,11 @@
 -- nothing can be taken from the list. No listring names it, so shift-click
 -- never reaches it.
 --
--- What may not be destroyed stays refused where it always was:
--- grug_housing/soulbound.lua and grug_skills/bound_items.lua wrap every
--- detached inventory's allow_put, and bags.lua answers the player-side half
--- of the move (a bag whose contents have no room stays, with its feed line).
+-- What may not be destroyed stays refused where it always was: the
+-- bound-item seam (bound.lua; the rules of grug_housing/soulbound.lua and
+-- grug_skills/bound_items.lua) wraps every detached inventory's allow_put,
+-- and bags.lua answers the player-side half of the move (a bag whose
+-- contents have no room stays, with its feed line).
 
 local LIST = "trash"
 local HINT_SECONDS = 6
@@ -94,13 +95,11 @@ function grug_inventory.trash_undo(player)
 end
 
 -- The guards answer before the box's own allow_put and never call it for a
--- bound stack, so the hint watches their answer from outside. grug_skills
--- would wrap the box later (its render and join walks); walking now puts this
--- wrapper around both guards. builtin keeps the callbacks in
--- core.detached_inventories and the engine reads them there at every action.
+-- bound stack, so the hint watches their answer from outside: the bound-item
+-- seam (bound.lua) wrapped the box when it was created, so this wrapper sits
+-- around it. builtin keeps the callbacks in core.detached_inventories and the
+-- engine reads them there at every action.
 local function hint_on_refusal(owner)
-	local skills = rawget(_G, "grug_skills")
-	if skills then skills.guard_detached() end
 	local callbacks = core.detached_inventories[box_name(owner)]
 	local guarded = callbacks.allow_put
 	callbacks.allow_put = function(inv, listname, index, stack, actor)

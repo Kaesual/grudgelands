@@ -63,6 +63,9 @@ _G.core = {
 	end,
 }
 _G.grug_core = {
+	-- Round 81: tag_carrier.lua reads factions on the join slots
+	-- (player_slots.lua, not loaded here); the test seam reads them afresh.
+	register_player_pass = function() end,
 	start_identities = function()
 		return {{race_id = "human", faction_id = "accord"},
 			{race_id = "orc", faction_id = "throng"}}

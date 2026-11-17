@@ -105,6 +105,9 @@ rawset(_G, "core", {
 local generation, dismounts = 0, 0
 local holds = {} -- the movement aggregator's exclusive holds, by name
 rawset(_G, "grug_core", {factions={accord={}, throng={}},
+ -- Round 81: waypoints.lua's discovery pass rides the join slots
+ -- (player_slots.lua, not loaded here); nothing here steps it.
+ register_player_pass=function() end,
  -- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
  map_reset={clear=function() end, register_on_relocate=function() end},
  hold_movement=function(_, name) holds[name] = true end,
@@ -115,6 +118,9 @@ rawset(_G, "grug_core", {factions={accord={}, throng={}},
  start_position=function() return vnew(0, 101, 0) end,
  zone_authority_installed=function() return true end})
 dofile(repo .. "/mods/CORE/grug_core/settlement_sockets.lua")
+-- Round 81: the shared NPC-window check (the innkeeper); grug_factions below
+-- resolves the player's faction for it.
+dofile(repo .. "/mods/CORE/grug_core/npc_window.lua")
 local defs = dofile(repo .. "/mods/PLAYER/grug_home/locations.lua")
 for i, row in ipairs(defs) do
  grug_core.register_settlement_sockets(row.id, row.race, {x=i * 100, y=100, z=0},
@@ -508,6 +514,8 @@ do
  player.get_properties = function() return {visual="mesh", mesh="m.b3d", textures={"t.png"}} end
  player.get_inventory = function() return {get_size=function() return 0 end} end
  core.get_current_modname = function() return "grug_inventory" end
+ -- Round 81: the per-player passes register through grug_core.
+ dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
  dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
  core.get_current_modname = function() return "grug_home" end
  local character = pages["grug_inventory:character"]

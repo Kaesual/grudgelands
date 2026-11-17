@@ -210,6 +210,9 @@ local function scenario(spot)
 		log("DIG fuelled stone by owner: node_dig=" .. tostring(dug))
 		-- Faked clock: the paid-until time moves into the past.
 		claim.paid_until = os.time() - 1
+		-- The registry skips expiry scans before its stored earliest expiry
+		-- (Round 81): tell it about the faked one.
+		model.note_expiry(claim)
 		check(not grug_housing.is_active(claim), "expired by the wall clock")
 		check(not core.is_protected(inside, OTHER), "expired claim: open to others")
 		check(core.is_protected({x = sx, y = pos.y + 1, z = sz}, OTHER),

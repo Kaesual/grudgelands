@@ -511,6 +511,12 @@ local function new_player(name, pos)
 		local item = self.wield
 		return {get_name = function() return item end}
 	end
+	-- Each test item sits in its own hotbar slot, so a new held item is a
+	-- slot switch (Round 81: the minimap reads the held name again on a new
+	-- wield index, else every 0.5 s).
+	function p:get_wield_index()
+		return self.slot or self.wield == "" and 1 or self.wield == "grug_housing:claim_stone" and 2 or 3
+	end
 	function p:get_meta()
 		return {get_string = function(_, k) return meta[k] or "" end,
 			set_string = function(_, k, value) meta[k] = value end}
@@ -635,6 +641,15 @@ me.wield = "default:dirt"
 step()
 eq(minimap.texture_of(me), normal, "M another item: the normal texture")
 eq(hud_of(12).text, "", "M another item: no square")
+-- Round 81: a stone put into the held slot itself (no slot switch) shows
+-- within the minimap's 0.5 s window check
+me.slot, me.wield = 3, "grug_housing:claim_stone"
+step(5)
+eq(minimap.claim_of(me), "throng", "M a stone put into the held slot: claim mode within 0.5 s")
+me.wield = "default:dirt"
+step(5)
+eq(minimap.texture_of(me), normal, "M the dirt back in the held slot: the normal texture")
+me.slot = nil
 -- a switched-off minimap appears for claim mode and goes after it
 minimap.set_enabled(me, false)
 step(6)

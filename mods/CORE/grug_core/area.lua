@@ -1,8 +1,8 @@
 -- Shared helpers for area skills (Round 52, round52-class-plan.md §3
 -- "CORE-B", rulings C3-C5 and D9; class-redesign/skill-inventory.md §2 B4,
--- B5, the group helper, and §3a the ground anchor). Nothing shipped calls
--- them yet (D1): Nova, Cinderfall and the splashes keep their plain spheres
--- until round K rewires them.
+-- B5, the group helper, and §3a the ground anchor). The class kits' area
+-- skills call them (grug_abilities kits_mage, kits_priest, kits_warrior and
+-- scout).
 --
 --   area.anchor(player, range, opts)  the ground anchor of a crosshair area
 --   area.ground_below(point, start)   the ground search alone

@@ -5,15 +5,15 @@
 --   * `fly = true` + `fly_in = "air"` is supported and is what the kraken
 --     already uses (with water instead of air). Three api.lua facts make it
 --     safe for an AIR flier:
---       - falling() bails out for fly mobs (api.lua:2874-2923) and nothing else
+--       - falling() bails out for fly mobs (api.lua) and nothing else
 --         writes acceleration, so the bird hovers instead of sinking;
 --       - flight_check() compares self.standing_in against fly_in
---         (api.lua:612-622); for a bird that node is "air" wherever it is, so it
+--         (api.lua flight_check); for a bird that node is "air" wherever it is, so it
 --         never enters the "flop" state;
---       - fear_height defaults to 0 for fly defs (api.lua:4058) and do_jump
---         returns early (api.lua:1178-1207) — no cliff stops, no jumping.
+--       - fear_height defaults to 0 for fly defs (api.lua mobs:register_mob) and do_jump
+--         returns early (api.lua do_jump) — no cliff stops, no jumping.
 --   * ATTACK: `dogfight`, NOT dogshoot. In the dogfight branch mobs_redo
---     gives flying mobs their own vertical tracking (api.lua:2176-2864): while
+--     gives flying mobs their own vertical tracking (api.lua do_states): while
 --     the target is beyond reach it drives the y velocity toward the
 --     target's level — down onto a player on the ground, back up afterwards.
 --     Together with the heartland run speed 4.6 that IS the swoop, and it
@@ -48,7 +48,7 @@ local function eagle_def(description, texture)
 		-- Flier (see the header). floats/fall_damage are inert while fly is
 		-- set but keep the def honest, exactly like kraken.lua.
 		-- NB the `0` below is documentation, not a switch: mobs_redo tests
-		-- `if self.fall_damage` (api.lua:2890) and 0 is truthy in Lua, so it
+		-- `if self.fall_damage` (api.lua falling) and 0 is truthy in Lua, so it
 		-- would NOT disable fall damage on a ground mob — `false` does. It is
 		-- inert here only because falling() bails out for fliers first. Do not
 		-- copy this line into a walking def (levels.lua's critter tier header).
@@ -113,45 +113,9 @@ end
 grug_mobs.register_mob("grug_mobs:crag_eagle",
 	eagle_def("Crag Eagle", "grug_mobs_eagle.png"))
 
--- §4 row "Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 |
--- outer, coast", split by continent-side top node.
--- max_height 600 like every surface row (§4, Round 22 D37): the natural
--- terrain reaches past y 500, and zone palettes gate the habitat.
--- SNOWBLOCK: grug_crags_snowy is the alpine sibling of the crags — same
--- cuboid, same climate point, snow top above y = 80 (§1.3). It was added in
--- WP18 and §4's table was never extended, so NO spawn row in the roster
--- listed `default:snowblock` and the whole snow cap of the dwarf west band
--- was mob-free. The three crags families carry it now. Zero budget impact:
--- snowblock only exists where gravel does not (y >= 80 vs the crags'
--- y_max = 79), so no cell gains a second row.
-mobs:spawn({
-	name = "grug_mobs:crag_eagle",
-	nodes = {
-		"default:gravel", -- grug_crags
-		"default:snowblock", -- grug_crags_snowy
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 2000,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})
-
 --
 -- Vulture — grug_badlands (Throng)
 --
 
 grug_mobs.register_mob("grug_mobs:vulture",
 	eagle_def("Vulture", "grug_mobs_vulture.png"))
-
-mobs:spawn({
-	name = "grug_mobs:vulture",
-	nodes = {"grug_nodes:mesa_clay"}, -- grug_badlands
-	min_light = 10,
-	interval = 20,
-	chance = 2000,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})

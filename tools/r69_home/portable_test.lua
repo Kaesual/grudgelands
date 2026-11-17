@@ -118,6 +118,9 @@ rawset(_G, "core", {
 local holds, trail = {}, {} -- the hold, and {pos=, held=} per teleport
 local no_start = false
 rawset(_G, "grug_core", {factions={accord={}, throng={}},
+ -- Round 81: waypoints.lua's discovery pass rides the join slots
+ -- (player_slots.lua, not loaded here); nothing here steps it.
+ register_player_pass=function() end,
  map_reset={clear=function() end, register_on_relocate=function() end},
  hold_movement=function(_, name) holds[name] = true end,
  release_movement=function(p, name)

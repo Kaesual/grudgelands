@@ -141,7 +141,8 @@ local function settle(m)
 	end
 	return got
 end
-local function at_level(p, level) p:get_meta():set_int("grug_xp:xp", X.xp_for_level(level)) end
+-- Through set_xp, the XP's one writer: grug_xp keeps it per player (Round 81).
+local function at_level(p, level) X.set_xp(p, X.xp_for_level(level)) end
 
 ------------------------------------------------------------------------------
 -- 1. The unit and the curve.
@@ -342,7 +343,7 @@ do
 			local p = f[4] == "1" and human or quester
 			X.add_xp(p, X.quest_reward(tonumber(f[3]), tonumber(f[2])), "quest")
 			eq(grants[#grants].granted, expected, "ledger " .. line)
-			p:get_meta():set_int("grug_xp:xp", 0)
+			X.set_xp(p, 0) -- the writer: grug_xp keeps the XP per player (Round 81)
 		elseif kind == "kill" then
 			local n = tonumber(f[5])
 			local who = {}

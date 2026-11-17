@@ -1,7 +1,8 @@
--- Direct stable-query spawn gates. Surface mobs require both their existing
--- node whitelist and the owning named zone's explicit mob palette
--- (docs/design/world_zones.md Section 8). The old radial spawn buckets are
--- not reconstructed.
+-- Direct stable-query spawn gates for the ABM rows. Every named zone spawns
+-- its surface mobs from its spawn recipe's regions (spawn_regions.lua); its
+-- ABM rows keep only the recipe's critters and RECIPE_ZONE_ROWS. The named-
+-- zone mob palettes that once served a zone without a recipe are gone
+-- (Round 81, ruling 6), with the surface rows only they could reach.
 
 local VALID_DOMAINS = {
 	contested = true,
@@ -14,126 +15,7 @@ local VALID_CLOCKS = {
 	any = true,
 }
 
-local NIGHT_FALLBACKS = {
-	settled = "grug_mobs:zombie",
-	war = "grug_mobs:zombie",
-	forest = "grug_mobs:skeleton_archer",
-	mountain = "grug_mobs:skeleton_archer",
-	jungle = "grug_mobs:jungle_spider",
-	swamp = "grug_mobs:bog_ooze",
-}
-
--- Closed named-zone mob palettes (world_zones.md Section 8), the boar tint
--- and the lookalike choices per zone. Since Round 28 they are data: the
--- `palette` of each zone's data/zones/<zone_id>.spawns.json, read by
--- spawn_regions.lua. Capitals deliberately have empty palettes. Lorindor is
--- intentionally literal: its row names pale stags, not the complete forest
--- family. A zone whose data holds a spawn recipe (ruling 34, Lane S1) has no
--- palette and spawns its surface mobs from its regions; see
--- spawn_policy_allows.
-local ZONE_MOB_PALETTES, BOAR_VARIANT_BY_ZONE, ZONE_LOOKALIKE_SELECTION =
-	grug_mobs.spawn_regions.fallback_palettes()
-
--- A mob may name more than one Section 8 family where the catalog says so.
--- Existing mobs:spawn node lists remain the narrower habitat selector.
--- Section 3.1 makes Jungle Lynx the inner/outer bridge and Parrot the
--- jungle-edge critter; lower-jungle, jungle and high-jungle use the remaining
--- outer/coast jungle family, with the zone level supplying the adjective.
-local MOB_PALETTES = {
-	["grug_mobs:boar"] = {settled = true},
-	["grug_mobs:plague_boar"] = {settled = true},
-	["grug_mobs:jungle_boar"] = {settled = true},
-	["grug_mobs:rabbit"] = {settled = true},
-	["grug_mobs:hare"] = {settled = true},
-	["grug_mobs:zombie"] = {settled = true, war = true},
-
-	["grug_mobs:wolf"] = {forest = true},
-	["grug_mobs:blightfang_wolf"] = {forest = true},
-	["grug_mobs:bear"] = {forest = true},
-	["grug_mobs:plaguehide_bear"] = {forest = true},
-	["grug_mobs:stag"] = {forest = true},
-	["grug_mobs:gaunt_stag"] = {forest = true},
-	["grug_mobs:giant_spider"] = {forest = true},
-	["grug_mobs:pale_spider"] = {forest = true},
-	["grug_mobs:skeleton_archer"] = {forest = true, war = true},
-	["grug_mobs:bone_weevil"] = {forest = true},
-
-	["grug_mobs:crag_eagle"] = {mountain = true},
-	["grug_mobs:vulture"] = {mountain = true},
-	["grug_mobs:stone_golem"] = {mountain = true},
-	["grug_mobs:mesa_golem"] = {mountain = true},
-	["grug_mobs:mountain_ram"] = {mountain = true},
-	["grug_mobs:hyena"] = {mountain = true, savanna = true},
-	["grug_mobs:zebra"] = {savanna = true},
-
-	["grug_mobs:jungle_lynx"] = {jungle_edge = true, jungle = true},
-	["grug_mobs:panther"] = {jungle = true},
-	["grug_mobs:serpent"] = {jungle = true},
-	["grug_mobs:jungle_ape"] = {jungle = true},
-	["grug_mobs:jungle_spider"] = {jungle = true},
-	["grug_mobs:parrot"] = {jungle_edge = true},
-
-	["grug_mobs:crocodile"] = {swamp = true},
-	["grug_mobs:bog_ooze"] = {swamp = true},
-	["grug_mobs:bog_fowl"] = {swamp = true},
-
-	["grug_mobs:skeleton_raider"] = {war = true},
-	["grug_mobs:carrion_crow"] = {war = true},
-
-	["grug_mobs:poacher"] = {poacher = true},
-	["grug_mobs:frost_stray"] = {frost_stray = true},
-	["grug_mobs:sun_dried_husk"] = {sun_dried_husk = true},
-	["grug_mobs:song_bird"] = {song_bird = true},
-	["grug_mobs:fox"] = {fox = true},
-	["grug_mobs:ibex"] = {ibex = true},
-	["grug_mobs:wild_turkey"] = {wild_turkey = true},
-	["grug_mobs:plains_runner"] = {plains_runner = true},
-	["grug_mobs:tapir"] = {tapir = true},
-	["grug_mobs:giant_rat"] = {giant_rat = true},
-	["grug_mobs:scorpion"] = {scorpion = true},
-	["grug_mobs:viper"] = {viper = true},
-	["grug_mobs:goblin_raider"] = {goblin_raid = true},
-	["grug_mobs:goblin_slinger"] = {goblin_raid = true},
-	["grug_mobs:goblin_hound"] = {goblin_raid = true},
-	["grug_mobs:snow_leopard"] = {snow_leopard = true},
-	["grug_mobs:wisp"] = {wisp = true},
-	["grug_mobs:ashen_treant"] = {ashen_treant = true},
-	["grug_mobs:gravewood_treant"] = {gravewood_treant = true},
-	["grug_mobs:war_construct"] = {war_construct = true},
-	["grug_mobs:speargrass_tiger"] = {speargrass_tiger = true},
-	["grug_mobs:bog_witch"] = {bog_witch = true},
-	["grug_mobs:rift_spawn"] = {rift_spawn = true},
-}
-
--- Boars share one family budget and one visual identity per named zone. The
--- node whitelist remains a habitat check, but a biome patch inside a zone may
--- no longer switch the family to a second lookalike registration. The zone's
--- tint is its palette's `boar` (BOAR_VARIANT_BY_ZONE above).
-local BOAR_VARIANTS = {
-	["grug_mobs:boar"] = true,
-	["grug_mobs:plague_boar"] = true,
-	["grug_mobs:jungle_boar"] = true,
-}
-
--- Other shared-model regional tints use the same zone-level selection. Rows
--- with genuinely different silhouettes or combat roles are not folded into
--- this table merely because their imported mesh is shared. A zone's choice
--- per family is its palette's `lookalikes` (ZONE_LOOKALIKE_SELECTION above).
-local LOOKALIKE_FAMILY = {
-	["grug_mobs:zombie"] = "zombie",
-	["grug_mobs:sun_dried_husk"] = "zombie",
-	["grug_mobs:giant_spider"] = "spider",
-	["grug_mobs:pale_spider"] = "spider",
-	["grug_mobs:jungle_spider"] = "spider",
-	["grug_mobs:jungle_lynx"] = "cat",
-	["grug_mobs:panther"] = "cat",
-	["grug_mobs:snow_leopard"] = "cat",
-	["grug_mobs:skeleton_archer"] = "skeleton_archer",
-	["grug_mobs:skeleton_raider"] = "skeleton_archer",
-	["grug_mobs:frost_stray"] = "skeleton_archer",
-}
-
--- Kraken has an independent authority instead of a named-zone mob palette:
+-- Kraken has an independent authority instead of the recipe rule below:
 -- water_class_at == deep_ocean in kraken.lua. Round 51 adds the fixed-level
 -- sharks and the sea's critter fish (world slots in data/names.json,
 -- tools/r38_names/inventory.py); their spawn rows by water band are MOBS
@@ -308,18 +190,16 @@ end
 
 -- Hostile role, derived from exactly the fields mobs_redo's general_attack
 -- tests for a player candidate: `self.passive` returns before any candidate
--- is looked at (api.lua:1853-1859) and `not self.attack_players` drops every
--- player (api.lua:1871-1885). attack_players defaults to TRUE in mob_class
--- (api.lua:157-218), hence the explicit `== false`; grug_mobs.passive_prey
+-- is looked at (api.lua general_attack) and `not self.attack_players` drops every
+-- player (api.lua general_attack). attack_players defaults to TRUE in mob_class
+-- (api.lua's mob_class defaults), hence the explicit `== false`; grug_mobs.passive_prey
 -- (verbs.lua) sets it for the four non-passive prey animals. Deriving it
 -- keeps it from drifting the way a hand-kept hostile list would.
 local hostile_spawns = {}
 local claim_hostile_spawns = {}
 local spawn_clocks = {}
 local ambient_density_spawns = {}
-local natural_min_levels = {}
 local elite_spawns = {} -- mobs whose definition is elite (golems, Land Guard)
-local zone_palette_at
 
 local function validate_clock(clock, name)
 	if type(clock) == "string" then
@@ -333,14 +213,14 @@ local function validate_clock(clock, name)
 		error("[grug_mobs] missing spawn clock for " .. name)
 	end
 	local count = 0
-	for palette, value in pairs(clock) do
-		if type(palette) ~= "string" or not VALID_CLOCKS[value] then
-			error("[grug_mobs] invalid palette spawn clock for " .. name)
+	for key, value in pairs(clock) do
+		if type(key) ~= "string" or not VALID_CLOCKS[value] then
+			error("[grug_mobs] invalid spawn clock table for " .. name)
 		end
 		count = count + 1
 	end
 	if count == 0 then
-		error("[grug_mobs] empty palette spawn clock for " .. name)
+		error("[grug_mobs] empty spawn clock table for " .. name)
 	end
 end
 
@@ -351,7 +231,6 @@ function grug_mobs.register_spawn_role(name, def)
 	-- `type = "npc"`) are never refused by a housing claim (ruling 24).
 	claim_hostile_spawns[name] = hostile_spawns[name] and def.type ~= "npc"
 	spawn_clocks[name] = def.clock
-	natural_min_levels[name] = def._grug_min_level or 1
 	elite_spawns[name] = def._grug_tier == "elite"
 	-- Ordinary natural rows include hostile creatures and neutral huntable
 	-- wildlife. Critters are scenery, while NPC/rare/boss/encounter populations
@@ -449,65 +328,37 @@ function grug_mobs.underground_spawned(ent, pos, skip_elite)
 	return ent._grug_tier == "elite"
 end
 
-local function clock_for_palette(name, palette)
-	local clock = spawn_clocks[name]
-	if type(clock) == "table" then
-		return clock[palette]
-	end
-	return clock
-end
-
--- A clock table may name one named zone with a "zone:<zone id>" key (Round
--- 24 ruling 31: the Sunscar Scorpion and the Kapok Viper keep their night
--- clock elsewhere and spawn around the clock in their start zone). It wins
--- over the palette keys, so the choice never depends on table order.
-local function zone_clock_key(clock, zone_id)
-	local key = zone_id and ("zone:" .. zone_id)
-	return key and clock[key] and key or nil
-end
-
--- `zone_id` is optional: when given it selects the zone key; otherwise the
--- zone of `pos`; with neither there is no zone key (a caller that asks for a
--- zone palette without a position).
-local function clock_palette_at(name, pos, zone_palette, zone_id)
-	local clock = spawn_clocks[name]
-	if type(clock) ~= "table" then
-		return nil
-	end
+-- A family's clock is "day", "night" or "any", or a table that picks one by
+-- where the mob would stand: a "zone:<zone id>" key for one named zone (it
+-- wins, so the choice never depends on table order) and a "blight" key for
+-- the grug_blight biome; elsewhere such a table names no clock. No family
+-- with a kept surface row has a table today (Round 81 removed the rows that
+-- had one).
+local function clock_key_at(clock, pos, zone_id)
 	if zone_id == nil and pos then
 		zone_id = grug_zones.id_at(pos.x, pos.z)
 	end
-	local zone_key = zone_clock_key(clock, zone_id)
-	if zone_key then
+	local zone_key = zone_id and ("zone:" .. zone_id)
+	if zone_key and clock[zone_key] then
 		return zone_key
 	end
 	if clock.blight and pos and grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
 		return "blight"
 	end
-	if clock.war and zone_palette and zone_palette.war then
-		return "war"
-	end
-	if clock.settled and zone_palette and zone_palette.settled then
-		return "settled"
-	end
-	for palette in pairs(clock) do
-		if zone_palette and zone_palette[palette] then
-			return palette
-		end
-	end
 	return nil
 end
 
--- `zone_id` is optional and wins over the zone of `pos` (clock_palette_at).
+-- `zone_id` is optional and wins over the zone of `pos` (clock_key_at).
 function grug_mobs.spawn_clock_for(name, pos, zone_id)
 	if pos and pos.y < UNDERGROUND_TOP then
 		return "any"
 	end
-	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or
-		(pos and zone_palette_at(pos)) or nil
-	local palette = (pos or zone_id) and
-		clock_palette_at(name, pos, zone_palette, zone_id) or nil
-	return clock_for_palette(name, palette)
+	local clock = spawn_clocks[name]
+	if type(clock) ~= "table" then
+		return clock
+	end
+	local key = (pos or zone_id) and clock_key_at(clock, pos, zone_id)
+	return key and clock[key] or nil
 end
 
 function grug_mobs.spawn_clock_allows(name, pos, timeofday)
@@ -533,9 +384,7 @@ end
 function grug_mobs.prepare_spawn_row(def)
 	local row = {}
 	for key, value in pairs(def) do
-		if key ~= "_grug_clock_palette" then
-			row[key] = value
-		end
+		row[key] = value
 	end
 	if row.max_height and row.max_height <= UNDERGROUND_TOP then
 		row.day_toggle = nil
@@ -562,8 +411,10 @@ function grug_mobs.prepare_spawn_row(def)
 				math.floor(row.active_object_count * 1.3 + 0.5))
 		end
 	end
-	local clock = clock_for_palette(row.name, def._grug_clock_palette)
-	if not clock then
+	-- A surface row takes its family's plain clock (a table answers per
+	-- position, which a row cannot).
+	local clock = spawn_clocks[row.name]
+	if type(clock) ~= "string" then
 		error("[grug_mobs] spawn row has no clock role: " .. tostring(row.name))
 	end
 	row.min_light = nil
@@ -573,8 +424,7 @@ function grug_mobs.prepare_spawn_row(def)
 		row.min_light = 10
 		-- mobs_redo's day window (api.lua day_toggle: 4500..19500 of 24000)
 		-- is DAY_PHASE_START..END. Without it a day row also fires at night
-		-- on torch light >= 10, and a zone-keyed day row (the Sunscar Scorpion)
-		-- would pass the night clock outside its zone.
+		-- on torch light >= 10.
 		row.day_toggle = true
 	elseif clock == "night" then
 		row.max_light = 5
@@ -598,96 +448,6 @@ function grug_mobs.install_spawn_clock_wrapper()
 		return original(self, def)
 	end
 	grug_mobs._spawn_clock_wrapper_installed = true
-end
-
-zone_palette_at = function(pos)
-	local zone_id = grug_zones.id_at(pos.x, pos.z)
-	return zone_id and ZONE_MOB_PALETTES[zone_id] or nil
-end
-
-local function night_fallback_allows(name, zone_palette)
-	local count = 0
-	for mob_name, mob_palettes in pairs(MOB_PALETTES) do
-		local matched_palette
-		if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
-			matched_palette = "exact"
-		else
-			for palette in pairs(mob_palettes) do
-				if zone_palette[palette] then
-					matched_palette = palette
-					break
-				end
-			end
-		end
-		if matched_palette then
-			local role_clock = matched_palette == "exact" and
-				clock_for_palette(mob_name, nil) or
-				clock_for_palette(mob_name, matched_palette)
-			if role_clock == "night" then count = count + 1 end
-		end
-	end
-	for palette, fallback in pairs(NIGHT_FALLBACKS) do
-		if fallback == name and (zone_palette[palette] or
-				(zone_palette.night_fallback and
-				zone_palette.night_fallback[palette])) then
-			if count < 2 then
-				return true
-			end
-		end
-	end
-	return false
-end
-
-function grug_mobs.zone_clock_cast(zone_id, clock)
-	if not VALID_CLOCKS[clock] or clock == "any" then
-		error("[grug_mobs] cast clock must be day or night")
-	end
-	local zone_palette = ZONE_MOB_PALETTES[zone_id]
-	if not zone_palette then
-		return nil
-	end
-	local cast = {}
-	for mob_name, mob_palettes in pairs(MOB_PALETTES) do
-		local matched_palette
-		if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
-			matched_palette = "exact"
-		else
-			for palette in pairs(mob_palettes) do
-				if zone_palette[palette] then
-					matched_palette = palette
-					break
-				end
-			end
-		end
-		if matched_palette then
-			local role_clock = matched_palette == "exact" and
-				clock_for_palette(mob_name, nil) or
-				clock_for_palette(mob_name, matched_palette)
-			local mob_clock = spawn_clocks[mob_name]
-			local zone_key = type(mob_clock) == "table" and
-				zone_clock_key(mob_clock, zone_id)
-			if zone_key then role_clock = mob_clock[zone_key] end
-			if role_clock == clock or role_clock == "any" then
-				cast[#cast + 1] = mob_name
-			end
-		end
-	end
-	if clock == "night" then
-		for palette, fallback in pairs(NIGHT_FALLBACKS) do
-			if zone_palette[palette] or (zone_palette.night_fallback and
-					zone_palette.night_fallback[palette]) then
-				local present = false
-				for i = 1, #cast do
-					if cast[i] == fallback then present = true; break end
-				end
-				if not present and night_fallback_allows(fallback, zone_palette) then
-					cast[#cast + 1] = fallback
-				end
-			end
-		end
-	end
-	table.sort(cast)
-	return cast
 end
 
 function grug_mobs.compile_spawn_domains(domains, mob_name)
@@ -720,51 +480,12 @@ function grug_mobs.spawn_domains_allow(domains, pos)
 	return domains[grug_mobs.spawn_domain_at(pos)] == true
 end
 
--- Used by the Skeleton Archer's row-specific check: forest host nodes remain
--- valid in forest palettes, while its generic settled-top row requires the
--- explicit war palette rather than merely any contested zone.
-function grug_mobs.zone_spawn_palette_allows(palette, pos)
-	local zone_palette = zone_palette_at(pos)
-	return zone_palette and zone_palette[palette] == true or false
-end
-
 -- Variant-side authority for mob pairs whose surface nodes are shared across
 -- both continents. Contested zones deliberately have no political faction,
 -- so their stable cultural race region selects the matching variant.
 function grug_mobs.race_region_spawn_allows(faction_id, pos)
 	return RACE_FACTIONS[grug_zones.race_region_at(pos.x, pos.z)] ==
 		faction_id
-end
-
--- The zone-level half of the surface policy: one regional variant per
--- lookalike family, the zone's palette and its night fallback.
-local function zone_allows(mob_name, zone_id)
-	if BOAR_VARIANTS[mob_name] and BOAR_VARIANT_BY_ZONE[zone_id] ~= mob_name then
-		return false
-	end
-	local family = LOOKALIKE_FAMILY[mob_name]
-	local selection = zone_id and ZONE_LOOKALIKE_SELECTION[zone_id]
-	if family and selection and selection[family] and
-			selection[family] ~= mob_name then
-		return false
-	end
-	local mob_palettes = MOB_PALETTES[mob_name]
-	if not mob_palettes then
-		return false
-	end
-	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or nil
-	if not zone_palette then
-		return false
-	end
-	if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
-		return true
-	end
-	for palette in pairs(mob_palettes) do
-		if zone_palette[palette] then
-			return true
-		end
-	end
-	return night_fallback_allows(mob_name, zone_palette)
 end
 
 --
@@ -844,8 +565,7 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 		return false
 	end
 	-- Before every other authority, the Kraken's included: a start footprint
-	-- refuses each hostile row outright, the zombie's 24 h blight row inside
-	-- Stillgrave Hollow among them. Passive critters keep spawning there.
+	-- refuses each hostile row outright. Passive critters keep spawning there.
 	if hostile_spawns[mob_name] and
 			grug_mobs.in_start_footprint(pos.x, pos.z, pos.y) then
 		return false
@@ -878,64 +598,41 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 		return false
 	end
 	local zone_id = grug_zones.id_at(pos.x, pos.z)
-	-- Round 28 ruling 34: a zone whose data holds a spawn recipe spawns its
-	-- surface mobs only from its regions (spawn_regions.lua). Its ABM rows
-	-- keep the critters the recipe lists and RECIPE_ZONE_ROWS (Rift Spawn);
-	-- crabs and every other row are refused. The Gull keeps its beach host.
-	if zone_id and grug_mobs.spawn_regions.zone_has_recipe(zone_id) then
-		local kept = RECIPE_ZONE_ROWS[mob_name]
-		if kept then
-			-- Ruling 3 still last: never on a protected surface.
-			return kept[zone_id] == true and not grug_mobs.protected_spawn_surface(pos)
-		end
-		if not grug_mobs.spawn_regions.zone_critter(zone_id, mob_name) then
-			return false
-		end
-		if mob_name == "grug_mobs:gull" then
-			return grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
-		end
-		return true
-	end
-	local local_level = grug_zones.mob_level_at(pos)
-	if not local_level or local_level < (natural_min_levels[mob_name] or 1) then
+	-- Round 28 ruling 34: every zone spawns its surface mobs from its spawn
+	-- recipe's regions (spawn_regions.lua). Its ABM rows keep the critters
+	-- the recipe lists and RECIPE_ZONE_ROWS (Rift Spawn); every other row is
+	-- refused. The Gull keeps its beach host. Outside every zone no surface
+	-- row spawns (the land there is none: spawn_row_kept below).
+	if not zone_id or not grug_mobs.spawn_regions.zone_has_recipe(zone_id) then
 		return false
 	end
-	-- The Gull follows the logical beach palette. Crab rows ignore palettes:
-	-- their host is dry `default:sand` near water (shore_crab.lua, D36), and
-	-- the level splits every such shore between the neutral Shore Crab below
-	-- level 45 and the elite Reef Lurker from 45 to 60. The node host is
-	-- enforced by mobs_redo before this allocation-free policy callback.
-	local allowed
+	local kept = RECIPE_ZONE_ROWS[mob_name]
+	if kept then
+		-- Ruling 3 still last: never on a protected surface.
+		return kept[zone_id] == true and not grug_mobs.protected_spawn_surface(pos)
+	end
+	if not grug_mobs.spawn_regions.zone_critter(zone_id, mob_name) then
+		return false
+	end
 	if mob_name == "grug_mobs:gull" then
-		allowed = grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
-	elseif mob_name == "grug_mobs:shore_crab" then
-		allowed = local_level < 45
-	elseif mob_name == "grug_mobs:reef_lurker" then
-		allowed = local_level >= 45 and local_level <= 60
-	else
-		allowed = zone_allows(mob_name, zone_id)
+		return grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
 	end
-	-- Ruling 3, last: only an otherwise allowed ordinary natural row pays it.
-	if allowed and ambient_density_spawns[mob_name] and
-			grug_mobs.protected_spawn_surface(pos) then
-		return false
-	end
-	return allowed
+	return true
 end
 
 --
 -- Which ABM spawn rows still run (Round 30 P2, the user's ruling on perf
 -- review 2026-10 #11, round30-plan.md §1). The spawn regions own the surface
--- of every zone with a recipe, where spawn_policy_allows refuses every row
--- but the recipe's critters and RECIPE_ZONE_ROWS. A surface row of any other
--- mob could therefore only spawn in a zone without a recipe (a palette zone)
--- or outside every zone, and the dry ground outside every zone is none: the
--- only zone-less land columns are dragon-channel floors at height 0, under
--- the sea at water level 1 (checked on seeds 12345 and 42). Such a row is
--- retired: mobs_redo still records it (mobs.spawning_mobs, the chance
--- override), but no ABM is registered for it. Underground rows (top at or
--- below UNDERGROUND_TOP) and the independent authorities (Kraken, Reed
--- Angelfish) stay, merged by spawn_abms.lua. `max_y` is the row's top.
+-- of every zone, where spawn_policy_allows refuses every row but the
+-- recipe's critters and RECIPE_ZONE_ROWS. A surface row of any other mob
+-- could only spawn outside every zone, and the dry ground outside every zone
+-- is none: the only zone-less land columns are dragon-channel floors at
+-- height 0, under the sea at water level 1 (checked on seeds 12345 and 42).
+-- Such a row is retired: no ABM is registered for it. Round 81 (ruling 6)
+-- removed the 56 surface rows this retired; the rule stays for a new row.
+-- Underground rows (top at or below UNDERGROUND_TOP) and the independent
+-- authorities (Kraken, Reed Angelfish, the sharks, the Tide Goby) stay,
+-- merged by spawn_abms.lua. `max_y` is the row's top.
 function grug_mobs.spawn_row_kept(name, max_y)
 	if max_y <= UNDERGROUND_TOP or INDEPENDENT_AUTHORITY[name] or
 			RECIPE_ZONE_ROWS[name] then
@@ -943,7 +640,7 @@ function grug_mobs.spawn_row_kept(name, max_y)
 	end
 	local SR = grug_mobs.spawn_regions
 	for _, zone_id in ipairs(SR.zone_ids()) do
-		if not SR.zone_has_recipe(zone_id) or SR.zone_critter(zone_id, name) then
+		if SR.zone_critter(zone_id, name) then
 			return true
 		end
 	end

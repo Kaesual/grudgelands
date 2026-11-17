@@ -13,8 +13,8 @@
 -- a visible change: a new frame, a new number, an element added or removed.
 --
 -- The timer records are the callers' own {expiry = us time, duration = s}
--- tables (cooldowns and charges in init.lua), so ending one early
--- (clear_cooldown) shows on the next pass without a second call.
+-- tables (cooldowns and charges in init.lua), so ending one early (the
+-- clear_cooldown seam) shows on the next pass without a second call.
 --
 -- The action clock (Round 74 HUD): a cast skill on the bar without a
 -- running cooldown of its own, whose cast the action clock or its cast

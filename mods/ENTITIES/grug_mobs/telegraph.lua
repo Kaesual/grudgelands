@@ -11,8 +11,8 @@
 -- TIMING (all counted in self.temp, i.e. runtime only — a wind-up never
 -- survives an unload, which is the point):
 --   * grug_tg_engaged  seconds spent in MELEE combat (state "attack" with a
---                      target inside 2x reach). Reset whenever combat
---                      stops. The first wind-up needs FIRST_DELAY of this,
+--                      player target inside 2x reach). Reset whenever combat
+--                      stops or the target is not a player. The first wind-up needs FIRST_DELAY of this,
 --                      so a fight always opens with normal swings.
 --   * grug_tg_cd       cooldown counting down after each resolved wind-up;
 --                      the next one may start INTERVAL seconds later.
@@ -39,9 +39,9 @@ local RANGE_BONUS = 1.5 -- m of reach the cone adds on top of self.reach
 local CONE_COS = 0.7071
 
 -- Facing direction of the mob. mobs_redo stores a model-orientation offset
--- in self.rotate (radians, api.lua:4003) and subtracts it when aiming
--- (yaw_to_pos, api.lua:626-635) — so the direction the mob actually looks at is
--- object yaw + rotate, the same sum set_velocity uses (api.lua:401-437).
+-- in self.rotate (radians, api.lua mobs:register_mob) and subtracts it when aiming
+-- (yaw_to_pos, api.lua) — so the direction the mob actually looks at is
+-- object yaw + rotate, the same sum set_velocity uses (api.lua).
 local function facing_dir(self)
 	local yaw = self.object:get_yaw() or 0
 	return core.yaw_to_dir(yaw + (self.rotate or 0))
@@ -176,8 +176,11 @@ function grug_mobs.telegraph_tick(self, dtime)
 	end
 
 	-- Not winding up: are we in MELEE combat? A dogshoot elite at range or a
-	-- mob still closing in must not wind up into empty air.
-	if self.state ~= "attack" or not self.attack then
+	-- mob still closing in must not wind up into empty air. Only against a
+	-- PLAYER (Round 81 ruling 7): the cone hits players only (resolve), so a
+	-- fight with a mob, an elite guard against a wolf, stays plain swings.
+	if self.state ~= "attack" or not self.attack
+			or not core.is_player(self.attack) then
 		t.grug_tg_engaged = nil
 		return
 	end

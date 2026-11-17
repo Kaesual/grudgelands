@@ -79,17 +79,21 @@ function M.truncate(text, max)
 end
 
 -- Player text as stored: control characters (the client's colour escapes
--- among them) and stray bytes removed, line ends kept only where `multiline`,
--- outer blanks trimmed, at most `max` characters (no cut without `max`).
+-- among them) and stray bytes removed, a lead byte with the wrong number of
+-- continuation bytes too (grug_core.text.utf8_whole: a malformed run never
+-- counts as one character), line ends kept only where `multiline`, outer
+-- blanks trimmed, at most `max` characters (no cut without `max`).
 function M.clean(text, max, multiline)
 	text = tostring(text or ""):gsub("\r\n?", "\n")
+	local whole = grug_core.text.utf8_whole
 	local kept = {}
 	for char in text:gmatch(CHAR) do
 		if char == "\n" then
 			kept[#kept + 1] = multiline and "\n" or " "
 		elseif char == "\t" then
 			kept[#kept + 1] = " "
-		elseif not (#char == 1 and (char:byte() < 32 or char:byte() == 127)) then
+		elseif whole(char) and
+				not (#char == 1 and (char:byte() < 32 or char:byte() == 127)) then
 			kept[#kept + 1] = char
 		end
 	end

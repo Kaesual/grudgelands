@@ -67,8 +67,10 @@
 -- screen pixel, the cell, the texture, the markers or the window changed;
 -- the party arrows only then or when a member moved or turned to another of
 -- the 16 heading frames. A player standing still with a still party costs
--- one position read, one wielded-item read, one read of the claim set's
--- version and one mount-table read per step.
+-- one position read, one wield-index read, one read of the claim set's
+-- version and one mount-table read per step; the held item's name is read
+-- only when the wield index changes and every WINDOW seconds (Round 81,
+-- wielded_name).
 
 local atlas = grug_map.atlas
 local markers = grug_map.markers or dofile(core.get_modpath("grug_map") .. "/markers.lua")
@@ -517,10 +519,25 @@ local function update_window(player, state)
 	return changes
 end
 
+-- The wielded item's name for claim mode (Round 81 HOT; audit X4-07, X4-02:
+-- get_wielded_item copies the stack, every step for every player before).
+-- Read again when the wield index changed (a number, no copy: a slot
+-- switch shows at once) and on the window check (`fresh`, every WINDOW
+-- seconds, and every refresh): a change inside the held slot (a stack
+-- dragged into it, a hotbar layout switch, a pickup, a placed Claim Stone)
+-- shows within WINDOW.
+local function wielded_name(player, state, fresh)
+	local index = player:get_wield_index()
+	if fresh or index ~= state.wield_index then
+		state.wield_index, state.wield_name = index, player:get_wielded_item():get_name()
+	end
+	return state.wield_name
+end
+
 -- Claim mode: the faction whose overlay the player sees while holding a
 -- Claim Stone, or nil (another item, no faction, no overlays).
-local function claim_mode(player)
-	if not claim_tiles or player:get_wielded_item():get_name() ~= STONE then return nil end
+local function claim_mode(player, state, fresh)
+	if not claim_tiles or wielded_name(player, state, fresh) ~= STONE then return nil end
 	local faction = grug_factions.get_faction(player)
 	return faction and claim_tiles[faction] and faction or nil
 end
@@ -686,7 +703,7 @@ end
 local function update(player, state, slow, window)
 	if state.enabled == nil then state.enabled = M.enabled(player) end
 	-- Claim mode shows the minimap even when it is switched off (ruling 6).
-	local claim = claim_mode(player)
+	local claim = claim_mode(player, state, slow or window)
 	if not state.enabled and not claim then
 		remove(player, state)
 		state.claim, state.flight = nil, nil

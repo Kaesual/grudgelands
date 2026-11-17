@@ -317,7 +317,13 @@ for key, file in block:gmatch('(%w+) = "([^"]+)"') do
 	check(file:find("^[%w_]+%.png$") and exists(MOBS .. "/textures/" .. file),
 		"W rift texture " .. key .. " is a shipped file (" .. file .. ")")
 end
-eq(named, 4, "W four rift textures")
+-- Round 81 MOBRUN (MOB3-03): the rift's mote moved to grug_core's particle
+-- catalogue with its effects; rift.lua names the other three.
+eq(named, 3, "W three rift textures in rift.lua")
+check((read(repo .. "/mods/CORE/grug_core/particle_effects.lua") or ""):find(
+	'local RIFT_MOTE = "grug_mobs_rift_particle.png"', 1, true) ~= nil and
+	exists(MOBS .. "/textures/grug_mobs_rift_particle.png"),
+	"W the rift's mote is a shipped file the particle catalogue names")
 for _, faction in ipairs({"accord", "throng"}) do
 	check(exists(MOBS .. "/textures/grug_mobs_commander_" .. faction .. "_overlay.png"),
 		"W the " .. faction .. " commander's tabard file")

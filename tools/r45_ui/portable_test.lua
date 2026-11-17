@@ -342,6 +342,8 @@ end
 ------------------------------------------------------------------------------
 local character_level = 15
 grug_core = {
+	-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+	text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"),
 	feed = function(player, kind, text)
 		feed_lines[#feed_lines + 1] = text
 		return true

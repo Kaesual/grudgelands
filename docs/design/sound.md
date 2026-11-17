@@ -234,6 +234,15 @@ or night from the world clock, the town flag and the capital of the location
 sampler (`grug_map.location.in_town`, `capital_of`), one water probe (the
 eye in water), the sea share (§4.2b), the cave probe (§4.2a) and, out of
 water, one node search for the loops (§4.4).
+
+The Battlegrounds and dragon-island beds (and the dragon islands' thunder
+call) come from that mood, not from the zone: with
+`grug_atmosphere_enabled` or `grug_atmosphere_zones` off no mood is set, so
+those places play their biome group's bed, and an admin's manual
+`/atmosphere <mood>` switches that player's bed to the mood's wherever they
+stand. The open ocean keeps its bed through the ownerless column
+(`grug_ambience/rules.lua` `R.sound_key`; open question CORE-03 in
+[BACKLOG](../../BACKLOG.md#audit-2026-10-open-questions)).
 A forced `/atmosphere` Battlegrounds, dragon-island or ocean preset
 overrides the biome group like the zone would; any other preset leaves the
 biome in charge (since Round 52 a forced `underground` no longer drives the

@@ -286,13 +286,10 @@ local DIAGONAL_GROUP = {"sword", "axe", "pickaxe", "shovel", "staff",
 	"fishing_rod", "grug_equip_weapon"}
 local EDGE_DOWN_GROUP = {"axe"}
 local BOW_GROUP = {"grug_bow"}
-grug_visuals.DIAGONAL_GROUP = DIAGONAL_GROUP
-grug_visuals.EDGE_DOWN_GROUP = EDGE_DOWN_GROUP
-grug_visuals.BOW_GROUP = BOW_GROUP
 
 -- `group_value(itemname, group)` is `core.get_item_group` in the engine and a
--- table lookup in the fixture. Passed in rather than closed over so that the
--- once-a-second wield poll allocates nothing.
+-- table lookup in the fixture. Passed in rather than closed over, so a call
+-- allocates no closure.
 function grug_visuals.pose_for(itemname, group_value, explicit)
 	if explicit ~= nil then
 		assert(type(explicit) == "string" and POSE[explicit] == explicit,
@@ -327,7 +324,6 @@ local FLAT_DRAWTYPE = {
 	airlike = true, signlike = true, torchlike = true, raillike = true,
 	plantlike = true, flowingliquid = true, plantlike_rooted = true,
 }
-grug_visuals.FLAT_DRAWTYPE = FLAT_DRAWTYPE
 
 local function has_image(image)
 	return image ~= nil and image ~= ""

@@ -121,7 +121,8 @@ end
 
 dofile(ROOT .. "/mods/BASE/player_api/init.lua")
 grug_visuals = {}
-grug_core = {register_on_settled_incoming_hit = function(fn) settled[#settled + 1] = fn end}
+-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+grug_core = {text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"), register_on_settled_incoming_hit = function(fn) settled[#settled + 1] = fn end}
 assert(loadstring(read("mods/PLAYER/grug_visuals/apply.lua"):match(
 	"\n(grug_visuals%.PLAYER_MODEL = .-\nend)\n"), "=apply.lua registration"))()
 dofile(ROOT .. "/mods/PLAYER/grug_visuals/poses.lua")

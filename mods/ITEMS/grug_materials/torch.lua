@@ -17,8 +17,8 @@ local LIGHT = 14
 -- Textures: lane ART's Anthracite set (the user's pick of 2026-10-13), in
 -- the vendored torch's formats. All three meshes sample the floor sheet, as
 -- the vendored triple does with default_torch_on_floor_animated.png; the
--- set's ceiling and wall sheets keep the vendored files' layouts for a mesh
--- that would sample them.
+-- set's ceiling and wall sheets (the vendored files' layouts, for a mesh that
+-- would sample them) stay in tools/r47_art/anthracite.
 local INVENTORY_IMAGE = "grug_materials_anthracite_torch_on_floor.png"
 local TILE = {
 	name = "grug_materials_anthracite_torch_on_floor_animated.png",

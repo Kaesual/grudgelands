@@ -75,8 +75,6 @@ end
 
 local normalized_blocks = {
 	"default:obsidian", "default:obsidianbrick", "default:obsidian_block",
-	"default:steelblock", "default:copperblock", "default:tinblock",
-	"default:bronzeblock",
 }
 for _, item_name in ipairs(normalized_blocks) do
 	edit_groups(item_name, function(groups)

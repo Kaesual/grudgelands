@@ -15,7 +15,8 @@
 --     id), the last three only while an achievement asks for them; the
 --     counters of an entity name are looked up once and cached;
 --   * the boss ledger (grug_mobs.register_on_boss_kill): boss:king,
---     boss:dragon and boss:<boss id>;
+--     boss:dragon and boss:<boss id>, each only while an achievement asks
+--     for it (Round 81);
 --   * grug_pvp's counters (grug_pvp.register_on_stat): pvp:<stat>, read from
 --     grug_pvp.stats, never copied;
 --   * grug_jobs' counted crafts (grug_jobs.register_on_award_progress):
@@ -108,6 +109,11 @@ local function value_of(player, counter)
 	return R.count(player:get_meta(), counter)
 end
 
+-- Page re-sends held back while one kill's counters are added (Round 81
+-- P2-01): player name -> {page = true} (an earning: the whole page) or
+-- {tab = true} (progress on the shown Achievements rows); see `batched`.
+local held_back = {}
+
 local function announce(player, rows)
 	for _, row in ipairs(rows) do
 		local text = "Achievement: " .. R.title(row.achievement, row.tier)
@@ -118,7 +124,20 @@ local function announce(player, rows)
 			row.achievement.id .. ":" .. row.tier)
 	end
 	-- The cloak picker (Stats mode) and the Achievements list both changed.
-	grug_inventory.refresh_character(player)
+	local held = held_back[player:get_player_name()]
+	if held then
+		held.page = true
+	else
+		grug_inventory.refresh_character(player)
+	end
+end
+
+-- Whether the Achievements rows last built for this player show `counter`
+-- (character_achievements_formspec records them in the sfinv context).
+local function counter_shown(player, counter)
+	local context = sfinv.contexts[player:get_player_name()]
+	local shown = context and context.grug_achievement_counters
+	return shown ~= nil and shown[counter] == true
 end
 
 -- The character's faction (nil while it has none, in character creation).
@@ -139,7 +158,9 @@ local function settle(player, ach)
 end
 
 -- Settle every achievement on `counter`; a tab showing the progress is
--- re-sent when nothing was earned (an earning re-sends the page anyway).
+-- re-sent when nothing was earned (an earning re-sends the page anyway),
+-- and only when one of its rows counts `counter` (Round 81 P2-01: any other
+-- counter leaves the page's text as it was).
 local function counter_changed(player, counter)
 	local achievements = book.by_counter[counter]
 	if not achievements then
@@ -149,7 +170,28 @@ local function counter_changed(player, counter)
 	for _, ach in ipairs(achievements) do
 		announced = settle(player, ach) or announced
 	end
-	if not announced then
+	if not announced and counter_shown(player, counter) then
+		local held = held_back[player:get_player_name()]
+		if held then
+			held.tab = true
+		else
+			grug_inventory.refresh_character_tab(player, "achievements")
+		end
+	end
+end
+
+-- Runs `add_counters()`, which adds one event's counters for `player`, with
+-- the page re-sends held back and then done once (a family kill feeds two
+-- counters: one build, not two).
+local function batched(player, add_counters)
+	local name = player:get_player_name()
+	local held = {}
+	held_back[name] = held
+	add_counters()
+	held_back[name] = nil
+	if held.page then
+		grug_inventory.refresh_character(player)
+	elseif held.tab then
 		grug_inventory.refresh_character_tab(player, "achievements")
 	end
 end
@@ -301,22 +343,34 @@ end
 
 if core.global_exists("grug_mobs") then
 	grug_mobs.register_on_eligible_kill(function(player, ent)
-		local list = grug_achievements.kill_counters(ent and ent.name)
-		for index = 1, #list do
-			grug_achievements.add(player, list[index], 1)
+		if not player or not player.is_player or not player:is_player() then
+			return
 		end
-		local rare = ent and ent._grug_rare_id and C.rare_group(ent._grug_rare_id)
-		if rare and book.by_counter["kill:rare:" .. rare] then
-			grug_achievements.add(player, "kill:rare:" .. rare, 1)
-		end
+		batched(player, function()
+			local list = grug_achievements.kill_counters(ent and ent.name)
+			for index = 1, #list do
+				grug_achievements.add(player, list[index], 1)
+			end
+			local rare = ent and ent._grug_rare_id and C.rare_group(ent._grug_rare_id)
+			if rare and book.by_counter["kill:rare:" .. rare] then
+				grug_achievements.add(player, "kill:rare:" .. rare, 1)
+			end
+		end)
 	end)
 
 	grug_mobs.register_on_boss_kill(function(player, id)
-		local kind = id:match("^([%a_]+):")
-		if kind then
-			grug_achievements.add(player, "boss:" .. kind, 1)
+		if not player or not player.is_player or not player:is_player() then
+			return
 		end
-		grug_achievements.add(player, "boss:" .. id, 1)
+		batched(player, function()
+			local kind = id:match("^([%a_]+):")
+			if kind and book.by_counter["boss:" .. kind] then
+				grug_achievements.add(player, "boss:" .. kind, 1)
+			end
+			if book.by_counter["boss:" .. id] then
+				grug_achievements.add(player, "boss:" .. id, 1)
+			end
+		end)
 	end)
 end
 
@@ -525,11 +579,16 @@ function grug_achievements.character_achievements_formspec(player, context, area
 	local font_scale = grug_core.ui.text_scale(player)
 	local growth = grug_core.ui.text_growth(player)
 	local first = (page - 1) * PER_PAGE
+	-- The counters these rows show: progress on any other counter leaves
+	-- this text as it is (counter_changed).
+	local counters = {}
+	context.grug_achievement_counters = counters
 	for slot = 1, PER_PAGE do
 		local ach = list[first + slot]
 		if not ach then
 			break
 		end
+		counters[ach.counter] = true
 		local x = area.x
 		local y = area.y + (slot - 1) * ROW_STEP
 		local title, status, text, image, tip = grug_achievements.row(player, ach)

@@ -195,6 +195,8 @@ end
 local mono = 0
 H.status_effects = {}
 grug_core = {
+	-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+	text = dofile(repo .. "/mods/CORE/grug_core/text.lua"),
 	mono_time = function() return mono end,
 	feed = function(player, kind, text, key)
 		H.feed[#H.feed + 1] = {name = player:get_player_name(), text = text, key = key}
@@ -334,6 +336,8 @@ grug_sounds = grug_sounds or {}
 	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 H.refreshes = 0
 local real_set = sfinv.set_player_inventory_formspec

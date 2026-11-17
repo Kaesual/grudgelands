@@ -187,8 +187,19 @@ nav.on_event = function(self, kind)
 end
 mobs = {grug_obstacle = O, grug_nav = nav}
 
+-- Round 81 MOBRUN (MOB1-06): the stuck snap's watch reads grug_core's player
+-- snapshot (the nearest player's squared distance), here the players above.
+local function nearest_player_d2(pos)
+	local best
+	for _, p in ipairs(players) do
+		local dx, dz = p.pos.x - pos.x, p.pos.z - pos.z
+		if not best or dx * dx + dz * dz < best then best = dx * dx + dz * dz end
+	end
+	return best
+end
 local placed = {}
 grug_core = {
+	nearest_tag_player_d2 = nearest_player_d2,
 	mono_time = function() return us / 1000000 end,
 	recheck_switch = noop,
 	prune_engagement = noop,

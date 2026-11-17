@@ -18,7 +18,6 @@ local ROLE = "expedition_registrar"
 local SOCKET = "expedition_registrar"
 local TITLE, SUBTITLE = "Expedition Registrar", "The Miner's Guild needs fighters"
 local FORMNAME = "grug_expeditions:registrar"
-local REACH = 8
 local GREEN, RED, WARN = "#8fdc7a", "#ff6060", "#d4b77d"
 -- The window without a run, and with one.
 local CHOICE_W, CHOICE_H, RUN_W, RUN_H = 13, 9.9, 9, 9.9
@@ -56,18 +55,15 @@ local UI = grug_core.ui
 
 local function esc(text) return core.formspec_escape(tostring(text)) end
 
--- Bound to the live registrar, within talking range, and to its own faction.
--- A capital's settlement key is its home location's id.
+-- Bound to the live registrar on its own socket, within talking range, and to
+-- its own faction (grug_core.npc_window_permitted, the rule of every service
+-- window; the user, 2026-11-17). A capital's settlement key is its home
+-- location's id; every home location names its faction (grug_home/locations.lua).
 local function permitted(player, entity)
-	if not player or not player.is_player or not player:is_player() or
-			player:get_hp() <= 0 or type(entity) ~= "table" or
-			entity._grug_socket_role ~= ROLE or not entity.object then
-		return false
-	end
+	if type(entity) ~= "table" then return false end
 	local location = grug_home.location(entity._grug_start)
-	if not location or not grug_factions.serves(location.faction, player) then return false end
-	local pos, npc = player:get_pos(), entity.object:get_pos()
-	return pos ~= nil and npc ~= nil and vector.distance(pos, npc) <= REACH
+	return location ~= nil and grug_core.npc_window_permitted(player, entity, ROLE,
+		location.faction)
 end
 
 local function level_text(level)

@@ -716,6 +716,8 @@ check(booked.royal_1 == wall + 900, "G4 the King's death books the whole group t
 -- F  MOC-04 and P  MOC-05: the fan, the shots and the patches.
 -- ---------------------------------------------------------------------------
 grug_core = {}
+-- Round 81: the homing aim at a player reads the cached player body.
+dofile(repo .. "/mods/CORE/grug_core/combat_ray.lua")
 dofile(repo .. "/mods/CORE/grug_core/homing.lua")
 local verbs = read("mods/ENTITIES/grug_mobs/verbs.lua")
 local arrow_defs = {}

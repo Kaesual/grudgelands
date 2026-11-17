@@ -78,9 +78,10 @@ for race, def in pairs(defs) do
 		check(def.attack_type == "dogshoot" and def.arrow == RANGED[race]
 			and def.arrow_override == STAMP and def.shoot_interval == 3,
 			"K1 the " .. race .. " king shoots " .. RANGED[race] .. " with the shared lock")
-		check(def.dogshoot_switch == 1 and def.dogshoot_count_max == 10
-			and def.dogshoot_count2_max == 3,
-			"K2 the " .. race .. " king has a ranged phase (10 s ranged, 3 s melee)")
+		-- Round 81 (audit MOB3-09): the count fields went, unread since Round 78.
+		check(def.dogshoot_switch == 1 and def.dogshoot_count_max == nil
+			and def.dogshoot_count2_max == nil,
+			"K2 the " .. race .. " king has a ranged phase (mode by distance)")
 		check(def.pathfinding == 1, "K3 the " .. race .. " king may search")
 	else
 		check(def.attack_type == "dogfight" and def.arrow == nil

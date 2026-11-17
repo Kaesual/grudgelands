@@ -68,7 +68,9 @@ upper nodes with it; an upper node left without its root can still be dug and
 drops nothing. Every multi-node placement,
 growth, dig and harvest preflights all changed loaded positions and protection;
 a blocker or unloaded/protected position causes no partial mutation. The root
-retries blocked growth through its ordinary bounded timer.
+retries blocked growth through its ordinary bounded timer. Growth is no player
+action: a refusal by protection records no protection violation (no "protected"
+line to the planter); a refused harvest or dig still shows it.
 
 Right-click harvests a mature regrowing crop in place, also with seeds, a bucket
 or the fishing rod in hand (their own use runs only on nodes without a
@@ -80,8 +82,9 @@ wild habitat.
 Wooden, Stone and six metal-tier hoes perform exactly the same conversion of
 eligible earth to farm soil. Their use budgets are respectively
 **30 / 60 / 300 / 600 / 1000 / 1500 / 2000 / 3000**. Only an actual new conversion spends
-a use; failed interaction, already-tilled soil and Creative do not. Their grid
-shape and material count follow pinned VoxeLibre. They have hoe art and keep
+a use; failed interaction, already-tilled soil and Creative do not. Each is a
+Basic recipe of two units of its material and two sticks (the count of the
+pinned VoxeLibre shape; the craft grid is gone since Round 45). They have hoe art and keep
 their stack at exhaustion, refusing further conversion until repaired under
 [durability_repair.md](durability_repair.md). Higher material tiers buy lifetime,
 not faster growth or different soil.

@@ -64,9 +64,6 @@ local damagers = {}
 local change_callbacks = {}
 local shutting_down = false
 
--- Comparison figures for the report: location samples and their summed cost.
-grug_pvp.tick_stats = {samples = 0, us = 0}
-
 -- Whole seconds of real time: the timers keep running while a player is
 -- offline (pvp-plan §4).
 local function now()
@@ -282,33 +279,23 @@ local function samplable(player)
 		grug_core.player_in_creation_stasis(player:get_player_name()))
 end
 
--- One pass: sample every player, then report expired timers and flag
--- changes. A second of lag at a border is harmless: for that moment the
+-- One player's pass: sample the location, then report expired timers and
+-- flag changes. A second of lag at a border is harmless: for that moment the
 -- player can neither hit nor be hit by the side that differs.
-function grug_pvp.location_tick()
-	local stats = grug_pvp.tick_stats
-	for _, player in ipairs(core.get_connected_players()) do
-		local rec = records[player:get_player_name()]
-		if rec then
-			if samplable(player) then
-				local started = core.get_us_time()
-				sample(player, rec)
-				stats.samples = stats.samples + 1
-				stats.us = stats.us + (core.get_us_time() - started)
-			end
-			notify(player)
+function grug_pvp.location_tick(player)
+	local rec = records[player:get_player_name()]
+	if rec then
+		if samplable(player) then
+			sample(player, rec)
 		end
+		notify(player)
 	end
 end
 
-local elapsed = 0
-core.register_globalstep(function(dtime)
-	elapsed = elapsed + dtime
-	if elapsed < TICK then
-		return
-	end
-	elapsed = 0
-	grug_pvp.location_tick()
+-- Every player once a TICK, one join slot at a time (Round 81 PASSES; audit
+-- C3-01, X4-05: two zone lookups per player).
+grug_core.register_player_pass(TICK, function(player)
+	grug_pvp.location_tick(player)
 end)
 
 --

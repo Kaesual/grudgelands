@@ -61,9 +61,7 @@ local function build(player, view)
 	-- jobs and the six-slot overflow row visible. No refresh is needed to scroll.
 	local row_step = math.min(0.95, (view.bottom - y - 1.35) / math.max(1, #view.queue))
 	local row_h = row_step - 0.1
-	st.queue_ids = {}
 	for index, job in ipairs(view.queue) do
-		st.queue_ids[index] = job.id
 		local icon = grug_jobs.JOB_ICONS[job.kind or "recipe"]
 		local text = grug_jobs.job_label(job)
 		fs[#fs + 1] = UI.panel(X, y, W, row_h) ..

@@ -74,6 +74,9 @@ for these checks by Round 22 D1/D5 and the decisions above.
   a join; fix it with the deletion amendment, before anything writes tombstones (contract
   §10, `grug_accounts/model.lua`;
   [Round 79](docs/planning/round79-plan.md#carry-overs)).
+- **The bridge token in the main menu:** `grug_bridge.token` is declared in
+  `settingtypes.txt`, so a local main menu's settings show the secret in plain text
+  ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **The realm website's model has no emotes:** `build_glb.py` exports stand and walk; a
   further clip is one `CLIPS` entry plus the export's animation list
   ([Round 78](docs/planning/round78-plan.md#carry-overs),
@@ -119,6 +122,27 @@ Not in Round 37; details in the
 - **P8 structure and legacy:** the wp13/wp40 merge (W13-05; is a directory rename worth the
   churn?), mobs_redo as an owned fork (X-06, MOB-08; may it be declared one?), the
   `mod.conf` coupling (X-07), the tooltip writers (ITM-04) and the other duplications.
+- **CORE-06, status reads with side effects:** a status read (`status_modifier_sum`,
+  `each_status`) removes expired records and fires their callbacks; a status with an unknown
+  modifier key is refused without a log line (`grug_core/status.lua`)
+  ([core audit](docs/audit-2026-10/code/06-core-hud-ambience.md)).
+- **PLY-08, global API replacements in load order:** `core.show_formspec` (twice),
+  `core.is_protected` (twice), `core.create_detached_inventory`, `core.item_place_node`,
+  `core.handle_node_drops`, `core.show_death_screen` and `core.calculate_knockback` (three)
+  are replaced by wrappers whose order is the mods' load order
+  ([player systems audit](docs/audit-2026-10/code/08-player-systems.md)).
+- **ITM-05, tool lifetimes in several places:** `grug_materials/tool_lifetimes.lua`,
+  `mining.lua`'s pick profiles and `grug_farming/hoes.lua` each hold the use budgets, and the
+  axes' and shovels' `uses` in `grug_materials/tools.lua` are overwritten
+  ([items audit](docs/audit-2026-10/code/09-items.md)).
+- **ITM-06, ITEMS mods run grug_jobs files:** `grug_professions` and `grug_brewing`
+  `dofile` grug_jobs' station files ([items audit](docs/audit-2026-10/code/09-items.md)).
+- **MOB-09, mob instance fields persist by default:** mobs_redo's `clean_staticdata` saves
+  every top-level field that is not a function (userdata filtered only at the top level),
+  and property-named fields load around `self` ([mobs runtime audit](docs/audit-2026-10/code/04-mobs-runtime.md)).
+- **MOB-11, mob behaviour on four override levels:** class, prototype, instance and API
+  wrappers (`grug_mobs/init.lua` wraps `mobs.mob_class.on_deactivate` and `stop_attack`)
+  ([mobs runtime audit](docs/audit-2026-10/code/04-mobs-runtime.md)).
 
 ### Other performance work
 
@@ -130,6 +154,26 @@ Not in Round 37; details in the
 - **The performance review's later list:** R6 ability input and crosshair every step, R10
   vegetation renewal bursts, R12 tag carriers in crowded places, R13 royal and garrison NPC
   steps; re-measure first ([Round 32](docs/planning/round32-plan.md#carry-overs)).
+- **CORE-05, minimap client textures never freed:** Round 37 cut the growth (an hour's walk
+  61.2 → 26.4 MB, three hours 185.0 → 79.9 MB) but did not bound it
+  ([Round 37](docs/planning/round37-plan.md), [core audit](docs/audit-2026-10/code/06-core-hud-ambience.md)).
+- **World generation speed** (audit 2026-11 lane 5: M1-01, M2-01, M2-02, M3-02..M3-07,
+  M4-01..M4-03, W1-01..W1-05 and the mapgen dead code), byte-identical output: the next
+  round ([Round 81 §7](docs/planning/round81-plan.md#7-orchestration-notes)).
+- **The minimap's party names** still build `grug_parties.view` every 5 s per party player;
+  switch to `grug_parties.member_names` (about 15 map fixtures need a stub line) ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **Invitation switches in the Social roster rows** are read per build (P5-05's rest,
+  [Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **Completed quests in their own player-meta key** (P3-04's full fix) needs a migration
+  step ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **Environment damage on a lagging server:** above 0.25 s per step the per-visit rounding is
+  off by up to a third; a carry reset at the join and after a stall would fix it ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **Mail body trim** is still quadratic up to the 10,000-character draft (about 0.1 s for a
+  crafted blank body) ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **Tag carriers:** the faction could come from the identity cache, and
+  `nearest_tag_player_d2` still walks the whole snapshot ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **DT2-04:** whether 5.18.0's default send distance 13 with generate distance 10 stalls
+  loading is unmeasured; a short engine probe would settle it ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **A real-client performance test** with a handful of clients (stand-ins cover no block or
   object sending, physics or client work); optional
   ([Round 32](docs/planning/round32-plan.md#carry-overs)).
@@ -167,8 +211,8 @@ R1b). `world_alterable` does not consult that Round 25 layer
    blueprint at its anchor.
 
 Checks follow the Round 22 minimal policy: a small fixture of the guard and a short
-headless probe. Related audit question MGS-08 (water in POIs) is
-[below](#audit-2026-10-open-questions).
+headless probe. The water guard asks the layer since Round 81 (ruling 3); cactus and papyrus
+growth still ignore it and may grow into POI cores ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 
 ### Weather (optional; user, 2026-10-04)
 
@@ -213,6 +257,11 @@ Not planned yet.
   The War Constructs are DW-04 [below](#audit-2026-10-open-questions).
 - **Per-player NPC visibility** (the engine's `set_observers`, as the quest objects use) is a
   possible later feature, not planned ([Round 59](docs/planning/round59-plan.md#carry-overs)).
+- **Elder Bear and Silverback stay dormant:** their 1-in-10 roll lives in the base
+  definitions, but every ambient bear and ape is an authored-tier sub-type; a follow-up may
+  let the normal-tier sub-types roll ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **`mob_nospawn_range` defaults disagree:** 12 in `spawn_policy.lua` and `mobs/api.lua`, 24
+  in `spawn_regions.lua`; `minetest.conf` sets 24 ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **Watch in play:** reach-2 mobs against a target 1.1–2 nodes up
   ([Round 78](docs/planning/round78-plan.md#carry-overs)); night mobs kept all day by an
   idle player ([Round 45](docs/planning/round45-plan.md#carry-overs)); guards looping on
@@ -232,6 +281,12 @@ Not planned yet.
   and [tools](docs/planning/class-redesign-handoff.md#73-tools-and-everyday-layouts)
   (remove shovels, combine axe and hoe)
   ([Round 53](docs/planning/round53-plan.md#carry-overs)).
+- **Faster mobs against kiting:** the Mage's root, the bound actors' soft de-aggro distance
+  and the mob speeds are one system; a rule is needed before ordinary mobs get faster
+  ([scout.md §6.3](docs/design/scout.md#63-faster-mobs-versus-the-mages-kiting-fantasy--coupled)).
+- **Scout stealth v2** (deferred): the detection roll, the blocking conflicts with
+  `grug_visuals` and the weapon entity, and the rules for nametags, the target veto, PvP and
+  the telegraph ([scout.md §8](docs/design/scout.md#8-deferred-stealth-v2)).
 - **Heal out of range says "full health":** Heal aimed at a hurt ally beyond its 15 m
   falls back to the caster and, at full health, answers "Target is at full health."
   (Hearten beyond 6 m alike); a range message would be clearer
@@ -253,6 +308,9 @@ Not planned yet.
   ignores the Expedition chest's coins (factor 10) and the death penalty
   ([Round 71](docs/planning/round71-plan.md#carry-overs),
   [Round 70](docs/planning/round70-plan.md#carry-overs)).
+- **`item_tiers.md`'s generated tables** (the crown options, two income tables at repair
+  factor 1.00) are dated: one crown row and the factor 0.50 in `tools/r33_ds/money.py`, then
+  regenerate (DD3-09, [Round 81](docs/planning/round81-plan.md#carry-overs)).
 - Crafting and Cooking variety: see the
   [player experience follow-up](#crafting-and-cooking-variety). The open fuel and
   fishing-rod questions are [below](#audit-2026-10-open-questions).
@@ -354,18 +412,10 @@ Every new sound goes through a listening page ([sound.md](docs/design/sound.md) 
 
 ## Code and tool hygiene
 
-- **Dead mob fields:** upstream `dogswitch` (`mods/ENTITIES/mobs/api.lua`) is no longer
-  called and the `dogshoot_count*` fields in the `grug_mobs` family files are inert; both
-  could go. `VENDOR.md`'s marker count for `mobs/api.lua` is stale since Round 56
-  ([Round 78](docs/planning/round78-plan.md#carry-overs)).
-- **`grug_gear.BRACKET_TINT`** is unused since the rods left (only `r45_rg`'s stub sets it)
-  ([Round 67](docs/planning/round67-plan.md#carry-overs)).
+- **Dead mob function:** upstream `dogswitch` (`mods/ENTITIES/mobs/api.lua`) is no longer
+  called and could go ([Round 78](docs/planning/round78-plan.md#carry-overs)).
 - **`tools/wp13/node_tiles.json`** (generated) still lists `mobs:mob_repellent`; regenerate
   ([Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#carry-overs)).
-- **Dead talent keys:** `melee_damage_add`, `rage_per_hit_taken_add`,
-  `combat_mana_regen_add` (`grug_abilities/init.lua`), `crit_cap_override` and others are
-  read but no node carries them ([Round 53](docs/planning/round53-plan.md#carry-overs),
-  [Round 69](docs/planning/round69-plan.md#carry-overs)).
 - **Tool checks that fail on main:** `tools/r52_pfx/build_page.py --check` (the page is
   stale since 0.54.1), `tools/r52_art/artb/build_drop.py --check`,
   `tools/r33_ds/allocation.py --check` (the T5 enchants take `ash_feather`),
@@ -381,13 +431,27 @@ Every new sound goes through a listening page ([sound.md](docs/design/sound.md) 
   probes expecting the old hover text ([Round 68](docs/planning/round68-plan.md#carry-overs));
   the Expedition probes fixed by reading only
   ([Round 73](docs/planning/round73-plan.md#carry-overs)); `r71_l20`'s `range.lua`
-  ([Round 72](docs/planning/round72-plan.md#carry-overs)).
+  ([Round 72](docs/planning/round72-plan.md#carry-overs)); `r25_claim_core`'s probe, stale
+  since Round 26's drafts, and about 20 `grug_probe_*` that write identity meta directly
+  ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **Two small text bugs:** the mail count reads "1 sent letters" (`grug_mail/window.lua:396`;
   [Round 66](docs/planning/round66-plan.md#carry-overs)); the mapgen waypost labels Last
   Hedge Redoubt "Last" (`wayposts.lua` `short_label`, the first word;
   [Round 70](docs/planning/round70-plan.md#carry-overs)).
 - **Smaller hygiene** (the `grug_gear` global in `talent_graph_ui.lua`, stale docstrings
   and comments): [Round 78](docs/planning/round78-plan.md#carry-overs).
+- **The capital plot engine's duplication** (audit 2026-11 W2-01..W2-05), an optional
+  refactor ([audit](docs/audit-2026-11/README.md), [Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **The mob species boilerplate** (audit 2026-11 MOB3-05), an optional refactor
+  ([audit](docs/audit-2026-11/README.md), [Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **The skills bound-item re-walk** at mods-loaded holds only while grug_skills runs after
+  grug_jobs; `core.after(0)` would be order-proof ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **Fixture-only seams** kept under X3-03 (move immunity, `get_target` and its store,
+  `clear_cooldown`, `test_vault`): delete them together with their fixtures? ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **I1-05:** the two `drop_hover_text` LBMs (grug_text, grug_signs) convert 0.68.0 data at
+  load, an accepted exception the upgrade contract does not name yet ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **The mod map's coupling list** omits the vendored `vessels` calling
+  `grug_inventory.station_formspec` ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 
 ## Player experience follow-up (2026-10-11)
 
@@ -446,6 +510,9 @@ their replacements. No round is assigned yet.
 
 ## Open questions for the user
 
+- **Clan and account defaults:** the coordinator defaults of Round 76 (clans) and Rounds
+  79–80 (accounts) are built as written but were never confirmed by the user: confirm or
+  change ([clans.md](docs/design/clans.md), [accounts.md](docs/design/accounts.md)).
 - **Desktop HUD scaling above 1** only caps the map markers (1920×1080 at HUD 2: 52 → 26 px);
   the server cannot tell it from a phone's density (MAP Q1,
   [Round 66](docs/planning/round66-plan.md#carry-overs)).
@@ -460,6 +527,8 @@ their replacements. No round is assigned yet.
 - **Start zones:** the cave mobs below them (no recipe roles) still call each other; the
   start-zone camps fighting alone is lane F's reading of the ruling, to confirm
   ([Round 37](docs/planning/round37-plan.md#carry-overs)).
+- **The rift crack's particles:** one 1 s spawner per stretch every second (built) or every
+  2 s (half the packets, still continuous with a 2–3 s mote life)? ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **A systematic mapgen failure** would send one red chat line per chunk to every player; a
   cap needs the user's call ([Round 41](docs/planning/round41-plan.md#carry-overs)).
 
@@ -470,7 +539,8 @@ blocks a fix, and until a ruling the docs describe the code as it is. Answered a
 DI-14 and D3 (Round 45), CTX-14, RDM-08 and the README's PvP NPCs (Round 37), DP-12 (the
 Scout's HP factor is an explicit 1.00 since Round 53, `grug_classes/stats.lua`), CTX-26 (the
 Nether's decided rules are in [world.md §10](docs/design/world.md#10-the-nether-v2-a-future-system-not-built)
-since 2026-11-16). Sources:
+since 2026-11-16), CMB-10 and MGS-08 (Round 81 rulings 2 and 3,
+[round81-plan.md §2](docs/planning/round81-plan.md#2-user-rulings)). Sources:
 [world docs](docs/audit-2026-10/docs/03-design-world.md),
 [item docs](docs/audit-2026-10/docs/05-design-items.md),
 [player docs](docs/audit-2026-10/docs/04-design-player.md), code audits in
@@ -496,8 +566,6 @@ since 2026-11-16). Sources:
   or a backlog entry? (`classes.md`: none exists and none is scheduled.)
 - **DP-18:** "Last Word" is both an achievement and the Priest capstone: keep the shared
   name?
-- **CMB-10:** a relog resets every ability cooldown and refills mana while talent and
-  trinket cooldowns persist: should long cooldowns and mana survive a relog?
 - **Blink into claims:** Blink and Charge ignore housing claims and protected POI interiors
   (only walls stop them): refuse them there?
 - **Rift void and shields:** absorb shields soak the rift void's damage, unlike lava and
@@ -508,9 +576,6 @@ since 2026-11-16). Sources:
   and leaves (2 s): intended? (The brewing stand takes no fuel since Round 45.)
 - **Fishing rod:** all other gear breaks and is repaired; the rod breaks and disappears:
   intended?
-- **MGS-08, water in POIs:** planned and bucket water may flow into village, camp and POI
-  cores and onto roads (only towns and capitals are guarded): keep until WP46, or extend
-  the water guard?
 - **MGT-14:** will the WP40 evidence and capture modes run again, or may they go from
   `r6_settlement.lua`, `r6.lua` and `r7_runtime.lua`?
 - **W13-04:** should the Round 14, 20 and 31 POIs use the race palette (a visible change)?
@@ -541,7 +606,7 @@ since 2026-11-16). Sources:
 
 The residual notes of each round live in its plan, in a section "Carry-overs" after
 "Completion": `docs/planning/round<NN>-plan.md#carry-overs` for Rounds 29–37, 40–49, 51–62,
-65–74, 76 and 78–80 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
+65–74, 76 and 78–81 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
 the plans with longer names for
 [24](docs/planning/round24-mining-underground-mobs-plan.md#carry-overs),
 [25](docs/planning/round25-housing-plan.md#carry-overs),
@@ -550,7 +615,8 @@ the plans with longer names for
 [28](docs/planning/round28-questing-leveling-plan.md#carry-overs),
 [38](docs/planning/round38-mob-names-plan.md#carry-overs),
 [39](docs/planning/round39-web-data-plan.md#carry-overs) and
-[0.53.1](docs/planning/round53-fix-plan.md#carry-overs). Rounds 50, 63, 64, 75 and 75.2
+[0.53.1](docs/planning/round53-fix-plan.md#carry-overs), and
+[80.1](docs/planning/round80.1-plan.md#carry-overs). Rounds 50, 63, 64, 75, 75.2 and 75.5
 left none. Releases without a plan (0.66.1, the UI modernization 0.60.1 and the UI dialogs
 0.61.1) keep theirs in the
 [archive](docs/archive/backlog-through-round-79.md#0661--performance-log-lines-carry-overs).

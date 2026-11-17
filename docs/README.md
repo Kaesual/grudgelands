@@ -25,7 +25,7 @@ reading every development round.
 | Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](technical/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
 | Which plan is active, which is history, which is still cited as the rule? | [Planning index](planning/README.md) |
 | Why was something decided or how was it tested? | [Research and historical evidence](research/README.md) |
-| What changed during documentation cleanup? | [Consolidation record](maintenance/documentation-round.md) |
+| What changed during documentation cleanup? | The [2026-11 cleanup plan](planning/docs-cleanup-plan.md) (today's STATUS, AGENTS and module-guide shape) and the [2026-09 consolidation record](archive/maintenance/documentation-round.md) |
 
 ## Reading and authority
 

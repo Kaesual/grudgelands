@@ -21,9 +21,23 @@ local function identity(object)
 	return entity
 end
 
+-- The middle of the target's box, read without get_properties() on every
+-- step (Round 81 HOT; audit C1-06, E1-01): a player's box from
+-- grug_core.player_body (combat_ray.lua), a mobs_redo mob's live box from
+-- `_grug_cbox` (written wherever mobs/api.lua sets a mob's collisionbox);
+-- any other object reads its properties as before.
 local function target_center(object, pos)
-	local props = object:get_properties()
-	local box = props and (props.collisionbox or props.selectionbox)
+	local box
+	if object:is_player() then
+		box = grug_core.player_body(object).collisionbox
+	else
+		local entity = object:get_luaentity()
+		box = entity and entity._grug_cbox
+		if not box then
+			local props = object:get_properties()
+			box = props and (props.collisionbox or props.selectionbox)
+		end
+	end
 	if not box then return pos end
 	return vector.offset(pos, (box[1] + box[4]) / 2,
 		(box[2] + box[5]) / 2, (box[3] + box[6]) / 2)

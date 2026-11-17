@@ -74,23 +74,3 @@ grug_mobs.melee_rider(serpent, function(self, target)
 end)
 
 grug_mobs.register_mob("grug_mobs:serpent", serpent)
-
--- §4 row "Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer,
--- coast". The mud top is grug_swamp, which the jungle bands border — §3.1
--- lists the serpent under the jungle group, the swamp pools are its second
--- home, and the zone gate keeps both in the outer/coast rings.
-mobs:spawn({
-	name = "grug_mobs:serpent",
-	nodes = {
-		"default:dirt_with_rainforest_litter", -- jungle edge / jungle fringe
-		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (WP36 top)
-		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", -- grug_swamp
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 4,
-	min_height = 0,
-	max_height = 600,
-})

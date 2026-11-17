@@ -44,6 +44,8 @@ end
 ------------------------------------------------------------------------------
 -- A. The pure model
 ------------------------------------------------------------------------------
+-- Round 81: the cleaner reads the shared UTF-8 rule from grug_core.text.
+grug_core = {text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua")}
 local M = dofile(ROOT .. "/mods/PLAYER/grug_mail/model.lua")
 local DAY = 24 * 3600
 local NOW = 1800000000
@@ -486,6 +488,8 @@ end
 -- Mod surface: stand-ins for what the real files call.
 ------------------------------------------------------------------------------
 grug_core = {
+	-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+	text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"),
 	feed = function(player, kind, text, key)
 		feed_lines[#feed_lines + 1] = {name = player:get_player_name(), kind = kind,
 			text = text, key = key}
@@ -540,6 +544,8 @@ current_mod = "grug_inventory"
 grug_inventory = {refresh = function() end}
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/inbox.lua")
+-- Round 81: the bound-item seam the two guards below register their rules with.
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/bound.lua")
 grug_inventory.GAME_VERSION = "0.48.0"
 grug_inventory.UI = {frame_w = 20, frame_h = 13.5}
 grug_inventory.SCROLL_FIELDS = {short = "grug_inv_scroll_short"}

@@ -19,9 +19,11 @@
 --   M  "New recipe: X" for one, "New recipes: X and N more" for several,
 --      one line per scan, the open page resent unless the scan is quiet;
 --      nothing for a scan that unlocks nothing;
---   S  when the scan runs: an inventory action or a dug node in the
---      player's slot within 0.5 s, every 10 s without one (a pickup), one
---      slot's players per step; a rejoin reads the stored set;
+--   S  when the scan runs: an inventory action or a new token through the
+--      give helper (a dug node's drop; Round 81: a held drop marks nothing,
+--      a creative player's dig marks) in the player's slot within 0.5 s,
+--      every 10 s without one (an item set by other code), one slot's
+--      players per step; a rejoin reads the stored set;
 --   P  the stored set: format, the tokens only a Basic recipe names, its
 --      size for a character that has held ~300 items (printed), the scan's
 --      cost per pass (printed, a comparison).
@@ -45,7 +47,8 @@ end
 ------------------------------------------------------------------------------
 -- Engine surface.
 ------------------------------------------------------------------------------
-local callbacks = {join = {}, leave = {}, loaded = {}, action = {}, dig = {}, step = {}}
+local callbacks = {join = {}, leave = {}, loaded = {}, action = {}, dig = {}, step = {}, give = {}}
+local creative = {}
 local online, feed_lines, refreshes = {}, {}, {}
 core = {
 	registered_items = {},
@@ -60,8 +63,12 @@ core = {
 	register_on_dignode = function(f) table.insert(callbacks.dig, f) end,
 	register_globalstep = function(f) table.insert(callbacks.step, f) end,
 	get_player_by_name = function(name) return online[name] end,
+	is_creative_enabled = function(name) return creative[name] == true end,
 	log = function() end,
 }
+-- Round 81 (P2-04): items arriving through grug_inventory.give mark the
+-- player when they name a new token; the stub records the callback.
+grug_inventory = {register_on_give = function(f) table.insert(callbacks.give, f) end}
 
 local Stack = {}
 Stack.__index = Stack
@@ -356,11 +363,27 @@ do
 	for _, f in ipairs(callbacks.action) do f(b, "move", b.inv, {}) end
 	step(0.55)
 	check(known_outputs(b)["default:clay"], "S an inventory action: scanned within 0.5 s")
-	-- A dug node, the same.
+	-- A dug node: its drop arrives through the give helper (Round 81 P2-04),
+	-- which marks the player because papyrus is a new token.
 	b.inv:set_stack("main", 2, "default:papyrus 3")
 	for _, f in ipairs(callbacks.dig) do f({x = 0, y = 0, z = 0}, {name = "default:papyrus"}, b) end
+	for _, f in ipairs(callbacks.give) do f(b, "default:papyrus") end
 	step(0.55)
 	check(known_outputs(b)["default:paper"], "S a dug node: scanned within 0.5 s")
+	-- A dug node whose drop is held already: no scan (Round 81 P2-04).
+	local reads = b.inv.reads
+	for _ = 1, 4 do
+		for _, f in ipairs(callbacks.dig) do f({x = 0, y = 0, z = 0}, {name = "default:papyrus"}, b) end
+		for _, f in ipairs(callbacks.give) do f(b, "default:papyrus") end
+		step(0.55)
+	end
+	eq(b.inv.reads - reads, 0, "S a held drop: no scan per dug node")
+	-- A creative player's drops skip the give helper: the dig marks them.
+	creative.s2 = true
+	for _, f in ipairs(callbacks.dig) do f({x = 0, y = 0, z = 0}, {name = "default:papyrus"}, b) end
+	step(0.55)
+	eq(b.inv.reads - reads, 1, "S a creative player's dug node: scanned within 0.5 s")
+	creative.s2 = nil
 	-- A delivered craft (jobs.lua calls held_dirty).
 	b.inv:set_stack("main", 3, "default:paper 3")
 	J.held_dirty(b)

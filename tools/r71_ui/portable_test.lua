@@ -120,13 +120,19 @@ UI.frame = function(w, h) return ("formspec_version[6]size[%g,%g]"):format(w, h)
 -- The real registry, with dedicated core sockets and the unchanged guild residents.
 local assigned, resolved = {}, nil
 dofile(repo .. "/mods/CORE/grug_core/settlement_sockets.lua")
+-- Round 81: the shared NPC-window check (npc_window.lua) reads the player's
+-- faction through grug_core's stub, which grug_factions resolves in the game.
+dofile(repo .. "/mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = function(player) return player.faction end
 local services = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp13/capital_services.lua")
 local capitals = {}
 for key in pairs(services.PLOTS) do capitals[#capitals + 1] = key end
 table.sort(capitals)
 check(#capitals == 6, "A six capitals")
+-- Round 81: the anchor puts the registrar's socket where the stub NPC stands
+-- ({1, 0, 1}), since the registrar checks its socket like every service window.
 for _, key in ipairs(capitals) do
-	grug_core.register_settlement_sockets(key, "human", {x = 0, y = 10, z = 0}, {
+	grug_core.register_settlement_sockets(key, "human", {x = -2, y = -1, z = 0}, {
 		{id = "expedition_registrar", role = "idle", x = 3, y = 1, z = 1, dir = {x = 1, z = 0},
 			tags = {"work"}},
 		{id = "miners_guild/miners_guild_clerk", role = "idle", x = 1, y = 1, z = 1, dir = {x = 1, z = 0},
@@ -208,8 +214,11 @@ local function player(name, level, faction)
 	return row
 end
 local function npc(capital)
-	return {_grug_socket_role = "expedition_registrar", _grug_start = capital or "highcourt",
-		object = {get_pos = function() return {x = 1, y = 0, z = 1} end}}
+	local entity = {_grug_socket_role = "expedition_registrar", _grug_start = capital or "highcourt",
+		_grug_socket = "expedition_registrar"}
+	entity.object = {get_pos = function() return {x = 1, y = 0, z = 1} end,
+		get_luaentity = function() return entity end} -- Round 81: the live-entity check
+	return entity
 end
 local function press(who, fields)
 	for _, fn in ipairs(receivers) do fn(who, R.FORMNAME, fields) end

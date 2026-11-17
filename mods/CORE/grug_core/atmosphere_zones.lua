@@ -227,7 +227,7 @@ mood("elf", "Elf region: bright silver haze over pale cliffs",
 		height = 170, thickness = 12, drift = -1.5, shadow = "#ccd6dc"})
 
 -- Undead: blight basins, bone ridges, salt cliffs. The strongest mood in the
--- set: pale grey-green fog closed to 110 nodes and clearly desaturated light.
+-- set: pale grey-green fog starting early and clearly desaturated light.
 -- Shadow intensity drops because a hazed sky casts weaker shadows.
 mood("undead", "Undead region: pale grey-green blight fog",
 	{shadow_intensity = 0.25, shadow_r = 16, shadow_g = 22, shadow_b = 18,
@@ -313,7 +313,7 @@ mood("ocean", "Open ocean: cold clean horizon",
 
 -- Underground. `indoors` is the colour the client actually uses below ground
 -- (lua_api.md:9432), so it carries the mood; fog_color applies regardless of
--- sky type (lua_api.md:9454) and closes the view to 90 nodes. Clouds are hidden
+-- sky type (lua_api.md:9454) and starts at a fifth of the view. Clouds are hidden
 -- rather than merely unseen, which matters at a hillside entrance mouth. Bloom
 -- stays high so a torch reads as a light source, and saturation drops.
 -- graphics-improvements.md §3 names exactly this look.

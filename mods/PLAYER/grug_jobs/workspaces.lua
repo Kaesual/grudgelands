@@ -69,6 +69,20 @@ local function extend_personal_light(ctx)
 	if not timer:is_started() then timer:start(1) end
 end
 
+-- Whether a workspace record holds nothing (Round 81 P2-03): every slot
+-- empty and no fuel left. Opening the station without it is the same for
+-- the player (`open` reads a missing record as {}; with no fuel and no
+-- input nothing burns or cooks), so such a record is deleted, not stored.
+local function empty_record(record)
+	if (tonumber(record.process and record.process.fuel) or 0) > 0 then return false end
+	for _, values in pairs(record.lists or {}) do
+		for _, item in ipairs(values) do
+			if not ItemStack(item):is_empty() then return false end
+		end
+	end
+	return true
+end
+
 local function save(ctx)
 	local station = node_station(ctx.pos)
 	if station ~= ctx.station or core.get_meta(ctx.pos):get_string("grug_jobs:station_id") ~= ctx.id then
@@ -83,13 +97,35 @@ local function save(ctx)
 		end
 	end
 	local meta = core.get_meta(ctx.pos)
-	local key, encoded = PREFIX .. ctx.name, core.serialize(record)
+	local key = PREFIX .. ctx.name
+	if empty_record(record) then
+		if meta:get_string(key) ~= "" then meta:set_string(key, "") end
+		return
+	end
+	local encoded = core.serialize(record)
 	-- The durable owner record must never be serialized to other clients.
 	-- mark_as_private also accepts a not-yet-written key in the pinned engine.
 	meta:mark_as_private(key)
 	if meta:get_string(key) ~= encoded then meta:set_string(key, encoded) end
 end
 
+-- Empty records stored before Round 81 go at the station's first opening in
+-- a server run (positions as "x,y,z"; a run opens each station once).
+local pruned = {}
+local function prune_empty_records(pos)
+	local id = pos.x .. "," .. pos.y .. "," .. pos.z
+	if pruned[id] then return end
+	pruned[id] = true
+	local meta = core.get_meta(pos)
+	for key, value in pairs(meta:to_table().fields or {}) do
+		if key:sub(1, #PREFIX) == PREFIX then
+			local data = core.deserialize(value)
+			if type(data) == "table" and empty_record(data) then meta:set_string(key, "") end
+		end
+	end
+end
+
+-- The station lists' slots as strings, compared slot by slot (`same_slots`).
 local function inventory_signature(ctx)
 	local result = {}
 	for _, list in ipairs({"src", "input", "fuel", "dst", "output"}) do
@@ -97,7 +133,15 @@ local function inventory_signature(ctx)
 			result[#result + 1] = stack:to_string()
 		end
 	end
-	return core.serialize(result)
+	return result
+end
+
+local function same_slots(a, b)
+	if #a ~= #b then return false end
+	for index = 1, #a do
+		if a[index] ~= b[index] then return false end
+	end
+	return true
 end
 
 -- Returns whether settlement changed an inventory slot. An allow callback
@@ -112,7 +156,7 @@ local function advance(ctx)
 	local fuel, progress, recipe = ctx.process.fuel, ctx.process.progress, ctx.process.recipe
 	automatic.advance(ctx.station, ctx.inv, ctx.process, elapsed)
 	extend_personal_light(ctx)
-	local changed_inventory = before ~= inventory_signature(ctx)
+	local changed_inventory = not same_slots(before, inventory_signature(ctx))
 	-- Updating only the idle clock must not dirty the physical node every tick.
 	if changed_inventory or fuel ~= ctx.process.fuel or progress ~= ctx.process.progress or
 			recipe ~= ctx.process.recipe then save(ctx) end
@@ -198,19 +242,12 @@ refresh = function(ctx, show, if_changed)
 	core.show_formspec(ctx.name, FORM, spec)
 end
 
-local function refresh_position(pos)
-	for _, ctx in pairs(viewers) do
-		if vector.equals(ctx.pos, pos) then refresh(ctx, false) end
-	end
-end
-
 local function changed(ctx)
 	if ctx.personal then
 		automatic.advance(ctx.station, ctx.inv, ctx.process, 0)
 		extend_personal_light(ctx)
 	end
 	save(ctx)
-	refresh_position(ctx.pos)
 end
 
 local function detach(ctx)
@@ -262,6 +299,7 @@ function workspaces.open(pos, player)
 	local ctx = {name = name, pos = vector.new(pos), station = station,
 		id = stamp(pos), personal = grug_jobs.is_public_station(station, pos)}
 	if not accessible(ctx, player) then return false end
+	prune_empty_records(ctx.pos)
 	detach(viewers[name])
 	sequence = sequence + 1
 	ctx.detached = "grug_workspace_" .. name .. "_" .. sequence
@@ -380,7 +418,6 @@ local function install_node(name, station)
 		if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
 		local timer = core.get_node_timer(pos)
 		if not timer:is_started() then timer:start(1) end
-		refresh_position(pos)
 	end
 	-- Only a dialog station shows its node lists; the others take nothing
 	-- (nor give: their old lists come out only when they are dug).
@@ -422,15 +459,9 @@ local function install_node(name, station)
 		on_receive_fields = function() end,
 	}
 	if not dialog then
-		-- A proximity station has no dialog (no on_rightclick) and no lists. A
-		-- brewing stand the automatic brewing lit before Round 45 still runs its
-		-- node timer once after loading: it goes out, and the timer stops.
-		override.on_timer = function(pos)
-			local node = core.get_node(pos)
-			local inactive = grug_jobs.station_info(station).node
-			if node.name ~= inactive then node.name = inactive core.swap_node(pos, node) end
-			return false
-		end
+		-- A proximity station has no dialog (no on_rightclick), no lists and
+		-- no timer (a brewing stand lit before Round 45 cannot exist any more:
+		-- every world crossed the map resets from 0.46.0 on).
 		core.override_item(name, override)
 		return
 	end

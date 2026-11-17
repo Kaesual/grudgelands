@@ -29,20 +29,12 @@ local crow = {
 	_grug_voice = "crow",
 	clock = "any",
 	type = "animal",
-	-- The war coast is NOT its own biome (§1.2 / §8.1): it uses the local
-	-- band's settled biome plus a battlefield decoration set. So there is no
-	-- signature node to spawn on that would confine this mob — the ZONE does
-	-- all of the gating, and the node list below is simply "all six settled
-	-- tops". Unlike skeleton_archer.lua no _grug_spawn_check is needed: that
-	-- family also spawns in the outer ring and therefore needs a per-ROW
-	-- rule, while every row of this file is war-coast-only.
-	_grug_spawn_domains = {"contested"},
 	-- Level: engine-owned (levels.lua); the war-coast cap of
 	-- grug_zones.mob_level_at keeps it at 20-30.
 
 	-- Flier (gull.lua header). fall_damage stays at mobs_redo's default: prey
 	-- is not a critter, and a flier's falling() bails out before the fall
-	-- check anyway (api.lua:2874-2876).
+	-- check anyway (api.lua falling).
 	-- `pathfinding` deliberately UNSET, unlike the four ground prey mobs that
 	-- got it in WP36 (stag.lua): core.find_path is a ground search, and a
 	-- flier answers terrain by flying over it — the same rule eagle.lua,
@@ -102,50 +94,3 @@ local crow = {
 grug_mobs.passive_prey(crow)
 
 grug_mobs.register_mob("grug_mobs:carrion_crow", crow)
-
--- §4 has NO carrion-crow row — these numbers are DERIVED from the Gull row,
--- the only other flying critter in the catalog (interval 20 / chance 2500 /
--- aoc 2 / min light 10), exactly as parrot.lua did for the jungle edge.
--- T10's calibration pass owns them.
---
--- Nodes: all six settled tops of §1.3 — the war coast wears whichever
--- settled biome its band has, so a crow must be able to appear on any of
--- them. blight_dirt is included here (unlike zombie.lua/skeleton_archer.lua,
--- where it carries its own row): this mob has exactly one row, so there is
--- no second ABM that could double up on it.
-mobs:spawn({
-	name = "grug_mobs:carrion_crow",
-	-- ALL land tops, not just the settled ones. The war coast is not its own
-	-- biome, so whatever the local band's voronoi produces at |z| 100..300 is
-	-- what a war-coast traveller walks on — and that includes wild patches
-	-- (§1.4). §4's "settled tops, blight_dirt" left grug_deep_forest,
-	-- grug_bone_forest, grug_crags(+snowy), grug_badlands and grug_swamp
-	-- war-coast strips without ANY daytime mob. This family is war_coast-
-	-- exclusive by the common named-zone `war` palette; the additional
-	-- contested-domain check authenticates the PvP status. The wider node list
-	-- therefore cannot leak into another named zone.
-	nodes = {
-		"default:dirt_with_grass", -- grug_meadows
-		"default:dirt_with_coniferous_litter", -- grug_pine_hills
-		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
-		"default:dry_dirt_with_dry_grass", -- grug_savanna
-		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
-		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (WP36 top)
-		"grug_nodes:blight_dirt", -- grug_blight
-		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
-		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
-		"grug_nodes:mesa_clay", -- grug_badlands
-		"default:gravel", -- grug_crags
-		"default:snowblock", -- grug_crags_snowy
-		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", -- grug_swamp
-		-- No `default:sand`: every authenticated grug_beach cell is the Gull's
-		-- day slot and is already covered.
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 2500,
-	active_object_count = 2,
-	min_height = 0,
-	max_height = 600,
-})

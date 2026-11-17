@@ -127,12 +127,33 @@ local function run_level_callbacks(player, old_level, new_level)
 	end
 end
 
+-- XP and level per player, kept so the per-hit and per-step readers (combat,
+-- the nametag, the attribute accessors) read no player meta (Round 81
+-- PASSES; audit C3-02: every get_meta read resolves the player again in the
+-- engine and makes garbage). Filled on the first read (the join's level
+-- callbacks read it at the latest) and rewritten by set_xp, the one writer
+-- of META_XP: kills, quests, gathering, /xp and the web bridge all go
+-- through add_xp. Keyed weakly by the ObjectRef, so a rejoin (a new
+-- ObjectRef) reads the meta afresh and a left player's entry goes with it.
+-- The stored meta stays the authority.
+local cached = setmetatable({}, {__mode = "k"}) -- player -> {xp, level}
+
+local function progress(player)
+	local entry = cached[player]
+	if not entry then
+		local xp = player:get_meta():get_int(META_XP)
+		entry = {xp = xp, level = grug_xp.level_from_xp(xp)}
+		cached[player] = entry
+	end
+	return entry
+end
+
 function grug_xp.get_xp(player)
-	return player:get_meta():get_int(META_XP)
+	return progress(player).xp
 end
 
 function grug_xp.get_level(player)
-	return grug_xp.level_from_xp(grug_xp.get_xp(player))
+	return progress(player).level
 end
 
 -- Resolve grug_core's dependency-free level stub now that the XP owner is
@@ -170,6 +191,7 @@ function grug_xp.set_xp(player, xp)
 	local old_level = grug_xp.get_level(player)
 	player:get_meta():set_int(META_XP, xp)
 	local new_level = grug_xp.level_from_xp(xp)
+	cached[player] = {xp = xp, level = new_level}
 	player:get_meta():set_int(META_LEVEL, new_level)
 	if new_level ~= old_level then
 		run_level_callbacks(player, old_level, new_level)

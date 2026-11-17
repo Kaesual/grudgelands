@@ -27,6 +27,14 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   personal notice goes there too. Chat keeps deaths, rare sightings, boss
   and dragon warnings and the one-time no-weapon hint
   ([inventory_equipment.md](../../design/inventory_equipment.md) "Message feed").
+- **Raw form fields are cut first (Round 81, audit X6-01):** the engine
+  accepts up to 640 KiB of field data in one submit, and `string:trim()`
+  (also inside `core.explode_textlist_event` and its kin) takes time that
+  grows with the square of a run of blanks. A handler cuts a raw field with
+  `grug_core.text` (`grug_core/text.lua`) before any trim or event parse:
+  `cut(value, bytes)`, `cut_trim(value, bytes)`, or `clean_field(value, limit)`
+  for a text box (control characters out, trimmed, at most `limit` bytes).
+  Anchored `match("^(%u+):(%-?%d+)$")` parses need no cut.
 - **The hotbar switch (Round 50, `grug_inventory/hotbars.lua`,
   [inventory_equipment.md](../../design/inventory_equipment.md) §1):**
   `grug_inventory.inventory_view` draws the A/B buttons
@@ -44,6 +52,22 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   (grug_abilities cancels input there). The hidden list's guard is the
   first allow callback of `grug_inventory` (init.lua loads `hotbars.lua`
   first).
+- **Inventory and item flow** (`grug_inventory`; the player-facing rules
+  are [inventory_equipment.md](../../design/inventory_equipment.md) §1 and §3):
+  `storage.lua` holds the give order, pickups and dug drops, the sort and the
+  potion belt; `bags.lua` the bag slots and content lists; `inbox.lua` the
+  one-slot shift-click inbox; `trash.lua` the Trash box; `bound.lua` the
+  bound-item seam. Rules for other mods: every item source goes through
+  `grug_inventory.give(player, stack)` (the quiver and the belt first, then
+  `main[9..]`, the bags, the hotbar last; it returns the leftover for the
+  caller to drop, refuse or keep); an all-or-nothing reward asks
+  `grug_inventory.fits(player, stacks)` first; a consumer counts and takes
+  through `consume_lists` (below); `register_on_give(fn)` hears what `give`
+  placed; a soulbound or skill-like item registers with
+  `register_bound_rule`. Do not resize `grug_shift` or `grug_inbox`: the
+  shift-click routing relies on their one slot. Fixtures `tools/r44_ih`
+  (the give order and pickups), `tools/r45_pt5` (the inbox),
+  `tools/r48_bags`, `tools/r50_hotbar`, `tools/r69_ui` (the Trash box).
 - **Initial focus (0.45.1):** the inventory key closes a window unless the
   focused element eats the key. When a window is built and nothing named in
   `set_focus[]` exists, the engine focuses the first empty edit box, else the
@@ -195,9 +219,9 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
 
 ## Player model and skins
 
-- **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
-  textures={...}}`; texture layering (skin/armor/wielditem) following
-  LotT `lottarmor/multiskin.lua`.
+- **Player model/skins**: players go through `player_api.set_textures` on
+  the seven-slot `grug_visuals_character.b3d` (`grug_visuals/apply.lua`);
+  `compose.lua` builds the layers (look, armour, cloak; below).
 - **Emotes** (Rounds 78 and 80, rules in
   [character_visuals.md](../../design/character_visuals.md) "Emotes"): clips baked
   after the poses (`tools/r40_an/poses.json`, `tools/r33_c3/gen_cloak_model.py`, whose
@@ -231,7 +255,10 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   `tools/wp13/gen_character_visuals.py`. `apply.lua` stores a player's look
   once in meta `grug_visuals:look` (`set_look` refuses a second write) and
   builds `player_spec`; `compose.lua` puts every armour piece in its own
-  parentheses and keys its cache on every normalized input. Since Round 54
+  parentheses and keys its cache on every normalized input (two generations
+  of 2,048 entries since Round 81: a full one becomes the old one, an old
+  hit moves to the new one; callers compare results by `key` and `digest`,
+  never by table identity). Since Round 54
   armour is boxes in the model with one atlas
   ([armor format](../armor-format.md)): `compose` returns `skin` (the look with
   each worn chest, legs and feet piece's skin layer
@@ -334,7 +361,7 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   of the redraw key, the id part of the stored appearance. `mods/PLAYER/
   grug_achievements` owns the rest: `core.lua` (pure: counters, tiers,
   unlocked cloaks and the selected cloak in player meta, i.e. per
-  character), `catalog.lua` (data: 21 achievements, tier N of `<id>`
+  character), `catalog.lua` (data: 22 achievements, tier N of `<id>`
   unlocks cloak `<id>_N` (the three of Round 36 a cloak of its own name),
   an optional `faction` hides and withholds a row from the other faction
   (the faction from `grug_core.get_player_faction`), `manual = true`
@@ -407,11 +434,12 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
     `"pos"`). `HOOKS` lists every event a call site may name; a new call
     site adds its event there and its mod depends on `grug_sounds`.
     `item_sound(event)` gives an item definition's sound table (the swing
-    skills' `punch_use_air`). `CLICK_STYLE` extends the formspec prepend on
-    join (after `default`'s) and is pasted into the two `no_prepend[]`
-    formspecs. Call sites by kind: crafts through `grug_jobs.award_progress`
-    (`CRAFT_SOUNDS` by operation or profession; `automatic_take_sound` for a
-    furnace or brewing-stand take), abilities through
+    skills' `punch_use_air`). `CLICK_STYLE` ends `grug_core.ui.prepend`,
+    the whole prepend grug_core sets on join, and is pasted into the two
+    `no_prepend[]` formspecs. Call sites by kind: crafts through `grug_jobs.award_progress`
+    (`CRAFT_SOUNDS` by operation or profession;
+    `grug_jobs.furnace_take_sound` for a cooked dish taken from a furnace,
+    smelting and the plain refinements stay silent), abilities through
     `grug_abilities.CAST_SOUNDS` in `try_cast` (every registered ability
     must be listed: a cue, `"weapon"`, `"projectile"` or `"silent"`),
     projectiles through `sound_launch`/`sound_hit` on
@@ -521,7 +549,7 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
       underground mood keeps the last key; inside a start town (0.52.1:
       `location.in_town` and no `capital_of`) the biome is the town's look,
       `R.start_town_look` with the nearest start anchor of
-      `grug_core.settlement_socket_settlements` within `D.town_reach` 80
+      `grug_core.settlement_socket_settlements` within `D.town_reach` 103 (the footprint's farthest corner)
       and `D.town_looks[race]` (the anchors read once); a biome in `D.neutral` (the
       beach, 0.52.1) keeps the last group key, but an override key
       (`current`, the fifth argument) turns false there. `D.region[key]` names the day

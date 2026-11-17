@@ -10,8 +10,9 @@
 --      cell, all inside the protected box, the storage mark); a second load
 --      writes nothing; the void node (not walkable, damage per second,
 --      unbreakable, not placeable, liquid movement);
---   P  particles: only for near players, one spawner per crack stretch every
---      period, the alive count in the hundreds at most;
+--   P  particles: only while a player is near, one 1 s spawner per crack
+--      stretch every pass through the particle helper (Round 81 MOBRUN), the
+--      alive count in the hundreds at most;
 --   B  the boss: appears only with a player within 48 nodes and none within
 --      6 of its spot, once; static, homed, its encounter id, a fresh ledger;
 --      its death settles the ledger and books the return 5 minutes of
@@ -352,6 +353,8 @@ _G.grug_core = setmetatable({
 		return protection.kind_at(math.floor(p.x + 0.5), math.floor(p.y + 0.5), math.floor(p.z + 0.5))
 	end,
 	feed = noop, feed_item = noop,
+	-- Round 81 MOBRUN: the rift's particles go through the REAL helper.
+	particles = dofile(repo .. "/tools/r40_pm/helper_stub.lua")(repo),
 }, {__index = function(_, key)
 	if type(key) == "string" and key:match("^register_") then return noop end
 	return nil
@@ -547,24 +550,25 @@ do
 	local boss_bursts = 0
 	for _ = 1, 10 do rift_pass(1) end
 	local stretches = math.ceil(#site.cells / 8)
-	local per_player = {}
-	local total = 0
+	local crack, total = 0, 0
+	-- Round 81 MOBRUN (MOB3-03): 1 s spawners through the particle helper,
+	-- never private; the crack's motes live up to R.PARTICLE_LIFE[2], the
+	-- boss's bursts shorter.
 	for _, def in ipairs(spawners) do
-		if def.playername then
-			per_player[def.playername] = (per_player[def.playername] or 0) + 1
+		check(def.playername == nil and def.time > 0 and def.time <= 1,
+			"P a spawner of at most 1 s for every player in range")
+		if def.exptime.max == R.PARTICLE_LIFE[2] then
+			crack = crack + 1
 			total = total + def.amount
-			check(def.time == R.PARTICLE_PERIOD, "P a spawner lasts one period")
 		else
 			boss_bursts = boss_bursts + 1
 		end
 	end
-	eq(per_player.far, 2 * stretches, "P two periods: one spawner per stretch each (player one)")
-	eq(per_player.two, 2 * stretches, "P ...and per stretch for the second player")
-	check(total <= 2 * 2 * R.PARTICLE_AMOUNT + 2 * stretches,
-		"P " .. total .. " particles in 10 s for two players")
+	eq(crack, 10 * stretches, "P ten passes: one spawner per stretch each, the same for both players")
+	check(total <= 10 * (R.PARTICLE_RATE + stretches), "P " .. total .. " particles in 10 s")
 	check(stats.particles - before >= total, "P the counters follow")
-	print(("P particles: %d spawners, %d particles in 10 s for 2 players, about %d alive per player")
-		:format(#spawners - boss_bursts, total, R.particles_alive()))
+	print(("P particles: %d spawners, %d particles in 10 s, about %d alive at once")
+		:format(crack, total, R.particles_alive()))
 end
 
 ------------------------------------------------------------------------------
@@ -807,7 +811,9 @@ do
 	boss.temp = {}
 	boss.object.pos = {x = anchor.x, y = anchor.y + 1, z = anchor.z}
 	boss.stop_attack = function(self) self.attack = nil; self.state = "stand" end
-	grug_mobs.apply_aggro_fields(boss, {damage_pursuit = false, leash_range = def._grug_leash_range})
+	-- Round 81 MOBRUN: the aggro config is published (on the boss, as this
+	-- test's stand-in for its prototype) instead of installed every step.
+	grug_mobs.publish_aggro_fields(boss, {damage_pursuit = false, leash_range = def._grug_leash_range})
 	eq(grug_mobs.damage_pursuit(boss), false, "R the boss is no free (damage-pursuit) mob")
 	eq(grug_mobs.free_roamer(boss), false, "R ...and no free roamer")
 	local fresh = {_grug_damage_pursuit_candidate = true}

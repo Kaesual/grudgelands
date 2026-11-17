@@ -629,7 +629,7 @@ W.sessions = sessions
 
 -- The window is open from a send or any other event of it until its quit
 -- or until any other form is shown: another form, the death screen, the
--- inventory ("Back to inventory") or a close of every form replace it
+-- inventory (a navigation tab) or a close of every form replace it
 -- silently, and a refresh must never pop it back over them (or over the
 -- game once that form is closed). Every form the server shows passes the
 -- wrapper below, which closes the session. A send that crosses a close
@@ -780,19 +780,6 @@ function W.open(player)
 	return true
 end
 
--- "Back to inventory": the inventory window at its homepage.
-function W.back(player)
-	local session = sessions[player:get_player_name()]
-	if session then session.open = false end
-	if sfinv.inventory_suspended(player) then
-		core.close_formspec(player:get_player_name(), W.FORMNAME)
-		return
-	end
-	sfinv.set_page(player, sfinv.get_homepage_name(player))
-	core.show_formspec(player:get_player_name(), "",
-		sfinv.get_formspec(player, sfinv.get_or_create_context(player)))
-end
-
 function W.handle_fields(player, fields)
 	local name = player:get_player_name()
 	local session = sessions[name]
@@ -823,10 +810,6 @@ function W.handle_fields(player, fields)
 	-- lock (atlas.zoom_view, atlas.scroll_event).
 	if atlas.scroll_event(session, fields[SCROLL_X], fields[SCROLL_Y], session.shown_zoom, session.layout) then
 		session.quiet_until = core.get_us_time() + W.QUIET_US
-	end
-	if fields.grug_map_back then
-		W.back(player)
-		return
 	end
 	local changed = false
 	session.busy = true

@@ -8,9 +8,7 @@
 --
 -- The Throng half of the §3.1 row ("Mountain Ram (Dust Hare)") already
 -- shipped in T5: rabbit.lua registers grug_mobs:hare with the
--- grug_mobs_hare_dust.png skin. That is why the §4 "Ram | gravel | 20 | 2200
--- | 2 | min 10 | outer" row is RAM-ONLY and has no mesa_clay twin — the Dust
--- Hare rides the settled rabbit/hare row (settled tops, core+inner) instead.
+-- grug_mobs_hare_dust.png skin.
 --
 -- Drop deviation from the shared critter table, spelled out by §3.1 itself:
 -- "light leather 1/2 [leather] (ram: heavy leather 1/4)" — a mountain ram
@@ -71,21 +69,3 @@ local ram = {
 grug_mobs.passive_prey(ram)
 
 grug_mobs.register_mob("grug_mobs:mountain_ram", ram)
-
--- §4 row "Ram | gravel | 20 | 2200 | 2 | min 10 | outer".
--- max_height 600 like every surface row (§4, Round 22 D37). The snow top is
--- exactly where the Ram belongs, so `default:snowblock` is listed here too
--- (eagle.lua carries the full note on why no row had it).
-mobs:spawn({
-	name = "grug_mobs:mountain_ram",
-	nodes = {
-		"default:gravel", -- grug_crags
-		"default:snowblock", -- grug_crags_snowy
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 2200,
-	active_object_count = 2,
-	min_height = 0,
-	max_height = 600,
-})

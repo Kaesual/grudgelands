@@ -22,10 +22,6 @@
 -- `inputs` is ordered as registered; the matcher accepts both orders.
 grug_smelting.RECIPES = {}
 
--- The dual furnace has exactly two material slots. The number is named once
--- here so the node, the matcher and the KAT cannot drift apart.
-grug_smelting.INPUT_SLOTS = 2
-
 local by_pair = {}
 local by_output = {}
 

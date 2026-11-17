@@ -89,12 +89,8 @@ grug_parties.pvp_section = {
 
 grug_pvp.register_on_change(function(player) refresh(player) end)
 
-local elapsed = 0
-core.register_globalstep(function(dtime)
-	elapsed = elapsed + dtime
-	if elapsed < 1 then return end
-	elapsed = elapsed % 1
-	for _, player in ipairs(core.get_connected_players()) do
-		refresh(player)
-	end
+-- The timers' countdown: every player once a second, one join slot at a
+-- time (Round 81 PASSES; audit X4-05).
+grug_core.register_player_pass(1, function(player)
+	refresh(player)
 end)

@@ -28,7 +28,7 @@ local function stag_def(description, texture)
 		-- Ground prey chases up to 45 m since WP36 (§3.0 retaliation + the
 		-- _grug_chase_range patch), so it needs the same A* every other mob
 		-- that enters the attack state has: `core.find_path` runs only from
-		-- the attack branch (api.lua:2176-2864), i.e. only after a player
+		-- the attack branch (api.lua do_states), i.e. only after a player
 		-- punch, so a grazing herd pays nothing. Without it the "worth the
 		-- swing" of §3.0 is defeated by any 3-node ledge. §3's "all
 		-- aggressive mobs: pathfinding = 1" does not cover prey (prey never
@@ -55,7 +55,7 @@ local function stag_def(description, texture)
 
 		-- wp6_model_notes §3.1 (creatura ranges translated). No punch clip on
 		-- this mesh: mobs_redo's set_animation returns without a write when
-		-- the requested clip is missing (api.lua:500-548), so a retaliating stag
+		-- the requested clip is missing (api.lua set_animation), so a retaliating stag
 		-- keeps its run animation instead of freezing — acceptable, and
 		-- cheaper than inventing a clip the mesh does not have.
 		animation = {
@@ -86,46 +86,9 @@ end
 
 grug_mobs.register_mob("grug_mobs:stag", stag_def("Stag", "grug_mobs_stag.png"))
 
--- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
--- grass | 20 | 1800 | 3 | min 10 | inner, outer", split by continent side.
---
--- T10 correction: §4 prices these three names as ONE row of aoc 3, so each
--- top node may be claimed by exactly ONE of them. `dry_dirt_with_dry_grass`
--- belongs to the Zebra (§3.1 "Savanna extras … Zebra"); the Gaunt Stag used
--- to list it as well, which stacked 3 + 3 = 6 stag-family slots on the
--- savanna and pushed that biome's day sum to 19 against §4's ~14 cap
--- (docs/research/wp6_spawn_budget.md). The Gaunt Stag is the bone-forest
--- half of the forest pair (§3.1) and keeps bone litter only.
-mobs:spawn({
-	name = "grug_mobs:stag",
-	nodes = {
-		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
-		"default:dirt_with_grass", -- grug_meadows
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})
-
 --
 -- Gaunt Stag — Throng: bone forest
 --
 
 grug_mobs.register_mob("grug_mobs:gaunt_stag",
 	stag_def("Gaunt Stag", "grug_mobs_stag_gaunt.png"))
-
-mobs:spawn({
-	name = "grug_mobs:gaunt_stag",
-	-- Bone forest only — the savanna's stag-table slot is the Zebra's
-	-- (zebra.lua, same drop table per §3.2). See the note above.
-	nodes = {"grug_nodes:dirt_with_bone_litter"}, -- grug_bone_forest
-	min_light = 10,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})

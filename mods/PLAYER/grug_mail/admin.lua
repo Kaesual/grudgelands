@@ -31,7 +31,6 @@ local M = grug_mail.model
 local PAGE = "grug_mail:admin"
 grug_mail.ADMIN_PAGE = PAGE
 local PRIV = "mail_admin"
-grug_mail.ADMIN_PRIV = PRIV
 local BADGE = "grug_mail_admin_badge.png"
 local W = grug_inventory.UI.frame_w
 local X, CONTENT_W = 0.3, W - 0.6
@@ -72,7 +71,6 @@ end
 local function allowed(player)
 	return core.check_player_privs(player, {[PRIV] = true})
 end
-grug_mail.is_mail_admin = allowed
 
 --
 -- The tab's state, in the player's sfinv context

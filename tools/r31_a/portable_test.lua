@@ -97,6 +97,9 @@ grug_core = {
 		return {{key = "start_dwarf", race_id = "dwarf"}, {key = "capital_troll", race_id = "troll"}}
 	end,
 }
+-- Round 81: grug_visuals' wield poll registers through grug_core's
+-- per-player pass (the stub's globalstep never runs it here).
+dofile(ROOT .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 grug_inventory = {
 	get_cosmetic_weapon = function() return nil end,
 	get_cosmetic_offhand = function() return nil end,

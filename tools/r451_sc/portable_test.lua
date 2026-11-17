@@ -161,6 +161,8 @@ function ItemStack()
 		get_meta = function() return {get_string = function() return "" end, set_string = function() end} end}
 end
 grug_core = {
+	-- Round 81: the input gate asks grug_core's privilege cache.
+	has_priv = function() return true end,
 	combat_eye_pos = function() return vector.new(0, 1.47, 0) end,
 	combat_actor = function(ref) return ref end,
 	aim_raycast = function(o, d, liquids) return core.raycast(o, d, true, liquids) end,

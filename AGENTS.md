@@ -158,8 +158,9 @@ AGENTS.md changes only when a working rule changes.
 - **One commit per round on main (user, 2026-11-09):** every round, and every
   follow-up release such as a fix round after a human test, is built on its
   own local round branch `round<NN>`; lanes branch from it and merge into it,
-  never into main. The coordinator lands it on main as **one squash commit**
-  and tags the branch tip `round-<NN>` before deleting the branch
+  never into main. The coordinator lands it on main as **one squash commit**,
+  tags that squash commit `round-<NN>` (Round 81 ruling 14) and deletes the
+  branch; no lane tags, and plans cite no lane hash as a lasting reference
   ([round workflow §2](docs/process/round-workflow.md#2-a-round-step-by-step)).
   The tag is pushed with main, on the user's word.
 - **Findings are hypotheses:** check a review finding, report claim or error
@@ -240,6 +241,12 @@ AGENTS.md changes only when a working rule changes.
   liveness), timings under unintended contention are invalid, and the same work
   never runs twice. The one shared queue
   (`~/projects/grudgelands-orchestration/r45/lua_run.sh`) enforces the cap.
+  That folder is the user's private orchestration folder on the workstation,
+  not part of the repository, and the repository sits at
+  `~/projects/grudgelands` there; on another machine install
+  [the queue template](docs/process/templates/lua_run.sh) once (its locks
+  live beside the copy) and read both paths as yours. A lane script that
+  finds no queue runs unqueued, so the cap then rests with the caller.
 - The reference checkout is **Luanti 5.18.0**, a read-only source; a newer
   engine never unlocks newer Lua syntax. **Read the engine's Lua, never guess:**
   `reference_projects/luanti/builtin/`, `lib/lua/src/`,

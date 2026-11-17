@@ -33,11 +33,11 @@ decided specifications under the shared arithmetic in `skill_trees.md`.
 
 | | |
 |---|---|
-| **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
+| **Armour** | leather — armor class 2 (`inventory_equipment.md` §2) |
 | **Weapons** | bow in the Weapon slot, shown as **"Ranged"**; dagger / 1H sword in the offhand, shown as **"Melee"** (Round 28 ruling 25). Battle Axes are Warrior-only. Bow skills read Ranged; Strike, Opening and every melee skill read Melee (bare hand when empty). Both items always count toward stats. Scout melee and ranged damage use Dexterity. |
 | **Resource** | **mana** — ruling 14, decided. The bar uses the class-neutral level pool `round(20 + 5L + 0.66L²)` before mana-percent gear/talents (`combat_stats.md` §2); Intelligence does not add mana |
 | **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, named by ruling 27 |
-| **Attributes** | Dexterity-led; growth **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
+| **Attributes** | Dexterity-led; growth **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md` §1's Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
 | **Role** | ranged damage that can also fight at knife range; the most evasive class in the game |
 
 At level 60 the growth gives Dex `10 + 2 × 59 = 128`, so the Dexterity
@@ -53,7 +53,7 @@ gives the Scout the same **2696** base mana as every level-60 caster before
 mana-percent gear/talents. Intelligence contributes spell power only. What
 scales an **arrow** is ruling 28: `weapon damage + Dex/10` (fractions count
 since Round 33), through a
-new `grug_classes.get_ranged_bonus` (`skill_trees.md` §7, task 9).
+`grug_classes.get_ranged_bonus`.
 
 Ruling 12 rules out poison and traps outright, and ruling 7 already did for
 poison: "no new combat mechanic". `classes.md` once planned poison as the signature
@@ -98,9 +98,7 @@ ruling 10** — "skills may explicitly break the base inequalities… the bigger
 the break, the stronger the limit". It breaks the one inequality the whole mob
 game rests on, so it carries the strongest limit in the design: ten seconds,
 once every five minutes. The user's words: "a deliberate special, not an
-every-fight button." The three decided files that state the opposite pillar
-need one sentence each — `skill_trees.md` §7 task 1 carries that, and it is not
-this lane's to write.
+every-fight button."
 
 What is deliberately **not** in the base kit: a melee finisher (Opening, a
 Veil unlock), and stealth of any kind (§8). The Scout has no root since Round
@@ -168,7 +166,7 @@ per material tier, in the same table as the metal and cloth ladders. The 24
 items (6 grades × 4 slots) and their dedicated inventory/worn art are active.
 The downstream contract is:
 
-- `inventory_equipment.md:184-193`: armor class **cloth 1 < leather 2 <
+- `inventory_equipment.md` §2: armor class **cloth 1 < leather 2 <
   metal 3**; a class may wear its rank "and everything below", and leather
   leather is the **Scout's armor line** and remains a legal light avoidance
   set for the Warrior. A Scout at rank 2 wears leather and cloth, and the
@@ -184,7 +182,8 @@ The downstream contract is:
 ### 4.1 Historical ballistic research (superseded by Round 17)
 
 The physics recommendation below is historical evidence, not current gameplay
-authority. The license findings remain applicable to any reused assets.
+authority; its file and line citations are as of 2026-09-16 and have drifted.
+The license findings remain applicable to any reused assets.
 
 Ruling 12 asks for **ballistic arrows** — gravity, an impulse from draw time —
 while **Fireball stays straight**, "the trajectory is what makes the archer
@@ -310,10 +309,9 @@ remains 10 seconds, cooldown 300 seconds and cost 15% of the base mana pool.
 The shared movement aggregator's existing additive modifiers and 1.5 speed cap
 still apply; this change does not raise the cap.
 
-### 6.3 Faster mobs versus the Mage's kiting fantasy — **needs a rule**
+### 6.3 Faster mobs versus the Mage's kiting fantasy — **coupled**
 
-`classes.md:439-441`: "Ice Nova became the rotation pivot — **kiting IS the
-Mage fantasy here**." Kiting is a function of the same one inequality. The
+Kiting with slows is the Mage's advantage (`classes.md` §4). Kiting is a function of the same one inequality. The
 mob-pressure task card proposes making mobs "a bit faster"; every 0.1 the mob
 gains, the Mage's Ice Nova window loses. Against camp members and other
 bound actors the 25 m soft de-aggro (`combat_stats.md` §3) becomes harder to
@@ -321,9 +319,10 @@ reach in the same proportion; free-roaming mobs have no distance rule at all
 and disengage only by the ambient pursuit clock (`combat_stats.md` "Ambient
 pursuit policy": 15 s without incoming damage while the target moves).
 The Scout's Sprint pushes from the other side, with a cooldown long enough
-that it cannot be the answer to an ordinary fight. **Rule needed before any
-mob speed changes**: the root duration, the soft-de-aggro distance and the mob
-speed are one system and cannot be tuned separately.
+that it cannot be the answer to an ordinary fight. The root duration, the
+soft-de-aggro distance and the mob speed are one system and are tuned
+together; a rule for faster mobs is open in
+[BACKLOG](../../BACKLOG.md#classes-and-combat).
 
 ### 6.4 Caps versus timed windows — **resolved by ruling 10**
 
@@ -369,8 +368,10 @@ three blocking conflicts are already written. The Veil ultimate is **Close
 Dance** (§2), not invisibility.
 
 The numbers below were an open decision of an earlier revision of
-`skill_trees.md`; with stealth deferred they are simply undecided and
-unscheduled, and §6 of that file no longer carries them.
+`skill_trees.md`; with stealth deferred they are undecided and unscheduled,
+and §6 of that file no longer carries them. The chapter's open rules (the
+detection roll, the blocking conflicts and every **needs a rule** below) are
+one item in [BACKLOG](../../BACKLOG.md#classes-and-combat).
 
 ### 8.1 The rulings and the mechanism
 

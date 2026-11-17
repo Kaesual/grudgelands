@@ -179,6 +179,8 @@ dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/combat_ray.lua")
 dofile(repo .. "/mods/CORE/grug_core/combat.lua")
 dofile(repo .. "/mods/CORE/grug_core/death_messages.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
 local modifier = hp_modifiers[1]
 function grug_core.player_in_creation_stasis() return false end

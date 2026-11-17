@@ -71,14 +71,20 @@ grug_core.plain_text = nil
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 
 -- The real guards (grug_housing and grug_skills load after this mod).
+-- Round 81: both are rules of grug_inventory's bound-item seam (bound.lua),
+-- the soulbound one registered once every mod has loaded; here that is now.
 grug_housing = {}
 core.registered_nodes = {}
 core.override_item = function() end
+local register_on_mods_loaded = core.register_on_mods_loaded
+core.register_on_mods_loaded = function(fn) fn() end
+dofile(repo .. "/mods/PLAYER/grug_inventory/bound.lua")
 dofile(repo .. "/mods/PLAYER/grug_housing/soulbound.lua")
 grug_skills = {}
 grug_abilities = {is_unlocked = function() return true end}
 grug_mounts = {owns_tier = function() return true end}
 dofile(repo .. "/mods/PLAYER/grug_skills/bound_items.lua")
+core.register_on_mods_loaded = register_on_mods_loaded
 
 local players = {}
 core.get_player_by_name = function(name) return players[name] end

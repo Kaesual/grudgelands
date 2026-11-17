@@ -237,7 +237,8 @@ in six guild templates, 153 further templates and the runtime table/counter buil
 waystone plaza approach (main's Round 72/73 Registrar dialog, run lifecycle and finish/cancel
 kept; the guild clerk an ordinary resident). **Map reset**, no migration step. Evidence,
 reviews and the GUI checklist (8 items):
-[capital-polish implementation](../../tools/capital_polish_study/implementation/README.md);
+[capital-polish implementation](https://github.com/Kaesual/grudgelands/blob/4cb49044/tools/capital_polish_study/implementation/README.md)
+(the study left the tracked tree in Round 81; the link is pinned to the last commit that has it);
 creation: [creation report](../../tools/character_creation_preview/README.md). Integration
 checks: see the squash commit.
 
@@ -2659,7 +2660,7 @@ user's notes.
   schematic POI gallery (`tools/r20/evidence/pois/`, retired in Round 22;
   git history keeps it).
 - **Documentation consolidation:** complete with independent Astra PASS;
-  [receipt and coverage](../maintenance/documentation-round.md). Its findings
+  [receipt and coverage](maintenance/documentation-round.md). Its findings
   list is [archived](../archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../../BACKLOG.md#audit-2026-10-open-questions)).

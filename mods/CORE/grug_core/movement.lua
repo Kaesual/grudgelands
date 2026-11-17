@@ -292,15 +292,6 @@ function grug_core.set_move_modifier(player, name, effect, duration)
 	settle(player, pname, rec)
 end
 
-function grug_core.clear_move_modifier(player, name)
-	local pname, rec = peek(player)
-	if not pname or not name or not rec then
-		return -- no record is already "cleared"; do not mint one to say so
-	end
-	rec.mods[name] = nil
-	settle(player, pname, rec)
-end
-
 -- A named self-imposed speed stance (see `combine`): `factor` multiplies the
 -- final clamped speed until cleared. It has no expiry on purpose -- the owner
 -- sets it when the stance begins and clears it on every end path (death and
@@ -460,19 +451,9 @@ function grug_core.mark_nova_root(player, duration)
 	if rec and rec.root then rec.ice = math.max(rec.ice or 0, now() + duration) end
 end
 
-function grug_core.clear_root(player)
-	local pname, rec = peek(player)
-	if not pname or not rec then
-		return
-	end
-	rec.root = nil
-	rec.ice = nil
-	settle(player, pname, rec)
-end
-
 -- Remove current roots and every named movement penalty while preserving
 -- beneficial modifiers, stances, holds and mount-independent state. Shake Loose uses
--- this before arming immunity, so an older slow cannot resume afterward.
+-- this; no immunity follows (grug_classes/scout.lua).
 function grug_core.clear_negative_move_modifiers(player)
 	local pname, rec = peek(player)
 	if not pname or not rec then return end
@@ -488,9 +469,9 @@ function grug_core.clear_negative_move_modifiers(player)
 end
 
 -- Root/slow immunity for `duration` seconds: drops a running root and makes
--- every negative modifier inert while it lasts (see `combine`). This is the
--- seam WP11's Hold Ground and Shake Loose are specified against
--- (skill_trees.md §3.9); nothing calls it yet.
+-- every negative modifier inert while it lasts (see `combine`). No shipped
+-- code calls it or clear_move_immunity: they are kept as a probe seam for
+-- the fixtures (audit 2026-11 X3-03).
 function grug_core.set_move_immunity(player, duration)
 	local pname, rec = resolve(player)
 	if not pname then
@@ -642,17 +623,6 @@ function grug_core.clear_movement(player)
 	rec.n_holds = 0
 	write(player, rec, true)
 	state[pname] = nil
-end
-
--- Re-assert the computed override against the player's LIVE physics, for
--- code that knows something else may have written the field. One engine
--- read, and a write only on a mismatch.
-function grug_core.reassert_movement(player)
-	local pname, rec = peek(player)
-	if not pname or not rec then
-		return -- nothing is being asserted, so there is nothing to re-assert
-	end
-	write(player, rec, true)
 end
 
 --

@@ -331,20 +331,8 @@ core.register_craft({
 	recipe = {{"grug_trees:gravewood_tree"}}
 })
 
--- The engine's fuel rows of the two logs (values as for aspen / apple
--- logs). The furnaces do not read them: they burn every log 15 s by its
--- tree group (grug_jobs/automatic.lua FURNACE_FUELS).
-core.register_craft({
-	type = "fuel",
-	recipe = "grug_trees:silverwood_tree",
-	burntime = 22,
-})
-
-core.register_craft({
-	type = "fuel",
-	recipe = "grug_trees:gravewood_tree",
-	burntime = 30,
-})
+-- No engine fuel rows: the furnaces burn every log 15 s by its tree group
+-- (grug_jobs/automatic.lua FURNACE_FUELS) and read no fuel recipe.
 
 -- The tree shape nodes of every wood type, the leaf decay of all seven woods
 -- (radius 3, the shapes included) and the leaf and ground connect sides.

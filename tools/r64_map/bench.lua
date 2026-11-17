@@ -57,6 +57,7 @@ local function new_player(name, pos)
   return n
  end
  function p:get_wielded_item() return {get_name=function() return "" end} end
+ function p:get_wield_index() return 1 end
 	function p:hud_change(id, stat, value)
   huds[id][stat]=value
   if stat=="text" and type(value)=="string" and value:match("^%[combine:") then textures[value]=true end

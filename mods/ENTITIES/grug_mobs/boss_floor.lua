@@ -506,4 +506,3 @@ function grug_mobs.boss_no_way(self)
 	leave(self, self.temp, target:get_player_name())
 end
 
-grug_mobs.BOSS_QUIET = QUIET

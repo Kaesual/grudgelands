@@ -22,6 +22,13 @@ local SNAPSHOT_INTERVAL = 1
 -- once per second, but no single server step carries all of them.
 local SLOTS = 8
 local SLOT_INTERVAL = SNAPSHOT_INTERVAL / SLOTS
+-- The player snapshot is bucketed by CELL x CELL node columns (Round 81,
+-- audit C1-04/X4-03): a carrier tests only the players of its own and the
+-- eight neighbouring cells. CELL is at least the hide distance (30), so
+-- every viewer in range is among them.
+local CELL = 32
+local CELL_ROW = 65536 -- cell key = cell x * CELL_ROW + cell z
+local floor = math.floor
 
 local CATEGORY_DEFAULTS = {
 	aggressive = {foreground = "#ff4b4b", background = "#00000040"},
@@ -55,6 +62,15 @@ local HP_BARS_ENABLED = core.settings:get_bool("grug_injured_mob_hp_bars", true)
 
 local player_snapshot = {}
 local player_count = 0
+-- cell key -> {n = count, [i] = snapshot index}; the cells filled by the
+-- last refresh, and the ones before it (emptied first, dropped if unused).
+local cells, cells_used, cells_before = {}, {}, {}
+local cells_used_count = 0
+-- A player's faction, read from player meta once per SNAPSHOT_INTERVAL
+-- through the join slots (below) instead of on every snapshot refresh
+-- (Round 81, audit C1-04); false for none. Weak keys: a player who leaves
+-- drops out, a rejoin is a new object and reads afresh.
+local faction_of = setmetatable({}, {__mode = "k"})
 local slot_elapsed = 0
 local visibility_callbacks = {}
 -- callback(parent, observers, removed): membership is borrowed, read-only.
@@ -90,6 +106,8 @@ function grug_core.register_hp_bar_presentation(entity_name, definition)
 	}
 	return true
 end
+
+local EMPTY = {}
 
 local function object_valid(object)
 	return object and object:is_valid()
@@ -135,6 +153,21 @@ function grug_core.get_player_object_faction(player)
 	return nil
 end
 
+local function read_faction(player)
+	local faction = grug_core.get_player_object_faction(player) or false
+	faction_of[player] = faction
+	return faction
+end
+
+-- The faction the tags use: the one read on the player's last slot visit
+-- (at most SNAPSHOT_INTERVAL old), read at once the first time.
+local function player_faction(player)
+	local faction = faction_of[player]
+	if faction == nil then faction = read_faction(player) end
+	return faction or nil
+end
+grug_core.register_player_pass(SNAPSHOT_INTERVAL, read_faction)
+
 -- Settlement key -> faction id, built once on first use from the socket
 -- registry and the start roster (both final after load).
 local settlement_factions
@@ -158,15 +191,16 @@ end
 
 -- Fills row.faction and row.kind: "combat" (green and red), "npc" (light
 -- green and light red) or nil (the category colour for every viewer).
--- A player is read on every visit (the faction is chosen after joining);
--- a mob keeps its faction once known. A fighting mob carries _grug_faction
+-- A player is read on every visit (the faction is chosen after joining;
+-- the value of its last slot visit, player_faction); a mob keeps its
+-- faction once known. A fighting mob carries _grug_faction
 -- (grug_mobs sets it on activation, before its carrier exists); a peaceful
 -- resident (category npc), a capital's display included, belongs to its
 -- settlement's faction (user ruling 2026-11-08: every NPC and guard is friend
 -- or foe, no violet or lavender).
 local function resolve_unit(row)
 	if row.is_player then
-		local faction = grug_core.get_player_object_faction(row.parent)
+		local faction = player_faction(row.parent)
 		row.faction, row.kind = faction, faction and "combat" or nil
 		return
 	end
@@ -308,7 +342,7 @@ local function refresh_hp_bar(row, observers)
 	end
 	-- Defer creation and texture work until somebody can actually see it.
 	if next(observers) == nil then
-		if object_valid(row.hp_bar) and not same_set(row.hp_observers or {}, observers) then
+		if object_valid(row.hp_bar) and not same_set(row.hp_observers or EMPTY, observers) then
 			row.hp_bar:set_observers(observers)
 			row.hp_observers = observers
 		end
@@ -316,10 +350,25 @@ local function refresh_hp_bar(row, observers)
 	end
 	local percent = math.max(1, math.min(99,
 		math.floor(hp * 100 / hp_max + 0.5)))
+	-- A tier promotion that rescales the parent after the bar exists moves
+	-- the bar through grug_core.sync_tag_carrier_box (follow_bar_geometry).
 	local bar = ensure_hp_bar(row)
 	if not bar then return end
-	-- A tier promotion rescales the parent after the bar exists: its box top
-	-- and its visual_size both move the anchor, so follow the height too.
+	if row.hp_percent ~= percent then
+		row.hp_percent = percent
+		bar:set_properties({textures = {hp_texture(percent)}})
+	end
+	if not same_set(row.hp_observers or EMPTY, observers) then
+		bar:set_observers(observers)
+		row.hp_observers = observers
+	end
+end
+
+-- The bar of a parent rescaled after the bar exists (a tier promotion):
+-- its box top and its visual_size both move the anchor.
+local function follow_bar_geometry(row)
+	local bar = row.hp_bar
+	if not object_valid(bar) then return end
 	local height, sx, sy = bar_height_and_scale(row.parent)
 	if row.hp_scale_x ~= sx or row.hp_scale_y ~= sy
 			or row.hp_height ~= height then
@@ -328,19 +377,17 @@ local function refresh_hp_bar(row, observers)
 			{x = 0, y = 0, z = 0})
 		row.hp_scale_x, row.hp_scale_y, row.hp_height = sx, sy, height
 	end
-	if row.hp_percent ~= percent then
-		row.hp_percent = percent
-		bar:set_properties({textures = {hp_texture(percent)}})
-	end
-	if not same_set(row.hp_observers or {}, observers) then
-		bar:set_observers(observers)
-		row.hp_observers = observers
-	end
 end
 
-local function refresh_snapshot()
+-- Positions every slot step (the mobs' nearest_tag_player_d2 reads them
+-- too); the viewer's side (Round 72) from player_faction, or read afresh
+-- for every player when `read_factions` is set (the test seam).
+local function refresh_snapshot(read_factions)
 	local players = core.get_connected_players()
-	local count = 0
+	cells_used, cells_before = cells_before, cells_used
+	local before_count = cells_used_count
+	for index = 1, before_count do cells[cells_before[index]].n = 0 end
+	local count, used = 0, 0
 	for index = 1, #players do
 		local player = players[index]
 		local pos = player:get_pos()
@@ -353,10 +400,30 @@ local function refresh_snapshot()
 			end
 			row.name = player:get_player_name()
 			row.x, row.y, row.z = pos.x, pos.y, pos.z
-			-- The viewer's side, read once per snapshot (Round 72).
-			row.faction = grug_core.get_player_object_faction(player)
+			if read_factions then
+				row.faction = read_faction(player) or nil
+			else
+				row.faction = player_faction(player)
+			end
+			local key = floor(pos.x / CELL) * CELL_ROW + floor(pos.z / CELL)
+			local cell = cells[key]
+			if not cell then
+				cell = {n = 0}
+				cells[key] = cell
+			end
+			if cell.n == 0 then
+				used = used + 1
+				cells_used[used] = key
+			end
+			cell.n = cell.n + 1
+			cell[cell.n] = count
 		end
 	end
+	for index = 1, before_count do
+		local key = cells_before[index]
+		if cells[key].n == 0 then cells[key] = nil end
+	end
+	cells_used_count = used
 	player_count = count
 end
 
@@ -475,16 +542,28 @@ local function replace_carrier(old, row)
 	managed_carriers[carrier] = row
 	carrier_slots[row.slot][carrier] = row
 	carrier_by_parent[parent] = carrier
+	-- The new carrier starts without viewers: rebuild the combined set on
+	-- its first visit even when neither side's set changes then.
+	row.both = nil
 	style_carrier(carrier, row.text or "", own_category(row))
 	return carrier
 end
 
-local EMPTY = {}
+-- The viewers in range of the carrier being visited, reused by every visit:
+-- range_names[i] and whether it belongs to the other side, range_foe[i].
+local range_names, range_foe = {}, {}
 
--- One walk over the snapshot splits the viewers in range by side: the held
--- carrier gets its own side and every viewer without a faction, the foe
--- carrier the other side. Returns both sides together (borrowed, read-only)
--- and whether either set changed.
+local function set_size(set)
+	local n = 0
+	for _ in pairs(set) do n = n + 1 end
+	return n
+end
+
+-- One walk over the snapshot cells around the carrier splits the viewers in
+-- range by side: the held carrier gets its own side and every viewer without
+-- a faction, the foe carrier the other side. A set is rebuilt only when it
+-- changed (Round 81, audit X4-03). Returns both sides together (borrowed,
+-- read-only) and whether either set changed.
 local function update_observers(carrier, row)
 	local entity = carrier:get_luaentity()
 	if not entity or entity.name ~= ENTITY_NAME then return EMPTY, false end
@@ -494,53 +573,82 @@ local function update_observers(carrier, row)
 	local previous = entity._grug_observers or EMPTY
 	local foe_entity = object_valid(row.foe) and row.foe:get_luaentity()
 	local previous_foe = foe_entity and foe_entity._grug_observers or EMPTY
-	local observers, foes = {}, nil
-	for index = 1, player_count do
-		local player = player_snapshot[index]
-		local name = player.name
-		if name ~= owner_name then
-			local dx = pos.x - player.x
-			local dy = pos.y - player.y
-			local dz = pos.z - player.z
-			local d2 = dx * dx + dy * dy + dz * dz
-			if d2 < SHOW_D2 or (d2 <= HIDE_D2 and
-					(previous[name] or previous_foe[name])) then
-				local side = player.faction
-				if faction and side and side ~= faction then
-					foes = foes or {}
-					foes[name] = true
-				else
-					observers[name] = true
+	local n, own_count, own_same, foe_count = 0, 0, true, 0
+	local cx, cz = floor(pos.x / CELL), floor(pos.z / CELL)
+	for gx = cx - 1, cx + 1 do
+		for gz = cz - 1, cz + 1 do
+			local cell = cells[gx * CELL_ROW + gz]
+			for i = 1, cell and cell.n or 0 do
+				local player = player_snapshot[cell[i]]
+				local name = player.name
+				if name ~= owner_name then
+					local dx = pos.x - player.x
+					local dy = pos.y - player.y
+					local dz = pos.z - player.z
+					local d2 = dx * dx + dy * dy + dz * dz
+					if d2 < SHOW_D2 or (d2 <= HIDE_D2 and
+							(previous[name] or previous_foe[name])) then
+						local side = player.faction
+						local foe = faction and side and side ~= faction or false
+						n = n + 1
+						range_names[n], range_foe[n] = name, foe
+						if foe then
+							foe_count = foe_count + 1
+						else
+							own_count = own_count + 1
+							if not previous[name] then own_same = false end
+						end
+					end
 				end
 			end
 		end
 	end
 	local changed = false
-	if same_set(previous, observers) then
-		observers = previous
-	else
+	local observers = previous
+	if not own_same or own_count ~= set_size(previous) then
+		observers = {}
+		for i = 1, n do
+			if not range_foe[i] then observers[range_names[i]] = true end
+		end
 		entity._grug_observers = observers
 		carrier:set_observers(observers)
 		changed = true
 	end
-	if not foes then
+	if foe_count == 0 then
 		if row.foe then
 			changed = changed or next(previous_foe) ~= nil
 			remove_foe_carrier(row)
 		end
+		row.both = nil
 		return observers, changed
 	end
 	local foe = ensure_foe_carrier(row, row.text or entity._grug_text)
 	foe_entity = foe and foe:get_luaentity()
-	if foe_entity and not same_set(foe_entity._grug_observers or EMPTY, foes) then
-		foe_entity._grug_observers = foes
-		foe:set_observers(foes)
-		changed = true
+	local foes
+	if foe_entity then
+		local sent = foe_entity._grug_observers or EMPTY
+		local same = foe_count == set_size(sent)
+		for i = 1, n do
+			if same and range_foe[i] and not sent[range_names[i]] then same = false end
+		end
+		if not same then
+			foes = {}
+			for i = 1, n do
+				if range_foe[i] then foes[range_names[i]] = true end
+			end
+			foe_entity._grug_observers = foes
+			foe:set_observers(foes)
+			changed = true
+		end
 	end
-	local both = {}
-	for name in pairs(observers) do both[name] = true end
-	for name in pairs(foes) do both[name] = true end
-	return both, changed
+	-- Both sides together, rebuilt when a side changed (or without a foe
+	-- carrier to hold the other side's set).
+	if changed or not row.both or not foe_entity then
+		local both = {}
+		for i = 1, n do both[range_names[i]] = true end
+		row.both = both
+	end
+	return row.both, changed
 end
 
 -- Returns true for a player's carrier that is lost while the player is
@@ -598,7 +706,7 @@ core.register_globalstep(function(dtime)
 	local due = math.min(SLOTS, math.floor(slot_elapsed / SLOT_INTERVAL))
 	slot_elapsed = slot_elapsed - due * SLOT_INTERVAL
 	if slot_elapsed >= SLOT_INTERVAL then slot_elapsed = slot_elapsed % SLOT_INTERVAL end
-	refresh_snapshot()
+	refresh_snapshot(false)
 	for _ = 1, due do
 		current_slot = current_slot % SLOTS + 1
 		manage_carriers(current_slot)
@@ -606,7 +714,9 @@ core.register_globalstep(function(dtime)
 end)
 
 -- A parent rescaled after its carrier exists (a tier promotion,
--- grug_mobs levels.lua) re-copies its box so the tag rides on the new top.
+-- grug_mobs levels.lua) re-copies its box so the tag rides on the new top,
+-- and its HP bar moves to the new anchor (Round 81, audit C1-04: the bar no
+-- longer reads the parent's properties on every visit).
 function grug_core.sync_tag_carrier_box(parent)
 	local carrier = parent and carrier_by_parent[parent]
 	if not object_valid(carrier) or not object_valid(parent) then
@@ -615,6 +725,7 @@ function grug_core.sync_tag_carrier_box(parent)
 	copy_parent_box(carrier, parent)
 	local row = managed_carriers[carrier]
 	if row and object_valid(row.foe) then copy_parent_box(row.foe, parent) end
+	if row then follow_bar_geometry(row) end
 	return true
 end
 
@@ -684,11 +795,8 @@ function grug_core.nearest_tag_player_d2(pos)
 	return best
 end
 
-function grug_core.is_tag_carrier(entity)
-	return type(entity) == "table" and entity.name == ENTITY_NAME
-end
-
 -- Test seam: production refreshes only through the throttled globalstep,
--- one slot per step; the seam runs a full pass over every carrier.
-grug_core.refresh_tag_player_snapshot = refresh_snapshot
+-- one slot per step; the seams refresh the snapshot with every player's
+-- faction read afresh and run a full pass over every carrier.
+grug_core.refresh_tag_player_snapshot = function() refresh_snapshot(true) end
 grug_core.manage_tag_carriers = function() manage_carriers(nil) end

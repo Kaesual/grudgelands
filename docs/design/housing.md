@@ -369,7 +369,7 @@ Round 26 ruling 11, internal role id `housing_manager`): the gate resident of
 the capital's tailor service plot (`settlements.md`). It serves only its
 capital's faction, hands out the stone (§3), and its dialog briefly explains
 the upkeep, the 5-minute activation with 5 lumps and the 12-hour lock. The
-map shows it with a "+" marker.
+map shows it with the Steward icon ([world_map.md](world_map.md)).
 
 The dialog shows **Receive Claim Stone** only when the player can receive
 one (Round 49 ruling 4); otherwise the reason stands in its place: "You
@@ -405,7 +405,7 @@ minute); only the draft form (§7.1) counts seconds.
 - The player's own Claim Stone can be the "travel home" target of
   [innkeeper home travel](home_travel.md), with the usual 30-minute cooldown
   (ruling 14). The owner sets it with "Set as home" in the stone interface;
-  the map marks a claim home with "H". An expired claim still works as a
+  the map marks a claim home with the home icon at the stone ([home_travel.md](home_travel.md)). An expired claim still works as a
   target; a draft does not ("Activate your Claim Stone first").
 - The arrival is the arrival cube (§2). If the cube is blocked, that one trip
   goes to the bound innkeeper instead, with a message, and the cooldown is

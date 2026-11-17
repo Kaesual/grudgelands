@@ -82,36 +82,6 @@ local spider = spider_def("Crevice Spider", "grug_mobs_spider.png")
 grug_mobs.melee_rider(spider, web_rider)
 grug_mobs.register_mob("grug_mobs:giant_spider", spider)
 
--- §4 row "Giant Spider (all) | forest litter, bone litter, rainforest litter
--- | 20 | 1800 | 4 | max 5 | outer, coast, underground", split by continent
--- side; rainforest litter belongs to the jungle tint at the end of this file.
---
--- The elf-forest and pine-hills tops are here for the same reason bear.lua
--- carries them: settled patches occur in the outer ring and on the coasts
--- (§1.4), where §4's role-based whitelists left them empty. The Bear is the
--- day half of that Accord outer/coast forest roster, this row the night half
--- — without it grug_elf_forest x outer/coast and grug_pine_hills x coast
--- would be lit-up by day and dead after dark.
-mobs:spawn({
-	name = "grug_mobs:giant_spider",
-	nodes = {
-		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
-		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest patches
-		"default:dirt_with_coniferous_litter", -- grug_pine_hills patches
-		-- WP36, the night half of bear.lua's grug_meadows addition: read the
-		-- note there — grug_meadows x coast had no mob at all after the
-		-- centre band was extended to Z_MAX on 2026-08-08.
-		"default:dirt_with_grass", -- grug_meadows patches
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 4,
-	min_height = 0,
-	max_height = 600,
-})
-
 --
 -- Bonelurker Spider — grug_bone_forest (Throng)
 --
@@ -120,65 +90,19 @@ local bonelurker = spider_def("Bonelurker Spider", "grug_mobs_spider_pale.png")
 grug_mobs.melee_rider(bonelurker, web_rider)
 grug_mobs.register_mob("grug_mobs:pale_spider", bonelurker)
 
--- blight_dirt: the night half of the Throng mirror (bear.lua's Plaguehide
--- note) — grug_blight patches in the outer ring and on the coasts.
--- dry_dirt_with_dry_grass: the night half of the WP36 grug_savanna x coast
--- repair, same note.
-mobs:spawn({
-	name = "grug_mobs:pale_spider",
-	nodes = {
-		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
-		"grug_nodes:blight_dirt", -- grug_blight patches
-		"default:dry_dirt_with_dry_grass", -- grug_savanna patches
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 4,
-	min_height = 0,
-	max_height = 600,
-})
-
 --
 -- Jungle Spider — grug_deep_jungle (Throng) and grug_jungle_fringe (Accord),
 -- added with the jungle group (T6)
 --
 -- ONE registration for both continents, unlike the pair above: §3.2 puts
 -- every spider tint on the same table anyway ("spider table | Giant Spider |
--- Giant Spider (tints)"). Same def factory, same drops, same §4 numbers: only
--- the texture and the spawn node change.
---
--- TWO node names since WP36. §8.4 binds grug_jungle_fringe to the TROLL
--- JUNGLE's nodes 1:1 — and the troll jungle is grug_jungle_edge, not
--- grug_deep_jungle, which got its own top that round (§1.3). So the fringe
--- still stands on rainforest litter while the Throng deep jungle stands on
--- canopy litter, and this row must name both or the Throng half of the
--- outer/coast NIGHT roster disappears.
+-- Giant Spider (tints)"). Same def factory, same drops: only the texture
+-- changes.
 --
 
 local jungle_spider = spider_def("Jungle Spider", "grug_mobs_spider_jungle.png")
 grug_mobs.melee_rider(jungle_spider, web_rider)
 grug_mobs.register_mob("grug_mobs:jungle_spider", jungle_spider)
-
-mobs:spawn({
-	name = "grug_mobs:jungle_spider",
-	nodes = {
-		"default:dirt_with_rainforest_litter", -- grug_jungle_fringe (Accord)
-		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (Throng)
-		-- Glassroot mixes the jungle and forest palettes but selects one
-		-- regional spider identity for the whole named zone.
-		"grug_nodes:dirt_with_forest_litter",
-		"grug_nodes:dirt_with_silver_litter",
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 4,
-	min_height = 0,
-	max_height = 600,
-})
 
 --
 -- CAVE ROW (WP6/T7) — §3.1's cave paragraph, §4 zone column "outer, coast,
@@ -187,7 +111,7 @@ mobs:spawn({
 -- read that block before changing anything here.
 --
 -- ONE cave row, and it belongs to grug_mobs:giant_spider (the base tint).
--- The pale and jungle tints stay surface families: their textures are biome
+-- The pale and jungle tints have no ABM row: their textures are biome
 -- identity (bone forest, jungle), a cave has neither, and three cave rows
 -- would triple the underground spider budget for no design reason — §3.1
 -- says "reuse Giant Spider", singular. The zone list of spider_def already

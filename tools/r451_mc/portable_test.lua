@@ -292,6 +292,10 @@ do
 	core.register_on_joinplayer = join
 end
 local function load(path) dofile(ROOT .. "/" .. path) end
+-- Round 81: the shared NPC-window check; the player's faction through
+-- grug_core's stub, which grug_factions resolves in the game.
+load("mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = grug_factions.get_faction
 grug_mounts = {}
 load("mods/PLAYER/grug_mounts/catalog.lua")
 load("mods/PLAYER/grug_mounts/state.lua")
@@ -490,10 +494,12 @@ grug_mounts.dismount(quick, "manual", false)
 ------------------------------------------------------------------------------
 eq(grug_mounts.SUMMON_HINT, "Press E to summon your mount", "the banner's text")
 local function npc(role, player)
-	return {_grug_socket_role = role,
+	local entity = {_grug_socket_role = role,
 		_grug_start = player.faction == "throng" and "nhal_veyr" or "highcourt",
-		_grug_socket = role == "shipwright" and "dock" or "stable",
-		object = {get_pos = function() return {x = 0, y = 0.5, z = 2} end}}
+		_grug_socket = role == "shipwright" and "dock" or "stable"}
+	entity.object = {get_pos = function() return {x = 0, y = 0.5, z = 2} end,
+		get_luaentity = function() return entity end} -- Round 81: the live-entity check
+	return entity
 end
 local function formname_of(player)
 	for index = #shown, 1, -1 do

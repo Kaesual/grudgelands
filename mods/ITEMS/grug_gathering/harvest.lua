@@ -17,7 +17,6 @@ return function(dependencies)
 	}
 	local VALID_DENIALS = {
 		no_alchemist = true,
-		book_group_locked = true,
 	}
 
 	local function player_name(player)
@@ -64,8 +63,6 @@ return function(dependencies)
 	local function failure_message(reason, row)
 		if reason == "no_alchemist" then
 			return "Requires the Alchemy profession."
-		elseif reason == "book_group_locked" then
-			return "Requires Alchemy book group T" .. row.required_group .. "."
 		elseif reason == "profession_unavailable" then
 			return "Profession service unavailable."
 		end

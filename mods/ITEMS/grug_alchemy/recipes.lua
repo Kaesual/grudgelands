@@ -257,21 +257,8 @@ grug_gathering.register_herb_authorizer(function(player)
 	return false, "no_alchemist"
 end)
 
-grug_traders.register_all_vendor_stock({item = VIAL, price = 3,
-	category = "goods"})
+grug_traders.register_all_vendor_stock({item = VIAL, price = 3})
 
--- Capital protection covers the station, so these six authored stations are
--- public while a player-placed stand continues to obey ordinary protection.
-core.register_on_mods_loaded(function()
-	local settlements = grug_core.settlement_socket_settlements()
-	for index = 1, #settlements do
-		local sockets = grug_core.settlement_sockets_at(settlements[index].key)
-		for socket_index = 1, #sockets do
-			local socket = sockets[socket_index]
-			if socket.role == "public_station" and socket.tags and
-					socket.tags[1] == "brewing_stand" then
-				grug_brewing.register_public_position(socket.pos)
-			end
-		end
-	end
-end)
+-- The capitals' authored brewing stands are public stations through
+-- grug_jobs' socket pass (station_nodes.lua install_jobs), like every other
+-- public station; a player-placed stand obeys ordinary protection.

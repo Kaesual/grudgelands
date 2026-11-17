@@ -61,14 +61,38 @@ for _, fortress in ipairs(FORTRESSES) do
  add_row(fortress.key, row.display_name or fortress.key, fortress.faction, row.race_id, false)
 end
 
+-- A player's discovered set, decoded once per session and kept by discover,
+-- the only writer of KEY (Round 81, audit P4-03: the discovery pass asks
+-- every second). Weak keys: a rejoin is a new object and decodes afresh.
+-- Callers read the set and never change it; discover adds to it.
+local known_sets = setmetatable({}, {__mode = "k"})
 local function known_set(player)
- return rules.decode(player:get_meta():get_string(KEY))
+ local set = known_sets[player]
+ if not set then
+  set = rules.decode(player:get_meta():get_string(KEY))
+  known_sets[player] = set
+ end
+ return set
+end
+-- Each faction's network, built once (the rows are final after load). A
+-- player without a faction (before character creation) has none: an empty
+-- list, never a cache entry (a nil key would raise). Callers only read it.
+local networks, NO_NETWORK = {}, {}
+local function network_of(faction)
+ if faction == nil then return NO_NETWORK end
+ local network = networks[faction]
+ if not network then
+  network = rules.network(rows, faction)
+  networks[faction] = network
+ end
+ return network
 end
 local function race_of(player)
  return grug_core.get_player_race(player:get_player_name())
 end
 
-local function discover(player, set, row)
+local function discover(player, row)
+ local set = known_set(player)
  set[row.id] = true
  player:get_meta():set_string(KEY, rules.encode(set, rows))
  local text = "Waypoint discovered: " .. row.label
@@ -79,7 +103,7 @@ end
 -- The discovered stones of the player's own network, for the map markers.
 function grug_home.known_waypoints(player)
  local set, race, result = known_set(player), race_of(player), {}
- for _, row in ipairs(rules.network(rows, grug_factions.get_faction(player))) do
+ for _, row in ipairs(network_of(grug_factions.get_faction(player))) do
   if rules.known(set, row, race) then
    result[#result + 1] = {id=row.id, label=row.label, pos=vector.new(row.pos)}
   end
@@ -294,7 +318,7 @@ function grug_home.use_waystone(player, pos)
   return
  end
  local set = known_set(player)
- if not rules.known(set, row, race_of(player)) then discover(player, set, row) end
+ if not rules.known(set, row, race_of(player)) then discover(player, row) end
  open(player, row, true)
 end
 
@@ -512,19 +536,16 @@ function grug_home.travel_from_claim(player, id)
 end
 
 -- Discovery by proximity: once a second, every player against the stones of
--- their own network.
-local elapsed = 0
-core.register_globalstep(function(dtime)
- elapsed = elapsed + dtime
- if elapsed < 1 then return end
- elapsed = 0
- for _, player in ipairs(core.get_connected_players()) do
-  local faction = grug_factions.get_faction(player)
-  if faction and player:get_hp() > 0 then
-   local set = known_set(player)
-   for _, row in ipairs(rules.newly_found(rows, faction, set, race_of(player),
-     player:get_pos())) do
-    discover(player, set, row)
+-- their own network, on the player's join slot (Round 81, audit P4-03; the
+-- test of rules.newly_found without its lists).
+grug_core.register_player_pass(1, function(player)
+ local faction = grug_factions.get_faction(player)
+ if faction and player:get_hp() > 0 then
+  local set, race, pos = known_set(player), nil, player:get_pos()
+  for _, row in ipairs(network_of(faction)) do
+   if not set[row.id] and rules.near(row, pos) then
+    race = race or race_of(player)
+    if not rules.known(set, row, race) then discover(player, row) end
    end
   end
  end

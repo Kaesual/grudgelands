@@ -105,6 +105,10 @@ rawset(_G, "grug_core", {
 })
 rawset(_G, "grug_classes", {registered_races = {human = {faction = "accord"}, orc = {faction = "throng"}}})
 rawset(_G, "grug_factions", {get_faction = function(p) return p.faction end})
+-- Round 81: the shared NPC-window check; the player's faction through
+-- grug_core's stub, which grug_factions resolves in the game.
+dofile(repo .. "/mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = grug_factions.get_faction
 rawset(_G, "grug_jobs", {
 	PROFESSIONS = {tailor = {name = "Tailor"}, cooking = {name = "Cooking"}},
 	MENDER_TITLE = MENDER,

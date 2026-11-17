@@ -33,30 +33,6 @@ local skeleton = {
 	_grug_voice = "skeleton",
 	clock = "night",
 	type = "monster",
-	-- Zones: the bone forest sits in the outer ring, and the war coast is
-	-- the second home of the battlefield dead. The node whitelist alone
-	-- cannot separate the two spawn rows below — see the check.
-	-- §4 gives this family "bone litter, blight_dirt, settled tops (war
-	-- coast)": the settled tops are allowed ONLY on the war coast, while
-	-- bone litter and blight dirt remain their own habitat everywhere their
-	-- accepted palettes place them. This check expresses the per-row rule by
-	-- looking at the node the spawn ABM matched. mobs_redo calls
-	-- spawn_abm_check with that ABM node position (api.lua:4348-4350),
-	-- BEFORE it raises the spawn position one node at :4390, so
-	-- core.get_node(pos) is exactly that top node.
-	_grug_spawn_check = function(pos)
-		if grug_mobs.zone_spawn_palette_allows("war", pos) then
-			return true -- explicit war palette: every listed top node is fine
-		end
-		if grug_mobs.zone_spawn_palette_allows("mountain", pos) then
-			-- The policy independently verifies that this family is the active
-			-- mountain night fallback; this check only admits its host nodes.
-			return true
-		end
-		local node = core.get_node(pos).name
-		return node == "grug_nodes:dirt_with_bone_litter"
-			or node == "grug_nodes:blight_dirt"
-	end,
 	-- HP/damage/XP/armor: engine-owned (levels.lua). The war-coast cap of
 	-- grug_zones.mob_level_at keeps the coastal ones at 20-30, the bone
 	-- forest ones scale to 60.
@@ -68,9 +44,8 @@ local skeleton = {
 	pathfinding = 1,
 
 	-- Ranged loadout. dogshoot_switch = 1 starts in the RANGED mode; since
-	-- Round 78 the mode follows the distance (golem.lua; the count fields
-	-- are no longer read): a target close in is met in melee, which is the
-	-- "melee when cornered" half.
+	-- Round 78 the mode follows the distance (golem.lua): a target close in
+	-- is met in melee, which is the "melee when cornered" half.
 	arrow = "grug_mobs:arrow_entity",
 	arrow_override = grug_mobs.stamp_arrow_damage,
 	shoot_interval = 2.5,
@@ -79,8 +54,6 @@ local skeleton = {
 	-- every shot lands at the target's feet.
 	shoot_offset = 1.5,
 	dogshoot_switch = 1,
-	dogshoot_count_max = 10,
-	dogshoot_count2_max = 3,
 
 	-- §3.1 speed column: 4.0 in combat, a calm walk while roaming (Round 24
 	-- ruling 20; mobs_redo roams at walk_velocity and fights at
@@ -138,53 +111,3 @@ local skeleton = {
 }
 
 grug_mobs.register_mob("grug_mobs:skeleton_archer", skeleton)
-
---
--- Spawns — §4 row: interval 20 / chance 2000 / aoc 3 / max light 5 /
--- zones outer + war_coast. Two rows because the node list has two different
--- zone rules (see _grug_spawn_check above); both rows share the aoc budget,
--- mobs_redo counts it per entity name.
---
-
--- Row A: the wild/undead tops. Allowed in the outer ring AND on the war
--- coast.
-mobs:spawn({
-	name = "grug_mobs:skeleton_archer",
-	nodes = {
-		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
-		"grug_nodes:blight_dirt", -- grug_blight
-		"default:gravel", -- mountain fallback, grug_crags
-		"default:snowblock", -- mountain fallback, grug_crags_snowy
-		"grug_nodes:mesa_clay", -- mountain fallback, grug_badlands
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 2000,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})
-
--- Row B: the settled tops — the battlefield dead of the war coast. The
--- check rejects every one of these outside zone war_coast, so this row
--- cannot leak skeletons into inland village patches. blight_dirt is the
--- sixth settled top but already covered by row A (and would otherwise be
--- hit by two ABMs).
-mobs:spawn({
-	name = "grug_mobs:skeleton_archer",
-	nodes = {
-		"default:dirt_with_grass", -- grug_meadows
-		"default:dirt_with_coniferous_litter", -- grug_pine_hills
-		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
-		"default:dry_dirt_with_dry_grass", -- grug_savanna
-		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 2000,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})

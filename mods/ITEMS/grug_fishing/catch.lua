@@ -48,10 +48,6 @@ function grug_fishing.band_at(pos)
 	return grug_fishing.band_for_level(grug_core.mob_level_at(pos))
 end
 
-function grug_fishing.table_for(pos)
-	return TABLES[grug_fishing.band_at(pos)]
-end
-
 function grug_fishing.catch_at(catch_table, roll)
 	local seen = 0
 	for _, entry in ipairs(catch_table) do

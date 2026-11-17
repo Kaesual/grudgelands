@@ -57,8 +57,6 @@ local function goblin_def(description, texture, ranged)
 		def.shoot_interval = 2.5
 		def.shoot_offset = 1
 		def.dogshoot_switch = 1
-		def.dogshoot_count_max = 8
-		def.dogshoot_count2_max = 2
 	end
 	grug_mobs.camp_swarm(def, {range = 16})
 	return def
@@ -88,18 +86,6 @@ local goblin_hound = ground({
 grug_mobs.camp_swarm(goblin_hound, {range = 16})
 grug_mobs.register_mob("grug_mobs:goblin_hound", goblin_hound)
 
-for _, name in ipairs({"goblin_raider", "goblin_slinger", "goblin_hound"}) do
-	mobs:spawn({
-		name = "grug_mobs:" .. name,
-		nodes = {"default:dirt_with_coniferous_litter", "default:gravel",
-			"default:snowblock", "default:dry_dirt_with_dry_grass",
-			"grug_nodes:mesa_clay"},
-		interval = 20, chance = 2400,
-		active_object_count = name == "goblin_raider" and 2 or 1,
-		min_height = 0, max_height = 600,
-	})
-end
-
 local snow_leopard = ground({
 	description = "Snow Leopard", attack_type = "dogfight",
 	_grug_voice = "feline",
@@ -125,10 +111,6 @@ local snow_leopard = ground({
 })
 grug_mobs.stalker(snow_leopard, {})
 grug_mobs.register_mob("grug_mobs:snow_leopard", snow_leopard)
-mobs:spawn({name = "grug_mobs:snow_leopard",
-	nodes = {"default:gravel", "default:snowblock"},
-	interval = 20, chance = 2100, active_object_count = 3,
-	min_height = 0, max_height = 600})
 
 -- The blink never lands in a liquid (Round 34): water is not walkable
 -- either, and a wisp has no collision and takes no water damage, so a blink
@@ -144,7 +126,7 @@ local wisp = {
 	description = "Wisp", clock = "night", type = "monster",
 	_grug_voice = "spirit",
 	attack_type = "dogfight", attack_players = true, group_attack = false,
-	reach = 2, view_range = 14, fly = true, fly_in = "air", physical = false,
+	reach = 2, view_range = 14, fly = true, fly_in = "air",
 	walk_velocity = 2.5, run_velocity = 4.6, jump = false, fear_height = 0,
 	visual = "mesh", mesh = "grug_mobs_wisp.b3d",
 	textures = {{"default_tool_steelsword.png", "grug_mobs_wisp.png"}},
@@ -183,13 +165,6 @@ local wisp = {
 	end,
 }
 grug_mobs.register_mob("grug_mobs:wisp", wisp)
-mobs:spawn({name = "grug_mobs:wisp",
-	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_silver_litter",
-		"grug_nodes:dirt_with_forest_litter", "grug_nodes:dirt_with_bone_litter",
-		"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter"},
-	interval = 20, chance = 2200, active_object_count = 3,
-	min_height = 0, max_height = 600})
 
 local function treant_def(description, tint)
 	return ground({
@@ -241,12 +216,6 @@ end
 
 grug_mobs.register_mob("grug_mobs:ashen_treant",
 	treant_def("Ashen Treant", "#6d5140"))
-mobs:spawn({name = "grug_mobs:ashen_treant",
-	nodes = {"grug_nodes:dirt_with_forest_litter"}, interval = 20, chance = 2600,
-	active_object_count = 2, min_height = 0, max_height = 600})
 
 grug_mobs.register_mob("grug_mobs:gravewood_treant",
 	treant_def("Gravewood Treant", "#c2bba8"))
-mobs:spawn({name = "grug_mobs:gravewood_treant",
-	nodes = {"grug_nodes:dirt_with_bone_litter"}, interval = 20, chance = 2600,
-	active_object_count = 2, min_height = 0, max_height = 600})

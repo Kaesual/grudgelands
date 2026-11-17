@@ -25,10 +25,11 @@
 --   5. At level 60+ the guard promotes itself to tier "elite" below (the
 --      "elite city watch (60+)" of world.md §1), which also switches on the
 --      2 s wind-up telegraph.
---   6. It defends its post: _grug_leash_range = 30 around the banner
---      (camps.lua writes the banner position into _grug_home), and while
---      idle it stays within the 15-node roam cap of world.md §4a
---      (aggro.lua) instead of wandering off the pad.
+--   6. It defends its post: _grug_leash_range = 30, measured as drag from
+--      where its chase began (aggro.lua's chase anchor); it evades back to
+--      _grug_home (camps.lua writes the banner position there), and while
+--      idle it stays within aggro.lua's 20-node camp roam cap instead of
+--      wandering off the pad.
 --   7. The camp's designated patroller additionally carries
 --      _grug_patrol_route and ambles to the neighbouring ring's outpost and
 --      back (patrol.lua + the patrol leash exemption in aggro.lua).
@@ -263,11 +264,11 @@ local function guard_def(faction, description, texture)
 		-- additionally drop war trophies (vendor 5-10c) + heavy cloth 1/3
 		-- (combat_stats player-tag PvP rule)"). This table only ever
 		-- materializes on a kill by an ENEMY-faction PLAYER: the faction branch
-		-- of grug_mobs._item_drop_filter (aggro.lua:529-538) returns nil for a
+		-- of grug_mobs._item_drop_filter (aggro.lua) returns nil for a
 		-- guard slain by a mob, by a factionless player or by its own side, and
 		-- api.lua's item_drop then drops nothing at all.
 		--
-		-- chance = N is a 1-in-N roll (api.lua:761-839,
+		-- chance = N is a 1-in-N roll (api.lua item_drop,
 		-- `if random(drops[n].chance) == 1`): the trophy is guaranteed at 1-2
 		-- pieces x 5c, which IS the 5-10c band of §5.6, and the heavy cloth is
 		-- the literal "1/3" of the same line.
@@ -286,7 +287,7 @@ local function guard_def(faction, description, texture)
 		-- start_npcs.lua): its death frees the slot and books the refill. An
 		-- outpost guard carries no start fields and this is a no-op for it.
 		-- MUST return nil: any truthy return skips the removal of the mob
-		-- (api.lua:940-944, "skips removal of mob").
+		-- (api.lua check_for_death, "skips removal of mob").
 		on_die = function(self)
 			if self._grug_start and self._grug_socket then
 				grug_mobs.start_guard_died(self)

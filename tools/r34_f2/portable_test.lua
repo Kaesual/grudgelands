@@ -122,7 +122,8 @@ core = {
 	end,
 	get_all_craft_recipes = function() return nil end,
 }
-grug_core = {feed = function(_, kind, text) feed[#feed + 1] = text end}
+-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+grug_core = {text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"), feed = function(_, kind, text) feed[#feed + 1] = text end}
 
 local function new_player(name, money, slots)
 	local main = {}

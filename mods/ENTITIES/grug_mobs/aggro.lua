@@ -91,26 +91,23 @@ end
 -- Target acquisition for a mob that may target nobody (WP36 review, LOW 2).
 --
 -- mobs_redo's general_attack short-circuits at its very first line for a
--- `passive` mob (api.lua:1853-1858). Passive prey is deliberately NOT passive —
+-- `passive` mob (api.lua general_attack). Passive prey is deliberately NOT passive —
 -- that is the field that buys it retaliation (verbs.lua) — so it falls
 -- through into the acquisition loop and pays, once a second, for a
--- `core.get_objects_inside_radius(pos, view_range)` (api.lua:1861-1864) plus the
+-- `core.get_objects_inside_radius(pos, view_range)` (api.lua general_attack) plus the
 -- ObjectRef table it allocates. Every candidate that scan can return is then
--- discarded by the filter: players by `attack_players = false` (:1874),
--- animals/monsters/npcs by the three type tests (:1904-1906), and anything
--- else by the `else objs[n] = nil` tail (:1920-1921). `min_player` is therefore
--- nil at :1944 with certainty, not merely usually — the whole call is
+-- discarded by the filter: players by `attack_players = false`,
+-- animals/monsters/npcs by the three type tests, and anything else by the
+-- `else objs[n] = nil` tail. `min_player` is therefore nil at the end with
+-- certainty, not merely usually — the whole call is
 -- provably a no-op, and against the 100-player design target it is a no-op
 -- per prey mob per second.
 --
--- So we replace the METHOD on the entity instead of patching the vendored
--- file (AGENTS.md: prefer a wrapper over an in-place edit). `self` is an
--- instance table whose metatable's __index is mobs.mob_class (api.lua:157-218),
--- so an instance field shadows the class method — the same technique
--- `_grug_ignore_player` uses, and safe for the same reason:
--- clean_staticdata drops every field of type "function" (api.lua:3546-3627), so
--- this cannot be persisted, and do_custom runs before general_attack in the
--- same on_step (api.lua:3837-3938), so it is always reinstalled in time.
+-- So we replace the METHOD on the registered prototype instead of patching
+-- the vendored file (AGENTS.md: prefer a wrapper over an in-place edit). The
+-- prototype's own metatable reaches mobs.mob_class, so a prototype field
+-- shadows the class method for every instance (publish_aggro_fields below,
+-- Round 81 MOBRUN; it used to be an instance field reinstalled every step).
 -- ONE shared function, never a per-entity closure.
 --
 -- Not applied to any mob that can still target something: the guard keeps
@@ -118,49 +115,53 @@ end
 --
 -- The `grug_traders` vendor NPCs do NOT have this defect and need no
 -- wrapper (checked 2026-08-08): their def sets `passive = true`
--- (`grug_traders/vendors.lua:177`), and general_attack's very first test
--- returns on `self.passive` (api.lua:1853-1858) — before the
--- get_objects_inside_radius at :1862 — so a vendor never runs the scan at
--- all. They also register through plain `mobs:register_mob` (vendors.lua
--- :258, deliberately not through grug_mobs.register_mob, which IS the level
+-- (`grug_traders/vendors.lua`), and general_attack's very first test
+-- returns on `self.passive` — before its get_objects_inside_radius — so a
+-- vendor never runs the scan at all. They also register through plain
+-- `mobs:register_mob` (vendors.lua, deliberately not through
+-- grug_mobs.register_mob, which IS the level
 -- engine), so the `no_acquire` derivation never sees them either. Do not
 -- file a WP to wrap a code path that cannot execute.
 --
 local function no_target_acquisition() end
 
 --
--- Runtime field installation. Custom def fields do NOT reach the entity:
--- mobs_redo's register_mob copies an EXPLICIT field list into the entity
--- table (api.lua:3956-4112) and mob_activate only layers staticdata on top. So
--- everything an api.lua patch reads off `self` must be installed at runtime
--- — the same reason _grug_faction is set on activation (init.lua). Called
--- from the do_custom and do_punch wrappers; `cfg` is the per-registration
--- upvalue table built in grug_mobs.register_mob.
+-- Definition fields on the prototype (Round 81 MOBRUN, MOB1-03). Custom def
+-- fields do NOT reach the entity: mobs_redo's register_mob copies an
+-- EXPLICIT field list into the registered prototype and mob_activate only
+-- layers staticdata on top. grug_mobs.register_mob therefore publishes the
+-- aggro config once on `core.registered_entities[name]`, right after
+-- registering; every instance reads it through its metatable (the prototype
+-- is the entity's metatable), from its first moment, the first group alert
+-- before any do_custom included. An instance field still shadows it: a
+-- spawner's `_grug_no_leash` on a boss, a pack's `_grug_chase_range`, the
+-- dragon's arena range. Being definition values, they are never written onto
+-- the instance, so staticdata does not freeze them and a later retune
+-- reaches saved mobs (drop_prototype_copies below cleans old saves).
+-- `cfg` is the per-registration table built in grug_mobs.register_mob.
 --
-function grug_mobs.apply_aggro_fields(self, cfg)
-	self._grug_damage_pursuit_candidate = cfg.damage_pursuit == true
+function grug_mobs.publish_aggro_fields(prototype, cfg)
+	prototype._grug_damage_pursuit_candidate = cfg.damage_pursuit == true
 	-- The guaranteed-empty acquisition scan above.
-	if cfg.no_acquire and self.general_attack ~= no_target_acquisition then
-		self.general_attack = no_target_acquisition
+	if cfg.no_acquire then
+		prototype.general_attack = no_target_acquisition
 	end
 	-- Gate for the item_drop GRUG PATCH: only mobs registered through us
 	-- follow the player-tag rule, vanilla mobs_redo mobs are untouched.
-	if not self._grug_drop_rule then
-		self._grug_drop_rule = true
-	end
-	if cfg.no_leash and not self._grug_no_leash then
-		self._grug_no_leash = true
+	prototype._grug_drop_rule = true
+	if cfg.no_leash then
+		prototype._grug_no_leash = true
 	end
 	-- Read by the soft de-aggro GRUG PATCH in do_states; only the opt-out
-	-- value needs to exist on the entity (nil means "rule applies").
-	if cfg.soft_deaggro == false and self._grug_soft_deaggro ~= false then
-		self._grug_soft_deaggro = false
+	-- value needs to exist (nil means "rule applies").
+	if cfg.soft_deaggro == false then
+		prototype._grug_soft_deaggro = false
 	end
 	-- Per-def leash radius (the "territorial" verb of bear/ape, ~20 m —
 	-- biomes_mobs.md §3.1 "guards radius, short chase"). nil keeps the
 	-- global default, so nothing changes for every other mob.
-	if cfg.leash_range and self._grug_leash_range ~= cfg.leash_range then
-		self._grug_leash_range = cfg.leash_range
+	if cfg.leash_range then
+		prototype._grug_leash_range = cfg.leash_range
 	end
 	-- Give-up distance for the do_states GRUG PATCH in mobs/api.lua. OURS
 	-- only, unconditionally and with no def field: vanilla mobs_redo gives up
@@ -174,14 +175,37 @@ function grug_mobs.apply_aggro_fields(self, cfg)
 	-- 45 EXTENDS its chase — but it runs its own hand-rolled open-sea leash
 	-- (strayed(), kraken.lua) and _grug_no_leash, so that leash still governs
 	-- when it turns around, exactly as before.
-	-- A pack mob brings its own (packs.lua).
-	if self._grug_chase_range ~= grug_mobs.CHASE_RANGE and not self._grug_pack then
-		self._grug_chase_range = grug_mobs.CHASE_RANGE
+	-- A pack mob brings its own (packs.lua), an instance field.
+	prototype._grug_chase_range = grug_mobs.CHASE_RANGE
+end
+
+-- The fields an older save may carry on the instance although the
+-- definition owns them: the aggro config above and the speeds a root, slow,
+-- stun or evade once wrote back (init.lua tick_speed_effects). Called from
+-- the after_activate wrapper (init.lua): a saved value EQUAL to the
+-- prototype's is removed, so the mob reads the definition again; a different
+-- one is kept (a spawner's override, a speed effect still running). Never
+-- `temp`, which is not saved.
+local PROTOTYPE_FIELDS = {
+	"walk_velocity", "run_velocity", "_grug_damage_pursuit_candidate",
+	"_grug_drop_rule", "_grug_no_leash", "_grug_soft_deaggro",
+	"_grug_leash_range", "_grug_chase_range",
+}
+
+function grug_mobs.drop_prototype_copies(self)
+	local prototype = core.registered_entities[self.name]
+	if not prototype then return end
+	for i = 1, #PROTOTYPE_FIELDS do
+		local field = PROTOTYPE_FIELDS[i]
+		local value = rawget(self, field)
+		if value ~= nil and value == prototype[field] then
+			rawset(self, field, nil)
+		end
 	end
 end
 
 -- Default leash radius; a def may override it per mob with
--- _grug_leash_range (installed onto the entity by apply_aggro_fields above).
+-- _grug_leash_range (published on the prototype by publish_aggro_fields).
 grug_mobs.LEASH_RANGE = 40 -- m dragged from where the chase began
 grug_mobs.LEASH_TIMEOUT = 15 -- s since the last effective incoming damage
 -- Once that damage grace has elapsed, horizontal movement by the current
@@ -190,7 +214,7 @@ grug_mobs.LEASH_TIMEOUT = 15 -- s since the last effective incoming damage
 -- movement, mob movement and facing are deliberately irrelevant.
 local PURSUIT_TARGET_MOVE_SQ = 0.25 * 0.25
 -- Give-up distance handed to the api.lua do_states patch (see
--- apply_aggro_fields): must sit ABOVE LEASH_RANGE so the leash — not the
+-- publish_aggro_fields): must sit ABOVE LEASH_RANGE so the leash — not the
 -- mob's eyesight — is what ends a chase, with a little hysteresis so a mob
 -- hovering exactly at the leash edge does not flip between the two rules.
 grug_mobs.CHASE_RANGE = 45
@@ -210,8 +234,8 @@ grug_mobs.RARE_LEASH_RANGE = 300
 -- leash meant for guards standing ON the post. Effectively "no distance
 -- leash": a patroller leashes by CONTACT TIMEOUT only, and the 15 s rule above
 -- still keeps it from chasing anyone across the continent.
--- It has to be a floor applied HERE and not a field on the entity, because
--- apply_aggro_fields re-writes _grug_leash_range from the def on every tick.
+-- A floor applied HERE, not a field on the patroller: it stays a guard of
+-- the guard definition, leash value included.
 grug_mobs.PATROL_LEASH_RANGE = 2000
 local LEASH_INTERVAL = 1 -- s between checks (performance rule: throttled)
 
@@ -250,7 +274,7 @@ function grug_mobs.leash_reset(self)
 	if hp_max and hp_max > 0 then
 		self.health = hp_max
 		-- Keep mobs_redo's damage bookkeeping in sync, otherwise the next
-		-- check_for_death (api.lua:887-975) reads the jump as a change and can
+		-- check_for_death (api.lua) reads the jump as a change and can
 		-- play a damage sound (same reason levels.lua apply_stats does it).
 		self.old_health = self.health
 		if type(self.update_tag) == "function" then
@@ -611,7 +635,7 @@ local function evade_tick(self, dtime)
 	-- general_attack, which is the path that matters; other paths reach past
 	-- it and are swept here instead, each costing at most one second of chase:
 	--   * mobs_redo's group alert calls do_attack DIRECTLY on nearby idle mobs
-	--     of the same name (api.lua:2927-3538), as do our pack-hunter and
+	--     of the same name (api.lua on_punch), as do our pack-hunter and
 	--     camp-swarm verbs (verbs.lua);
 	--   * general_attack's NON-player half can still hand an evading guard a
 	--     wolf (the veto hook is a player filter).
@@ -960,7 +984,7 @@ end
 -- that was DRAGGED away; this is the bound on the mob's own drifting.
 --
 -- Why it is needed at all: mobs_redo's idle walk is an unbounded random walk
--- (do_states picks a random yaw and walks, api.lua:2176-2300) — nothing in it
+-- (do_states picks a random yaw and walks, api.lua) — nothing in it
 -- ever pulls a mob back. A bandit camp therefore dissolved into the landscape
 -- over an evening, and every member that drifted past radius + 16 was counted
 -- as dead by camps.lua and refilled behind (the same failure mode the evade

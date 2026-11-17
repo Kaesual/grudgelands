@@ -19,8 +19,8 @@
 -- "<name> [Lv 42] 250/250" (grug_mobs/levels.lua:147-165). A shopkeeper with
 -- a level and a health bar is wrong on both counts, and the aggro/leash/
 -- telegraph wrappers it also installs are dead weight on something that never
--- fights. So vendors go straight to mobs:register_mob, and the only piece of
--- grug_mobs they use is the placement helper grug_mobs.add_mob.
+-- fights. So vendors go straight to mobs:register_mob, and grug_mobs only
+-- places them (the settlement socket roles of grug_mobs/start_npcs.lua).
 --
 -- PERMANENCE (api.lua evidence, all three checked, not assumed)
 --   * mob_staticdata's unload-delete is skipped for `self.type ~= "npc"`
@@ -131,12 +131,6 @@ function grug_traders.apply_discount(base_price, discount)
 		return grug_traders.discounted_price(base_price)
 	end
 	return base_price
-end
-
--- The buy price a specific player pays a specific vendor for a base price.
-function grug_traders.price_for(player, vendor, base_price)
-	return grug_traders.apply_discount(base_price,
-		grug_traders.has_discount(player, vendor))
 end
 
 --
@@ -303,7 +297,7 @@ local function vendor_def(vendor, texture)
 		-- Reused engine/MTG player mesh, referenced BY NAME: Luanti's media
 		-- namespace is flat, so a mob here may point at a mesh that lives in
 		-- mods/BASE/player_api/models without copying it (wp6_model_notes §5).
-		-- Textures are the faction guards' skins — the WP13 asset TODO above.
+		-- Textures are the faction guards' skins.
 		mesh = "character.b3d",
 		textures = {{texture}},
 		visual_size = {x = 1, y = 1},
@@ -560,33 +554,16 @@ end)
 --
 -- Placement
 --
--- SOCKET IF REGISTERED, OFFSET OTHERWISE (docs/research/wp13-npc-sockets-
--- contract.md section 3: "the two vendor offsets in `vendors.lua` migrate to
--- `vendor` sockets at that moment and not before").
---
--- A capital whose core has landed exports two `vendor` sockets, and the one
--- placement engine that serves settlement sockets -- `grug_mobs/start_npcs.lua`
--- -- puts the two traders on them, through the `vendor` role resolver at the
--- bottom of this file. This mod then owns NO slot for that capital at all, or
--- the two mechanisms would both place a trader and the capital would end up
--- with four.
---
--- A capital whose core has NOT landed keeps the two fixed offsets below and the
--- globalstep that serves them, which is the whole of the pre-WP13 behaviour.
--- R7's stable capital anchor is the only origin in either case; there is no
--- retired platform state, discovery or height fallback.
+-- Every capital's core exports `vendor` sockets, and the one placement engine
+-- that serves settlement sockets -- `grug_mobs/start_npcs.lua` -- puts the two
+-- traders on them, through the `vendor` role resolver at the bottom of this
+-- file (docs/research/wp13-npc-sockets-contract.md section 3). The pre-WP13
+-- fixed offsets and their 5 s placement pass are gone (Round 81, audit
+-- 2026-11 E1-02): since all six cores landed they served an empty set.
 --
 -- Which capitals have sockets is read from the registry, not from a list of
 -- capital names: a settlement is registered under a key this mod does not know,
--- so what identifies a race's capital is its published capital ANCHOR, the same
--- authority the offsets are measured from.
-local SLOT_OFFSETS = {
-	general = {x = -5, z = 3},
-	race = {x = 5, z = 3},
-}
-
-local slots = {}
-
+-- so what identifies a race's capital is its published capital ANCHOR.
 local function socketed_capitals()
 	local socketed = {}
 	if type(grug_core.settlement_socket_settlements) ~= "function" then
@@ -611,12 +588,12 @@ local function socketed_capitals()
 	return socketed
 end
 
--- Built after every mod has loaded, because that is when grug_mapgen has
--- published its socket sets; before then the registry is legitimately empty and
--- this mod would give every capital the offsets.
-local function build_slots()
+-- Checked after every mod has loaded, because that is when grug_mapgen has
+-- published its socket sets; before then the registry is legitimately empty.
+-- A capital without a `vendor` socket is a blueprint regression: it is logged
+-- as an error, and that capital has no traders.
+local function check_capital_vendors()
 	local socketed = socketed_capitals()
-	local offset_races = 0
 	for _, race_id in ipairs(race_ids) do
 		local race = grug_classes.registered_races[race_id]
 		if not race then error("grug_traders: race registry differs: " .. race_id, 0) end
@@ -629,138 +606,16 @@ local function build_slots()
 			core.log("action", "[grug_traders] " .. race_id ..
 				" capital vendors come from the sockets of " .. socketed[race_id])
 		else
-			offset_races = offset_races + 1
-			slots[#slots + 1] = {
-				entity = "grug_traders:vendor_general_" .. race.faction,
-				race = race_id,
-				x = capital.x + SLOT_OFFSETS.general.x,
-				y = capital.y + 1,
-				z = capital.z + SLOT_OFFSETS.general.z,
-			}
-			slots[#slots + 1] = {
-				entity = "grug_traders:vendor_race_" .. race_id,
-				race = race_id,
-				x = capital.x + SLOT_OFFSETS.race.x,
-				y = capital.y + 1,
-				z = capital.z + SLOT_OFFSETS.race.z,
-			}
+			core.log("error", "[grug_traders] the " .. race_id ..
+				" capital exports no vendor socket; it has no traders")
 		end
-	end
-	if #slots ~= offset_races * 2 then
-		error("grug_traders: capital slot population differs", 0)
 	end
 end
-
-local CHECK_INTERVAL = 5 -- s (AGENTS.md performance rule: dtime accumulator)
--- Only slots a player could actually see are checked — and the number is
--- COUPLED to object activation, it is not a taste decision. vendor_present
--- below asks core.get_objects_inside_radius, which only ever sees ACTIVATED
--- objects, and activation reaches `active_block_range * 16` nodes around a
--- player. `active_block_range` defaults to 4 on desktop but to 2 in other
--- platform profiles and is user-tunable down to 1. At 2 the activation radius
--- is 32 nodes: a gate any wider than that would look at a slot whose existing
--- vendor is loaded but INACTIVE, conclude "nobody here", and spawn a second
--- one — every 5 s, forever, because `type = "npc"` entities never expire.
--- 24 keeps the slot inside the activation radius with margin at 2 (and the
--- PRESENCE_RADIUS 8 sphere around it too: 24 + 8 = 32). The only visible
--- consequence is that vendors appear at 24 m instead of 48 m, and vendors are
--- stationary. active_block_range = 1 (16 nodes) is out of scope: at that
--- setting the engine deactivates a mob standing next to the player.
-local PLAYER_RANGE = 24
-local PRESENCE_RADIUS = 8 -- "is a vendor of this kind already standing here"
-
--- `positions` is the hoisted per-interval array from the globalstep below —
--- get_pos() is a C call per player, and calling it inside the 12-slot loop
--- would mean 12 x 100 of them every interval instead of 100.
---
--- y = nil runs the check HORIZONTALLY only. That form is the pre-filter used
--- before the capital's platform y is resolved: it can only be more permissive
--- than the full 3D check that follows, so no slot is lost by it.
-local function player_near(positions, x, y, z)
-	for i = 1, #positions do
-		local p = positions[i]
-		local dx, dz = p.x - x, p.z - z
-		local d2 = dx * dx + dz * dz
-		if y then
-			local dy = p.y - y
-			d2 = d2 + dy * dy
-		end
-		if d2 <= PLAYER_RANGE * PLAYER_RANGE then
-			return true
-		end
-	end
-	return false
-end
-
--- Only ever called for a slot that already passed the player-range and
--- node-loaded gates, i.e. a handful of times a minute in the whole world.
-local function vendor_present(pos, entity_name)
-	local objs = core.get_objects_inside_radius(pos, PRESENCE_RADIUS)
-	for i = 1, #objs do
-		local ent = objs[i]:get_luaentity()
-		if ent and ent.name == entity_name then
-			return true
-		end
-	end
-	return false
-end
-
-local acc = 0
-
-core.register_globalstep(function(dtime)
-	acc = acc + dtime
-	if acc < CHECK_INTERVAL then
-		return
-	end
-	acc = 0
-	local players = core.get_connected_players()
-	if #players == 0 then
-		return
-	end
-	-- Hoisted once per interval instead of once per (slot, player): get_pos()
-	-- is a C call, and the loop below runs 12 slots x every player.
-	local positions = {}
-	for i = 1, #players do
-		local p = players[i]:get_pos()
-		if p then
-			positions[#positions + 1] = p
-		end
-	end
-	if #positions == 0 then
-		return
-	end
-	for i = 1, #slots do
-		local slot = slots[i]
-		if player_near(positions, slot.x, slot.y, slot.z) then
-				local pos = {x = slot.x, y = slot.y, z = slot.z}
-				local node = core.get_node_or_nil(pos)
-				local ndef = node and core.registered_nodes[node.name]
-				-- node == nil: block not loaded, nothing to decide yet.
-				if node and node.name ~= "ignore" and
-						not (ndef and ndef.walkable) and
-						not vendor_present(pos, slot.entity) then
-					-- ignore_count = true: a vendor family has no mobs:spawn
-					-- row, so mobs:add_mob's per-name area cap would default to
-					-- 1 for the shared general-vendor entity and only ever let
-					-- ONE of the three capitals of a faction have one
-					-- (api.lua:4218-4222, the reason camps.lua passes it too).
-					-- A decline (no player in the active area, active mob
-					-- limit) simply means "retry in 5 s".
-					local ent = grug_mobs.add_mob(pos,
-						{name = slot.entity, ignore_count = true})
-					if ent then
-						core.log("action", "[grug_traders] " .. slot.entity ..
-							" placed at " .. core.pos_to_string(pos))
-					end
-				end
-		end
-	end
-end)
 
 -- Vendors are never despawned by us: the engine unloads them with their
 -- mapblock and mob_activate brings them back. No ObjectRef is stored anywhere
--- in this mod — the slot table holds coordinates only (AGENTS.md: refs must be
--- re-fetched across any callback boundary).
+-- in this mod (AGENTS.md: refs must be re-fetched across any callback
+-- boundary).
 
 --
 -- The socketed settlements (WP13)
@@ -772,8 +627,7 @@ end)
 -- one placement engine that serves every settlement NPC -- including its
 -- persistence, which must survive a restart in which no player is anywhere
 -- near the settlement and therefore cannot be a presence scan (see that
--- file's header). The offsets and the globalstep above serve exactly the
--- capitals whose core has not landed yet.
+-- file's header).
 --
 if type(grug_mobs.register_start_socket_role) == "function" then
 	grug_mobs.register_start_socket_role("vendor", function(socket, settlement)
@@ -807,14 +661,13 @@ else
 		"reload")
 end
 
--- Last: the capital slots this mod still owns itself, which is every capital
--- whose core has not landed. It has to run after grug_mapgen published its
--- socket sets, and `register_on_mods_loaded` is where that is guaranteed.
-core.register_on_mods_loaded(build_slots)
+-- Last: the capital vendor check. It has to run after grug_mapgen published
+-- its socket sets, and `register_on_mods_loaded` is where that is guaranteed.
+core.register_on_mods_loaded(check_capital_vendors)
 
 -- Settlement key -> race, for the profession vendors' skin (see
--- `settlement_race`). Same trigger and same reason as `build_slots` above: the
--- socket registry is filled by grug_mapgen at load.
+-- `settlement_race`). Same trigger and same reason as `check_capital_vendors`
+-- above: the socket registry is filled by grug_mapgen at load.
 core.register_on_mods_loaded(function()
 	local settlements = grug_core.settlement_socket_settlements()
 	for index = 1, #settlements do

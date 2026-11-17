@@ -45,9 +45,11 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   unrestricted world-wide. The v7 terrain and climate noise params are
   overridden from `r7_native.lua` (`core.set_mapgen_setting_noiseparams`) —
   **test mapgen work on a FRESH world**, an existing one gets seams. The v7
-  flags come from `minetest.conf` (`nomountains` since Round 49: no v7
-  mountain stone for the writer to clear) and are checked at load in both
-  environments (`r7_runtime.lua`, the R5 manifest's `caverns,ridges`).
+  flags (`nomountains` since Round 49: no v7 mountain stone for the writer to
+  clear) are forced by `r7_native.lua` with `core.set_mapgen_setting(
+  "mgv7_spflags", …, true)` over the world's `map_meta.txt`, like the noise
+  params, and checked at load in both environments (`r7_runtime.lua`, the
+  R5 manifest's `caverns,ridges`).
 
 ### Registration order and the strata
 
@@ -285,11 +287,14 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   which is also the sole publisher of the `grug_zones` global — it refuses to
   install if something else already published it) — this is the whole
   `grug_core` surface, not a sample: `territory_at`, `zone_at`, `mob_level_at`,
-  `guard_level_at`, `open_sea_at`, `surface_level_at`, `start_position`,
-  `start_anchor`, `start_identities`, `capital_anchor`, `outpost_at`,
-  `outpost_patrol_target`, `outpost_position`, `rare_route` and
-  `world_protected_for_faction`. `grug_core.difficulty_at` is **gone** — the
-  difficulty field survives only inside WP40's own compatibility layer.
+  `surface_mob_level_at`, `guard_level_at`, `open_sea_at`, `surface_level_at`,
+  `start_position`, `start_anchor`, `start_identities`, `capital_anchor`,
+  `outpost_at`, `outpost_patrol_target`, `outpost_position`, `rare_route`,
+  `world_protected_for_faction`, `zone_protected_for_faction`,
+  `world_feature_at`, `world_feature_boxes_in` and `register_level_overlay`,
+  plus the install helpers `prepare_zone_authority`,
+  `install_zone_authority` and `zone_authority_installed`.
+  `grug_core.difficulty_at` is **gone**.
   Gameplay consumers read the richer surface off `grug_zones` directly
   (`biome_at`, `id_at`, `faction_at`, `race_region_at`, `pvp_rule_at`,
   `water_class_at`, `territory_rule_at`, `surface_mob_level_at`) and **never**
@@ -329,20 +334,19 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   (`water_class_at`: `planned_water`, `coastal_shelf` for the belt,
   `deep_ocean`, `immutable_dragon_channel`) keep their names.
 
-### The difficulty seam
+### The zone level staircase
 
-  **R7.6 difficulty seam (2026-09-18):** `simple_map.lua` derives straight
-  z-axis progression extents from authored hub rows and the fixed
-  Battlegrounds edges, splits each published zone range into three rational
-  thirds, and serves an integer staircase through
-  `difficulty_for_macro_at`; `zones.lua` applies the 100/150-node start safety
-  override afterward. Accord runs toward +z, Throng toward -z, front zones
-  toward z=0 and the two summits are flat 60. The compatibility method
-  `difficulty_lattice_digest()` authenticates the profiles, raw-x midpoint
-  selector results and complete integer staircases despite its historical
-  name; there is no difficulty lattice or hub-target smoothing. Difficulty
-  lateral selection is warp- and bias-free even though political ownership is
-  not.
+  The surface level follows the zone (Round 22; `world_zones.md` §2):
+  `wp40/simple_map.lua` splits each zone's published range into integer
+  thirds along z from the home-facing side (`band_ranges`,
+  `level_from_progress`) and serves the staircase through `zone_level_at`
+  (published as `session.zone_level_at`); the two level-60 summits are flat.
+  `zones.lua` then applies the start band (`zone_field_level`,
+  `start_band_level_at`: level 1 within `START_LEVEL_CORE_RADIUS` 100 of a
+  start anchor, 2 up to `START_LEVEL_BAND_RADIUS` 150) and the start-zone
+  gradient. There is no difficulty lattice and no hub-target smoothing; the
+  R7.6 names `difficulty_for_macro_at` and `difficulty_lattice_digest()`
+  left in Round 22.
   The unchanged underground term already supplies three integer threshold
   steps per uncapped 50-node window, and `mob_level_at` remains
   `max(surface, depth)`.
@@ -371,6 +375,8 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   `r7_settlement.lua` binds every row to its anchor (all or none) and the
   gate turn (by faction; since Round 46 the placement keeps the fortress on
   its side of the middle road), and `r31_pvp_poi_blueprint.lua` is the pure cell builder
+  of the fortress (for every camp row it returns `r63_camp_blueprint.lua`'s
+  result, Round 63)
   (sockets as landmarks; `landmarks.race`/`faction` name what the
   settlement registers as). `road_layout.lua` routes a fortress's gate trail
   (`GATE_STRETCH`) and every road round the PvP POIs' reserves (since Round
@@ -536,7 +542,12 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   the top down `band_depth - 1` nodes, over the column's stone and its own
   filler only (never a resource ore, a cave or water; a native gravel blob
   under a gravel-filled band row may take a band), and its ordinary strata
-  below. `zones.lua` publishes 80-node owner-local cave candidates but
+  below. **The cave-mouth carve is switched off** (Round 9, R9-MAP-C,
+  [round 9 decisions](../../research/round9-decisions.md); the setting
+  `grug_mapgen_r8_cave_writer_disabled`, default true, read in
+  `r6_settlement.lua`), replaced by the surface-skin rule; the rest of this
+  paragraph describes the writer as it stands behind that switch.
+  `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air
   beneath a three-node roof is witnessed within 24 vertical and (for a
   sinkhole) 24 horizontal nodes in the same mapchunk, then validates the exact
@@ -560,7 +571,8 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   caller with its own spawn rule). Never hand-maintain those fields on
   a new surface row. Since Round 30 (P2) a surface row no zone keeps
   registers no ABM at all (`spawn_policy.lua` `spawn_row_kept`; the spawn
-  regions own every zone's surface), and every remaining row goes through
+  regions own every zone's surface; Round 81 deleted the rows it had
+  retired), and every remaining row goes through
   `mobs.register_spawn_abm` into one of three merged ABMs
   (`grug_mobs/spawn_abms.lua`: underground, water, surface). A merged ABM
   picks at most one row per triggered node with the probability that keeps
@@ -613,20 +625,35 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
 ## Preparation
 
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
-  storage on first boot. A stable aligned plan has one in-flight chunk and a
-  success-only cursor; dispatch occurs in throttled globalstep, not callbacks.
+  storage on first boot. A stable aligned plan has at most two in-flight
+  chunks (`starts_preload.lua` `MAX_INFLIGHT`) and a success-only cursor; dispatch occurs in throttled globalstep, not callbacks.
   Full mode includes a 320-node ocean margin and replaces starts preparation.
   Round 16 resolves one conservative surface envelope at a time, counts completed
   horizontal tiles and persists the inner Y-chunk cursor. Its authority identity
   binds stable seed/content and bounded terrain-source bytes, never runtime CIDs.
   No full-world height prepass, exact savings run or ETA retuning.
   Preparation precedes character selection. Bounded scan-time/small-batch
-  selection dispatches available work immediately while retaining one in-flight
-  request. Waiting may be dismissed without releasing safety gates; nothing
+  selection dispatches available work immediately while keeping at most
+  two requests in flight. Waiting may be dismissed without releasing safety gates; nothing
   reopens it (a failure updates the hint and the inventory formspec, which
   keeps the retry form). Both creation and reconnect use
   the shared waiting/stasis gate. Native tests
   use isolated tiny bounds; never run production full generation as a test.
+
+### World-folder caches and the preparation identity
+
+  The world layouts are cached in the world folder under a key of the seed,
+  a digest of the mapgen mod's Lua files, templates, layouts and rosters,
+  the v7 settings and the interpreter (`wp40/layout_cache.lua`,
+  `world_zones.md` §13.4); the region maps and the map's claim and flight
+  overlays key on the same `grug_mapgen.wp40.world_key`. A world in `full`
+  preparation mode binds the bytes of the 27 files
+  `wp40/preparation_identity.lua` lists (and the layout texts): any byte
+  change there, a comment included, stops such a world at its next start
+  until a map reset, and `tools/check_upgrade.py` holds such a change to a
+  new `map_reset` entry or the CHANGELOG's `grug_prepare_full_world` line
+  ([upgrade contract](../upgrade-contract.md) §5.9 "Preparation
+  authority").
 
 ## R7 audit boundary
 

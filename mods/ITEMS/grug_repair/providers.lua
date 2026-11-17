@@ -14,32 +14,29 @@ local function trainer_provider(entity)
 		profession = entity._grug_profession}
 end
 
+-- The faction a settlement's NPCs serve: its race's.
+local function settlement_faction(key)
+	for _, settlement in ipairs(grug_core.settlement_socket_settlements()) do
+		if settlement.key == key then
+			local definition = grug_classes.registered_races[settlement.race_id]
+			return definition and definition.faction
+		end
+	end
+	return nil
+end
+
+-- The NPC the form was opened at, still that NPC (settlement, socket and
+-- profession), then grug_core.npc_window_permitted. Every trainer socket
+-- repairs, the mender on a socket whose profession no trainer teaches
+-- (Round 45, Cooking) included.
 grug_repair.register_provider("trainer", function(player, provider)
 	local entity, object = provider.entity, provider.object
 	if not entity or not object or entity.object ~= object or
-			object:get_luaentity() ~= entity or entity._grug_socket_role ~= "trainer" or
 			entity._grug_start ~= provider.settlement or entity._grug_socket ~= provider.socket or
 			entity._grug_profession ~= provider.profession or
 			not grug_jobs.PROFESSIONS[provider.profession] then return false end
-	local position = object:get_pos()
-	if distance_squared(player:get_pos(), position) > 64 then return false end
-	local race
-	for _, settlement in ipairs(grug_core.settlement_socket_settlements()) do
-		if settlement.key == provider.settlement then race = settlement.race_id break end
-	end
-	local definition = race and grug_classes.registered_races[race]
-	if not definition or grug_factions.get_faction(player) ~= definition.faction then
-		return false
-	end
-	-- Every trainer socket repairs, the mender on a socket whose profession
-	-- no trainer teaches (Round 45, Cooking) included.
-	for _, socket in ipairs(grug_core.settlement_sockets_at(provider.settlement)) do
-		if socket.id == provider.socket and socket.role == "trainer" and
-				socket.profession == provider.profession then
-			return distance_squared(position, socket.pos) <= 4
-		end
-	end
-	return false
+	return grug_core.npc_window_permitted(player, entity, "trainer",
+		settlement_faction(provider.settlement), {profession = provider.profession})
 end)
 
 -- Repair happens in towns (Round 46 ruling 16; the claim stations' repair
@@ -169,11 +166,6 @@ end
 
 function grug_repair.open_trainer(player, entity)
 	return grug_repair.open(player, trainer_provider(entity))
-end
-
--- The camp vendor window's Repair button (grug_traders/trade.lua).
-function grug_repair.open_camp_vendor(player, settlement, socket)
-	return grug_repair.open(player, camp_vendor_provider(settlement, socket))
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)

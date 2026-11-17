@@ -1141,8 +1141,9 @@ do
 	eq(sends_to("ann") - before, 0, "R a stale event does not pop the window over another form")
 	shown.ann = nil
 	fields(accord, {quit = "true"})
-	-- (A) "Back to inventory", then Esc on the inventory (its quit clears
-	-- node_formspec's record): the window stays closed.
+	-- (A) The Inventory tab, then Esc on the inventory (its quit clears
+	-- node_formspec's record): the window stays closed. Round 81 (DEAD,
+	-- P1-04): the window has no Back button; the shared bar leaves it.
 	local function nothing_after(label)
 		local n = sends_to("ann")
 		for _, fn in ipairs(markers_changed) do fn(accord) end
@@ -1155,10 +1156,15 @@ do
 	end
 	W.open(accord)
 	advance(2)
-	fields(accord, {grug_map_back = "Back to inventory"})
-	eq(shows[#shows].formname, "", "R Back to inventory shows the inventory")
+	local inventory_tab
+	for n, id in ipairs(W.sessions.ann.grug_ui_nav or {}) do
+		if id == "grug_inventory:inventory" then inventory_tab = n end
+	end
+	check(inventory_tab ~= nil, "R the Inventory tab is in the map's shared bar")
+	fields(accord, {["grug_ui_tab_" .. tostring(inventory_tab)] = "true"})
+	eq(shows[#shows].formname, "", "R the Inventory tab shows the inventory")
 	shown.ann = nil -- the inventory's quit
-	nothing_after("R (A) back, then Esc: the map never pops up again")
+	nothing_after("R (A) the Inventory tab, then Esc: the map never pops up again")
 	-- (B) Death with the map open: the death screen replaces it; its quit
 	-- on respawn clears the record; the map stays closed.
 	W.open(accord)
@@ -1497,12 +1503,9 @@ do
 	lacks(form, "grug_map_minimap;", "Z no switch without a minimap")
 	grug_map.minimap.available = available
 	lacks(form, "hypertext[", "Z no region-name text (baked)")
-	-- Back to inventory: the homepage in the inventory window.
-	advance(1.1)
-	local n = #shows
-	fields(accord, {grug_map_back = "Back to inventory"})
-	check(shows[n + 1] and shows[n + 1].formname == "" and
-		shows[n + 1].form == "inventory:grug_inventory:inventory", "Z Back to inventory")
+	-- Round 81 (DEAD, P1-04): no Back button (the shared bar leaves the
+	-- window, block NAV below).
+	lacks(form, "grug_map_back", "Z no Back button")
 	-- The Map tab: opens the window, then the homepage on the next step.
 	local page = pages["grug_map:atlas"]
 	check(page and page.title == "Map & Quests", "Z the Map tab exists (\"Map & Quests\" since 0.45.1)")

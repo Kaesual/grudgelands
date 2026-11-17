@@ -595,24 +595,20 @@ sfinv.register_page(CHARACTER_PAGE, {
 -- Return home text changed: once a minute of a running cooldown, when an
 -- arrival starts or ends, and once when it becomes Ready; and once when an
 -- equip notice ran out (Round 66). Nothing is re-sent for other pages.
-local effects_elapsed = 0
-core.register_globalstep(function(dtime)
-	effects_elapsed = effects_elapsed + dtime
-	if effects_elapsed < 1 then return end
-	effects_elapsed = effects_elapsed % 1
-	for _, player in ipairs(core.get_connected_players()) do
-		local context = sfinv.contexts[player:get_player_name()]
-		if context and context.grug_equip_notice and not equip_notice(context) then
-			context.grug_equip_notice = nil
-			if context.page == CHARACTER_PAGE then
-				sfinv.set_player_inventory_formspec(player, context)
-			end
-		elseif context and context.page == CHARACTER_PAGE then
-			if (selected_mode(context) == "effects" and
-					grug_inventory.effects_key(player) ~= context.grug_effects_key) or
-					home_text(player) ~= context.grug_home_text then
-				sfinv.set_player_inventory_formspec(player, context)
-			end
+-- Every player once a second, one join slot at a time (Round 81 PASSES;
+-- audit X4-05).
+grug_core.register_player_pass(1, function(player)
+	local context = sfinv.contexts[player:get_player_name()]
+	if context and context.grug_equip_notice and not equip_notice(context) then
+		context.grug_equip_notice = nil
+		if context.page == CHARACTER_PAGE then
+			sfinv.set_player_inventory_formspec(player, context)
+		end
+	elseif context and context.page == CHARACTER_PAGE then
+		if (selected_mode(context) == "effects" and
+				grug_inventory.effects_key(player) ~= context.grug_effects_key) or
+				home_text(player) ~= context.grug_home_text then
+			sfinv.set_player_inventory_formspec(player, context)
 		end
 	end
 end)
@@ -754,12 +750,14 @@ end
 
 -- Re-send a cached Character page (any mode) and nothing else: the stat
 -- hooks below use it, and so does the quiver total (bags.lua), which
--- the gear box shows in every mode.
+-- the gear box shows in every mode. True when the page was re-sent.
 function grug_inventory.refresh_character(player)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == CHARACTER_PAGE then
 		sfinv.set_player_inventory_formspec(player, context)
+		return true
 	end
+	return false
 end
 
 grug_xp.register_on_level_change(function(player, old_level, new_level)

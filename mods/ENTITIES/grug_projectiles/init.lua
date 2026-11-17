@@ -132,13 +132,8 @@ local function debug_event(owner_name, event, projectile_id, value_a, value_b)
 	if event == "spawn" then
 		detail = "speed=" .. tostring(value_a) ..
 			" max_distance=" .. tostring(value_b)
-	elseif event == "hit" or event == "range" then
+	elseif event == "hit" then
 		detail = "distance=" .. tostring(value_a)
-	elseif event == "node" then
-		detail = "node=" .. tostring(value_a) ..
-			" distance=" .. tostring(value_b)
-	elseif event == "lifetime" then
-		detail = "age=" .. tostring(value_a)
 	else
 		detail = tostring(value_a or "")
 	end
@@ -235,7 +230,6 @@ local function spawn_one(id, params)
 		projectile_id = id,
 		owner_name = owner_name,
 		owner_session = owner_session,
-		max_distance = max_distance,
 		data = data,
 		active_token = active_token,
 		attacker_level = grug_core.get_player_level(owner),
@@ -367,7 +361,7 @@ local function settle_hit(self, owner, hit, def)
 	self._grug_settled = true
 	release_projectile(self)
 	debug_event(self._grug_owner_name, "hit", self._grug_projectile_id,
-		self._grug_travelled + hit.distance)
+		hit.distance)
 	if def.sound_hit then grug_sounds.play(def.sound_hit, hit.target) end
 	local ok, err = pcall(def.on_hit, owner, hit.target,
 		self._grug_data, hit.point, self._grug_attacker_level)
@@ -399,7 +393,6 @@ core.register_entity(ENTITY_NAME, {
 		if not def or type(payload.owner_name) ~= "string"
 				or type(payload.owner_session) ~= "number"
 				or type(payload.attacker_level) ~= "number"
-				or type(payload.max_distance) ~= "number"
 				or type(payload.data) ~= "table" then
 			self._grug_settled = true
 			release_projectile(self)
@@ -409,11 +402,9 @@ core.register_entity(ENTITY_NAME, {
 		self._grug_projectile_id = payload.projectile_id
 		self._grug_owner_name = payload.owner_name
 		self._grug_owner_session = payload.owner_session
-		self._grug_max_distance = payload.max_distance
 		self._grug_data = payload.data
 		self._grug_attacker_level = math.max(1,
 			tonumber(payload.attacker_level) or 1)
-		self._grug_travelled = 0
 		self._grug_settled = false
 		if def.properties then
 			self.object:set_properties(def.properties)

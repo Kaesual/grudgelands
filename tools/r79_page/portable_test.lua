@@ -181,6 +181,8 @@ _G.sfinv = {pages = {}, pages_unordered = {}, contexts = {},
 
 _G.grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 _G.grug_core = {
+	-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+	text = dofile(repo .. "/mods/CORE/grug_core/text.lua"),
 	feed = function(player, kind, text) feed[#feed + 1] = {player:get_player_name(), kind, text} end,
 	get_player_faction = function(name) return players[name] and players[name].faction end,
 }

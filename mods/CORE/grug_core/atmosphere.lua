@@ -13,9 +13,10 @@
 -- COST: one packet per call. l_object.cpp:2879 calls Server::setLighting,
 -- which stores the value on the RemotePlayer and sends exactly one
 -- TOCLIENT_SET_LIGHTING (server.cpp:3704-3709 — the only caller of
--- SendSetLighting in the whole engine). Nothing in this file runs per
--- globalstep; a preset is sent only when set_atmosphere is called with a name
--- that differs from the one the player already carries.
+-- SendSetLighting in the whole engine). A preset is sent only when
+-- set_atmosphere is called with a name that differs from the one the player
+-- already carries; the file's only periodic work is the 1 s world clock sync
+-- and the per-player day-night ratio pass at the end.
 --
 -- MERGE SEMANTICS (the trap): given a table, the engine starts from the
 -- player's CURRENT lighting and overwrites only the fields present
@@ -259,12 +260,13 @@ core.register_globalstep(function(dtime)
 		return
 	end
 	clock_accumulator = clock_accumulator % 1
-	local timeofday = core.get_timeofday()
-	sync_world_clock(timeofday)
-	local players = core.get_connected_players()
-	for index = 1, #players do
-		sync_day_night_ratio(players[index], timeofday)
-	end
+	sync_world_clock(core.get_timeofday())
+end)
+
+-- Each player's day-night ratio once a second, one join slot at a time
+-- (Round 81 PASSES; audit X4-05).
+grug_core.register_player_pass(1, function(player)
+	sync_day_night_ratio(player)
 end)
 
 -- Returns the preset name currently applied to `name`, or nil.

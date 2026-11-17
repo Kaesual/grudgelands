@@ -583,6 +583,8 @@ do
 	tank.outside = true
 	check(grug_core.taunt(mob, tank) == false, "D the tank stepping out cannot taunt")
 	-- the wrath bypasses the absorb shield; the arena hazards do not
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 	dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
 	check(grug_core.DRAGON_WRATH_CUSTOM_TYPE == "grug_mobs:dragon_wrath",
 		"D the wrath reason is the one boss_dragons.lua deals")

@@ -194,6 +194,17 @@ grug_mobs = {
 -- The road layout the runtime holds (set per street test).
 grug_mapgen = {wp40 = {}}
 dofile(repo .. "/mods/ENTITIES/grug_mobs/npc_doors.lua")
+-- Round 81 MOBRUN (MOB1-06): the stuck snap's watch reads grug_core's player
+-- snapshot (the nearest player's squared distance), here the players above.
+local function nearest_player_d2(pos)
+	local best
+	for _, p in ipairs(players) do
+		local dx, dz = p.pos.x - pos.x, p.pos.z - pos.z
+		if not best or dx * dx + dz * dz < best then best = dx * dx + dz * dz end
+	end
+	return best
+end
+grug_core = {nearest_tag_player_d2 = nearest_player_d2}
 dofile(repo .. "/mods/ENTITIES/grug_mobs/patrol.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/routes.lua")
 local routes = grug_mobs.routes

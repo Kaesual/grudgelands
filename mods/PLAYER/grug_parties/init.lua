@@ -186,6 +186,18 @@ end
 function grug_parties.in_party(player)
 	return membership[name_of(player)] ~= nil
 end
+-- The id of the player's party, or nil, without building a view (the party
+-- HUD polls a party's members on one step and builds its view once).
+function grug_parties.party_id(player)
+	return membership[name_of(player)]
+end
+-- The member names of the player's party in join order (borrowed, read-only),
+-- or nil: for callers that need only the names, with no engine reads
+-- (Round 81, audit P5-03: the minimap).
+function grug_parties.member_names(player)
+	local group = group_of(name_of(player))
+	return group and group.members
+end
 function grug_parties.pending(player)
 	local name, time = name_of(player), now()
 	prune(name, time)
@@ -220,12 +232,27 @@ end
 function grug_parties.invitations_enabled(player)
 	return player:get_meta():get_int(INVITES) == 0
 end
+-- The Party HUD switch and the health colours, read from player meta once
+-- per session and kept by the setters below, their only writers (Round 81,
+-- audit P5-03: the HUD poll asks every 0.5 s). Weak keys: a rejoin is a new
+-- object and reads afresh.
+local display = setmetatable({}, {__mode = "k"})
+local function display_of(player)
+	local prefs = display[player]
+	if not prefs then
+		local meta = player:get_meta()
+		local mode = meta:get_string(HEALTH_COLORS)
+		prefs = {hud = meta:get_int(HUD) == 0,
+			colors = HEALTH_COLOR_MODES[mode] and mode or "by_class"}
+		display[player] = prefs
+	end
+	return prefs
+end
 function grug_parties.hud_enabled(player)
-	return player:get_meta():get_int(HUD) == 0
+	return display_of(player).hud
 end
 function grug_parties.health_color_mode(player)
-	local mode = player:get_meta():get_string(HEALTH_COLORS)
-	return HEALTH_COLOR_MODES[mode] and mode or "by_class"
+	return display_of(player).colors
 end
 function grug_parties.set_invitations_enabled(player, enabled)
 	local name = actor(player)
@@ -239,6 +266,7 @@ function grug_parties.set_hud_enabled(player, enabled)
 	local name = actor(player)
 	if not name or type(enabled) ~= "boolean" then return false, "Invalid player or preference." end
 	player:get_meta():set_int(HUD, enabled and 0 or 1)
+	display_of(player).hud = enabled
 	emit({[name] = true}, "display")
 	return true, enabled and "Party HUD enabled." or "Party HUD disabled."
 end
@@ -251,6 +279,7 @@ function grug_parties.set_health_color_mode(player, mode)
 		return true, "Health colors unchanged."
 	end
 	player:get_meta():set_string(HEALTH_COLORS, mode)
+	display_of(player).colors = mode
 	emit({[name] = true}, "display")
 	return true, mode == "by_class" and "Class health colors enabled."
 		or "All-green health colors enabled."
@@ -402,9 +431,15 @@ local function remember_level(player)
 end
 grug_xp.register_on_level_change(function(player)
 	remember_level(player)
-	-- Pending invitations also display live levels, even before a party exists.
-	local names = {}
-	for name in pairs(connected) do names[name] = true end
+	-- The level shows in the party's HUD rows; the Social tab (pending
+	-- invitations show live levels, even before a party exists) follows the
+	-- roster change emit sends. Only the party, the player and the
+	-- recipients of its invitations hear it (Round 81, audit P5-04).
+	local name = player:get_player_name()
+	local names = affected(group_of(name), name)
+	for recipient, list in pairs(incoming) do
+		if list[name] then names[recipient] = true end
+	end
 	emit(names, "level")
 end)
 grug_factions.register_on_faction_chosen(faction_changed)

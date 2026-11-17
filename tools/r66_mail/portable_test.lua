@@ -197,6 +197,8 @@ grug_xp = {get_level = function() return 12 end}
 grug_classes = {get_class = function() return "warrior" end, get_race = function() return "dwarf" end}
 grug_sounds = {CLICK_STYLE = ""}
 grug_core = {
+	-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+	text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"),
 	feed = function() return true end,
 	settlement_socket_settlements = function()
 		return {{key = "dur_brannoc", display_name = "Dur Brannoc"}}

@@ -4,7 +4,7 @@ Decided 2026-09-21; Round 14 user Go. Clans, the second and purely social
 kind of group (Round 76), have their own rules: [clans.md](clans.md).
 
 
-### Confirmed by the user
+### Membership and limits
 
 - Maximum ten members, **always the same faction**. This is not a temporary
   V1 limitation; enemy factions cannot form a party.
@@ -22,7 +22,7 @@ kind of group (Round 76), have their own rules: [clans.md](clans.md).
   per second **per sender**. No ten-per-minute limiter or additional rate tiers.
 - A saved per-player HUD switch defaults on. Without a party it is hidden.
   Display names and HP bars; offline rows display offline status, not fake
-  live HP. No mana/rage bars in this round.
+  live HP. The party HUD shows health only, no mana or rage bars.
 - No XP multiplier, passive nearby-party credit, loot mode, automatic quest
   sharing or party-owned mob tag is introduced. Existing participation governs
   XP and quest credit independently of party identity.
@@ -42,7 +42,7 @@ C accepts the still-valid invitation (new A+C party). No special orphan-party
 state or generation history is necessary. The UI identifies the inviter and
 shows current party context before acceptance; invites do not reserve slots.
 
-Accepted defaults:
+Invitation rules:
 
 - One pending invitation per inviter/recipient pair; duplicate sends are a
   no-op and cannot create duplicate notifications.
@@ -66,8 +66,8 @@ Accepted defaults:
   without a mandatory successor-selection dialog. Logout never triggers it.
   Leaving a two-member party dissolves it instead.
 - No automatic party cleanup for inactivity, region change, death or logout.
-- Party HUD rows need not support click-to-target for V1. Do not broaden the
-  current spell ally/targeting rules merely because parties now exist.
+- Party HUD rows are not click targets, and party membership does not widen
+  the spell ally and targeting rules.
 
 ## HUD and atlas presentation
 

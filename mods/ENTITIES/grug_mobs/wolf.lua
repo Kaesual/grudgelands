@@ -74,25 +74,6 @@ local wolf = wolf_def("Wolf", "grug_mobs_wolf.png")
 grug_mobs.pack_hunter(wolf, {})
 grug_mobs.register_mob("grug_mobs:wolf", wolf)
 
--- §4 row "Wolf/Blightfang | coniferous litter, forest litter, bone litter,
--- grass | 20 | 1500 | 5 | any | inner, outer", split along the continent
--- border: bone litter is the Throng bone forest and belongs to the
--- Blightfang below, the other three tops are Accord.
--- "any light" = no min_light/max_light and no day_toggle: 24 h.
-mobs:spawn({
-	name = "grug_mobs:wolf",
-	nodes = {
-		"default:dirt_with_coniferous_litter", -- grug_pine_hills
-		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
-		"default:dirt_with_grass", -- grug_meadows
-	},
-	interval = 20,
-	chance = 1500,
-	active_object_count = 5,
-	min_height = 0,
-	max_height = 600,
-})
-
 --
 -- Blightfang Wolf — Throng side: the bone forest
 --
@@ -100,13 +81,3 @@ mobs:spawn({
 local blightfang = wolf_def("Blightfang Wolf", "grug_mobs_wolf_blightfang.png")
 grug_mobs.pack_hunter(blightfang, {})
 grug_mobs.register_mob("grug_mobs:blightfang_wolf", blightfang)
-
-mobs:spawn({
-	name = "grug_mobs:blightfang_wolf",
-	nodes = {"grug_nodes:dirt_with_bone_litter"}, -- grug_bone_forest
-	interval = 20,
-	chance = 1500,
-	active_object_count = 5,
-	min_height = 0,
-	max_height = 600,
-})

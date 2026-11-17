@@ -9,8 +9,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 1. The inventory window (the "i" key)
 
 - Built on sfinv pages in one shared frame. The approved UI modernization
-  (2026-10-24, merged in 0.60.1) retains the 13.5 × 13.673
-  body and adds a compact header (1.5 units plus 0.54 per extra tab row)
+  (2026-10-24, merged in 0.60.1) uses a 20 × 13.5 body
+  (`grug_inventory/ui.lua` `UI.frame_w`, `UI.frame_h`) and adds a compact header (1.5 units plus 0.54 per extra tab row)
   with icon/text navigation and a gold active underline. All non-map
   tabs share that frame; Map & Quests keeps its larger responsive window
   and uses the same navigation. See the [presentation contract](../technical/ui-presentation.md).
@@ -35,10 +35,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
   `grug_inventory.LAYOUT`): an **Inventory** box with the grid and its
   scrollbar and the **Hotbar** panel, each labelled inside, top left
-  above the slots. **Full** shows seven rows (the Inventory tab, layout
+  above the slots. **Full** shows eight rows (the Inventory tab, layout
   below); **short** shows two (every other tab with an inventory), its
-  Inventory box right above the Hotbar box; **station** shows three (0.49.1
-  ruling 6): the forms of the furnace, chests, the bookshelf, the vessels
+  Inventory box right above the Hotbar box; **station** shows four
+  (`grug_inventory.VIEW_ROWS`; three in 0.49.1 ruling 6): the forms of the furnace, chests, the bookshelf, the vessels
   shelf, the Claim Stone and the profession workspaces (furnace and dual
   furnace) put their own content at the top (the node and workspace forms
   in a box labelled with the station's name) and the station view below it (`grug_inventory.station_formspec`, `STATION` geometry,
@@ -84,18 +84,18 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2;
   boxed layout since the Round 45 playtest, `grug_inventory.LAYOUT`):
   each area has its own box with its label inside, top left above the
-  slots. Along the top the four **Bags** slots and the four-slot **Potion
-  belt** (`grug_potion_belt`, potions and elixirs only), sharing the full
-  width; below them the **Inventory** box (the full view's grid and
-  scrollbar, at most 24 + 4 × 32 = 152 slots in 19 rows), the **money
-  row** and the **Hotbar** panel (the same translucent theme as the other
-  inventory areas). All boxes share one left edge and one right edge; the group
-  is centred in the window. The money row has no box and lies on the slot
-  columns: "Money" over the balance (e.g. "123456g 99s 99c"), **Withdraw**
-  (opens the Bag of Coins dialog, [economy.md](economy.md) §1), the Bag of
-  Coins **deposit slot**, its **Auto** checkbox (deposit coin bags
-  automatically on pickup, Round 46) and, at the right end with the hotbar's
-  last slot, **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
+  slots. On the left the **Inventory** box (the full view's eight-column
+  grid and scrollbar, at most 24 + 4 × 20 = 104 slots in 13 rows; bags hold
+  at most 20 slots since 0.62.0) with **Sort** on its heading; on the right,
+  stacked and ending at the Inventory box's bottom, the four **Bags** slots,
+  the four-slot **Potion belt** (`grug_potion_belt`, potions and elixirs
+  only), the **Money** box and the Trash box (below); the **Hotbar** panel
+  (the same translucent theme as the other inventory areas) is centred
+  under both columns. The Money box holds the balance (e.g. "123456g 99s
+  99c"), **Withdraw** (opens the Bag of Coins dialog,
+  [economy.md](economy.md) §1), the Bag of Coins **deposit slot** and its
+  **Auto deposit** checkbox (deposit coin bags automatically on pickup,
+  Round 46). A balance
   change re-sends the Inventory page while it is the selected page (also
   with the window closed, so it opens current); money has no gameplay HUD.
   Sort orders
@@ -161,8 +161,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   talent buys one rank immediately. Respec retains confirmation and its price.
 - Help is a short player guide in eight sub-pages chosen by buttons at its top
   (the selection lives in the sfinv context; Start is the default): **Start**
-  (first steps, levels and zones, capitals, protected ground), **Quests &
-  Professions**, **Basics** (ores by depth and pick tier, smelting, recipe
+  (first steps, levels and zones, capitals, protected ground), **Story &
+  Craft** (tooltip "Quests & Professions"), **Basics** (ores by depth and pick tier, smelting, recipe
   discovery, skills, bags, food, repair, riding, home travel, death, parties),
   **Materials** (Round 67 ruling 16: a search field with × and Search,
   the paged list of every item that has a source in the source index or is
@@ -831,7 +831,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   list (`housing.md` §6), with no station-specific owner or ACL; outside
   protected areas they have no individual owner. The station UI shows its mode
   with a short explanation. Authored loot chests are outside this model.
-  Closing a UI loses no contents.
+  Closing a UI loses no contents. A map reset does not keep them: what a
+  player leaves in a public workspace goes with the old map, as the
+  pre-reset pass packs only the containers in housing claims (Round 81
+  ruling 8, [upgrade contract](../technical/upgrade-contract.md) §3.5).
 - Player-placed furnaces, dual furnaces, brewing stands and profession
   stations can be dug at any time by anyone the normal protection allows
   (Round 28 ruling 18): in the open world there is no extra rule, inside a

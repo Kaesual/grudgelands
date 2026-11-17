@@ -177,9 +177,10 @@ Basic lists what the character has held the ingredients of (Round 47,
   pickaxe, axe, shovel and hoe of wood) and the fishing rod (Round 66
   ruling 7) from the start. A scan of every
   list of the character's inventory notices what it holds: at every
-  inventory action, dug node or crafted delivery (within half a second),
-  every 10 s for anything else (pickups, rewards), at the join and before
-  the Crafting tab is built. A scan that lists new recipes writes one feed
+  inventory action or crafted delivery, and whenever an item arrives
+  (a dug node's drop, a pickup, a reward) that names an ingredient the
+  character has not held yet (within half a second; Round 81), every 10 s
+  for anything else, at the join and before the Crafting tab is built. A scan that lists new recipes writes one feed
   line, "New recipe: Torch" or "New recipes: Torch and 4 more". The first
   scan of a character (a new one at its first join, an existing one at its
   first login after the update) is silent. The held set lives in player

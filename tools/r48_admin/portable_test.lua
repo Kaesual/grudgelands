@@ -190,6 +190,8 @@ function Meta:set_string(key, value) self.fields[key] = value ~= "" and value or
 -- Mod surface
 ------------------------------------------------------------------------------
 grug_core = {
+	-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+	text = dofile(ROOT .. "/mods/CORE/grug_core/text.lua"),
 	factions = {accord = {name = "Accord"}, throng = {name = "Throng"}},
 	feed = function() return true end,
 	settlement_socket_settlements = function() return {} end,

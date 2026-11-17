@@ -411,6 +411,10 @@ end
 -- Model: `_grug_speed_base` holds the original speeds while any effect is
 -- active. A root (speed 0) runs first; a pending slow (base × factor)
 -- only starts counting once the root has expired ("root, THEN slow").
+-- The restore removes a speed equal to the definition's from the instance
+-- instead of writing it back (Round 81 MOBRUN, MOB1-03): the mob reads its
+-- prototype again, so staticdata does not freeze the speed and a later
+-- retune reaches it; a different base (the Kraken's deep-sea run) is written.
 --
 
 local function save_speed_base(ent)
@@ -474,7 +478,7 @@ function grug_mobs.tick_speed_effects(self, dtime)
 	-- Why walk_velocity and not a set_velocity() argument in walk_toward: the
 	-- evade steer is a 1 Hz nudge, and mobs_redo's do_states re-issues
 	-- `set_velocity(self.walk_velocity)` for a "walk"-state mob once a second
-	-- of its own accord (api.lua:2176-2864) — a per-call speed would survive less
+	-- of its own accord (api.lua do_states) — a per-call speed would survive less
 	-- than a second and the mob would walk home at walking pace. Raising the
 	-- field the walk state reads is what makes the run stick. run_velocity is
 	-- raised with it so the numbers cannot disagree if some state does read it.
@@ -539,8 +543,14 @@ function grug_mobs.tick_speed_effects(self, dtime)
 		return
 	end
 	-- All effects expired (or stale state from an old/broken save): restore.
-	self.walk_velocity = self._grug_speed_base.walk
-	self.run_velocity = self._grug_speed_base.run
+	local base = self._grug_speed_base
+	local prototype = core.registered_entities[self.name]
+	self.walk_velocity = base.walk
+	self.run_velocity = base.run
+	if prototype then
+		if base.walk == prototype.walk_velocity then self.walk_velocity = nil end
+		if base.run == prototype.run_velocity then self.run_velocity = nil end
+	end
 	self._grug_speed_base = nil
 	self._grug_root_left = nil
 	self._grug_slow_left = nil
@@ -726,9 +736,9 @@ function grug_mobs.register_mob(name, def)
 	-- into the entity prototype, and it reads the def fields the verbs have
 	-- already installed (verbs.lua contract: verbs first, register after).
 	grug_mobs.register_spawn_role(name, def)
-	-- Aggro config kept as an upvalue: mobs_redo does not copy custom def
-	-- fields onto the entity, so the wrappers install them at runtime
-	-- (grug_mobs.apply_aggro_fields, aggro.lua).
+	-- Aggro config: mobs_redo does not copy custom def fields onto the
+	-- entity, so it is published on the registered prototype below
+	-- (grug_mobs.publish_aggro_fields, aggro.lua).
 	local aggro_cfg = {
 		damage_pursuit = def.type ~= "npc" and def.passive ~= true
 			and def.attack_type ~= nil and not def._grug_no_leash
@@ -737,12 +747,12 @@ function grug_mobs.register_mob(name, def)
 		no_leash = def._grug_no_leash,
 		soft_deaggro = def._grug_soft_deaggro,
 		leash_range = def._grug_leash_range,
-		-- "This mob may target NOBODY on sight" — see apply_aggro_fields.
+		-- "This mob may target NOBODY on sight" — see publish_aggro_fields.
 		-- DERIVED, not a def flag: it is exactly the conjunction
-		-- general_attack's own candidate filter tests (api.lua:1853-2017 for
-		-- players and :1900-1923 for the three mob types), so it can
-		-- never drift out of sync with the fields it summarises. Both player
-		-- fields default to TRUE in mob_class (api.lua:204-207), hence the
+		-- general_attack's own candidate filter tests (api.lua: the player
+		-- test and the three mob-type tests), so it can never drift out of
+		-- sync with the fields it summarises. Both player fields default
+		-- to TRUE in api.lua's mob_class defaults, hence the
 		-- explicit `== false`; the two mob fields default to false.
 		no_acquire = def.attack_players == false and def.attack_npcs == false
 			and not def.attack_animals and not def.attack_monsters,
@@ -775,22 +785,21 @@ function grug_mobs.register_mob(name, def)
 				and not grug_core.in_ability_punch then return true end
 		--
 		-- EVADE = UNTOUCHABLE (combat_stats.md §4). An evading mob (aggro.lua)
-		-- cancels EVERY punch outright, and this is the first statement in the
-		-- wrapper so nothing below it — provocation memory, drop tag, threat,
-		-- rage, kill credit, XP — ever sees the hit.
+		-- cancels EVERY punch outright. Only the boss-activity touch and the
+		-- stunned-hitter cancel above run before it, so nothing below it —
+		-- provocation memory, drop tag, threat, rage, kill credit, XP — ever
+		-- sees the hit.
 		--
 		-- The cancel IS mobs_redo's do_punch contract, and this is the one place
 		-- where the AGENTS.md gotcha ("any truthy return cancels the punch, the
-		-- api.lua comment claims the opposite") is the FEATURE. api.lua:3204-3208
-		-- reads `if self.do_punch and not self:do_punch(...) == false then
+		-- api.lua comment claims the opposite") is the FEATURE. api.lua on_punch
+		-- (the do_punch test) reads `if self.do_punch and not self:do_punch(...) == false then
 		-- return true end`, which parses as `(not result) == false` — i.e. it
 		-- bails on a TRUTHY result. That `return true` sits BEFORE the weapon
-		-- wear (api.lua:3260-3339), before hit sound and blood particles
-		-- (api.lua:3361-3424), before health subtraction (api.lua:3418-3445)
-		-- and check_for_death (api.lua:3441), before knockback
-		-- (api.lua:3455-3490) and before the retaliation + group alert
-		-- that would otherwise hand the evader a fresh target
-		-- (api.lua:3506-3538). So: no
+		-- wear, before hit sound and blood particles, before health
+		-- subtraction and check_for_death, before knockback and before the
+		-- retaliation + group alert that would otherwise hand the evader a
+		-- fresh target (all later in api.lua on_punch). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
 		--
 		-- on_punch previews the damage remainder before this wrapper only so the
@@ -812,7 +821,6 @@ function grug_mobs.register_mob(name, def)
 		-- A mob can be punched before its first do_custom tick, and the XP
 		-- below needs its level: initialize here too (idempotent).
 		grug_mobs.ensure_init(self)
-		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		if old_do_punch then
 			return old_do_punch(self, hitter, tflp, tool_capabilities, dir, damage)
 		end
@@ -863,6 +871,8 @@ function grug_mobs.register_mob(name, def)
 		-- A stale or second copy of a named rare or a dragon removes itself
 		-- before anything else runs (liveness.lua).
 		if not grug_mobs.live_claim(self) then return end
+		-- An older save's copies of definition fields go (aggro.lua).
+		grug_mobs.drop_prototype_copies(self)
 		if old_tag_after_activate then
 			old_tag_after_activate(self, staticdata, mob_def, dtime)
 		end
@@ -883,10 +893,6 @@ function grug_mobs.register_mob(name, def)
 	def.do_custom = function(self, dtime, moveresult)
 		-- First-tick level/stat assignment + per-activation nametag hook.
 		grug_mobs.ensure_init(self)
-		-- Runs before do_states/general_attack in the same step
-		-- (api.lua:3908-3935), so the aggro fields the api.lua patches read
-		-- are always in place in time.
-		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		grug_mobs.tick_speed_effects(self, dtime)
 		grug_mobs.leash_tick(self, dtime)
 		-- A night mob by day leaves (dawn.lua); one field test for the rest.
@@ -899,12 +905,6 @@ function grug_mobs.register_mob(name, def)
 			return false
 		end
 
-		if (self._grug_stun_left or 0) > 0 then
-			local velocity = self.object:get_velocity()
-			if velocity then self.object:set_velocity(vector.new(0, velocity.y, 0)) end
-			self.timer, self.timer1 = 0, 0
-			return false
-		end
 		-- Elite/rare wind-up (telegraph.lua). Guarded here so a mob that does
 		-- not telegraph pays one table lookup per step and nothing else.
 		--
@@ -924,7 +924,7 @@ function grug_mobs.register_mob(name, def)
 			grug_mobs.rare_tick(self, dtime)
 		end
 		-- ONE target-acquisition veto consumed by general_attack (GRUG PATCH in
-		-- mobs/api.lua:1882): the mob skips vetoed players and picks the
+		-- mobs/api.lua general_attack): the mob skips vetoed players and picks the
 		-- next-closest viable target instead. A function field is never
 		-- serialized into staticdata; do_custom runs before general_attack on
 		-- every step, so it is back after each (re)activation in time.
@@ -933,12 +933,12 @@ function grug_mobs.register_mob(name, def)
 		-- an evading mob acquires no targets at all, which is not a faction or
 		-- truce question. A mob with neither of those carries the evade test
 		-- alone. Cost: one function call per candidate player per
-		-- general_attack, i.e. per mob once a second (api.lua:3927 runs it from
+		-- general_attack, i.e. per mob once a second (api.lua on_step runs it from
 		-- the 1 s timer block) over the players inside view_range — nothing.
 		--
 		-- What it does NOT reach any more: the five passive-prey mobs
 		-- (verbs.lua). Its only reader is the GRUG PATCH inside
-		-- general_attack (api.lua:1882), and `no_acquire` shadows that whole
+		-- general_attack (api.lua), and `no_acquire` shadows that whole
 		-- method with a no-op on any mob that may target nobody (aggro.lua),
 		-- which is exactly those five. So on a stag this closure is installed
 		-- and never called. No behaviour is lost — an evading prey mob could
@@ -1059,13 +1059,12 @@ function grug_mobs.register_mob(name, def)
 		assert(grug_core.register_hp_bar_presentation(name,
 			hp_bar_presentation))
 	end
-	-- mobs_redo copies an explicit field whitelist, so publish the custom field
-	-- on its canonical registered prototype after registration as well. Live
-	-- entities inherit it directly from that prototype.
-	-- Group alert may acquire before the first custom tick. Publish the
-	-- candidate policy now so that first aggro starts the grace clock exactly.
-	core.registered_entities[name]._grug_damage_pursuit_candidate =
-		aggro_cfg.damage_pursuit == true
+	-- mobs_redo copies an explicit field whitelist, so publish the aggro
+	-- config on its canonical registered prototype after registration. Live
+	-- entities inherit it directly from that prototype; group alert may
+	-- acquire before the first custom tick, and the candidate policy is
+	-- already there, so first aggro starts the grace clock exactly.
+	grug_mobs.publish_aggro_fields(prototype, aggro_cfg)
 	if disposition then
 		core.registered_entities[name]._grug_disposition = disposition
 	end

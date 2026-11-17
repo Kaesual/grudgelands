@@ -104,14 +104,12 @@ local function can_dig(pos, player)
 	return inv:is_empty("fuel") and inv:is_empty("dst") and inv:is_empty("src")
 end
 
--- GRUG PATCH: authored public Cooking hearths retain this furnace's real
--- callback/timer chain while the owning mod authorizes exact live sockets.
+-- GRUG PATCH: one protection test for the allow callbacks below. In this
+-- game grug_jobs' workspaces replace these callbacks on both furnace nodes
+-- at mods-loaded (grug_jobs/workspaces.lua), public hearths included; the
+-- public-hearth branch that stood here went in Round 81.
 local function inventory_protected(pos, player)
 	if not player or not player.is_player or not player:is_player() then return true end
-	local jobs = rawget(_G, "grug_jobs")
-	if jobs and jobs.is_public_station and jobs.is_public_station("furnace", pos) then
-		return not jobs.can_access_public_furnace(pos, player)
-	end
 	return core.is_protected(pos, player:get_player_name())
 end
 

@@ -13,10 +13,10 @@
 -- water)") — read api.lua before "fixing" this:
 --   * mobs_redo has exactly ONE amphibious knob, `fly = true` + `fly_in =
 --     {water}`, which is what upstream animalworld uses. It is NOT usable
---     for a land+water mob here: follow_flop (api.lua:2054-2120) puts a `fly`
+--     for a land+water mob here: follow_flop (api.lua) puts a `fly`
 --     mob into the "flop" state whenever flight_check() fails, i.e. whenever
 --     it is NOT standing in its medium — a water-flying crocodile would flop
---     helplessly on every river bank (api.lua:2112: velocity {0, -5, 0},
+--     helplessly on every river bank (api.lua follow_flop: velocity {0, -5, 0},
 --     stand animation, no movement).
 --   * A per-medium speed swap would need a custom do_custom tick that reads
 --     self.standing_in and rewrites walk/run_velocity — and that collides
@@ -25,7 +25,7 @@
 --     Two owners of the same two fields is exactly the bug class the WP6
 --     notes warn about.
 --   * MVP therefore: ONE speed, 4.6 on land and in water, plus `floats` so
---     the mob swims at the surface instead of sinking (api.lua:2882-2889). The
+--     the mob swims at the surface instead of sinking (api.lua falling). The
 --     5.0-in-water bonus is dropped, NOT postponed silently — a later WP can
 --     add it once one owner for the speed fields exists.
 --
@@ -61,7 +61,7 @@ local crocodile = {
 	-- Ambush range, see the header. grug_mobs.ambusher re-arms the "stand"
 	-- order at the same 6 nodes, so seeing a player and bursting coincide.
 	view_range = 6,
-	-- Explicit although `true` is mobs_redo's own default (api.lua:157-218): this
+	-- Explicit although `true` is mobs_redo's own default (api.lua's mob_class defaults): this
 	-- is the field that keeps the croc swimming at the surface of a swamp
 	-- pool instead of walking along its floor, so it must not be lost in a
 	-- later cleanup.
@@ -108,34 +108,3 @@ local crocodile = {
 
 grug_mobs.ambusher(crocodile, {trigger_range = 6})
 grug_mobs.register_mob("grug_mobs:crocodile", crocodile)
-
--- §4 row "Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer".
---
--- DEVIATION, spelled out: only `mud` is registered as a spawn node, "water
--- at mud" is not. Two reasons, both mechanical:
---   * an ABM's `neighbors` list is an OR set ("at least one of these is
---     adjacent"), so it cannot express "must be next to water" together with
---     anything else — adding {"default:water_source", "air"} would be a
---     no-op, because every walkable top node has air above it;
---   * registering the row on `default:water_source` instead would put a 20 s
---     ABM on every ocean node in the world, which is exactly the candidate-
---     set explosion §4's performance note tells us to avoid.
--- The behaviour the design wants is delivered anyway: `floats` (above) lets
--- the croc swim, while R7's named-zone terrain authors the swamp water/mud
--- habitat and P9 adds its reeds on mud.
---
--- "any light" = no min_light/max_light and no day_toggle: 24 h (§3.1).
-mobs:spawn({
-	name = "grug_mobs:crocodile",
-	-- the swamp's mixed ground (Round 47); moss soil too (the user,
-	-- 2026-10-13), and the swamp's own moss (Round 51): these spawns are
-	-- zone-gated to the swamp family
-	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss",
-		"grug_nodes:swamp_moss"}, -- grug_swamp
-	interval = 20,
-	chance = 1800,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})

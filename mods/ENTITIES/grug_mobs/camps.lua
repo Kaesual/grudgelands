@@ -1,9 +1,8 @@
 --
--- Camps: the camp-fire node, the guard-banner node and their RESPAWN SLOTS
--- (docs/design/world.md §4a "NPC binding & respawn slots";
--- docs/design/biomes_mobs.md §4, row "Bandits / Mirefolk | **no ABM** — camp
--- anchor with respawn slots: max 3-5, one refill per 120-300 s, dormant
--- catch-up"; docs/design/world.md §4 for the military outposts that reuse it).
+-- Guard posts: the guard-banner node and its RESPAWN SLOTS
+-- (docs/design/world.md §4a "NPC binding & respawn slots", §4 for the
+-- military outposts), and the recipe camps of the spawn regions (bottom of
+-- this file).
 --
 -- Why a node timer and not an ABM: §4's performance justification puts camps
 -- and rares "off the ABM entirely (node timers / scheduled) — zero idle
@@ -11,44 +10,38 @@
 -- player is nearby, and it costs nothing at all otherwise. That is also why
 -- the empty-area branch below is not a hack but the honest reading of the
 -- situation: with no player around there are no loaded objects to count and
--- mobs:add_mob would refuse anyway (api.lua:4121-4213, count_mobs needs a player
+-- mobs:add_mob would refuse anyway (api.lua, count_mobs needs a player
 -- within active_block_range * 2 = 128 m).
 --
 -- FLOW, end to end:
---   grug_mobs.place_camp(pos, "bandit")   (WP13's settlement pass, or a
---       hand-placed node in creative -> on_construct defaults to "bandit")
---     -> node grug_nodes:camp_fire, meta _grug_camp_type = "bandit"
---     -> node timer starts
+--   R7's named-zone writer places grug_nodes:guard_banner (or a hand-placed
+--     banner in creative); the LBM / on_construct types it and arms its timer
 --   on_timer -> camp_tick(pos, elapsed):
---       roll the camp's target size ONCE (meta _grug_camp_target, 3-5)
+--       roll the post's target size ONCE (meta _grug_camp_target, 2-3)
 --       no player within 80 m?          -> re-arm short, do nothing
 --       count the living members, book the missing ones into the REFILL QUEUE
 --       drain every refill whose due time has passed (see "RESPAWN SLOTS")
---   the spawned mob gets `_grug_home = camp pos` (WHERE it belongs: aggro.lua
---       runs it back there when it evades further out than its radius) and
---       `_grug_camp_pos = camp pos` (WHO it belongs to — the identity the head
---       count below and the mirefolk swarm verb match on; `_grug_home` is not
---       an identity, a hand-placed mob has one too)
---   with `_grug_leash_range = 25` in the mob defs, that IS "defends camp": a
---       camp mob may be dragged 25 nodes from wherever the fight started
---       before it drops the target, heals and returns to the fire (aggro.lua
---       — the leash measures DRAG from the pull, the evade run-home uses
---       `_grug_home`).
+--   the spawned guard gets `_grug_home = post pos` (WHERE it belongs:
+--       aggro.lua runs it back there when it evades further out than its
+--       radius) and `_grug_camp_pos = post pos` (WHO it belongs to — the
+--       identity the head count below matches on; `_grug_home` is not an
+--       identity, a hand-placed mob has one too)
 --
--- GUARD POSTS (WP6/T8) reuse the whole mechanism with a second anchor node,
--- grug_nodes:guard_banner, and the camp types "guard_accord"/"guard_throng"
--- at the bottom of this file. What differs:
---   * the banner is placed by R7's single named-zone map writer via a
---     VoxelManip, which fires no node callbacks at all — so the timer of a
---     generated banner is started by the LBM at the bottom (which for that
---     reason must run at EVERY load, see there) instead of by on_construct;
+-- What a guard post does beyond the slots:
 --   * an authenticated outpost anchor supplies its race-bound garrison
 --     faction; other banners use the faction territory they stand in. This is
 --     necessary because frontier outposts deliberately stand on contested
 --     land, where grug_zones.faction_at returns nil;
---   * a guard camp with `patrol = true` designates ONE of its guards as the
+--   * a post with `patrol = true` designates ONE of its guards as the
 --     ambient patrol of world.md §4 (see assign_patrol below);
---   * a post refills one slot per 180-360 s instead of the camp's 30-60 s.
+--   * a post refills one slot per 180-360 s.
+--
+-- The CAMP FIRE (grug_nodes:camp_fire) is scenery since the Round 28 spawn
+-- recipes: a camp POI's population is its recipe camp (bottom of this file).
+-- Round 81 (audit MOB2-05, ruling 6) removed its timer, its bandit and
+-- mirefolk camp types and grug_mobs.place_camp; the node keeps only its
+-- infotext (init_camp_fire), and a timer an older world armed fires once and
+-- stops (the node has no on_timer).
 --
 -- RESPAWN SLOTS (world.md §4a), the model this file implements since F5.
 -- The old rule was "count heads, spawn one if below target, then wait
@@ -97,11 +90,11 @@
 -- STATE lives in node meta, so a camp survives restarts and world unloads
 -- with zero mod storage:
 --   `_grug_camp_type`     string, a key of grug_mobs.registered_camp_types
---   `_grug_camp_target`   int, the rolled 3-5 (0/absent = not rolled yet)
+--   `_grug_camp_target`   int, the rolled 2-3 (0/absent = not rolled yet)
 --   `_grug_refill_queue`  int, refills owed (0/absent = camp is full)
 --   `_grug_next_refill`   int, gametime second the next refill is due
 --   `_grug_camp_patrol_t` int, gametime of the last patrol designation
---   `_grug_camp_init`     int, init idempotency flag (camp fires)
+--   `_grug_camp_init`     int, infotext idempotency flag (camp fires)
 --   `_grug_banner_init`   int, init idempotency flag (guard banners)
 --
 
@@ -114,7 +107,6 @@
 -- a global read and trip strict.lua).
 --
 
-local DEFAULT_TYPE = "bandit"
 local META_TYPE = "_grug_camp_type"
 local META_TARGET = "_grug_camp_target"
 local META_QUEUE = "_grug_refill_queue"
@@ -130,13 +122,11 @@ local META_FIRE_INIT = "_grug_camp_init"
 -- bounds how LATE a due refill can be served (see camp_tick, which shortens
 -- the re-arm when a refill falls due sooner).
 local IDLE_PERIOD = 30
--- Round 28 ruling 37: a camp-type slot refills after 30-60 s (was 120-300 s),
--- so a camp that two players clear comes back while they are still around.
--- Per camp type overridable with respawn_exact / respawn_min / respawn_max
--- (see register_camp_type); guard posts keep their own slower pair below.
+-- The default refill window of a camp type's slot (register_camp_type); the
+-- guard posts state their own slower pair below.
 local RESPAWN_MIN, RESPAWN_MAX = 30, 60
--- A guard post refills SLOWER than a bandit camp (world.md §4a leaves the
--- number to the implementation): a wiped outpost that is back to full three
+-- A guard post refills SLOWLY (world.md §4a leaves the number to the
+-- implementation): a wiped outpost that is back to full three
 -- minutes later removes the point of clearing it, and a garrison is meant to
 -- be re-takeable ground for a while. THE tunable of this file — raise it to
 -- make outposts feel more expensive to hold, lower it to keep the roads safe.
@@ -144,10 +134,10 @@ local GUARD_RESPAWN_MIN, GUARD_RESPAWN_MAX = 180, 360
 -- Do no work at all unless a player is this close. Comfortably inside
 -- mobs:add_mob's own 128 m requirement, comfortably outside the camp radius.
 local PLAYER_RANGE = 80
--- Head-count radius margin on top of the camp radius: a defending camp mob
--- may stand up to its leash range from the fire, and counting it as gone
--- would let the camp overfill. radius + 16 covers every registered camp type
--- (bandit 12 + 16 > leash 25, mirefolk 10 + 16 > 25, guards 15 + 16 > 30).
+-- Head-count radius margin on top of the camp radius: a defending guard
+-- may stand up to its leash range from the banner, and counting it as gone
+-- would let the post overfill. radius + 16 covers the guard posts
+-- (15 + 16 > leash 30).
 --
 -- That "> leash" comparison is only a sound bound because a defender CANNOT
 -- park itself outside it: a mob that ends a chase further than its own radius
@@ -174,31 +164,21 @@ local SPOT_TRIES = 12
 
 grug_mobs.registered_camp_types = {}
 
--- id -> {mob = "grug_mobs:bandit", count_min = 3, count_max = 5, radius = 12,
---        node = "grug_nodes:camp_fire", patrol = false,
---        respawn_exact = nil, respawn_min = 120, respawn_max = 300}
---   node          — the anchor node grug_mobs.place_camp uses for this type
---                   (guard posts fly a banner, bandits sit around a fire)
+-- id -> {mob = "grug_mobs:guard_accord", count_min = 2, count_max = 3,
+--        radius = 15, node = "grug_nodes:guard_banner", patrol = true,
+--        respawn_exact = nil, respawn_min = 180, respawn_max = 360}
+--   node          — the anchor node of this type (the guard banner)
 --   patrol        — designate one member as an ambient patrol (world.md §4)
 --   respawn_*     — the refill interval of ONE slot (world.md §4a: "either an
 --                   exact duration or a min-max range rolled per refill").
 --                   respawn_exact wins when set; the range is the default.
---   variant       an optional SECOND family for this camp, rolled per slot
---                 (1 in `variant_chance`). It shares the camp's head count
---                 and its refill slots -- the camp is still "3-5 per camp"
---                 (biomes_mobs.md §4), it is simply not all of one kind. Used
---                 by the bandit camp for the Bandit Archer, so ruling 3's
---                 "more ranged mobs" costs no spawn budget at all.
---   variant_chance  1 in N, default 3.
 function grug_mobs.register_camp_type(id, def)
 	grug_mobs.registered_camp_types[id] = {
 		mob = def.mob,
-		variant = def.variant,
-		variant_chance = def.variant_chance or 3,
 		count_min = def.count_min or 3,
 		count_max = def.count_max or 5,
 		radius = def.radius or 12,
-		node = def.node or "grug_nodes:camp_fire",
+		node = def.node,
 		patrol = def.patrol or false,
 		respawn_exact = def.respawn_exact,
 		respawn_min = def.respawn_min or RESPAWN_MIN,
@@ -206,16 +186,12 @@ function grug_mobs.register_camp_type(id, def)
 	}
 end
 
--- Both families of a camp count against ONE head count. Counting only
--- `cfg.mob` would make every archer invisible to the refill and the camp
--- would grow without limit.
+-- A member of the camp's head count.
 local function camp_member(cfg, name)
-	return name == cfg.mob or (cfg.variant ~= nil and name == cfg.variant)
+	return name == cfg.mob
 end
 
--- The two anchor nodes, by name. BANNER_NODE is needed as a value (not only
--- as a camp-type field) because place_camp has to recognise a guard post and
--- let authenticated outpost/territory authority pick its type — see there.
+-- The two anchor nodes, by name.
 local BANNER_NODE = "grug_nodes:guard_banner"
 local CAMP_FIRE_NODE = "grug_nodes:camp_fire"
 
@@ -228,21 +204,14 @@ local banner_camp_type
 -- Helpers
 --
 
--- Config of the camp anchored at pos. The type normally comes from meta; the
--- fallback for an EMPTY meta value is decided by the NODE, never by
--- DEFAULT_TYPE alone: VoxelManip placement bypasses on_construct, and a guard
--- banner without metadata must not be read as a bandit camp. Authenticated
--- outpost/territory authority stays decisive for a banner exactly as it is in
--- place_camp and init_banner; only the camp fire falls back to "bandit".
+-- Config of the post anchored at pos. The type normally comes from meta; for
+-- an EMPTY meta value (VoxelManip placement bypasses on_construct) the
+-- authenticated outpost/territory authority decides, exactly as in
+-- init_banner.
 local function camp_cfg(pos, meta)
 	local id = meta:get_string(META_TYPE)
 	if id == "" then
-		local node = core.get_node(pos)
-		if node.name == BANNER_NODE then
-			id = banner_camp_type(pos)
-		else
-			id = DEFAULT_TYPE
-		end
+		id = banner_camp_type(pos)
 	end
 	return grug_mobs.registered_camp_types[id], id
 end
@@ -270,8 +239,8 @@ end
 --
 -- Known and accepted blind spot: get_objects_inside_radius sees only ACTIVE
 -- objects, so a camp member that wandered into an unloaded block is counted
--- as dead and the camp may briefly hold one mob too many. The leash range of
--- 25 keeps that window small, an extra bandit is not a balance problem, and
+-- as dead and the post may briefly hold one guard too many. The leash range
+-- keeps that window small, an extra guard is not a balance problem, and
 -- the alternative (persisting a roster in meta) would have to garbage-collect
 -- entities it cannot see either.
 local function count_camp_mobs(pos, cfg)
@@ -389,7 +358,7 @@ local function spawn_one(pos, meta, cfg, living)
 	end
 	-- `ignore_count = true` is REQUIRED: mobs:add_mob otherwise compares
 	-- against the family's mobs:spawn aoc, and a camp family has no
-	-- mobs:spawn row at all, so that cap defaults to 1 (api.lua:4218-4222) — every
+	-- mobs:spawn row at all, so that cap defaults to 1 (api.lua mobs:add_mob) — every
 	-- camp would top out at a single mob. The camp's own target is the cap.
 	-- add_mob returns nil whenever it declines (no player in range, active
 	-- mob limit, entity missing); that must never be an error here.
@@ -397,14 +366,8 @@ local function spawn_one(pos, meta, cfg, living)
 	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
 	-- — a camp family with a negative box floor would otherwise stand sunk
 	-- into the ground.
-	-- Which of the camp's families this slot becomes. Rolled per SLOT, not
-	-- per camp, so a camp is a mix and a refill can change the mix -- the
-	-- same shape as the bandit's own per-mob race roll (bandit.lua).
 	local name = cfg.mob
-	if cfg.variant and math.random(cfg.variant_chance) == 1 then
-		name = cfg.variant
-	end
-	-- Round 25 ruling 24: a bandit or mirefolk slot whose spot lies in an
+	-- Round 25 ruling 24: a hostile camp type's slot whose spot lies in an
 	-- active housing claim is not served, like blocked ground (the due time
 	-- stays, a later tick rolls a new spot). Guards are `type = "npc"` and
 	-- never refused.
@@ -459,20 +422,13 @@ local function camp_tick(pos, elapsed)
 		-- `elapsed > IDLE_PERIOD + 1` as "the mapblock was dormant", and a
 		-- longer re-arm here would make that a lie the moment the missing camp
 		-- type is registered again (a mod re-enabled mid-world).
-		core.log("warning", "[grug_mobs] camp fire at " ..
+		core.log("warning", "[grug_mobs] guard post at " ..
 			core.pos_to_string(pos) .. " has unknown camp type '" .. id .. "'")
 		return IDLE_PERIOD
 	end
-	-- Round 28 ruling 34: in a zone with a spawn recipe, bandits and mirefolk
-	-- come from the recipe's CAMPS with their levels; the fire stays scenery
-	-- there. Guard posts keep spawning everywhere.
-	if cfg.node == CAMP_FIRE_NODE and
-			grug_mobs.spawn_regions.zone_has_recipe(grug_zones.id_at(pos.x, pos.z)) then
-		return IDLE_PERIOD
-	end
 	local now = core.get_gametime()
-	-- Camp size is rolled ONCE and kept, so a camp has a stable identity
-	-- ("this is a five-bandit camp") instead of re-rolling every respawn.
+	-- Camp size is rolled ONCE and kept, so a post has a stable identity
+	-- ("this is a three-guard post") instead of re-rolling every respawn.
 	local target = meta:get_int(META_TARGET)
 	if target <= 0 then
 		target = math.random(cfg.count_min, cfg.count_max)
@@ -583,54 +539,22 @@ end
 -- The node
 --
 
--- Shared by on_construct (hand/place_camp placement) and the LBM below
--- (mapgen placement, see there). Idempotent: the meta flag makes a second
--- call a no-op, and an already typed fire keeps its type.
---
--- The TIMER is armed BEFORE that early return, on purpose. The LBM runs at
--- every load (see there), so this function is the one place that sees every
--- camp fire on every activation — and a fire whose timer went missing (an old
--- world generated before the init LBM existed, a mapblock written by a tool,
--- an engine-side loss) would otherwise stay a dead node forever while its meta
--- flag says "initialised". `is_started` keeps the repeat cost at one meta read
--- plus one timer query per node per activation and never re-arms a running
--- timer, so a camp mid-respawn is not reset by a reload.
---
--- THE ORDER MATTERS AND IT IS IN OUR FAVOUR (checked against the engine):
--- activateBlock runs the LBMs FIRST and steps the block's node timers AFTER
--- (serverenvironment.cpp:576/581). So on the activation of a dormant camp
--- this function sees the stored timer still armed and un-fired —
--- `is_started()` is true, we leave it alone, and the catch-up tick that the
--- following block->step(dtime_s) delivers survives. Re-arming here would
--- have thrown away exactly the tick that drains a dormant camp's owed
--- refills (world.md §4a).
+-- The camp fire is scenery (header): on_construct and the LBM at the bottom
+-- give it its infotext once, nothing else. It has no on_timer, so a timer an
+-- older world armed fires once and stops. grug_nodes owns both pure
+-- activation nodes so R7 can authenticate them before grug_mobs loads; this
+-- higher layer supplies their runtime behaviour.
 local function init_camp_fire(pos)
-	local timer = core.get_node_timer(pos)
-	if not timer:is_started() then
-		timer:start(IDLE_PERIOD)
-	end
 	local meta = core.get_meta(pos)
 	if meta:get_int(META_FIRE_INIT) == 1 then
 		return
 	end
 	meta:set_int(META_FIRE_INIT, 1)
-	if meta:get_string(META_TYPE) == "" then
-		meta:set_string(META_TYPE, DEFAULT_TYPE)
-	end
 	meta:set_string("infotext", "Camp Fire")
 end
 
--- grug_nodes owns both pure activation nodes so R7 can authenticate them before
--- grug_mobs loads. This higher layer supplies their runtime behaviour.
 core.override_item(CAMP_FIRE_NODE, {
 	on_construct = init_camp_fire,
-	-- Returning true would make the engine re-arm the elapsed timer with its
-	-- old timeout. Refill proximity changes the next period, so install that
-	-- freshly computed timeout ourselves and leave the expired timer stopped.
-	on_timer = function(pos, elapsed)
-		core.get_node_timer(pos):start(camp_tick(pos, elapsed))
-		return false
-	end,
 })
 
 --
@@ -666,16 +590,28 @@ function banner_camp_type(pos)
 	return "guard_" .. territory
 end
 
--- Shared by on_construct (hand/place_camp placement) and the LBM below
--- (mapgen placement). Idempotent: the meta flag makes a second call a no-op,
--- and an already typed banner keeps its type.
+-- Shared by on_construct (a hand-placed banner) and the LBM below (mapgen
+-- placement). Idempotent: the meta flag makes a second call a no-op, and an
+-- already typed banner keeps its type.
 --
--- Same self-healing arm as init_camp_fire above and for the same reason: the
--- LBM runs at every load, so an outpost banner whose node timer was lost gets
--- it back on the next activation instead of standing there as a decorative
--- flag with no garrison. `is_started` never resets a running timer — which,
--- per the engine ordering noted at init_camp_fire, is what keeps a dormant
--- post's catch-up tick intact.
+-- The TIMER is armed BEFORE that early return, on purpose. The LBM runs at
+-- every load, so this function is the one place that sees every banner on
+-- every activation — and a banner whose timer went missing (an old world
+-- generated before the init LBM existed, a mapblock written by a tool, an
+-- engine-side loss) would otherwise stand there as a decorative flag with no
+-- garrison while its meta flag says "initialised". `is_started` keeps the
+-- repeat cost at one meta read plus one timer query per node per activation
+-- and never re-arms a running timer, so a post mid-respawn is not reset by a
+-- reload.
+--
+-- THE ORDER MATTERS AND IT IS IN OUR FAVOUR (checked against the engine):
+-- activateBlock runs the LBMs FIRST and steps the block's node timers AFTER
+-- (serverenvironment.cpp:576/581). So on the activation of a dormant post
+-- this function sees the stored timer still armed and un-fired —
+-- `is_started()` is true, we leave it alone, and the catch-up tick that the
+-- following block->step(dtime_s) delivers survives. Re-arming here would
+-- have thrown away exactly the tick that drains a dormant post's owed
+-- refills (world.md §4a).
 local function init_banner(pos)
 	local timer = core.get_node_timer(pos)
 	if not timer:is_started() then
@@ -694,9 +630,9 @@ end
 
 core.override_item("grug_nodes:guard_banner", {
 	on_construct = init_banner,
-	-- Same re-arm reasoning as the camp fire above: start the next timer
-	-- ourselves and return false, because the period shortens when a refill
-	-- is about to fall due.
+	-- Returning true would make the engine re-arm the elapsed timer with its
+	-- old timeout. Refill proximity changes the next period, so install that
+	-- freshly computed timeout ourselves and leave the expired timer stopped.
 	on_timer = function(pos, elapsed)
 		core.get_node_timer(pos):start(camp_tick(pos, elapsed))
 		return false
@@ -719,12 +655,12 @@ core.override_item("grug_nodes:guard_banner", {
 -- generated after the LBM's introduction". Every banner in this game is placed
 -- by mapgen, i.e. in a block generated after the LBM existed — the init never
 -- ran for a single one of them, no timer was ever armed, and the entire guard
--- post / bandit camp mechanism was dead in every world (engine side:
+-- post mechanism was dead in every world (engine side:
 -- LBMManager puts a non-every-load LBM into the bucket of its introduction
 -- time, and getLBMsIntroducedAfter only ever selects buckets at or after the
 -- block's own, i.e. later, timestamp).
 -- `true` runs the action on EVERY activation of a block holding this node,
--- which is what the two init functions are written for (cheap, idempotent,
+-- which is what the init functions are written for (cheap, idempotent,
 -- self-healing). It also repairs EXISTING worlds: the engine refiles the LBM
 -- into the always-selected bucket on the next load, so every banner already in
 -- the map gets its timer on the next visit.
@@ -737,19 +673,10 @@ core.register_lbm({
 	end,
 })
 
--- The same problem, the same fix, for the CAMP FIRE: R7's named-zone writer
--- writes the deterministic bandit camps of world.md §4 straight into the
--- mapchunk's VoxelManip, which fires no node callbacks, so on_construct never
--- runs for a generated fire and its node timer would never be armed (a camp
--- that never spawns anybody). init_camp_fire does exactly what on_construct
--- does — default type "bandit", infotext, arm the timer — and its meta flag
--- makes the pair idempotent.
---
--- run_at_every_load = true for exactly the reason spelled out at the banner
--- LBM above: with `false` this LBM would never have run on a single
--- mapgen-placed fire (they all live in blocks generated after the LBM's
--- introduction), and no bandit camp in the world would ever have spawned
--- anybody.
+-- The same path for the CAMP FIRE, which R7's named-zone writer also places
+-- through the VoxelManip: its infotext, once (init_camp_fire), with
+-- run_at_every_load = true for the reason spelled out at the banner LBM above
+-- (a `false` LBM never runs on a mapgen-placed node).
 core.register_lbm({
 	name = "grug_mobs:camp_fire_init",
 	nodenames = {CAMP_FIRE_NODE},
@@ -760,94 +687,9 @@ core.register_lbm({
 })
 
 --
--- Placement API
---
-
--- Places (or re-types) a camp. This is the entry point for WP13's settlement
--- pass and for manual testing; placing the bare node by hand also works and
--- defaults to the bandit camp (fire) resp. the local faction's watch
--- (banner) via on_construct.
---
--- Returns true on success, false for an unknown camp type — a silent no-op
--- would hide a typo in a settlement schematic.
-function grug_mobs.place_camp(pos, type_id)
-	type_id = type_id or DEFAULT_TYPE
-	local cfg = grug_mobs.registered_camp_types[type_id]
-	if not cfg then
-		core.log("warning", "[grug_mobs] place_camp: unknown camp type '" ..
-			tostring(type_id) .. "'")
-		return false
-	end
-	-- THE AUTHENTICATED OUTPOST OR TERRITORY IS AUTHORITATIVE for a guard post
-	-- (world.md §0/§4: "a post can never fly the wrong faction's colours").
-	-- banner_camp_type already
-	-- enforces that for every OTHER placement path — on_construct and the
-	-- mapgen LBM both go through it. The caller's wish loses; it is told so,
-	-- because a settlement schematic asking for the wrong watch is a bug worth
-	-- seeing.
-	local effective = type_id
-	if cfg.node == BANNER_NODE then
-		effective = banner_camp_type(pos)
-		if effective ~= type_id then
-			core.log("warning", "[grug_mobs] place_camp at " ..
-				core.pos_to_string(pos) .. ": requested '" .. type_id ..
-				"' but authenticated outpost/territory authority selects '" ..
-				effective .. "' — authority wins")
-		end
-	end
-	-- set_node fires on_construct, which writes the default type and arms the
-	-- timer; the two lines after it overwrite that default.
-	core.set_node(pos, {name = cfg.node})
-	local meta = core.get_meta(pos)
-	meta:set_string(META_TYPE, effective)
-	meta:set_int(META_TARGET, 0) -- re-rolled for THIS type on the first tick
-	-- A re-typed camp is a NEW camp: its slots belong to the old population
-	-- (possibly of a different mob and a different size), so the queue and its
-	-- due time start empty and the first tick books whatever is missing.
-	meta:set_int(META_QUEUE, 0)
-	meta:set_int(META_NEXT, 0)
-	-- Populate promptly instead of after the on_construct idle period: a camp
-	-- placed next to a player should not stand empty for half a minute.
-	core.get_node_timer(pos):start(1)
-	return true
-end
-
---
--- The two camp types of §4
---
--- Both are "3-5 per camp" (§4 aoc column). The radii differ by habitat: a
--- bandit camp sprawls across a clearing, a mirefolk camp huddles around one
--- swamp pool (§3.1 "camps at swamp pools").
---
-
--- The bandit camp is the game's only INNER-ring source of a ranged enemy
--- (biomes_mobs.md §3.1, user ruling 3 of 2026-09-16). One slot in three is an
--- archer, and the roll is per slot and INDEPENDENT: the expected mix of a
--- five-bandit camp is between one and two archers, and an all-archer camp is
--- rare rather than impossible (1 in 27 at three slots, 1 in 243 at five).
--- Deliberately not a quota — a quota would need the camp to remember which
--- slots it has filled, and a refill would then have to re-roll against a head
--- count it cannot see for unloaded members.
-grug_mobs.register_camp_type("bandit", {
-	mob = "grug_mobs:bandit",
-	variant = "grug_mobs:bandit_archer",
-	variant_chance = 3,
-	count_min = 3,
-	count_max = 5,
-	radius = 12,
-})
-
-grug_mobs.register_camp_type("mirefolk", {
-	mob = "grug_mobs:mirefolk",
-	count_min = 3,
-	count_max = 5,
-	radius = 10,
-})
-
---
 -- The two guard posts (world.md §4/§9)
 --
--- Deliberately smaller and wider than a bandit camp: 2-3 guards (§9's
+-- 2-3 guards (§9's
 -- "guaranteed minimum" outpost is a picket, not a garrison — the numbers can
 -- grow with WP13's real structures) spread over the 7x7 pad and its
 -- surroundings (radius 15, the pad plus a little patrol ground). Both types
@@ -855,7 +697,7 @@ grug_mobs.register_camp_type("mirefolk", {
 -- outpost first and faction territory otherwise (banner_camp_type above), so
 -- the race's frontier posts keep their faction on contested land and the mob
 -- level still varies with the ring via guard_level_at.
--- Their refill slot runs slower than a camp's (GUARD_RESPAWN_MIN/MAX,
+-- Their refill slot runs slowly (GUARD_RESPAWN_MIN/MAX,
 -- 180-360 s — THE tunable of this file, see there): clearing a post should
 -- buy a while of open road.
 --
@@ -906,17 +748,16 @@ function grug_mobs.guard_to_street(self)
 	return true
 end
 
-
 --
 -- Recipe camps (Round 28 ruling 37, Lane S1): bandits, poachers and
 -- mirefolk of a zone's spawn recipe, at the camp spot its region map picked
 -- by rule or on the camp POI the recipe names (spawn_regions_core.lua step
 -- 7). A recipe camp on a POI is that POI's only population: the POI's fire
--- is scenery in a recipe zone (camp_tick above).
+-- is scenery in a recipe zone (header).
 --
 -- The slot model above without a node: `slots` members, each death booked
 -- into a refill queue whose due time advances by a roll in the camp's
--- `respawn` [min, max] (30-60 s by the ruling). What differs from a fire:
+-- `respawn` [min, max] (30-60 s by the ruling). What differs from a post:
 --   * members roam FREE under the normal wander leash (`_grug_home` = their
 --     own spawn point, radius 32): no `_grug_camp_pos`, no camp leash, no
 --     roam cap. They carry the camp's tag, and the head count is by that tag;
@@ -927,23 +768,28 @@ end
 --   * levels and species come from the camp (belt range x role range,
 --     roster weights);
 --   * the state lives in memory, keyed by the camp tag. The first look at a
---     camp after a start (a player within 64 nodes, so saved members nearby
---     are active and counted) fills what is missing at once, which is
---     what a camp standing in the world should look like when a player walks
---     up; after that the queue and its due time behave exactly like a fire's,
---     the dormant catch-up included (due times lag `now` while nobody is
---     near, and the drain serves what the elapsed time earned).
+--     camp after a start fills what is missing at once, which is what a camp
+--     standing in the world should look like when a player walks up; after
+--     that the queue and its due time behave like a post's, the dormant
+--     catch-up included (due times lag `now` while nobody is near, and the
+--     drain serves what the elapsed time earned). A look after an absence
+--     that books new deaths (members culled while their blocks were unloaded)
+--     starts their drain at the last look + one interval, not at now +
+--     interval, so the absence earns refills as it does for a post.
+-- A camp is looked at only while its centre's mapblock is active and a
+-- player stands within SR.LEADER_RANGE of the centre horizontally (48 nodes
+-- at the default active_block_range; Round 81 SPAWN, audit MOB2-03): from
+-- further out the far members' blocks may be inactive, the count reads them
+-- as dead, and the refills overfilled the camp once the player walked in.
 -- Ticked every five seconds by spawn_regions.lua's globalstep (a slice of
 -- the zones per quarter second), for the camps of the region maps built so
--- far. The same known blind spot as count_camp_mobs: a member in an unloaded
--- block reads as dead, so a camp may briefly hold one too many.
+-- far. The same known blind spot as count_camp_mobs remains, smaller: a
+-- member roaming into an inactive block reads as dead.
 --
 
-local REGION_CAMP_RANGE = PLAYER_RANGE
--- The first look after a start: within this of the centre the blocks of the
--- members a camp may already hold (radius about 40) are active.
-local REGION_CAMP_FIRST = 64
-local region_camps = {} -- tag -> {queue, next_refill}
+-- A look this long after the last one follows an absence (two slow passes).
+local REGION_CAMP_ABSENCE = 10
+local region_camps = {} -- tag -> {queue, next_refill, fill, seen}
 
 local function region_camp_interval(camp)
 	return math.random(camp.respawn[1], camp.respawn[2])
@@ -1001,49 +847,58 @@ local function spawn_region_member(unit, zone_id, players, center_y, clock)
 	return false
 end
 
+-- The camp's centre while it is in view (header: a player within
+-- SR.LEADER_RANGE and the centre's mapblock active), else nil.
+local function camp_in_view(SR, unit, players)
+	if not SR.player_near_xz(unit.x, unit.z, SR.LEADER_RANGE, players) then
+		return nil
+	end
+	unit.center_y = unit.center_y or grug_zones.terrain_height_at(unit.x, unit.z)
+	local center = {x = unit.x, y = unit.center_y, z = unit.z}
+	return core.compare_block_status(center, "active") == true and center or nil
+end
+
 function grug_mobs.region_camp_tick(now, players, clock, zone_ids)
 	local SR = grug_mobs.spawn_regions
 	local list = SR.camp_units(zone_ids)
 	for i = 1, #list do
 		local unit = list[i]
 		local camp = unit.camp
-		if SR.player_near_xz(unit.x, unit.z, REGION_CAMP_RANGE, players) then
-			unit.center_y = unit.center_y or grug_zones.terrain_height_at(unit.x, unit.z)
-			local center_y = unit.center_y
-			local living = count_region_members(camp,
-				{x = unit.x, y = center_y, z = unit.z})
+		local center = camp_in_view(SR, unit, players)
+		if center then
+			local center_y = center.y
+			local living = count_region_members(camp, center)
 			local missing = camp.slots - living
 			local st = region_camps[camp.tag]
 			if not st then
-				-- First look since the start, once a player is close enough that
-				-- the camp's own saved members are active and counted: the whole
-				-- deficit is due now.
-				if SR.player_near_xz(unit.x, unit.z, REGION_CAMP_FIRST, players) then
-					st = {queue = math.max(missing, 0), next_refill = now, fill = true}
-					region_camps[camp.tag] = st
-				end
+				-- First look since the start: the whole deficit is due now.
+				st = {queue = math.max(missing, 0), next_refill = now, fill = true}
+				region_camps[camp.tag] = st
 			elseif missing > st.queue then
 				if st.queue <= 0 then
-					st.next_refill = now + region_camp_interval(camp)
+					local from = now
+					if st.seen and now - st.seen > REGION_CAMP_ABSENCE then
+						from = st.seen
+					end
+					st.next_refill = from + region_camp_interval(camp)
 				end
 				st.queue = missing
 			elseif missing < st.queue then
 				st.queue = missing > 0 and missing or 0
 			end
-			if st then
-				local zone_id = camp.tag:match("^([^/]+)/")
-				while st.queue > 0 and now >= st.next_refill do
-					if not spawn_region_member(unit, zone_id, players, center_y, clock) then
-						break
-					end
-					st.queue = st.queue - 1
-					if not st.fill then
-						st.next_refill = st.next_refill + region_camp_interval(camp)
-					end
+			st.seen = now
+			local zone_id = camp.tag:match("^([^/]+)/")
+			while st.queue > 0 and now >= st.next_refill do
+				if not spawn_region_member(unit, zone_id, players, center_y, clock) then
+					break
 				end
-				if st.queue <= 0 then
-					st.fill = nil
+				st.queue = st.queue - 1
+				if not st.fill then
+					st.next_refill = st.next_refill + region_camp_interval(camp)
 				end
+			end
+			if st.queue <= 0 then
+				st.fill = nil
 			end
 		end
 	end

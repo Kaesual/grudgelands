@@ -71,6 +71,7 @@ end
 local serial, entities, chat, shown = {}, {}, {}, {}
 local callbacks = {hp = {}, die = {}, leave = {}, join = {}, shutdown = {}, fields = {}}
 local registered_entities, registered_items = {}, {}
+local registered_aliases = {} -- Round 81 (DEAD): what register_alias recorded
 
 core = {
 	registered_nodes = {
@@ -94,6 +95,8 @@ core = {
 	end,
 	register_entity = function(name, def) registered_entities[name] = def end,
 	register_craftitem = function(name, def) registered_items[name] = def end,
+	-- Round 81 (DEAD, ruling 10): the retired mount items are aliases of "".
+	register_alias = function(name, target) registered_aliases[name] = target end,
 	register_on_player_hpchange = function(fn) callbacks.hp[#callbacks.hp + 1] = fn end,
 	register_on_dieplayer = function(fn) callbacks.die[#callbacks.die + 1] = fn end,
 	register_on_leaveplayer = function(fn) callbacks.leave[#callbacks.leave + 1] = fn end,
@@ -237,6 +240,10 @@ local roles = {}
 grug_mobs = {register_start_socket_role = function(role, fn) roles[role] = fn end}
 local sockets = {}
 grug_core.settlement_sockets_at = function(key) return sockets[key] or {} end
+-- Round 81: the shared NPC-window check; the player's faction through
+-- grug_core's stub, which grug_factions resolves in the game.
+dofile(ROOT .. "/mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = grug_factions.get_faction
 
 local function load(path) dofile(ROOT .. "/" .. path) end
 grug_mounts = {}
@@ -288,16 +295,15 @@ eq(grug_mounts.TIERS[5].speed, 4, "base boat 4 nodes/s")
 eq(grug_mounts.TIERS[6].speed, 8, "improved boat 8 nodes/s")
 eq(grug_mounts.TIERS[5].level, 15, "base boat from level 15")
 eq(grug_mounts.TIERS[6].level, 30, "improved boat from level 30")
-local boat_item = registered_items["grug_mounts:boat"]
-check(boat_item and boat_item.stack_max == 1 and boat_item.groups.grug_bound_skill == 1 and
-	boat_item._grug_mount_tier == 5, "boat item: bound skill, one per stack")
-eq(boat_item.on_drop().name, "", "dropping deletes the boat item")
--- Round 44: the item is retired (the quickbar summons from the purchase
--- record), so it has no use of its own; it stays registered for old stacks.
-check(boat_item.on_use == nil and boat_item.on_secondary_use == nil and
-	boat_item.on_place == nil, "the retired boat item does nothing when used")
-check(registered_items["grug_mounts:improved_boat"].inventory_image ==
-	"grug_mounts_icon_improved_boat.png", "improved boat icon name")
+-- Round 44: the boat items are retired (the quickbar summons from the
+-- purchase record). Round 81 (DEAD, ruling 10): both names are aliases of
+-- "", so an old stack clears when it loads.
+check(registered_items["grug_mounts:boat"] == nil and
+	registered_aliases["grug_mounts:boat"] == "", "the retired boat item is an alias of nothing")
+check(registered_items["grug_mounts:improved_boat"] == nil and
+	registered_aliases["grug_mounts:improved_boat"] == "",
+	"the retired improved boat item is an alias of nothing")
+eq(grug_mounts.TIERS[6].icon, "grug_mounts_icon_improved_boat.png", "improved boat icon name")
 
 pond()
 ada.pos = {x = 2.3, y = -40, z = 0}
@@ -542,10 +548,15 @@ ok, message = grug_mounts.purchase(bo, 6)
 check(not ok and message == "You already own this boat.", "no second purchase")
 
 -- The dialogue, bound to a live Shipwright of the own faction.
-local npc = {pos = {x = 10, y = 5, z = 10}, valid = true}
-function npc:get_pos() return self.pos end
-local shipwright = {_grug_socket_role = "shipwright", _grug_start = "lethariel",
-	_grug_socket = "riding.shipwright", object = npc}
+-- Each NPC its own live object (Round 81: the window checks get_luaentity).
+local function npc(entity)
+	entity.object = {pos = {x = 10, y = 5, z = 10}, valid = true,
+		get_pos = function(self) return self.pos end,
+		get_luaentity = function(self) return self.valid and entity or nil end}
+	return entity
+end
+local shipwright = npc({_grug_socket_role = "shipwright", _grug_start = "lethariel",
+	_grug_socket = "riding.shipwright"})
 sockets.lethariel = {{id = "riding.shipwright", role = "shipwright", pos = {x = 10, y = 5, z = 10}}}
 local cy = make_player("cy", "accord", "dwarf")
 cy.pos = {x = 11, y = 5, z = 10}
@@ -567,11 +578,11 @@ eq(grug_mounts.highest_owned(cy, "water"), 5, "Boat bought through the dialogue"
 local throng = make_player("dee", "throng", "orc")
 throng.pos = {x = 11, y = 5, z = 10}
 check(not grug_mounts.open_trainer(throng, shipwright), "an enemy capital's Shipwright refuses")
-check(not grug_mounts.open_trainer(cy, {_grug_socket_role = "idle", _grug_start = "lethariel",
-	_grug_socket = "riding.shipwright", object = npc}), "only the service roles open")
+check(not grug_mounts.open_trainer(cy, npc({_grug_socket_role = "idle", _grug_start = "lethariel",
+	_grug_socket = "riding.shipwright"})), "only the service roles open")
 -- The Riding Trainer keeps its four rows.
-local trainer = {_grug_socket_role = "riding_trainer", _grug_start = "lethariel",
-	_grug_socket = "riding.trainer", object = npc}
+local trainer = npc({_grug_socket_role = "riding_trainer", _grug_start = "lethariel",
+	_grug_socket = "riding.trainer"})
 sockets.lethariel[2] = {id = "riding.trainer", role = "riding_trainer", pos = {x = 10, y = 5, z = 10}}
 check(grug_mounts.open_trainer(cy, trainer), "Riding Trainer opens")
 fs = shown[#shown].fs

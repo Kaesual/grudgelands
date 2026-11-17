@@ -23,6 +23,8 @@ local path_queue = {}
 local path_queue_head = 1
 local path_entries = setmetatable({}, {__mode = "k"})
 local path_generation = 0
+-- Server steps since load (begin_server_step), the clock of attack_sight.
+local server_step = 0
 
 local function copy_pos(pos)
 	if not pos then return end
@@ -120,6 +122,7 @@ local function new_path_request(temp)
 end
 
 function obstacle.begin_server_step()
+	server_step = server_step + 1
 	if player_boxes_used then
 		for object in pairs(player_boxes) do player_boxes[object] = nil end
 		player_boxes_used = false
@@ -357,10 +360,53 @@ function obstacle.target_visible(self, mob_pos, target_pos, ground_melee)
 	return self:line_of_sight(target_eye, mob_eye) == true
 end
 
+-- GRUG PATCH (Round 81 MOBRUN, X4-04): the attack state's sight ray is cast
+-- at most once every SIGHT_STEPS server steps per mob instead of on every
+-- step. A cast answers its own step and the next SIGHT_STEPS - 1 steps for
+-- the same target (about 0.27 s at the default 0.09 s step); a new target or
+-- an older answer casts again. A reused answer only steers: the chase, the
+-- contact run, the navigation, the ranged mode and the patience clock may
+-- notice a new wall or an opened gap two steps late. What acts on sight never
+-- takes a reused answer: a melee strike casts again unless this very step
+-- cast (strike_target_visible), and a mob that explodes casts every step (its
+-- fuse). So no hit lands through a wall that the ray on every step would have
+-- seen. A shot needs no fresh answer: its arrow is a body a wall stops.
+obstacle.SIGHT_STEPS = 3
+
+local function cast_sight(self, mob_pos, target_pos, ground_melee)
+	local visible = obstacle.target_visible(self, mob_pos, target_pos, ground_melee)
+	local temp = self.temp
+	if temp then
+		local sight = temp.grug_sight
+		if not sight then
+			sight = {}
+			temp.grug_sight = sight
+		end
+		sight.target, sight.step, sight.visible = self.attack, server_step, visible
+	end
+	return visible
+end
+
+function obstacle.attack_sight(self, mob_pos, target_pos, ground_melee)
+	local sight = self.temp and self.temp.grug_sight
+	if sight and sight.target == self.attack and self.attack_type ~= "explode"
+	and server_step - sight.step < obstacle.SIGHT_STEPS then
+		return sight.visible
+	end
+	return cast_sight(self, mob_pos, target_pos, ground_melee)
+end
+
 function obstacle.strike_target_visible(self, mob_pos, target_pos,
 		common_visible, ground_melee)
-	if not common_visible or ground_melee then return common_visible == true end
-	return obstacle.target_visible(self, mob_pos, target_pos, true)
+	if not common_visible then return false end
+	if not ground_melee then
+		return obstacle.target_visible(self, mob_pos, target_pos, true)
+	end
+	local sight = self.temp and self.temp.grug_sight
+	if sight and sight.target == self.attack and sight.step == server_step then
+		return sight.visible == true
+	end
+	return cast_sight(self, mob_pos, target_pos, true) == true
 end
 
 function obstacle.try_melee_attack(args)

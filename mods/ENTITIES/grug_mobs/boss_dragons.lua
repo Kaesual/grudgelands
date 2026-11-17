@@ -653,7 +653,6 @@ local function remove_whelps(self)
 		end
 	end
 end
-grug_mobs.remove_dragon_whelps = remove_whelps
 
 local function spawn_whelps(self, opts)
 	local pos = self.object and self.object:get_pos()
@@ -966,6 +965,9 @@ local function dragon_tick(self, dtime, moveresult, opts)
 		self.temp.grug_dragon = state
 		-- A dragon (re)activating starts without a fight: a stale one ends.
 		end_fight(self._grug_boss_id)
+		-- A saved enrage (`_grug_enraged` persists) glows again; once per
+		-- activation, not every step (Round 81 MOBRUN, MOB3-02).
+		if self._grug_enraged then self.object:set_properties({glow = 8}) end
 	end
 	local arena = arena_of(self)
 	self._grug_chase_range = arena and 2 * arena.radius + 4 or TUNING.leash + 4
@@ -985,7 +987,6 @@ local function dragon_tick(self, dtime, moveresult, opts)
 			if state.engaged then wrath_tick(self._grug_boss_id, arena) end
 		end
 	end
-	if self._grug_enraged then self.object:set_properties({glow = 8}) end
 	enrage(self, state, opts)
 	state.primary = math.max(0, (state.primary or 0) - dtime)
 	state.gust = math.max(0, (state.gust or 0) - dtime)

@@ -35,7 +35,7 @@ local witch = {
 	group_attack = false, reach = 3, pathfinding = 1,
 	walk_velocity = 1.5, run_velocity = 4.0, jump = true, jump_height = 4,
 	stepheight = 1.1, fear_height = 6, view_range = 16,
-	dogshoot_switch = 1, dogshoot_count_max = 8, dogshoot_count2_max = 2,
+	dogshoot_switch = 1,
 	arrow = "grug_mobs:hex_bottle", arrow_override = grug_mobs.stamp_arrow_damage,
 	shoot_interval = 2.5, shoot_offset = 1.5,
 	visual = "mesh", mesh = "grug_mobs_skeleton.b3d",
@@ -63,9 +63,3 @@ local witch = {
 }
 
 grug_mobs.register_mob("grug_mobs:bog_witch", witch)
-mobs:spawn({name = "grug_mobs:bog_witch",
-	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_bone_litter",
-		"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter"},
-	interval = 20, chance = 2400, active_object_count = 3,
-	min_height = 0, max_height = 600})

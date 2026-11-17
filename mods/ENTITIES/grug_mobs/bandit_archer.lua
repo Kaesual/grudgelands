@@ -74,10 +74,8 @@ archer.animation.shoot_start = archer.animation.punch_start
 archer.animation.shoot_end = archer.animation.punch_end
 archer.animation.shoot_speed = archer.animation.punch_speed
 -- dogshoot_switch = 1 starts in the RANGED mode, which follows the distance
--- since Round 78 (golem.lua; the count fields are no longer read).
+-- since Round 78 (golem.lua).
 archer.dogshoot_switch = 1
-archer.dogshoot_count_max = 10
-archer.dogshoot_count2_max = 3
 
 -- Round 24 ruling 20: it roams at the Bandit's calm walk (1, inherited from
 -- bandit_def) and uses 4.0 only in combat (run_velocity). A camp archer would

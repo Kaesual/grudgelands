@@ -36,9 +36,9 @@ pgrep -f '^luanti.bin'                              # must not list a server of 
 
 ## 2. Spawns files: the spawn recipe
 
-`zones/<zone_id>.spawns.json` is `{"zone": id, "recipe": {...}, "notes"?}`
-(a shipped game file without a recipe carries only `palette`, today's
-spawn rule). The recipe holds rules, never coordinates; the game turns it
+`zones/<zone_id>.spawns.json` is `{"zone": id, "recipe": {...}, "notes"?}`;
+like the game, the validator refuses a file without a recipe and a `palette`
+key (the palette layer is retired, Round 81). The recipe holds rules, never coordinates; the game turns it
 into a region map for each world seed. Format and rules:
 `docs/design/spawn_regions.md`; the game's parser,
 `mods/ENTITIES/grug_mobs/spawn_regions_core.lua` (`parse_recipe`), is the
@@ -147,8 +147,7 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   `E-duplicate` (ids, a leader placed twice or in two zones), `E-enum`
   (density), `E-unknown-role`, `E-not-a-mob`, `E-leader-flag` (leader role
   not `"leader": true`), `E-critter` (non-critter in `critters`),
-  `W-critter-area` (a critter in a roster), `E-required` (no recipe and no
-  palette), `E-recipe-poi` (a camp site's POI: not bandit or mirefolk, a
+  `W-critter-area` (a critter in a roster), `E-required` (no recipe), `E-recipe-poi` (a camp site's POI: not bandit or mirefolk, a
   type or name the zone lacks with `--atlas`, two of the type unnamed, two
   camps on one POI); `E-unknown-anchor` /
   `E-unknown-zone` / `W-border-neighbour` check every `from` anchor and
@@ -383,13 +382,13 @@ and the chief as its leader), `samples/existing_min.json`, `samples/mobs_min.jso
 read). The validator test checks that the valid sample gives only
 `W-loot-unchecked` (only Dawnmere is designed) and that about 200 variants each give
 their expected finding (broken designs and recipes, plus allowed forms: a
-`from` anchor by anchor id, a leader deep in a kind, a palette-only spawns
-file, a leader kill without area, a leader of another zone, a declared
-front file, a capital front giver, both outpost givers declared, the
+`from` anchor by anchor id, a leader deep in a kind, a leader kill
+without area, a leader of another zone, a declared front file, a capital front giver, both outpost givers declared, the
 single-NPC contested exemption, a new giver at a free socket, a zone-added
 leader used from another zone, a critter sub-type of a critter base, Round
 57's shared quest, choices, story and the reworked-file rules) and the
-retired quest fields refused (`E-unknown-key`, `repeatable` among them). The ledger test checks the
+retired quest fields refused (`E-unknown-key`, `repeatable` among them), as
+is a palette-only spawns file (`E-recipe-key`). The ledger test checks the
 formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
 194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,
 per-quest bands, per-role levels in kinds, species mix, `--lines`,

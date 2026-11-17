@@ -779,7 +779,6 @@ local entity_definition = {
 }
 
 core.register_entity(ENTITY_NAME, entity_definition)
-grug_mounts.entity_definition = entity_definition
 
 local visual_definition = {
 	initial_properties = {
@@ -808,7 +807,6 @@ local visual_definition = {
 	get_staticdata = function() return "" end,
 }
 core.register_entity(VISUAL_NAME, visual_definition)
-grug_mounts.visual_definition = visual_definition
 
 -- The rider's camera (catalog `camera`). While attached, the engine puts the
 -- camera at the PARENT's position plus the eye height plus the eye offset
@@ -823,6 +821,10 @@ grug_mounts.visual_definition = visual_definition
 function grug_mounts.apply_camera(player, model)
 	local first, third = model.camera.first, model.camera.third
 	player:set_properties({eye_height = first.y})
+	-- grug_core's cached eye height follows (combat_ray.lua player_body;
+	-- Round 81). The check keeps this file's loads beside the mount
+	-- fixtures' partial grug_core stubs working, as ensure_tag above.
+	if grug_core.player_body_changed then grug_core.player_body_changed(player) end
 	player:set_eye_offset({x = 0, y = 0, z = first.z * 10},
 		{x = 0, y = (third.y - first.y) * 10, z = third.z * 10})
 end

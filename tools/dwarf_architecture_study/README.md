@@ -13,6 +13,16 @@ No game version, shipped template, palette, runtime code or installed game chang
 No merge, push, map reset or world rewrite is part of this study. Adopting changes
 to generated buildings later will need the normal map-reset release declaration.
 
+**Frozen (Round 81).** The study is finished and is not rebuilt. Its fifteen
+captures (`*.png`) and the earlier iterations' pages and audits
+(`iterations/`, except `iteration5-audit.json`, which `build.py` reads) left
+the tracked tree; they are in history at
+[`4cb49044`](https://github.com/Kaesual/grudgelands/tree/4cb49044/tools/dwarf_architecture_study)
+(`git show 4cb49044:tools/dwarf_architecture_study/<path>`). `index.html`
+still works offline; its footer link to `iterations/iteration5.html` leads
+nowhere in the checkout. `audit.json`, `index.html` and the Python modules stay:
+`city_architecture_rollout` reads them.
+
 ## Open the comparison
 
 Open `index.html` directly in a browser: it is self-contained and works offline.
@@ -32,7 +42,8 @@ Clicking a block identifies its node and labels study-only reed shapes as
 preview forms. The URL records the selected
 building, for example `?building=elf_home`; the original `home` and `forge`
 links still select the two dwarf buildings. The footer links to the complete
-previous study in `iterations/iteration5.html`. Left remains the original game
+previous study in `iterations/iteration5.html` (in history at `4cb49044`
+since Round 81). Left remains the original game
 building, right is the current proposal.
 
 ## Examples and proposed architectural directions
@@ -122,7 +133,7 @@ iteration 5, the archived audit hash and the four preview-only definitions. Buil
 - Both human, both undead and the elf hall roofs still match their original game nodes.
 
 `iterations/iteration5-audit.json` is the comparison baseline. Earlier iterations
-remain archived alongside it.
+are archived in history (`4cb49044`, see above).
 `dwarf-baseline.json` remains a historical receipt of the first dwarf study;
 its material choices were superseded by the user's iteration 2 feedback.
 

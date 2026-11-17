@@ -148,12 +148,15 @@ Core principles:
   attempted: a target that cancels the punch (a vendor NPC, an evading
   mob), an `immune_to` mob or a player with PvP off yields **0 rage**.
   PvP refusal, dodge and full absorb likewise pay 0 (`combat_stats.md` §2).
-- **In combat** = engaged with a live mob, or a PvP/other hit within the last
-  5 s; death clears it (`combat_stats.md` §5 "Combat state" owns the rule).
+- **In combat** = engaged with a live mob, or another hit within the last
+  5 s (10 s after PvP contact); death clears it (`combat_stats.md` §5 "Combat state" owns the rule).
   The definition lives in `grug_core` (`in_combat`) and is shared with
   recovery (combat_stats §5).
-- Resources are runtime state, not persisted: mana is full on join and
-  respawn, rage is 0.
+- Resources are runtime state, not persisted: mana is full on respawn and
+  on a character's first join in a server run, rage is 0 on join and
+  respawn. A relog within one server run keeps the mana value and every
+  running cooldown and charge (Round 81 ruling 2); a server restart starts
+  them over.
 - Mana costs are rounded percentages of the caster's unmodified base pool,
   minimum 1. Full-pool cast counts at L1/L60 are: 5% = **26/19**, 6% =
   **13/16**, 8% = **13/12**, and 10% = **8/9**. Pool enchants and talents do

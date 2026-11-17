@@ -137,8 +137,8 @@ Decided 2026-09-14 after the first native playtest.
 Decided 2026-09-14 after the round-A playtest.
 
 - Preparation follows [world_preparation.md](world_preparation.md): the fresh
-  world selects one persistent starts-only or full-world mode, with one aligned
-  mapchunk request in flight and resumable successful-prefix progress.
+  world selects one persistent starts-only or full-world mode, with
+  resumable successful-prefix progress (the request pacing is that file's).
 - In starts-only mode, all six required start envelopes must be ready; full
   mode satisfies the same readiness seam when its surface plan completes.
   Preparation precedes faction/race/class creation. The waiting UI, stasis and
@@ -252,7 +252,8 @@ edge at 57. Each capital retains the actual asymmetric extent of its gatehouses;
 projection bounds include every authored cell, and no ring column intersects a
 building. Nhal Veyr's bars align with their wall on both axes. The 5 x 5
 corner drums and towers of Dur Brannoc, Gor Drazhak and Nhal Veyr own the ring
-columns from ±45 outward; the ring stops against their walls.
+columns from ±53 outward (the radius 56 minus 3, `precinct_ring.is_corner`);
+the ring stops against their walls.
 A fitting attached to content displaced by the boundary is removed, and an
 edge building faces inward so its door remains usable. The six forms of the
 same rule are:
@@ -427,15 +428,16 @@ keeps: an ore court with a mine mouth cut into a rock face, charcoal clamps, a
 slag yard, mushroom beds grown in the lee of the wall, goat pens and brewing
 courts. Its trades are a smith, a mason, an armourer, an embalmer, a butcher, a
 brewer and a baker, beside the two travelling traders every capital's core has.
-**The capital that stands on a lake.** Decided 2026-09-15 with the third
-capital, Lethariel, which was open until Round 23 (a planted belt with a
+**The capital that stands on a lake.** Decided 2026-09-15 for Lethariel,
+which was open until Round 23 (a planted belt with a
 threshold at each gate point). Since the Round 23 ruling of 2026-09-28 its
 edge is the **stone curtain in the elves' own light style**: pale silver
 sandstone brick over a silver sandstone core, a green serpentine string
 course, a marble coping on every parapet, low merlons of one brick under a
 marble slab (the playtest's ruling: the first version's pillar colonnettes
-stood too tall), a marble-tiled walk, slim turrets about
-every 48 nodes each carrying an emberglass lamp, and gatehouses with a marble
+stood too tall), a marble-tiled walk, slim turrets on the style's sparse
+rhythm (`TURRET_EVERY` 96, `capital_planner.lua` `M.STYLE`) each carrying an
+emberglass lamp, and gatehouses with a marble
 lintel over the passage. It stands on the footprint the belt was planned with
 (wall half 2, gate boxes 3 by 5), so the city inside is laid out exactly as
 before, and where the crown lake crosses the outline the wall runs a few
@@ -454,13 +456,12 @@ inside the core a promenade between the two colonnades ends at the quay's head.
 The king's castle stands on the dry western shoulder, turned once so that its
 great door looks east across a paved court to the south avenue.
 
-**Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
-Drazhak. What a walled capital has on its envelope edge is decided by the race
+**Not every wall is masonry.** Added 2026-09-15 with Gor Drazhak. What a walled capital has on its envelope edge is decided by the race
 that built it: the dwarves, the humans and the undead raise a stone curtain,
 and the orcs raise a **stake palisade on an earth rampart** -- a dug bank
 thrown up along the city's outline with a stockade of acacia stakes on its outer
-crest, a fighting walk along the top and a timber tower about every fifty-six
-nodes. It follows the ground and lets the avenue through its gates exactly as
+crest, a fighting walk along the top and a timber tower on the style's
+rhythm (`TURRET_EVERY` 84). It follows the ground and lets the avenue through its gates exactly as
 a curtain does, and it is the same thing to walk on; it simply is not made of
 stone. Gor Drazhak's own civic
 precinct repeats the section at a reduced height -- three courses of beaten
@@ -484,10 +485,8 @@ bypass runs up both flanks and behind the castle to the north gate, and the must
 lies east of it. Beside the castle's great door stands a raised **fighting
 platform** with its own breastwork, its own stair and two guard posts on it.
 
-**The capital with a lake in it.** How a capital with a lake in its core is
-laid out is the third capital's own lane, 2026-09-15/16, and is open to the
-user's correction like any other design. (Kezamba was open until Round 23;
-its city edge is now the troll palisade described above.)
+**The capital with a lake in it** is Kezamba, laid out 2026-09-15/16; since
+Round 23 its city edge is the troll palisade described above.
 
 Kezamba is also the one capital whose **civic core is not flat**, and that is
 the map's doing rather than the city's: a deep cenote fills the land north and
@@ -742,7 +741,7 @@ the same ids in all six capitals:
 |---|---|---|
 | `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it; since Round 59 the one giver of its capital's hub `<capital key>_guild` (chapter 1's second story quest, [quests.md](quests.md) "Chapter 1 in the capitals"). |
 | `miners_guild/miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the Miner's Guild Exchange (`grug_traders:guild_exchange`): the socket is taken over as the service role `guild_exchange` (`grug_traders/vendors.lua`, the socket id read from `GUILD_HALL.exchange`), as the Crownbinder takes his; a guild vendor of the capital's faction that opens on Trade-in and buys like every vendor, without the camp vendor's reputation page or repair. |
-| `miners_guild/miners_guild_clerk` | `idle`, inhabited, tag `work` | an ordinary guild clerk; the Expedition Registrar now uses the dedicated core socket beside the waystone plaza approach. |
+| `miners_guild/miners_guild_clerk` | `idle`, inhabited, tag `work` | an ordinary guild clerk; the Expedition Registrar uses its own core socket outside the great hall's door ("Public Expedition Registrar" below). |
 | `miners_guild/miners_guild_sorter` | `idle`, inhabited, tag `work`, between the grinder and the furnace behind his desk | the Stonewright (`grug_traders:stonewright`, Round 70): the socket is taken over as the service role `stonewright` (the socket id read from `GUILD_HALL.stonewright`), a guild service of the capital's faction ([miners_guild.md](miners_guild.md) §5.3). |
 | `miners_guild/miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
 

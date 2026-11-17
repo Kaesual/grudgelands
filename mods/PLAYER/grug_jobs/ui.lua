@@ -75,7 +75,6 @@ local QUANTITY_CHARS = 8
 local BAR_TEXTURE = "grug_jobs_progress_bar.png"
 local BAR_FILL_FRAMES = 64
 local BAR_FRAMES = BAR_FILL_FRAMES + BAR_FILL_FRAMES / 2
-grug_jobs.BAR_FILL_FRAMES = BAR_FILL_FRAMES
 grug_jobs.BAR_FRAMES = BAR_FRAMES
 
 -- Field names (shared with craft_box.lua).
@@ -578,7 +577,6 @@ end
 local DISABLED_STYLE = "style[" .. F.recheck .. "," .. F.recheck .. ":hovered," ..
 	F.recheck .. ":pressed;bgimg=grug_ui_button.png;bgcolor=#2a2a2a;" ..
 	"textcolor=#808080;border=false]"
-grug_jobs.CRAFT_DISABLED_STYLE = DISABLED_STYLE
 function grug_jobs.action_button(view, field, label, enabled, style)
 	local geometry = ("%s,%s;%s,%s"):format(n(BOX.x + BOX.w - 0.2 - ACTION.w),
 		n(view.bottom - ACTION.h), n(ACTION.w), n(ACTION.h))
@@ -737,13 +735,11 @@ end
 -- Events.
 --
 
--- A field value trimmed and cut to `limit` characters. The cut to a few
--- times the limit comes first: a client may send a field of hundreds of
--- kilobytes, and the trim's pattern takes time that grows with the square
--- of the spaces in it.
+-- A field value without control characters, trimmed and cut to `limit`
+-- bytes, the raw value cut first (grug_core.text.clean_field: a client may
+-- send a field of hundreds of kilobytes).
 local function clean(value, limit)
-	local text = tostring(value):sub(1, 4 * limit):gsub("[%c]", "")
-	return (text:match("^%s*(.-)%s*$") or ""):sub(1, limit)
+	return grug_core.text.clean_field(value, limit)
 end
 grug_jobs._clean_field = clean
 

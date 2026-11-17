@@ -22,14 +22,30 @@ function grug_core.register_planned_water_flow(predicate)
 	planned_flow[#planned_flow + 1] = predicate
 end
 
-local function guarded(pos)
-	if grug_core.world_alterable(pos) then return false end
-	-- A registered guard (an arrival cube) wins over planned flow.
+-- Water stays out of fixed guarded ground: the territory rule's towns,
+-- capitals, landmarks and open sea, and (Round 81 ruling 3, audit C1-01) the
+-- road, bridge, village, camp, fortress, war camp, mining camp and POI cores
+-- of the world-protection layer (grug_core.world_feature_at), which
+-- grug_core.world_alterable alone does not know. A registered guard (an
+-- arrival cube) refuses first, and planned flow passes everywhere else. Each
+-- guard is asked once. Returns nil where water may move, "layer" where only
+-- the world-protection layer guards (on ground the territory rule leaves
+-- alterable), true elsewhere.
+local function guard(pos)
 	if grug_core.world_alteration_guarded(pos) then return true end
-	for index = 1, #planned_flow do
-		if planned_flow[index](pos) == true then return false end
+	local layer = false
+	if grug_core.natural_ground_alterable(pos) then
+		if grug_core.world_feature_at(pos) == nil then return nil end
+		layer = true
 	end
-	return true
+	for index = 1, #planned_flow do
+		if planned_flow[index](pos) == true then return nil end
+	end
+	return layer and "layer" or true
+end
+
+local function guarded(pos)
+	return guard(pos) ~= nil
 end
 
 -- What a guarded air node that a liquid flowed into becomes again (Round 37,
@@ -41,7 +57,8 @@ end
 -- air, but it is floodable, so its on_flood (wrapped below like every
 -- floodable node's) refuses the flow before anything changes. It is used only
 -- where the fixed territory rule guards (towns, capitals, landmarks, the open
--- sea), which never changes: a guard that can vanish (a Claim Stone's
+-- sea) and on the world-protection layer's roads and cores (Round 81), which
+-- never change: a guard that can vanish (a Claim Stone's
 -- arrival cube) keeps the plain air revert, so no barrier outlives it in
 -- ordinary ground, where code that expects "air" would trip over it.
 -- The world writer (grug_mapgen, wp40/r7_content.lua) reads the group
@@ -66,9 +83,11 @@ core.register_node(BARRIER, {
 })
 
 -- The node a guarded transform at `pos` is set back to: what was there,
--- except that air on fixed guarded territory becomes the barrier.
+-- except that air on fixed guarded ground (the territory rule or the
+-- world-protection layer) becomes the barrier.
 function grug_core.water_guard_revert_node(pos, oldnode)
-	if oldnode.name == "air" and not grug_core.natural_ground_alterable(pos) then
+	if oldnode.name == "air" and (not grug_core.natural_ground_alterable(pos) or
+			grug_core.world_feature_at(pos) ~= nil) then
 		return {name = BARRIER}
 	end
 	return oldnode
@@ -109,9 +128,14 @@ core.register_on_liquid_transformed(function(positions, old_nodes)
 	for index = 1, #positions do
 		local pos, oldnode = positions[index], old_nodes[index]
 		local current = core.get_node_or_nil(pos)
-		if current and oldnode and
-				(water_names[current.name] or water_names[oldnode.name]) and
-				guarded(pos) then
+		local rule = current and oldnode and
+			(water_names[current.name] or water_names[oldnode.name]) and guard(pos)
+		-- On the world-protection layer only a flood is set back (the cell was
+		-- no water before); a drain or a level change stands. Water that lay
+		-- on a road or in a core before Round 81 (a compatible upgrade keeps
+		-- it) can drain away there instead of being restored every liquid
+		-- tick, and a later flood meets the barrier.
+		if rule == true or (rule == "layer" and not water_names[oldnode.name]) then
 			-- swap_node preserves metadata and performs ordinary lighting/liquid
 			-- updates without construction/destruction callbacks or item drops.
 			core.swap_node(pos, grug_core.water_guard_revert_node(pos, oldnode))

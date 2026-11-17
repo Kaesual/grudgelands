@@ -340,8 +340,9 @@ end
 -- Round 33 adds the Crownbinder and the culture vendor (grug_traders),
 -- Round 58 the Miner's Guild Exchange of every capital's guild house
 -- (grug_traders), Round 70 the Stonewright of the same house (grug_traders),
--- The Expedition Registrar uses a dedicated core socket at the waystone plaza
--- approach (grug_expeditions; moved from the guild clerk with a map reset).
+-- The Expedition Registrar uses a dedicated core socket a few nodes outside the
+-- great hall door (grug_expeditions; moved from the guild clerk with a map reset,
+-- from the waystone plaza approach in 0.75.3).
 local SERVICE_ROLES = {innkeeper = true, housing_manager = true,
 	crownbinder = true, culture_vendor = true, guild_exchange = true,
 	stonewright = true, expedition_registrar = true}

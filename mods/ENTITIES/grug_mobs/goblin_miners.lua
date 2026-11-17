@@ -42,8 +42,6 @@ local function miner_def(description, texture, ranged)
 		def.shoot_interval = 2.5
 		def.shoot_offset = 1
 		def.dogshoot_switch = 1
-		def.dogshoot_count_max = 8
-		def.dogshoot_count2_max = 2
 	end
 	grug_mobs.camp_swarm(def, {range = 16})
 	return def

@@ -65,15 +65,20 @@ return function(api)
 	local function same(a, b)
 		return a and b and a.x == b.x and a.y == b.y and a.z == b.z
 	end
+	-- `interact` from grug_core's privilege cache (Round 81: this runs on
+	-- every server step for every player; an uncached check is an
+	-- auth-database read).
 	local function allowed(player)
-		return player:get_hp() > 0 and core.check_player_privs(player, {interact = true}) and
+		return player:get_hp() > 0 and
+			grug_core.has_priv(player:get_player_name(), "interact") and
 			not grug_core.is_stunned(player) and
 			not grug_core.player_has_live_mount(player) and
 			not (grug_core.player_in_creation_stasis and
 				grug_core.player_in_creation_stasis(player:get_player_name()))
 	end
-	local function selected(player)
-		local def = api.selected(player)
+	-- `item`: the wielded item's name when the caller has read it.
+	local function selected(player, item)
+		local def = api.selected(player, item)
 		return def and Q.is_unlocked(player, def.id) and def or nil
 	end
 	local function ray(player, range, origin)
@@ -564,7 +569,9 @@ return function(api)
 	end
 	local M = {}
 	local stepping = {} -- player name -> true while that player's step runs
-	local function step(player, press)
+	-- `item`: the wielded item's name, read once by the caller for the whole
+	-- pass (init.lua), else read here.
+	local function step(player, press, item)
 		local s, controls = state(player), player:get_player_control()
 		local down, right = controls.dig == true or press == true, controls.place == true
 		-- An ally belongs to the press that began on it.
@@ -573,8 +580,9 @@ return function(api)
 		if not down and s.mode and core.get_us_time() - s.mode_at >= MODE_GRACE_US then
 			end_mode(player, s)
 		end
-		local item, slot = player:get_wielded_item():get_name(), player:get_wield_index()
-		local def = selected(player)
+		item = item or player:get_wielded_item():get_name()
+		local slot = player:get_wield_index()
+		local def = selected(player, item)
 		-- One native RMB action per physical press (see M.food_native).
 		if not right then s.native_seen = nil end
 		local changed = s.slot and (s.slot ~= slot or s.item ~= item)
@@ -705,11 +713,11 @@ return function(api)
 	-- would cast again before the outer cast has paid its cost or armed its
 	-- cooldown. The guard is cleared even when a nested callback raises; the
 	-- rethrown message keeps the inner traceback.
-	function M.step(player, press)
+	function M.step(player, press, item)
 		local name = player:get_player_name()
 		if stepping[name] then return end
 		stepping[name] = true
-		local ok, err = xpcall(function() return step(player, press) end,
+		local ok, err = xpcall(function() return step(player, press, item) end,
 			debug.traceback)
 		stepping[name] = nil
 		if not ok then error(err, 0) end

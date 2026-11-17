@@ -108,6 +108,8 @@ grug_inventory = {HOTBAR_STORE = "grug_hotbar_store"}
 rawset(_G, "ItemStack", function() return {get_tool_capabilities = function() return {} end} end)
 local stunned, on_stun = false, {}
 grug_core = {
+	-- Round 81: the input gate asks grug_core's privilege cache.
+	has_priv = function() return true end,
 	combat_eye_pos = function() return vector.copy(EYE) end,
 	combat_actor = function(ref) return ref end,
 	aim_raycast = function()

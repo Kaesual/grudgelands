@@ -29,24 +29,24 @@ grug_mounts.SUMMON_HINT = "Press E to summon your mount"
 grug_mounts.TIERS = {
 	[1] = {id = 1, key = "apprentice", name = "Apprentice Riding",
 		level = 15, mode = "land", speed = 6.4,
-		item = "grug_mounts:apprentice_mount", icon = "grug_mounts_icon_t1_accord.png"},
+		icon = "grug_mounts_icon_t1_accord.png"},
 	[2] = {id = 2, key = "journeyman", name = "Journeyman Riding",
 		level = 30, mode = "land", speed = 8,
-		item = "grug_mounts:journeyman_mount", icon = "grug_mounts_icon_human.png"},
+		icon = "grug_mounts_icon_human.png"},
 	[3] = {id = 3, key = "expert", name = "Expert Riding",
 		level = 45, mode = "flight", speed = 8, vertical_speed = 8,
-		item = "grug_mounts:expert_mount", icon = "grug_mounts_icon_expert_accord.png"},
+		icon = "grug_mounts_icon_expert_accord.png"},
 	[4] = {id = 4, key = "master", name = "Master Riding",
 		level = 60, mode = "flight", speed = 12, vertical_speed = 12,
-		item = "grug_mounts:master_mount", icon = "grug_mounts_icon_master_accord.png"},
+		icon = "grug_mounts_icon_master_accord.png"},
 	-- Boats are water mounts (docs/design/boats.md): the same purchase record,
 	-- quickbar button and ephemeral entity, sold by the Shipwright.
 	[5] = {id = 5, key = "boat", name = "Boat",
 		level = 15, mode = "water", speed = 4,
-		item = "grug_mounts:boat", icon = "grug_mounts_icon_boat.png"},
+		icon = "grug_mounts_icon_boat.png"},
 	[6] = {id = 6, key = "improved_boat", name = "Improved Boat",
 		level = 30, mode = "water", speed = 8,
-		item = "grug_mounts:improved_boat", icon = "grug_mounts_icon_improved_boat.png"},
+		icon = "grug_mounts_icon_improved_boat.png"},
 }
 grug_mounts.RIDING_TIERS = {1, 2, 3, 4}
 grug_mounts.BOAT_TIERS = {5, 6}

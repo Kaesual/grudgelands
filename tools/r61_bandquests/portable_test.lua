@@ -891,6 +891,9 @@ do
 		get_meta = function() return {get_inventory = function() return {get_stack = function() return ItemStack(PACKET) end} end} end,
 	})
 	grug_housing = {}
+	-- Round 81: the rule belongs to grug_inventory's bound-item seam, whose
+	-- one allow callback and node and detached wraps these are.
+	dofile(ROOT .. "/mods/PLAYER/grug_inventory/bound.lua")
 	dofile(ROOT .. "/mods/PLAYER/grug_housing/soulbound.lua")
 	local packet = ItemStack(PACKET)
 	eq(allow(nil, "put", nil, {listname = "grug_bag1_content", stack = packet}), nil, "the Packet goes into a bag")

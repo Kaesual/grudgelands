@@ -14,12 +14,15 @@
 --    zone, near, heart).
 -- B. The game module (spawn_regions.lua with the real spawn_policy.lua,
 --    density.lua, camps.lua and roam_avoid.lua under stubs) with the SHIPPED
---    Dawnmere recipe on the same synthetic world: a zone without a recipe
---    keeps its palette, the spawner end to end (kind tag, spawn clock, level
+--    Dawnmere recipe on the same synthetic world: a palette or a missing
+--    recipe fails the load (Round 81, ruling 6; the palette zone case is
+--    retired with the layer), the spawner end to end (kind tag, spawn clock, level
 --    in the role's range, roster by clock, shore host for crabs, protected
 --    ground, light), the drift band (aggressive refused, neutral allowed),
 --    density classes (sparse / normal / dense shares of the budget, refill),
---    recipe camps (first fill, respawn window, levels, radius), leaders
+--    recipe camps (first fill, respawn window, levels, radius; since Round 81
+--    counted only in view: a player within SR.LEADER_RANGE and the centre's
+--    block active, and refills after an absence from the last look), leaders
 --    (spot, level, never saved, 24-node clearance, 300 s after a kill), the
 --    level overlay, the quest seams (get_area, area_roles, zone_area_ids,
 --    leader), describe and direction. The leader's 1.15 size and 1.5x HP are
@@ -490,6 +493,8 @@ env.core = {
 	get_timeofday = function() return G.time end,
 	get_gametime = function() return G.now end,
 	get_us_time = function() return os.clock() * 1e6 end,
+	-- Every block is active unless a case says otherwise (Round 81 camps).
+	compare_block_status = function() return not G.inactive end,
 	registered_entities = {},
 	registered_nodes = {["default:dirt_with_grass"] = {walkable = true},
 		["default:sand"] = {walkable = true}, ["grug_nodes:blight_dirt"] = {walkable = true},
@@ -622,12 +627,14 @@ for name, def in pairs(env.core.registered_entities) do
 end
 check(type(overlay) == "function", "the level overlay is registered with grug_core")
 
--- A zone without a recipe keeps its palette; the shipped recipe installs.
-SR.install_zone(GOLD, {zone = GOLD, palette = {families = {"settled"}, boar = "grug_mobs:boar"}})
-check(not SR.zone_has_recipe(GOLD) and SR.fallback_palettes()[GOLD].settled, "no recipe: today's palette")
+-- A palette or a missing recipe fails the load (Round 81, ruling 6); the
+-- shipped recipe installs. Goldmead stays without spawn data in this world.
+check(not pcall(SR.install_zone, GOLD, {zone = GOLD, palette = {families = {"settled"}}}) and
+	not pcall(SR.install_zone, GOLD, {zone = GOLD}) and not SR.zone_has_recipe(GOLD),
+	"a palette or no recipe fails the load")
 SR.install_zone(DAWN, data)
 for _, fn in ipairs(mods_loaded) do fn() end
-check(SR.zone_has_recipe(DAWN) and SR.fallback_palettes()[DAWN] == nil, "recipe zone, no palette")
+check(SR.zone_has_recipe(DAWN) and SR.fallback_palettes == nil, "recipe zone, no palette layer")
 check(GM.spawn_policy_allows("grug_mobs:boar", {x = 200, y = GROUND_Y, z = -2700}) == false and
 	GM.spawn_policy_allows("grug_mobs:rabbit", {x = 200, y = GROUND_Y, z = -2700}) == true,
 	"ABM rows in a recipe zone: critters only")
@@ -655,11 +662,11 @@ check(M and M.compact and M.order == nil and #M.regions > 0 and
 	SR.build_stats[DAWN].cells == #F.order and M.cell_count == #F.order and
 	#F.regions == #M.regions, "lazy build")
 check(SR.map(DAWN) == M, "cached")
-check(SR.map(GOLD) == nil, "no map without a recipe")
+check(SR.map(GOLD) == nil, "no map without spawn data")
 -- One level truth: the overlay answers the region's level.
 local r0 = M.region_at(200, -2700)
 check(overlay(200, -2700) == r0.level and SR.level_at(200, -2700) == r0.level, "overlay = region level")
-check(overlay(0, -2100) == nil, "no overlay in a zone without a recipe")
+check(overlay(0, -2100) == nil, "no overlay in a zone without spawn data")
 local lp = SR.leader_pos("confused_bandit_chief")
 check(lp and lp.x == M.leaders[1].x and lp.y == GROUND_Y, "leader_pos builds and answers")
 
@@ -794,10 +801,15 @@ do
 	clear()
 	local unit = M.camps[1]
 	check(unit and #SR.camp_units() == 1 and SR.camp_units()[1] == unit, "camp unit of the built map")
-	local PC = player_at(unit.x + 50, unit.z)
+	local PC = player_at(unit.x + 40, unit.z)
 	G.now = 5000
-	GM.region_camp_tick(G.now, {player_at(unit.x + 70, unit.z)}, "day")
-	check(#spawned == 0, "first fill waits for a player within 64 nodes")
+	check(SR.LEADER_RANGE == 48, "the camps' range is the leaders' (48 here)")
+	GM.region_camp_tick(G.now, {player_at(unit.x + 50, unit.z)}, "day")
+	check(#spawned == 0, "first fill waits for a player within 48 nodes")
+	G.inactive = true
+	GM.region_camp_tick(G.now, {PC}, "day")
+	check(#spawned == 0, "no look while the centre's block is inactive")
+	G.inactive = nil
 	GM.region_camp_tick(G.now, {PC}, "day")
 	check(#spawned == 6, "first look fills all six slots (" .. #spawned .. ")")
 	for _, m in ipairs(spawned) do
@@ -820,6 +832,23 @@ do
 	check(#spawned == before + 1, "first slot back within 60 s, at any clock")
 	GM.region_camp_tick(G.now + 130, {PC}, "day")
 	check(#spawned == before + 2, "second slot after another 30-60 s")
+	-- Round 81 (audit MOB2-03): an absence. Two members are culled while
+	-- nobody looks; the first look 600 s later books them from the last look
+	-- (G.now + 130), so both are due at once instead of one 30-60 s later.
+	spawned[3].object._removed = true
+	spawned[4].object._removed = true
+	local away = #spawned
+	GM.region_camp_tick(G.now + 400, {player_at(unit.x + 200, unit.z)}, "day")
+	check(#spawned == away, "out of view: no look")
+	GM.region_camp_tick(G.now + 730, {PC}, "day")
+	check(#spawned == away + 2, "after an absence both refills are due at the return (" ..
+		(#spawned - away) .. ")")
+	-- In view all along, a death books from now: no refill before 30 s.
+	spawned[5].object._removed = true
+	local still = #spawned
+	GM.region_camp_tick(G.now + 735, {PC}, "day")
+	GM.region_camp_tick(G.now + 740, {PC}, "day")
+	check(#spawned == still, "in view: a fresh death waits its 30-60 s")
 	-- An ambient attempt on camp ground is no pick.
 	check(SR.attempt({x = unit.x - 24, y = GROUND_Y + 1, z = unit.z}, {player_at(unit.x - 24, unit.z)},
 		"day", 0, 0) == "camp", "camp ground spawns through its slots only")

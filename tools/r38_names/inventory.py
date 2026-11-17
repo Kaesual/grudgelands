@@ -1021,11 +1021,11 @@ class Model:
                     r.cite(MOBS + "/capital_displays.lua", r"local function configure_display_tag") + ", " +
                     r.cite("mods/PLAYER/grug_quests/use.lua", r"nametag = point\.objective\.label") + ", " +
                     r.cite("mods/PLAYER/grug_factions/init.lua", r"set_tag_carrier_text\(carrier, state\.text\)"))
-        self.source("no_slot_dormant", "(no slot) Elder Bear / Silverback spawn rolls of base bears and apes, "
-                    "whose ABM rows are retired in recipe zones (every zone has one); the legacy "
-                    "bandit/mirefolk fires are scenery in a recipe zone",
-                    r.cite(MOBS + "/bear.lua", r"ent\.description = elder_name") + ", " +
-                    r.cite(MOBS + "/jungle_ape.lua", r'ent\.description = "Silverback"') + ", " +
+        self.source("no_slot_dormant", "(no slot) Elder Bear / Silverback rolls of a fresh base bear or ape "
+                    "(Round 81: on activation), a name no ambient spawner adds (the recipes place "
+                    "sub-types, which never roll); the legacy bandit/mirefolk fires are scenery",
+                    r.cite(MOBS + "/bear.lua", r"self\.description = elder_name") + ", " +
+                    r.cite(MOBS + "/jungle_ape.lua", r'self\.description = "Silverback"') + ", " +
                     r.cite(policy, r"function grug_mobs\.spawn_row_kept") + ", " +
                     r.cite(MOBS + "/camps.lua", r"is scenery in a recipe zone"))
         self.source("start_footprint", "(no slot) start towns refuse hostile spawns; start-zone mobs are "

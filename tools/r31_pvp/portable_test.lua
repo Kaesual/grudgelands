@@ -162,6 +162,8 @@ grug_core.particles = {play = function() end}
 dofile(repo .. "/mods/CORE/grug_core/combat_ray.lua")
 dofile(repo .. "/mods/CORE/grug_core/combat.lua")
 dofile(repo .. "/mods/CORE/grug_core/death_messages.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
 eq(#hp_modifiers, 1, "one central hp-change modifier")
 local modifier = hp_modifiers[1]
@@ -264,8 +266,10 @@ local function leave(p, keep_connected)
 		if q == p then table.remove(connected, i) break end
 	end
 end
+-- One location pass: each connected player's sample and notify (Round 81:
+-- the pass runs per player on its join slot).
 local function tick()
-	grug_pvp.location_tick()
+	for _, p in ipairs(connected) do grug_pvp.location_tick(p) end
 end
 local function state(p) return grug_pvp.state(p) end
 

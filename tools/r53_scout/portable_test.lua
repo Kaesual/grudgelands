@@ -333,6 +333,8 @@ check(pool_src ~= nil, "K base_pool found in grug_core/combat.lua")
 
 local melee_prepare
 local fake_grug_core = with_any({
+	-- Round 81: the input gate asks grug_core's privilege cache.
+	has_priv = function() return true end,
 	get_melee_weapon = function(p) return p.melee and ItemStack(p.melee) or ItemStack("") end,
 	get_equipped_weapon = function(p) return p.bow and ItemStack(p.bow) or nil end,
 	equipment_is_broken = function() return false end,

@@ -110,7 +110,8 @@ _G.core = {
 for _, kind in ipairs({"joinplayer", "leaveplayer", "mods_loaded"}) do
 	core["register_on_" .. kind] = function(func) world.hooks[kind] = func end
 end
-_G.grug_core = {feed = function(player, kind, text)
+-- Round 81: the shared text rules (raw field cut, UTF-8 rule).
+_G.grug_core = {text = dofile(repo .. "/mods/CORE/grug_core/text.lua"), feed = function(player, kind, text)
 	world.feed[#world.feed + 1] = {player:get_player_name(), kind, text}
 end}
 _G.grug_classes = {

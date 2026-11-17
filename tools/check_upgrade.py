@@ -27,7 +27,19 @@ compatible, map reset, migrate or new server. The rules checked here:
   The comparison is of what the towns build, never of the template files. A missing
   earlier declaration is accepted (the first declaration); a pushed schema-1
   declaration has no `migrate` list, a pushed schema-1 or schema-2 one no
-  `map_reset_pass`.
+  `map_reset_pass`;
+- THE FULL-PREPARATION AUTHORITY (Round 81, audit M5-01): the bytes of the
+  files mods/MAPGEN/grug_mapgen/wp40/preparation_identity.lua digests (its
+  default `files` list, read at both commits) are compared with the pushed
+  commit's. A world in full preparation mode stops at its next start when
+  one of them changed (upgrade contract, "Preparation authority"), so any
+  difference (a comment too, or a changed list) needs a map reset entry the
+  pushed declaration did not have, or the server admins' note: a line naming
+  `grug_prepare_full_world` in CHANGELOG.md's section of the new version,
+  which must be above the pushed one (the 0.57.0 practice). The files that
+  differ are named either way. The rest of the identity (the seed, the WP43
+  projection digest, the layout texts, the template reach and the settlement
+  boxes) is not compared here.
 
 `outcome()` is the platform's reading: a move from `a` to `b` crosses every
 entry v with a < v <= b; crossing a `new_server` entry needs a new server
@@ -43,6 +55,7 @@ Usage (repository root; a check runs the self-test of these rules first):
   python3 tools/check_upgrade.py --self-test
 """
 import json
+import posixpath
 import re
 import subprocess
 import sys
@@ -281,6 +294,111 @@ def pushed_town_builds(ref):
         return town_builds(tree)
 
 
+PREPARATION = "mods/MAPGEN/grug_mapgen/wp40/preparation_identity.lua"
+CHANGELOG = "CHANGELOG.md"
+ACKNOWLEDGEMENT = "grug_prepare_full_world"
+
+
+def preparation_files(source):
+    """The default `files` list of preparation_identity.lua: (list, None) or
+    (None, error). The list must be one table of double-quoted string
+    literals; anything else there is refused rather than guessed."""
+    code = "\n".join(line.split("--", 1)[0] for line in source.splitlines())
+    tables = re.findall(r"\bfiles\s*=\s*files\s+or\s*\{([^{}]*)\}", code)
+    if len(tables) != 1:
+        return None, "%s must hold exactly one `files = files or {...}` table" % PREPARATION
+    items = [item.strip() for item in tables[0].split(",")]
+    if items and items[-1] == "":
+        items.pop()
+    names = []
+    for item in items:
+        match = re.fullmatch(r'"([^"\\]*)"', item)
+        if not match:
+            return None, "%s: `files` holds %r, not a string literal" % (PREPARATION, item)
+        names.append(match.group(1))
+    if not names:
+        return None, "%s: `files` is empty" % PREPARATION
+    return names, None
+
+
+def preparation_path(name):
+    """A listed name (relative to the wp40 folder) as a repository path."""
+    return posixpath.normpath(posixpath.join(posixpath.dirname(PREPARATION), name))
+
+
+def preparation_changes(old_names, new_names, read_old, read_new):
+    """What changed in the digested bytes between the pushed commit and now:
+    a list of descriptions, empty when the identity's file part is the same.
+    read_old(path) and read_new(path) return bytes, or None when absent."""
+    changes = []
+    if old_names != new_names:
+        changes.append("the file list (%s -> %s)" % (", ".join(old_names), ", ".join(new_names)))
+    for name in new_names:
+        path = preparation_path(name)
+        before, after = read_old(path), read_new(path)
+        if after is None:
+            changes.append(path + " (missing)")
+        elif before != after:
+            changes.append(path)
+    return changes
+
+
+def changelog_section(text, version):
+    """CHANGELOG.md's section of `version` (its `## <version> ...` heading to
+    the next `## `), or None."""
+    lines, section = text.splitlines(), None
+    for line in lines:
+        if line.startswith("## "):
+            if section is not None:
+                break
+            if re.match(r"^## %s(\s|$)" % re.escape(version), line):
+                section = []
+        elif section is not None:
+            section.append(line)
+    return None if section is None else "\n".join(section)
+
+
+def preparation_errors(changes, old, new, changelog):
+    """A change of the digested files needs a newly declared map reset, or
+    the admins' note in the new version's CHANGELOG section."""
+    if not changes:
+        return []
+    if [entry for entry in new["map_reset"] if entry not in (old or {}).get("map_reset", [])]:
+        return []
+    bumped = old is None or parse_version(new["version"]) > parse_version(old.get("version"))
+    section = changelog_section(changelog, new["version"])
+    if bumped and section is not None and ACKNOWLEDGEMENT in section:
+        return []
+    return ["the files the full-preparation authority digests changed against the pushed "
+            "commit (%s): a world in full preparation mode stops at its next start, so "
+            "this needs a map reset entry for this version or a line naming `%s` in "
+            "CHANGELOG.md's section of a version above the pushed one"
+            % ("; ".join(changes), ACKNOWLEDGEMENT)]
+
+
+def preparation_check(base, old, new):
+    """(errors, note) of the full-preparation comparison against `base`."""
+    current = read_file(PREPARATION)
+    if current is None:
+        return ["%s is missing" % PREPARATION], ""
+    new_names, error = preparation_files(current.decode())
+    if error:
+        return [error], ""
+    pushed = read_at(base, PREPARATION)
+    if pushed is None:
+        return [], "; no preparation authority at %s: accepted" % base
+    old_names, error = preparation_files(pushed.decode())
+    if error:
+        return ["at %s: %s" % (base, error)], ""
+    changes = preparation_changes(old_names, new_names, lambda path: read_at(base, path),
+                                  read_file)
+    errors = preparation_errors(changes, old, new,
+                                (ROOT / CHANGELOG).read_text(encoding="utf-8"))
+    if changes and not errors:
+        return [], "; the full-preparation files changed (%s), declared" % "; ".join(changes)
+    return errors, "; the full-preparation files are as at %s" % base
+
+
 def town_errors(old_builds, new_builds, old, new):
     """A change of what the towns build needs a newly declared map reset."""
     changed = sorted(key for key in set(old_builds) | set(new_builds)
@@ -309,6 +427,9 @@ def check(base):
         errors += step_errors(decl["migrate"], pushed_migrate, read_file,
                               lambda path: read_at(base, path))
         if not errors:
+            preparation, preparation_note = preparation_check(base, old, decl)
+            errors += preparation
+            note += preparation_note
             errors += town_errors(pushed_town_builds(base), town_builds(ROOT), old, decl)
             note += "; the towns build as at %s or a map reset is declared" % base
     if errors:
@@ -476,6 +597,57 @@ def self_test():
            "a town's identity changed with a new map reset")
     expect(town_errors(towns, {"hearthpine": towns["hearthpine"]}, first,
                        dict(first, version="0.42.0")) != [], "a town that disappeared")
+
+    listed = ('\tfiles = files or {\n\t\t"zones.lua", "../wp13/city_edge.lua", -- shapes\n'
+              '\t\t"../../../CORE/grug_core/preparation_plan.lua",\n\t}\n')
+    expect(preparation_files(listed) == (["zones.lua", "../wp13/city_edge.lua",
+                                          "../../../CORE/grug_core/preparation_plan.lua"], None),
+           "the preparation list with a comment")
+    expect(preparation_files('-- files = files or {"x.lua"}\n' + listed)[1] is None,
+           "a commented-out preparation list does not count")
+    expect(preparation_files("\tfiles = files or {NAME},\n")[1] is not None,
+           "the preparation list holds only string literals")
+    expect(preparation_files("\tfiles = {}\n")[1] is not None, "a missing preparation list")
+    expect(preparation_files(listed + listed)[1] is not None, "exactly one preparation list")
+    expect(preparation_path("../wp13/city_edge.lua") == "mods/MAPGEN/grug_mapgen/wp13/city_edge.lua"
+           and preparation_path("../../../CORE/grug_core/preparation_plan.lua")
+           == "mods/CORE/grug_core/preparation_plan.lua"
+           and preparation_path("zones.lua") == "mods/MAPGEN/grug_mapgen/wp40/zones.lua",
+           "listed names resolve from the wp40 folder")
+    names = ["zones.lua", "../wp13/city_edge.lua"]
+    tree = {preparation_path(n): b"x" for n in names}
+    edited = dict(tree, **{preparation_path("zones.lua"): b"x -- a comment"})
+    expect(preparation_changes(names, names, tree.get, tree.get) == [],
+           "the same bytes: no change")
+    expect(preparation_changes(names, names, tree.get, edited.get)
+           == ["mods/MAPGEN/grug_mapgen/wp40/zones.lua"], "a comment is a change")
+    expect(len(preparation_changes(names[:1], names, tree.get, tree.get)) == 1,
+           "a grown list is a change")
+    expect(preparation_changes(names, names, {}.get, tree.get) == [
+        preparation_path(n) for n in names], "a file new since the pushed commit")
+    expect(preparation_changes(names, names, tree.get, {}.get)[0].endswith("(missing)"),
+           "a listed file missing now")
+    log = ("# Changelog\n\n## 0.42.0 — b (2026-10-02)\n\n- **Server admins:** a world created "
+           "with `grug_prepare_full_world = true` refuses to start\n\n## 0.41.0 — a\n\n- x\n")
+    plain = log.replace("grug_prepare_full_world", "x")
+    expect(changelog_section(log, "0.41.0") == "\n- x", "a CHANGELOG section")
+    expect(changelog_section(log, "0.4") is None and changelog_section(log, "0.43.0") is None,
+           "only the version's own heading")
+    change = ["mods/MAPGEN/grug_mapgen/wp40/zones.lua"]
+    second = dict(first, version="0.42.0")
+    expect(preparation_errors([], first, second, plain) == [], "unchanged files: nothing to say")
+    expect(preparation_errors(change, first, second, plain) != [],
+           "a changed file without a map reset or the admins' note")
+    expect(preparation_errors(change, first, dict(second, map_reset=["0.40.1", "0.42.0"]),
+                              plain) == [], "a changed file with a new map reset")
+    expect(preparation_errors(change, first, second, log) == [],
+           "a changed file with the admins' note in the new version's section")
+    expect(preparation_errors(change, dict(first, version="0.42.0"), second, log) != [],
+           "the note counts only for a version above the pushed one")
+    expect(preparation_errors(change, first, dict(first, version="0.43.0"), log) != [],
+           "a note in an older section does not count")
+    expect(preparation_errors(change, None, second, log) == [],
+           "the first declaration with the note")
 
     expect(game_conf_version("# version = 1.0.0\nversion = 0.41.0\n") == "0.41.0",
            "game.conf's version line")

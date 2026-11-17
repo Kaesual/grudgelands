@@ -47,7 +47,6 @@ end
 local function box_radius(cbox)
 	return max(-cbox[1], cbox[4], -cbox[3], cbox[6])
 end
-grug_mobs.box_radius = box_radius
 
 -- Collision top of a node above its centre, cached per node name: +0.5 for a
 -- regular (or unknown-shaped) node, the highest y of a "fixed" collision box

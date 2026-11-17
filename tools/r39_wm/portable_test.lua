@@ -547,13 +547,16 @@ do
 	grug_xp.add_xp(ann, 10 * grug_xp.xp_for_level(60))
 	eq(level_of(ann), "60", "L capped at MAX_LEVEL")
 	eq(grug_xp.get_xp(ann), grug_xp.xp_for_level(60), "L XP capped too")
-	-- XP stays the authority: a stale level is recomputed on join.
+	-- XP stays the authority: a stale level is recomputed on join. The
+	-- rejoin is a new player object over the same meta, as in the engine
+	-- (grug_xp keeps the XP per ObjectRef since Round 81).
 	ann:get_meta():set_string("grug_xp:level", "42")
 	ann:get_meta():set_int("grug_xp:xp", grug_xp.xp_for_level(9))
-	join(ann, "grug_xp")
-	eq(level_of(ann), "9", "L join recomputes the level from XP")
-	eq(grug_xp.get_level(ann), 9, "L get_level derives from XP")
-	check(level_of(ann):find("^%d+$") ~= nil, "L a decimal integer string")
+	local rejoined = setmetatable({}, {__index = ann})
+	join(rejoined, "grug_xp")
+	eq(level_of(rejoined), "9", "L join recomputes the level from XP")
+	eq(grug_xp.get_level(rejoined), 9, "L get_level derives from XP")
+	check(level_of(rejoined):find("^%d+$") ~= nil, "L a decimal integer string")
 	local bob = new_player("bob", "orc")
 	grug_xp.set_xp(bob, 0 / 0)
 	eq(level_of(bob), "", "L a refused set_xp writes nothing")
@@ -826,7 +829,8 @@ do
 		end
 	end
 	V.OFFHAND_VISUALS = nil
-	for key in pairs(V.cache) do V.cache[key] = nil end
+	-- grug_visuals.cache is no longer exported (Round 81 P1-01); clear it through the API.
+	V.clear_compose_cache()
 	eq(count, 12 * #PAIRS * 2, "G every shield and spellbook layer checked")
 end
 

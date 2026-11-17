@@ -1,7 +1,7 @@
 # Upgrade contract: the declared releases
 
 The per-release case history of the [upgrade contract](upgrade-contract.md) §2 (the
-declaration): why each release from 0.41.0 to 0.70.0 declared its map reset, step or
+declaration): why each release from 0.41.0 to 0.81.0 declared its map reset, step or
 neither. Section numbers (§) refer to the upgrade contract. The rules are in the
 contract; this file only records the cases.
 
@@ -27,6 +27,10 @@ contract; this file only records the cases.
   by world generation) and the fourth step, 0.48.0 (§5.8): every bag holds
   half as much, so at each character's next join the inventory is sorted
   into the new sizes and what no longer fits is mailed.
+- 0.49.0 (Round 49) needs the fifth map reset: ores, gems and cave plants
+  come from the engine's own map generator and world generation got faster,
+  so an existing world's map is generated anew. It declares no step: the
+  new version reads every character as it is.
 - 0.50.0 (Round 50) moves to schema 3 with `"map_reset_pass": "0.50.0"`:
   its tool packs the claims' containers before a map reset (§3.5). It is
   compatible and declares no step; the production world moves from 0.48.1
@@ -120,6 +124,10 @@ contract; this file only records the cases.
   `map_reset_pass` stays 0.50.0. Unpushed 0.58.0's entry already covers
   these changes against pushed 0.57.0; the production world moves from
   0.57.0 to 0.62.0 across one reset.
+- 0.63.0 (Round 63, fortified mining outposts and faction banners) needs
+  the twelfth map reset: all 36 completed mining camps use new templates
+  and relocated lift columns, and their underground rooms follow the lift.
+  It declares no step; `map_reset_pass` stays 0.50.0.
 - 0.67.0 (Round 67, the playtest's notes) declares the sixth step, 0.67.0
   (§5.8): the metal rods are removed items, so every rod a world holds
   outside the map is refunded as bars offline. No map reset.
@@ -141,3 +149,18 @@ contract; this file only records the cases.
   Lethariel and Kezamba. Item, node and socket ids stay. `map_reset_pass`
   stays 0.50.0. The production world moves from 0.65.0 to 0.70.0 across one
   reset and runs the steps 0.67.0 and 0.69.0.
+- 0.71.0 to 0.73.0, 0.74.0, 0.75.4, 0.76.0 to 0.76.2 and 0.78.0 to 0.81.0
+  are compatible: no map reset, no step. The stores they add are not
+  map-bound and stay at a map reset: the clans (0.76.0) and the website
+  accounts (0.79.0), §3.2.
+- 0.73.1 (Round 73.1, character creation and capital polish) needs the
+  fourteenth map reset: the capitals' halls, gates and furniture, the start
+  towns' tables and the Expedition Registrar's place change what world
+  generation builds. No step.
+- 0.75.0, 0.75.1, 0.75.2, 0.75.3 and 0.75.5 (Round 75 and its follow-ups,
+  the homes' and cities' details) need the fifteenth to nineteenth map
+  resets, each joining the one before: city furnishings in the buildings
+  (0.75.0, more in 0.75.2), tidier workshops and windows (0.75.1), the
+  Registrar outside the great hall's door (0.75.3) and the towns' new
+  structural frames (0.75.5) change what world generation builds. Item and
+  node ids stay; no step. `map_reset_pass` stays 0.50.0.

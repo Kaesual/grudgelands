@@ -633,11 +633,6 @@ local function end_phase(name)
 		log(name .. " spawn attempts: " .. table.concat(parts, " "))
 		for k in pairs(SRs) do SRs[k] = nil end
 	end
-	if grug_pvp and grug_pvp.tick_stats then
-		local ts = grug_pvp.tick_stats
-		log(("%s pvp location samples=%d avg_us=%.2f"):format(name, ts.samples, ts.us / math.max(1, ts.samples)))
-		ts.samples, ts.us = 0, 0
-	end
 	if grug_map and grug_map.location and grug_map.location.stats then
 		local ls = grug_map.location.stats
 		log(("%s location samples=%d avg_us=%.2f"):format(name, ls.samples, ls.us / math.max(1, ls.samples)))

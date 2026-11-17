@@ -464,8 +464,9 @@ WATER_TYPES = ("sea_shallows", "sea_deep", "lake", "river")
 DENSITIES = ("sparse", "normal", "dense")
 MAX_MINOR = 0.25  # a roster's minor role: at most this share of the weight
 LEADER_PICKS = ("farthest_from_roads",)
-SPAWNS_FILE_KEYS = ("zone", "palette", "recipe", "notes")
-PALETTE_KEYS = ("families", "exact_mobs", "night_fallback", "boar", "lookalikes")
+# Mirrors FILE_KEYS in spawn_regions.lua: the palette layer is retired (Round
+# 81), so a `palette` key or a file without a recipe is a load error there.
+SPAWNS_FILE_KEYS = ("zone", "recipe", "notes")
 RECIPE_KEYS = ("from", "to", "belts", "camps", "leaders", "places", "critters", "notes")
 BELT_KEYS = ("id", "share", "levels", "max_from", "kinds", "notes")
 KIND_KEYS = ("id", "name", "day", "night", "density", "quest_target", "notes")

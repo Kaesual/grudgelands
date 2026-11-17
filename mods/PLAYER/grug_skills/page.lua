@@ -120,7 +120,6 @@ local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
 
 local function catalog_row(player, y, context)
-	grug_skills.guard_detached()
 	local rows = fill(player) or {}
 	local layout = grug_inventory.LAYOUT
 	local view_w = grug_inventory.VIEW_GEOMETRY.width
@@ -173,7 +172,6 @@ function sfinv.handle_scroll(player, context, fields)
 	return pure
 end
 
-grug_skills.catalog_row = catalog_row
 grug_classes.skill_catalog_row = catalog_row
 
 core.register_on_joinplayer(function(player) core.after(0, function(name)

@@ -122,6 +122,9 @@ rawset(_G, "core", {
 })
 local dismounts = 0
 rawset(_G, "grug_core", {
+ -- Round 81: waypoints.lua's discovery pass rides the join slots
+ -- (player_slots.lua, not loaded here); nothing here steps it.
+ register_player_pass=function() end,
  FLASH_COLOR={notice=1, error=2}, flash=function() end,
  faction_ids={"accord", "throng"},
  hold_movement=function() end, release_movement=function() end,

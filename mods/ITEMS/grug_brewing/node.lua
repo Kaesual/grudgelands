@@ -4,11 +4,6 @@ local station_factory = dofile(core.get_modpath("grug_jobs") .. "/station_nodes.
 station_factory.register_nodes()
 
 grug_brewing.NODE = INACTIVE
-grug_brewing.NODE_ACTIVE = ACTIVE
-
-function grug_brewing.register_public_position(pos)
-	station_factory.register_public_position("brewing_stand", pos)
-end
 
 local BOXES = {
 	{-0.4375, -0.3125, -0.375, 0.4375, -0.1875, 0.375},

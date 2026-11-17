@@ -75,7 +75,6 @@ local COLUMNS = {class = 0.1, race = 0.55, name = 1.05, role = 3.85, level = 4.9
 grug_parties.COLUMNS = COLUMNS
 -- The status column's "Online" (the clan list's green).
 local ONLINE_COLOR = "#b4dca4"
-grug_parties.ONLINE_COLOR = ONLINE_COLOR
 
 local function esc(value) return core.formspec_escape(tostring(value or "")) end
 local function health_color_mode(player)
@@ -327,14 +326,15 @@ local function online_list(fs, player, context, scale)
 	local shown = {}
 	for index, row in ipairs(rows) do
 		local is_own = row.name == own
+		-- Enemy rows never have either button (both eligibility rules refuse
+		-- them), so neither is asked for them (Round 81, audit P5-05).
+		local ally = not is_own and row.faction ~= nil and row.faction == own_faction
 		shown[index] = {name = row.name, faction = row.faction, class = row.class,
 			class_name = row.class_name, race = row.race, race_name = row.race_name,
 			level = row.level, favorite = favorites[row.name], own = is_own,
-			-- Enemy rows never have the button (eligible refuses them).
-			invite = not is_own and row.faction ~= nil and row.faction == own_faction and
-				grug_parties.can_invite(own, row.name),
+			invite = ally and grug_parties.can_invite(own, row.name),
 			mate = not is_own and clan.mate ~= nil and clan.mate(own, row.name),
-			clan_invite = not is_own and clan.can_invite ~= nil and clan.can_invite(own, row.name)}
+			clan_invite = ally and clan.can_invite ~= nil and clan.can_invite(own, row.name)}
 	end
 	grug_parties.row_list(fs, context, {x = VIEW_X, y = VIEW_Y, w = VIEW_W,
 		visible = VIEW_H / ROW_PITCH, field = SCROLL_FIELD, rows = shown, own = own,

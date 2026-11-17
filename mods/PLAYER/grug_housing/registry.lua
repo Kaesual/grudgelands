@@ -61,6 +61,13 @@ return function(api)
 
 	local claims = {}        -- id -> claim
 	local grid = {}          -- grid[cell_z][cell_x] -> array of claims
+	-- Round 81 (audit P4-02): the periodic scans touch only what can be due.
+	local drafts = {}        -- id -> claim, every draft (activated_at 0)
+	-- Never later than the lowest paid_until of a claim whose expiry is not
+	-- reported yet (paid_until ~= expired_for); nil: none. expiry_scan
+	-- returns at once before it; a refuel may leave it early (one full scan
+	-- then sets it right), never late.
+	local next_expiry = nil
 	local players = {}       -- name -> record
 	local next_id = 1
 	local claim_count = 0
@@ -142,6 +149,19 @@ return function(api)
 		storage.set_string("player:" .. name, encode_player(players[name]))
 	end
 
+	-- A paid_until that expiry_scan has to report one day.
+	local function note_expiry(claim)
+		if claim.paid_until ~= claim.expired_for and
+				(not next_expiry or claim.paid_until < next_expiry) then
+			next_expiry = claim.paid_until
+		end
+	end
+	-- For a tool that writes paid_until directly (the r25_claim_core engine
+	-- probe's faked clock): call it after the write, or expiry_scan may
+	-- return before that expiry. Game code changes paid_until only through
+	-- this file, whose writers call note_expiry themselves.
+	M.note_expiry = note_expiry
+
 	-- Claim grid --------------------------------------------------------------
 
 	local function cell(value) return floor(value / CELL) end
@@ -180,6 +200,7 @@ return function(api)
 
 	function M.load()
 		claims, grid, players, claim_count = {}, {}, {}, 0
+		drafts, next_expiry = {}, nil
 		claim_set_version = claim_set_version + 1
 		next_id = tonumber(storage.get_string("next_id")) or 1
 		local keys = storage.keys()
@@ -194,6 +215,8 @@ return function(api)
 					claims[id] = claim
 					claim_count = claim_count + 1
 					grid_add(claim)
+					if claim.activated_at == 0 then drafts[id] = claim end
+					note_expiry(claim)
 					if id >= next_id then next_id = id + 1 end
 				end
 			elseif name then
@@ -214,6 +237,7 @@ return function(api)
 			if keys[index]:match("^claim:") then storage.set_string(keys[index], "") end
 		end
 		claims, grid, claim_count = {}, {}, 0
+		drafts, next_expiry = {}, nil
 		claim_set_version = claim_set_version + 1
 		storage.set_string("next_id", tostring(next_id))
 		for name, rec in pairs(players) do
@@ -612,12 +636,11 @@ return function(api)
 		if rec and rec.state == "placed" and rec.claim_id and claims[rec.claim_id] then
 			return refuse("already_placed")
 		end
-		-- Drafts reserve their square too (R26 ruling 8).
-		for _, other in pairs(claims) do
-			local c = other.center
-			if math.abs(c.x - x) <= 2 * RADIUS and math.abs(c.z - z) <= 2 * RADIUS then
-				return refuse("overlap")
-			end
+		-- Drafts reserve their square too (R26 ruling 8). A claim whose square
+		-- meets the new one's (the grid holds every claim, drafts included):
+		-- the same as |dx| <= 2 RADIUS and |dz| <= 2 RADIUS (Round 81, P4-10).
+		if #M.claims_in(x - RADIUS, z - RADIUS, x + RADIUS, z + RADIUS) > 0 then
+			return refuse("overlap")
 		end
 		local kind = world.feature_in(x - RADIUS, z - RADIUS, x + RADIUS,
 			z + RADIUS, M.SETTLEMENT_MARGIN)
@@ -642,6 +665,7 @@ return function(api)
 		claim_count = claim_count + 1
 		claim_set_version = claim_set_version + 1
 		grid_add(claim)
+		drafts[claim.id] = claim
 		save_claim(claim)
 		local rec = record(name)
 		rec.state, rec.claim_id = "placed", claim.id
@@ -657,6 +681,7 @@ return function(api)
 	function M.remove(claim, reason)
 		if not claims[claim.id] then return false end
 		claims[claim.id] = nil
+		drafts[claim.id] = nil
 		claim_count = claim_count - 1
 		claim_set_version = claim_set_version + 1
 		grid_remove(claim)
@@ -689,6 +714,8 @@ return function(api)
 		local t = now()
 		claim.activated_at = t
 		claim.paid_until = t + accepted * M.LUMP_SECONDS
+		drafts[claim.id] = nil
+		note_expiry(claim)
 		save_claim(claim)
 		return accepted
 	end
@@ -698,7 +725,7 @@ return function(api)
 	-- counts as it does for fuel.
 	function M.draft_scan()
 		local t, result = now(), {}
-		for _, claim in pairs(claims) do
+		for _, claim in pairs(drafts) do
 			if claim.activated_at == 0 and claim.placed_at + M.DRAFT_SECONDS <= t then
 				result[#result + 1] = claim
 			end
@@ -721,6 +748,7 @@ return function(api)
 		local accepted = min(count, M.fuel_room(claim, seconds_each))
 		if accepted <= 0 then return 0 end
 		claim.paid_until = max(now(), claim.paid_until) + accepted * seconds_each
+		note_expiry(claim)
 		save_claim(claim)
 		return accepted
 	end
@@ -744,11 +772,15 @@ return function(api)
 	-- once), ordered by id. A draft is never reported.
 	function M.expiry_scan()
 		local t, result = now(), {}
+		if not next_expiry or t < next_expiry then return result end
+		next_expiry = nil
 		for _, claim in pairs(claims) do
 			if claim.paid_until <= t and claim.expired_for ~= claim.paid_until then
 				claim.expired_for = claim.paid_until
 				save_claim(claim)
 				result[#result + 1] = claim
+			else
+				note_expiry(claim)
 			end
 		end
 		table.sort(result, function(a, b) return a.id < b.id end)

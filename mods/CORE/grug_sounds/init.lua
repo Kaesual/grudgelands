@@ -26,9 +26,10 @@
 -- against it).
 --
 -- Formspec clicks: the "click" spec's file (no gain: the client plays it
--- from the style at the file's level) is added to every formspec through
--- the formspec prepend (style_type, played by the client), and CLICK_STYLE
--- carries it into the two formspecs that drop the prepend (no_prepend[]).
+-- from the style at the file's level) is CLICK_STYLE (style_type, played by
+-- the client). grug_core.ui.prepend ends with it, so it reaches every
+-- formspec through the prepend grug_core sets on join, and the formspecs
+-- that drop the prepend (no_prepend[]) add it themselves.
 
 grug_sounds = {}
 
@@ -380,14 +381,6 @@ end
 grug_sounds.CLICK_STYLE = EVENTS.click and
 	("style_type[button,image_button,checkbox,tabheader,dropdown;sound=" ..
 		EVENTS.click.name .. "]") or ""
-
--- `default` sets the prepend on join; this mod depends on it, so its join
--- callback runs later and extends that prepend.
-if grug_sounds.CLICK_STYLE ~= "" then
-	core.register_on_joinplayer(function(player)
-		player:set_formspec_prepend(player:get_formspec_prepend() .. grug_sounds.CLICK_STYLE)
-	end)
-end
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()

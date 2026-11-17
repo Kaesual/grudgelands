@@ -206,8 +206,8 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   The Map tab opens the window at once and puts the inventory back on its
   homepage on the next step, so the next "i" opens Inventory. Not during
   character creation or while dead. Esc, the inventory key ("i") or the X
-  button closes the window; "Back to inventory" opens the inventory window
-  at Inventory. A focused element that takes typed keys would swallow
+  button closes the window; the shared navigation tabs switch to another
+  page. A focused element that takes typed keys would swallow
   "i" (the engine focuses the first text box, read-only ones included, and
   a clicked list keeps the focus), so every send focuses the map's
   horizontal scrollbar (`set_focus[…;true]`; it keeps only the arrow keys,
@@ -427,7 +427,7 @@ at most 8 party checks and 2 sends per pass, so many windows opened
 together drift apart. The window counts as open from a send or any other
 event of it until its quit or until any other form is shown: every form
 the server shows passes a wrapper in `window.lua`, so another form, the
-death screen, the inventory ("Back to inventory") or a close of every form
+death screen, the inventory (a navigation tab) or a close of every form
 end it, and it is never sent again until the next opening, also after that
 form is closed (`default.node_formspec.shown_form` naming another form
 also means closed). A send that crosses a close shows the window again
@@ -692,8 +692,10 @@ drawn from the base image above. The gliding version (approved in playtest,
   pixel, the cell, the cell texture, the markers or the window change; the
   party arrows then or when a member comes, goes, moves or turns to another
   of the 16 heading frames. A player standing still with a still party costs
-  one position read, one wielded-item read and one read of the mount table
-  per step and sends nothing. Static markers are asked from their providers
+  one position read, one wield-index read and one read of the mount table
+  per step and sends nothing; the held item's name is read again only on a
+  new wield index and every 0.5 s (Round 81), so claim mode follows a slot
+  switch at once and a change inside the held slot within 0.5 s. Static markers are asked from their providers
   on joining, whenever the quest markers may have changed
   (`grug_quests.markers_changed`: a quest change, held objective items as
   the quest tracker sees them every 0.5 s, a level change), and at a check

@@ -20,12 +20,6 @@ local poacher = grug_mobs.bandit_def("Poacher")
 poacher.clock = "night"
 poacher._grug_leash_range = nil
 poacher._grug_visual = nil
-poacher._grug_spawn_check = function(pos)
-	if grug_zones.id_at(pos.x, pos.z) == "elandor_silverleaf_glades" then
-		return grug_zones.mob_level_at(pos) >= 7
-	end
-	return true
-end
 -- No armor without the composed look: the plain player model (Round 54).
 poacher.mesh = "character.b3d"
 poacher.textures = {{"grug_mobs_bandit_2.png^[multiply:#6b5948"}}
@@ -40,8 +34,6 @@ poacher.animation.shoot_start = poacher.animation.punch_start
 poacher.animation.shoot_end = poacher.animation.punch_end
 poacher.animation.shoot_speed = poacher.animation.punch_speed
 poacher.dogshoot_switch = 1
-poacher.dogshoot_count_max = 10
-poacher.dogshoot_count2_max = 3
 -- Round 24 ruling 20: roams at the Bandit's calm walk (1, from bandit_def),
 -- 4.0 only in combat; no soft de-aggro, as for the Bandit Archer.
 poacher.run_velocity = 4.0
@@ -50,17 +42,6 @@ poacher.view_range = 16
 -- The bandit's drops function as it is: the sell-only arrow bundle no
 -- longer drops (Round 46 ruling 12; coin bags, aggro.lua).
 grug_mobs.register_mob("grug_mobs:poacher", poacher)
-
-mobs:spawn({
-	name = "grug_mobs:poacher",
-	nodes = {
-		"default:dirt_with_grass",
-		"grug_nodes:dirt_with_forest_litter",
-		"grug_nodes:dirt_with_silver_litter",
-	},
-	interval = 20, chance = 2200, active_object_count = 3,
-	min_height = 0, max_height = 600,
-})
 
 -- Frost Stray: Skeleton Archer numbers and projectile, cold-blue bones.
 local frost_stray = common_ground({
@@ -77,8 +58,6 @@ local frost_stray = common_ground({
 	shoot_interval = 2.5,
 	shoot_offset = 1.5,
 	dogshoot_switch = 1,
-	dogshoot_count_max = 10,
-	dogshoot_count2_max = 3,
 	-- Calm roaming walk, 4.0 in combat (Round 24 ruling 20).
 	walk_velocity = 1,
 	run_velocity = 4.0,
@@ -113,13 +92,6 @@ local frost_stray = common_ground({
 })
 grug_mobs.register_mob("grug_mobs:frost_stray", frost_stray)
 
-mobs:spawn({
-	name = "grug_mobs:frost_stray",
-	nodes = {"default:gravel", "default:snowblock"},
-	interval = 20, chance = 2400, active_object_count = 3,
-	min_height = 0, max_height = 600,
-})
-
 -- Sun-Dried Husk: the desert Zombie shares ordinary damage-sustained pursuit.
 -- It does not burn in sunlight; its family exists only in the night cast.
 local husk = common_ground({
@@ -131,14 +103,6 @@ local husk = common_ground({
 	-- The zombie family's undead truce (zombie.lua); every husk sub-type
 	-- copies this base def.
 	_grug_truce_perk = "zombie_truce",
-	-- In Sunscar from band 2 of the start-zone gradient (L4+, Round 24
-	-- ruling 26; the Husk quest is level 5).
-	_grug_spawn_check = function(pos)
-		if grug_zones.id_at(pos.x, pos.z) == "kragmar_sunscar_flats" then
-			return grug_zones.mob_level_at(pos) >= 4
-		end
-		return true
-	end,
 	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
@@ -170,13 +134,6 @@ local husk = common_ground({
 	},
 })
 grug_mobs.register_mob("grug_mobs:sun_dried_husk", husk)
-
-mobs:spawn({
-	name = "grug_mobs:sun_dried_husk",
-	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
-	interval = 20, chance = 2000, active_object_count = 4,
-	min_height = 0, max_height = 600,
-})
 
 -- Song Bird: the gull chassis in a bright forest tint, fixed critter tier.
 local song_bird = {

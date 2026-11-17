@@ -58,8 +58,9 @@ of 2. This source check does not replace the entries' runtime acceptance steps.
   skill targets through `grug_abilities.aimed_target`, the crosshair colour,
   projectiles' aim), the hold ray in `grug_abilities/input.lua` (`ray()`),
   the right-click interaction ray in `grug_abilities/init.lua`
-  (`ability_on_secondary_use`) and the Target Frame's look ray
-  (`grug_mobs/target_frame.lua`). Fixture: `tools/r35_t/portable_test.lua`.
+  (`ability_on_secondary_use`), the Target Frame's look ray
+  (`grug_mobs/target_frame.lua`) and the door-before-NPC click
+  (`grug_mobs/door_click.lua`, 0.49.1). Fixture: `tools/r35_t/portable_test.lua`.
 - **Cost** (`tools/r35_t/engine.sh`: 20 frozen zombies in a 6 × 6 cluster,
   six fake players 2.5 m from their own zombie; µs per ray, median / best,
   each round alternating with the plain engine ray):
@@ -92,7 +93,8 @@ of 2. This source check does not replace the entries' runtime acceptance steps.
   `is_rotated_object`, `pointable`, `slab`, `enter_box`, `box_matrix`,
   `box_hit`, `same_box`, `rotated_hits`); keep `grug_core.aim_raycast` as
   a thin `core.raycast(origin, destination, true, liquids, pointabilities)`
-  or put `core.raycast` back at its call sites; drop the fixture's rotated
+  or put `core.raycast` back at its call sites (the five above, the door
+  click included); drop the fixture's rotated
   cases (`tools/r35_t/portable_test.lua`) and the `aim_raycast` stubs in
   `tools/r28_a4`, `tools/r30_p4`, `tools/r31_pvp` and `tools/r32_f2`.
 
@@ -204,9 +206,9 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
   `nav.search` in `mods/ENTITIES/mobs/grug_nav.lua`, raises any padding below
   `nav.MIN_PADDING` (2) to 2 (combat and fixed-walk searches at 6, Round 42
   NV1, then 12 and 16 within one stuck episode, Round 49 NAV2; fixture
-  `tools/r42_nv1` L3 and E). The other callers search far above it
-  (`grug_mobs/patrol.lua` 24, `grug_mobs/rift.lua` 40; Round 42 NV2 moves
-  them onto the module). The navigation probe never searches below 2
+  `tools/r42_nv1` L3 and E). Every search goes through `nav.search`, the
+  only `core.find_path` call in the game (patrol and the rift mobs walk on
+  the module since Round 42 NV2), so the floor covers all of them. The navigation probe never searches below 2
   (`tools/r42_nv0/grug_probe_r42_nv0/init.lua` `MIN_PAD`).
 - **How to tell upstream fixed it:** the neighbour access in
   `updateCostHeuristic` checks the index and rejects an invalid edge before
@@ -319,6 +321,12 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
 
 ## Checked and not listed
 
+- `grug_mobs/door_click.lua` (doors before NPCs, 0.49.1): the engine's
+  pointing counts an object one node squared nearer than a node
+  (`src/raycast.cpp` `RaycastSort`: "Add some bonus when one of them is an
+  object", upstream since 2018), so a right-click aimed at a door with a
+  dialog NPC close behind it reaches the NPC. Engine design, not a bug:
+  nothing to remove; its ray is one of §1's callers.
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields
   without `quit`, "workaround for luanti#16187"): vendored upstream
   minetest_game code, not ours. The engine bug (fields sent twice on the

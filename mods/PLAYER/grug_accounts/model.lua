@@ -2,8 +2,9 @@
 -- round79-plan.md §3.1): the website's list as the game holds it, the id
 -- index, the counting rule for a binding, the reward catalogue and the
 -- notices a character gets when its binding or rewards change. Pure: every
--- engine access is injected, so tools/r79_acc/portable_test.lua runs this
--- file itself.
+-- engine access is injected (the text rule grug_core.text, itself pure, is
+-- read at call time), so tools/r79_acc/portable_test.lua runs this file
+-- itself.
 --
 --   api.storage      get_string(key), set_string(key, value) (mod storage)
 --   api.serialize    core.serialize; api.deserialize core.deserialize
@@ -48,24 +49,20 @@ return function(api)
 	-- One UTF-8 character: a lead byte and its continuation bytes.
 	local CHAR = "[%z\1-\127\194-\244][\128-\191]*"
 
-	-- The bytes a character with this lead byte has.
-	local function size(byte)
-		if byte < 128 then return 1 elseif byte < 224 then return 2 elseif byte < 240 then return 3 end
-		return 4
-	end
-
 	-- Website text as one plain line, as grug_bridge's C.plain cleans it:
 	-- colour and translation escapes go whole, control characters and stray
-	-- bytes go, line ends become spaces, outer blanks go, at most `max`
-	-- characters.
+	-- bytes go, a lead byte with the wrong number of continuation bytes too
+	-- (the shared rule, grug_core.text.utf8_whole), line ends become spaces,
+	-- outer blanks go, at most `max` characters.
 	function M.clean(text, max)
 		text = tostring(text or ""):gsub("\27%(.-%)", ""):gsub("\27.?", "")
+		local whole = grug_core.text.utf8_whole
 		local kept, count = {}, 0
 		for char in text:gmatch(CHAR) do
 			local byte = char:byte()
 			if char == "\n" or char == "\r" or char == "\t" then
 				kept[#kept + 1] = " "
-			elseif #char == size(byte) and not (byte < 32 or byte == 127) then
+			elseif whole(char) and not (byte < 32 or byte == 127) then
 				kept[#kept + 1] = char
 			end
 		end

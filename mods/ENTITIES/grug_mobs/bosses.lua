@@ -93,8 +93,12 @@ local function participant(id, player)
 	ledger(id).players[player:get_player_name()] = true
 end
 
+-- A hit on the boss, a royal guard (which carries the king's id) or a
+-- dragon's whelp (`_grug_boss_summon`, the dragon's id; Round 81 MOBRUN,
+-- MOB3-01) makes the hitter a participant.
 grug_core.register_on_player_hit_mob(function(player, mob)
-	if mob and mob._grug_boss_id then participant(mob._grug_boss_id, player) end
+	local id = mob and (mob._grug_boss_id or mob._grug_boss_summon)
+	if id then participant(id, player) end
 end)
 
 grug_core.register_on_effective_heal(function(healer, target)
@@ -122,8 +126,11 @@ local function encounter_death(player, reason)
 			player:get_player_name())
 		return player_enemy_of(killer, victim_faction)
 	end
+	-- The encounter itself or another encounter NPC: a royal summon or a
+	-- dragon's whelp (Round 81 MOBRUN, MOB3-01; world.md "death grace").
 	local ent = killer:get_luaentity()
-	return ent and (ent._grug_boss_id or ent._grug_royal_summon) ~= nil
+	return ent and (ent._grug_boss_id or ent._grug_royal_summon
+		or ent._grug_boss_summon) ~= nil
 end
 
 core.register_on_dieplayer(function(player, reason)
@@ -639,10 +646,8 @@ local function king_def(race, row)
 		-- and search the shared navigation until they see it (mobs/api.lua
 		-- do_states). Without a `dogshoot_switch` they stood still inside
 		-- their shot range. Since Round 78 the mode follows the distance
-		-- (golem.lua; the count fields are no longer read).
+		-- (golem.lua).
 		dogshoot_switch = ranged and 1 or nil,
-		dogshoot_count_max = ranged and 10 or nil,
-		dogshoot_count2_max = ranged and 3 or nil,
 		walk_velocity = 1.2, run_velocity = 4.6,
 		jump = true, jump_height = 4, stepheight = 1.1, fear_height = 4,
 		view_range = 18, owner = "",

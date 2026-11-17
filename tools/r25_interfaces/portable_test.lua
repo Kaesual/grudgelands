@@ -195,7 +195,7 @@ end}
 -- grug_core (real socket registry), grug_mobs, grug_factions stand-ins
 --
 
-grug_core = {}
+grug_core = {text = dofile("mods/CORE/grug_core/text.lua")}  -- Round 81: the shared text rules
 dofile("mods/CORE/grug_core/ui.lua")
 -- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
 grug_core.map_reset = {clear = function() end}
@@ -231,6 +231,10 @@ local resolvers = {}
 grug_mobs = {register_start_socket_role = function(role, fn) resolvers[role] = fn end}
 local factions = {}
 grug_factions = {get_faction = function(player) return factions[player:get_player_name()] end}
+-- Round 81: the shared NPC-window check (the Steward); the player's faction
+-- through grug_core's stub, which grug_factions resolves in the game.
+dofile("mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = grug_factions.get_faction
 
 --
 -- grug_housing: real api.lua, fake contract
@@ -849,8 +853,9 @@ claims.owner, states.owner = claim, "placed"
 
 local npc_pos = {x = 1000 + 5, y = 11, z = 7} -- highcourt socket
 local manager = {_grug_socket_role = "housing_manager", _grug_start = "highcourt",
-	_grug_socket = "market_counting_house/market_counting_house_gate_idle",
-	object = {get_pos = function() return npc_pos end}}
+	_grug_socket = "market_counting_house/market_counting_house_gate_idle"}
+manager.object = {get_pos = function() return npc_pos end,
+	get_luaentity = function() return manager end} -- Round 81: the live-entity check
 local visitor = new_player("visitor", {x = 1003, y = 11, z = 7})
 factions.visitor = "accord"
 check(H.open_manager(visitor, manager), "Steward opens for the own faction")

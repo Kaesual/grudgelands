@@ -441,16 +441,17 @@ local function run_tick()
 				i % 2 == 0 and "accord" or "throng"), "grug_pvp")
 		end
 		include_fakes = true
-		local stats = grug_pvp.tick_stats
-		stats.samples, stats.us = 0, 0
+		-- Round 81: the location pass runs per player (grug_pvp.location_tick
+		-- takes the player); one "tick" here is every connected player once.
 		local t = now_us()
 		local runs = 20
-		for _ = 1, runs do grug_pvp.location_tick() end
+		for _ = 1, runs do
+			for _, p in ipairs(core.get_connected_players()) do grug_pvp.location_tick(p) end
+		end
 		local total = (now_us() - t) / runs
 		include_fakes = false
-		log(("TICK %3d fake players: %8.1f us per tick, %6.2f us per player, sample %6.2f us (samples %d)"):format(
-			count, total, count > 0 and total / count or 0,
-			stats.samples > 0 and stats.us / stats.samples or 0, stats.samples))
+		log(("TICK %3d fake players: %8.1f us per tick, %6.2f us per player"):format(
+			count, total, count > 0 and total / count or 0))
 		if count > 0 then
 			local t2 = now_us()
 			for _ = 1, runs do

@@ -311,6 +311,18 @@ local function new_player(name, faction, pos)
 	return player
 end
 core.get_player_by_name = function(name) return online[name] end
+-- As /faction writes it. Round 81: grug_factions caches the faction per
+-- player object and set_faction also gives the starter kit and runs the
+-- faction callbacks, so the switch hands back a fresh object over the same
+-- meta (as a rejoin).
+local function switch_faction(player, faction)
+	player.meta:set_string("grug_factions:faction", faction)
+	local fresh = {}
+	for k, v in pairs(player) do fresh[k] = v end
+	fresh.get_pos = function() return fresh.pos end
+	online[player:get_player_name()] = fresh
+	return fresh
+end
 local function fill_bag(player, item)
 	for list, stacks in pairs(player.inv.lists) do
 		for i = 1, #stacks do player.inv.lists[list][i] = ItemStack(item) end
@@ -461,13 +473,13 @@ eq(count_of(bo.inv, T4.item), 0, "W a forged click on row 4 buys nothing")
 -- The rank is checked again at the purchase: the form showed row 3 unlocked,
 -- then an admin's /faction gives the other guild (rank 0 there).
 submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
-bo.meta:set_string("grug_factions:faction", "throng")
+bo = switch_faction(bo, "throng")
 grug_core.feed = grug_core.feed or function() end
 local refused_life = grug_guild.lifetime(bo)
 submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T3.item]] = "x"})
 eq(count_of(bo.inv, T3.item), 0, "W the rank is checked again at the purchase")
 eq(grug_guild.lifetime(bo), refused_life, "W ...and nothing spent")
-bo.meta:set_string("grug_factions:faction", "accord")
+bo = switch_faction(bo, "accord")
 
 -- The exchange counter: Trade-in, Sell, no page.
 local cy = new_player("cy", "accord", {x = 0, y = 0, z = 0})

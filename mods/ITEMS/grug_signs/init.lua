@@ -44,7 +44,6 @@ local function yaw_param2(placer, turn)
 	local yaw = placer and placer.get_look_horizontal and placer:get_look_horizontal() or 0
 	return (math.floor(math.deg(yaw) / 1.5 + 0.5) + turn) % 240
 end
-grug_signs.yaw_param2 = yaw_param2
 
 -- The reader's right for a look direction (x of grug_text's surface frame).
 local function right_of(look)

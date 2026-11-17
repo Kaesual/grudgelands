@@ -136,8 +136,15 @@ local function new_player(name, faction)
 end
 core.get_player_by_name = function(name) return online[name] end
 -- As /faction (grug_factions.set_faction) writes it: the faction id in meta.
+-- Round 81: grug_factions caches the faction per player object and
+-- set_faction also gives the starter kit and runs the faction callbacks, so
+-- the switch hands back a fresh object over the same meta (as a rejoin).
 local function switch_faction(player, faction)
 	player.meta:set_string("grug_factions:faction", faction)
+	local fresh = {}
+	for k, v in pairs(player) do fresh[k] = v end
+	online[player:get_player_name()] = fresh
+	return fresh
 end
 
 -- Count the callbacks (registered after the game's own).
@@ -238,7 +245,7 @@ eq(grug_guild.balance(max), 0, "A a negative stored balance reads 0")
 local cy = new_player("cy", "accord")
 grug_guild.add(cy, C.RANKS[3], "test")
 grug_guild.spend(cy, 100)
-switch_faction(cy, "throng")
+cy = switch_faction(cy, "throng")
 eq(grug_guild.lifetime(cy), 0, "A after the switch: the other guild's lifetime (0)")
 eq(grug_guild.balance(cy), 0, "A after the switch: the other guild's balance (0)")
 eq(grug_guild.summary(cy).guild, "The Oathdelvers", "A after the switch: The Oathdelvers")
@@ -249,7 +256,7 @@ eq(cy.meta:get_int("grug_guild:lifetime_throng"), 50, "A the switched guild's ow
 eq(cy.meta:get_int("grug_guild:lifetime_accord"), C.RANKS[3], "A the old guild's lifetime kept")
 eq(cy.meta:get_int("grug_guild:balance_accord"), C.RANKS[3] - 100, "A the old guild's balance kept")
 eq(grug_guild.highest_rank(cy), 3, "A the highest rank with either guild")
-switch_faction(cy, "accord")
+cy = switch_faction(cy, "accord")
 eq(grug_guild.rank(cy), 3, "A back: the old rank")
 eq(grug_guild.balance(cy), C.RANKS[3] - 100, "A back: the old balance")
 eq(grug_guild.summary(cy).guild, "The Charter of Stone", "A back: The Charter of Stone")
@@ -539,7 +546,7 @@ grug_guild.add(gus, C.RANKS[6] - C.RANKS[3], "test")
 check(owns(gus, "miners_guild_2"), "D rank 6 unlocks the second cloak")
 grug_guild.spend(gus, C.RANKS[6])
 check(not owns(gus, "miners_guild_3"), "D spending earns nothing")
-switch_faction(gus, "accord")
+gus = switch_faction(gus, "accord")
 check(owns(gus, "miners_guild_2"), "D a faction switch keeps the cloaks")
 grug_guild.add(gus, C.RANKS[9], "test") -- rank 9 with the other guild: the highest stays 9
 check(not owns(gus, "miners_guild_3"), "D rank 9 with the second guild: no winged cloak")

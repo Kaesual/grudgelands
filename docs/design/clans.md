@@ -2,8 +2,9 @@
 
 Decided 2026-11-11 (the user's rulings, Round 76); implemented in Round 76
 (`grug_clans`). Provenance: [Round 76 plan](../planning/round76-plan.md) §2
-(rulings) and §3.1 (coordinator defaults, built as written below; the user
-may overrule them). Parties stay as they are ([parties.md](parties.md)).
+(rulings) and §3.1 (coordinator defaults, built as written below; whether
+the user confirms them is open in [BACKLOG](../../BACKLOG.md#open-questions-for-the-user)).
+Parties stay as they are ([parties.md](parties.md)).
 
 ## Rulings (the user, 2026-11-11)
 

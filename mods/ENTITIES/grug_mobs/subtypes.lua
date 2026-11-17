@@ -572,10 +572,12 @@ local function register_subtype(i, row)
 	end
 	-- A critter disposition needs the critter tier (disposition.lua).
 	def._grug_tier = sub.disposition == "critter" and "critter" or tier
-	-- The authored tier, name and leader flag win over anything the base
-	-- family rolls at spawn (the Elder Bear and Silverback rolls rename and
-	-- promote through on_spawn): set_tier leaves an authored tier alone
-	-- (levels.lua), and the name is put back on the next step.
+	-- The authored tier, name and leader flag are fixed. The Elder Bear and
+	-- Silverback rolls live in the base definitions' after_activate and only
+	-- fire for a fresh entity of the base name, so a sub-type never rolls
+	-- (and no recipe spawns a base name, so today the rolls are dormant).
+	-- Besides, set_tier leaves an authored tier alone (levels.lua), and the
+	-- name is put back on the next step.
 	def._grug_authored_tier = true
 	def._grug_min_level = sub.levels[1]
 	def._grug_max_level = sub.levels[2]

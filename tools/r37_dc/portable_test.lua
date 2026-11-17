@@ -136,6 +136,9 @@ local SETTINGS = {
 	"grug_perf_monitor (Log performance numbers every minute) bool true",
 	"grug_perf_profile_minutes (Save the engine profile every N minutes) int 0 0 1440",
 	"grug_reset_world (Map reset counter, set by the hosting platform) int 0 0",
+	-- Round 81 (DEAD, X1-03): the web bridge's two platform keys are declared.
+	"grug_bridge.url (Web bridge endpoint, set by the hosting platform) string",
+	"grug_bridge.token (Web bridge token, set by the hosting platform) string",
 }
 local INTERNALS = {"grug_", "globalstep", "observer", "set_lighting", "set_atmosphere",
 	"packet", "sprite", "hysteresis", "DoT", "Player/"}

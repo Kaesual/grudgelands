@@ -734,6 +734,8 @@ function smith:get_inventory() return {get_stack = function() return ItemStack("
 	get_size = function(_, list) return list == "main" and 32 or 0 end} end
 local resent = 0
 sfinv.set_player_inventory_formspec = function() resent = resent + 1 end
+-- Round 81: the per-player passes register through grug_core.
+dofile("tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile("mods/PLAYER/grug_inventory/pages.lua")
 local character = pages["grug_inventory:character"]
 local context = {page = "grug_inventory:character", grug_character_tab = "stats"}

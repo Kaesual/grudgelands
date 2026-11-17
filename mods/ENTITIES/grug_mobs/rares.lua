@@ -24,7 +24,7 @@ local storage = grug_mobs.storage
 local CHECK_INTERVAL = 10 -- s between spawner passes
 -- A player has to be this close (horizontally) before we even try: outside
 -- the active block range mobs:add_mob refuses anyway (it needs a player
--- within aoc_range * 2 = 128 m, api.lua:4121-4137), and an entity added to
+-- within aoc_range * 2 = 128 m, api.lua count_mobs), and an entity added to
 -- an inactive block would be pointless. Slightly under 128 so the check we
 -- make and the check add_mob makes agree.
 local PLAYER_RANGE = 120
@@ -197,7 +197,7 @@ local function try_spawn(id, spec)
 	if not ent then
 		return
 	end
-	-- `description` is a plain field of every mobs_redo entity (api.lua:3990)
+	-- `description` is a plain field of every mobs_redo entity (api.lua mobs:register_mob)
 	-- and is what levels.lua's tag_text prints, so the nametag reads
 	-- "★ Grimtusk [Lv 12] 325/325". It must be set BEFORE the tier: set_tier
 	-- refreshes the tag.
@@ -211,17 +211,9 @@ local function try_spawn(id, spec)
 	-- (mob_staticdata) and expires it on a timer below the same threshold
 	-- (mob_expire). A plain field, so the exemption persists with the mob.
 	ent.lifetimer = 30000
-	-- ... and the SECOND half of that exemption, which the field alone cannot
-	-- buy: mob_activate clears the object property `static_save` for every
-	-- untamed monster while remove_far_mobs is on, and an object with
-	-- static_save = false never gets its get_staticdata called at all — so the
-	-- lifetimer check above would never run and the rare would be deleted on
-	-- the first unload. api.lua now honours the lifetimer there too (GRUG
-	-- PATCH B3, mob_activate), but THIS entity was activated by the add_mob
-	-- above, i.e. before its lifetimer existed, and mob_activate does not run
-	-- again. Setting the property here is what makes the first session safe;
-	-- every later activation is covered by the patch.
-	ent.object:set_properties({static_save = true})
+	-- The object keeps static_save: mob_activate leaves it on for every
+	-- ordinary mob (only the terminal unload-despawn path clears it, api.lua
+	-- mob_activate), so mob_staticdata runs and reads the lifetimer above.
 	grug_mobs.set_tier(ent, "rare")
 	-- ... and NOW the ground correction, a second time and deliberately AFTER
 	-- the promotion. set_tier scales a rare by x2 (levels.lua
@@ -330,34 +322,14 @@ function grug_mobs.rare_tick(self, dtime)
 	grug_mobs.route_tick(self, dtime, spec.route, self, "_grug_rare_wp")
 end
 
--- R7 authority note: registrations below own presentation and respawn
--- metadata only. Their coordinates and levels come exclusively from the
--- authenticated source anchor plus its exact patrol_offsets. Any remaining
--- pre-R7 coordinate-analysis comments are historical rationale, never a
--- runtime fallback or placement authority.
+-- R7 authority: the registrations below own presentation and respawn
+-- metadata only. Each rare's coordinates and level come from its
+-- authenticated R7 source anchor and patrol offsets; the named-zone route and
+-- the target level per rare are biomes_mobs.md §3.3's table. The pre-R7
+-- per-point level derivations that stood here are retired (git history keeps
+-- them).
 
---
--- The two boar-based rares (biomes_mobs §3.3)
---
--- Both are ~L12, which is a property of WHERE they walk, not of a number in
--- this file: grug_zones.mob_level_at is the stable named-zone/depth field
--- seat at (0, +-900), plus a level-1 bubble within 240 nodes of each capital
--- anchor (world.md §1, WP36). Level check for the route points below
--- (level_at_n of the radial value, world.md §1 anchors):
---   (250, 560) -> n 0.340 -> L12    (340, 580) -> n 0.322 -> L11
---   (180, 540) -> n 0.360 -> L14
--- The closest any of them comes to a capital anchor is 383 nodes ((340,580)
--- to (+-550, +-900); the other two are 422 and 402 from (0, +-900)), so all
--- three sit well outside every bubble and the radial value alone decides.
--- All three are zone "inner" (radial 400-470 nodes out from the capital),
--- matching "inner ring" in §3.3, and all sit inside the center race band
--- (|x| <= 700, world.md §7) so the biome is the center one: meadows on the
--- Accord side, savanna on the Throng side.
---
--- Accord is negative z, Throng positive — Ashmaw's route is the exact
--- mirror of Grimtusk's, so both get the same level and the same walk.
---
-
+-- Grimtusk: boar, Goldmead Vale.
 grug_mobs.register_rare("grimtusk", {
 	name = "Grimtusk",
 	mob = "grug_mobs:boar",
@@ -366,51 +338,22 @@ grug_mobs.register_rare("grimtusk", {
 	respawn_max = 14400, -- 4 h
 })
 
+-- Ashmaw: plague boar, Redtusk Savanna. The boar model has TWO texture slots
+-- (boar.lua: {boar, blank}), and mobs:add_mob assigns def.texture straight to
+-- base_texture and to set_properties{textures=...} (api.lua mobs:add_mob) --
+-- so it has to be the full per-slot list, not a bare string. levels.lua then
+-- reads this list as the pristine base and layers the rare violet tint on it.
 grug_mobs.register_rare("ashmaw", {
 	name = "Ashmaw",
 	mob = "grug_mobs:boar",
-	-- The boar model has TWO texture slots (boar.lua: {boar, blank}), and
-	-- mobs:add_mob assigns def.texture straight to base_texture and to
-	-- set_properties{textures=...} (api.lua:4239-4258) — so it has to be the
-	-- full per-slot list, not a bare string. levels.lua then reads this list
-	-- as the pristine base and layers the rare violet tint on top of it.
 	texture = {"grug_mobs_boar_plague.png", "grug_mobs_blank.png"},
 	biome_hint = "the savanna",
 	respawn_min = 7200,
 	respawn_max = 14400,
 })
 
---
--- The two forest-pair rares (biomes_mobs §3.3: Old Whitefang ~L32 in the
--- A-center deep forest / outer, Marrowclaw ~L35 in the T-west bone forest /
--- outer)
---
--- Same rule as above: the level is a property of WHERE the route runs.
--- Field math from grug_core/init.lua (radial_n + level_at_n):
---
---   dx = max(|x| - 300, 0)              CORE_X_HALF = 300
---   dz = | |z| - 900 |                  SEAT_Z = 900
---   n  = sqrt((dx/1150)^2 + (dz/f)^2)   FIELD_X = 1150, f = 1000 on the
---                                       strait side (|z| < 900), 775 behind
---   L  = 25 + (n - 0.55)/0.35 * 20      for 0.55 < n <= 0.90
---
--- Zone check for all six points: n > 0.55 = "outer"; none of them is in the
--- coast band (needs |x| > 1350 or |z| > 1550) and all have |z| > 600, so the
--- war-coast cap does not apply either.
---
-
--- Old Whitefang — Accord centre, deep-forest back country.
---   (200, -1400): dx 0, dz 500 -> n 0.6452 -> L 30.4 -> 30
---   (300, -1440): dx 0, dz 540 -> n 0.6968 -> L 33.4 -> 33
---   (150, -1425): dx 0, dz 525 -> n 0.6774 -> L 32.3 -> 32
--- Average ~32, exactly the §3.3 target. The route deliberately sits at
--- |z| ~1400 rather than nearer the coast: further out the field climbs
--- past 39. That band is the meadows/deep-forest voronoi overlap (§1.3
--- "settled inner, patchy middle, wild outer"), i.e. forest patches — which
--- is what the broadcast hint promises and where grug_mobs:wolf spawns
--- anyway (forest litter AND grass are in its whitelist).
--- No `texture`: the base wolf skin is the grey-white one, and levels.lua
--- lays the rare violet tint over it.
+-- Old Whitefang: wolf, Ashenward March. No `texture`: the base wolf skin is
+-- the grey-white one, and levels.lua lays the rare violet tint over it.
 grug_mobs.register_rare("old_whitefang", {
 	name = "Old Whitefang",
 	mob = "grug_mobs:wolf",
@@ -419,17 +362,8 @@ grug_mobs.register_rare("old_whitefang", {
 	respawn_max = 14400, -- 4 h
 })
 
--- Marrowclaw — Throng west, bone forest (grug_bone_forest cuboid
--- x -1500..-801, §1.3; the inner edge moved out from -750 with the
--- capital-guarantee carve, all three route points are west of it).
---   (-1050, 1150): dx 750, dz 250 -> n 0.7276 -> L 35.2 -> 35
---   (-1120, 1060): dx 820, dz 160 -> n 0.7423 -> L 36.0 -> 36
---   ( -980, 1230): dx 680, dz 330 -> n 0.7287 -> L 35.2 -> 35
--- Average ~35, the §3.3 target. NB the level out here is driven by the x
--- axis, not by z: at |z| ~1000 the dz term is small, so the route has to sit
--- around |x| ~1050 to reach L35 — closer to the capital (|x| ~900) the field
--- is still ~24, which is why the route is further west than a first guess.
--- No `texture`: grug_mobs:plaguehide_bear already wears the right skin.
+-- Marrowclaw: plaguehide bear, Blackwind Rise. No `texture`: the family
+-- already wears the right skin.
 grug_mobs.register_rare("marrowclaw", {
 	name = "Marrowclaw",
 	mob = "grug_mobs:plaguehide_bear",
@@ -438,45 +372,16 @@ grug_mobs.register_rare("marrowclaw", {
 	respawn_max = 14400,
 })
 
---
--- The four mountain/jungle rares (biomes_mobs §3.3, WP6/T6)
---
--- Same rule as above: the level is a property of WHERE the route runs, and
--- the field math is the one quoted before Old Whitefang —
---
---   dx = max(|x| - 300, 0) ; dz = | |z| - 900 |
---   n  = sqrt((dx/1150)^2 + (dz/f)^2)   f = 1000 for |z| < 900, else 775
---   L  = 25 + (n - 0.55)/0.35 * 20      for 0.55 < n <= 0.90
---   L  = 45 + (n - 0.90)/0.10 * 15      for 0.90 < n <= 1.00
---
--- — plus the second segment above, which the two coast rares need.
--- Historical coordinate notes below describe the retired pre-R7 placement;
--- everything else with n > 0.55 is "outer". None of the twelve points below
--- is inside the war-coast cap band (all have |z| > 600).
---
-
--- Korgan's Bane — Accord west, high crags (grug_crags cuboid x -1500..-801,
--- §1.3; all three points also sit WEST of the grug_pine_hills cuboid edge at
--- x -1250, so the patch mosaic around them is crags, not pine hills).
---   (-1270,  -880): dx 970, dz  20, f 1000 -> n 0.8437 -> L 41.78 -> 42
---   (-1260,  -760): dx 960, dz 140, f 1000 -> n 0.8464 -> L 41.94 -> 42
---   (-1290, -1000): dx 990, dz 100, f  775 -> n 0.8705 -> L 43.31 -> 43
--- Average ~42, the §3.3 target. Out here the level is driven by the x axis
--- (same as Marrowclaw): |x| has to reach ~1270 for L42, while |z| only
--- fine-tunes. All three stay inside |x| < 1350, i.e. zone "outer" as §3.3
--- asks, not "coast".
---
--- NB the base family is the game's only DEF-LEVEL ELITE (golem.lua,
--- _grug_tier = "elite"). set_tier(ent, "rare") in try_spawn REPLACES that
--- tier, it does not stack on it: the rare multipliers are applied to the base
--- formula (x2.5 HP / x1.4 dmg / x2 XP, armor 90, scale x2), and
--- apply_tier_visuals scales relative to the tier already APPLIED — which at
--- that moment is still "normal", because set_tier runs before the mob's first
--- tick and ensure_init then does level, stats, scale and tint in one go
+-- Korgan's Bane: stone golem, Stormvault Heights. The base family is the
+-- game's only DEF-LEVEL ELITE (golem.lua, _grug_tier = "elite").
+-- set_tier(ent, "rare") in try_spawn REPLACES that tier, it does not stack
+-- on it: the rare multipliers apply to the base formula, and
+-- apply_tier_visuals scales relative to the tier already APPLIED -- still
+-- "normal" at that moment, because set_tier runs before the mob's first tick
+-- and ensure_init then does level, stats, scale and tint in one go
 -- (levels.lua). So Korgan's Bane is x2 scale and violet, never x1.4 gold or
 -- x3.2 of both. It keeps the golem's telegraph (telegraph.lua fires for
--- "elite" AND "rare").
--- No `texture`: grug_mobs:stone_golem already wears the crags skin.
+-- "elite" AND "rare"). No `texture`: the golem already wears the crags skin.
 grug_mobs.register_rare("korgans_bane", {
 	name = "Korgan's Bane",
 	mob = "grug_mobs:stone_golem",
@@ -485,28 +390,8 @@ grug_mobs.register_rare("korgans_bane", {
 	respawn_max = 14400, -- 4 h
 })
 
--- Silkfang — Accord east, jungle fringe COAST (grug_jungle_fringe cuboid
--- x 1150..1500, §1.3).
---   (1356,  -740): dx 1056, dz 160, f 1000 -> n 0.9321 -> L 49.81 -> 50
---   (1352, -1043): dx 1052, dz 143, f  775 -> n 0.9332 -> L 49.98 -> 50
---   (1350, -1060): dx 1050, dz 160, f  775 -> n 0.9361 -> L 50.41 -> 50
--- Exactly L50 at all three points, the §3.3 target, and all three are zone
--- "coast" (|x| >= 1350).
---
--- R7's accepted named-zone catalog now owns these route anchors and their
--- logical-biome identity. Historical pre-R7 context: competing engine-biome
--- registrations once classified all three points as deep forest; the later
--- cuboid cap made the route deterministic before that whole authority was
--- retired by R7.
---
--- DEVIATION worth knowing: "coast" and "~L50" together pin |z| to roughly
--- 740..1060. At |x| >= 1350 the field already sits at L47 where dz = 0, and
--- the back-side scale 775 makes it climb fast — (1350, -1300) is L60, so a
--- route further from the seat cannot be L50 no matter how it is shaped.
--- Historical pre-R7 context: the retired ocean-mask geometry made the inner
--- coast edge the safer dry route. R7's named-zone land/water authority and
--- accepted source catalog now own that guarantee instead.
--- No `texture`: grug_mobs:jungle_spider already wears the jungle skin.
+-- Silkfang: jungle spider, The Skyglass Canopy. No `texture`: the family
+-- already wears the jungle skin.
 grug_mobs.register_rare("silkfang", {
 	name = "Silkfang",
 	mob = "grug_mobs:jungle_spider",
@@ -515,17 +400,8 @@ grug_mobs.register_rare("silkfang", {
 	respawn_max = 14400,
 })
 
--- Dustwing — Throng centre, badlands back country (grug_badlands cuboid
--- x -700..700, z 1201..1700, §1.3; z_min moved in from 1100 with the
--- capital-guarantee carve, both route z values are well beyond it).
---   (300, 1500): dx   0, dz 600, f 775 -> n 0.7742 -> L 37.81 -> 38
---   (400, 1500): dx 100, dz 600, f 775 -> n 0.7791 -> L 38.09 -> 38
---   (220, 1490): dx   0, dz 590, f 775 -> n 0.7613 -> L 37.07 -> 37
--- Average ~38, the §3.3 target. Here the z axis does the work: inside the
--- centre band dx is 0 up to |x| 300, so the level is essentially 20 * (dz/775
--- - 0.55)/0.35 + 25. The route stops at |z| 1500 — from 1550 on the back
--- coast band starts (zone "coast", §3.3 says "outer") and the field passes 40.
--- No `texture`: grug_mobs:vulture already wears the dark badlands retint.
+-- Dustwing: vulture, Bannerbreak Mesa. No `texture`: the family already
+-- wears the dark badlands retint.
 grug_mobs.register_rare("dustwing", {
 	name = "Dustwing",
 	mob = "grug_mobs:vulture",
@@ -534,18 +410,8 @@ grug_mobs.register_rare("dustwing", {
 	respawn_max = 14400,
 })
 
--- Emerald Coil — Throng east, deep jungle COAST (grug_deep_jungle cuboid
--- x 801..1500, §1.3; x_min moved out from 750 with the capital-guarantee
--- carve, all three route points are far east of it).
---   (1352,  976): dx 1052, dz  76, f 775 -> n 0.9200 -> L 48.00 -> 48
---   (1355,  800): dx 1055, dz 100, f 1000 -> n 0.9228 -> L 48.42 -> 48
---   (1350, 1020): dx 1050, dz 120, f  775 -> n 0.9261 -> L 48.91 -> 49
--- Average ~48, the §3.3 target; all three are zone "coast" (|x| >= 1350).
--- Same two constraints as Silkfang apply and are handled the same way: the
--- level pins |z| to ~800..1020, and the x values hug the inner edge of the
--- coast band so the coast-noise inset cannot drown the whole route (the
--- middle point is ~200 nodes away in z from the other two).
--- No `texture`: grug_mobs:serpent has only the one skin.
+-- Emerald Coil: serpent, the Stormscale Summit approach. No `texture`: the
+-- family has only the one skin.
 grug_mobs.register_rare("emerald_coil", {
 	name = "Emerald Coil",
 	mob = "grug_mobs:serpent",
@@ -554,59 +420,13 @@ grug_mobs.register_rare("emerald_coil", {
 	respawn_max = 14400,
 })
 
---
--- Captain Bonerattle x2 (biomes_mobs §3.3, WP6/T7)
---
--- §3.3's last row: "Captain Bonerattle (x2, one per continent) | Skeleton
--- Raider | war coast | 28". Both instances carry the SAME name — they are
--- the same legend on both shores of the strait, one per continent, exactly
--- as the row says; only the ids differ.
---
--- LEVEL VERIFICATION — the war coast is the one place where the radial field
--- does NOT decide, the CAP does (grug_core/init.lua):
---
---   war_coast_cap(az) = 20 + (az - 100) / (300 - 100) * 10     for az <= 300
---   mob_level_at      = min(bubbled(level_at_n(radial_n)), cap) in the band
---
--- (`bubbled` is WP36's capital bubble, world.md §1 — it only bites within 240
--- nodes of a capital anchor, i.e. at |z| >= 660, and these routes run at
--- |z| = 268, so it is a no-op here and the line below holds unchanged.)
---
--- so the level is a pure function of |z| as long as the uncapped field stays
--- ABOVE the cap. Both routes run at |z| = 268 -> cap 28.40 -> **L28** after
--- math.round (levels.lua). The uncapped field at the six points, for the
--- record (dx = max(|x|-300, 0), dz = |az - 900| = 632, f = 1000 because
--- az < 900, n = sqrt((dx/1150)^2 + (dz/f)^2), L = 25 + (n-0.55)/0.35 * 20):
---   x  285 -> dx   0 -> n 0.6320 -> L 29.7  \
---   x  410 -> dx 110 -> n 0.6392 -> L 30.1   |  all > 28.40,
---   x  535 -> dx 235 -> n 0.6642 -> L 31.5   |  so the CAP governs
---   x  555 -> dx 255 -> n 0.6698 -> L 31.8   |  at every point and
---   x  680 -> dx 380 -> n 0.7166 -> L 34.5   |  the level is uniform
---   x  805 -> dx 505 -> n 0.7696 -> L 37.5  /
--- Zone check: |z| 268 is > CONTINENT_Z_MIN (100) and <= WAR_COAST_Z (300),
--- the accepted source catalog now owns these stable rare-route anchors;
--- 1350, so none of them slips into the "coast" band.
---
--- R7 AUTHORITY: the accepted named-zone source catalog owns these six stable,
--- dry route anchors. The old ocean-mask/noise derivation was a pre-R7
--- coordinate-selection aid, not a current land/water authority. The two
--- continents retain different x values; this is the one rare pair that is
--- not a geometric mirror, and that is why.
---
--- WHY THE ROUTE SPANS ONLY 250 NODES: it was written when the leash measured
--- distance from `_grug_home` (the spawn point), where a rare that had ambled
--- to the far end of a longer route would have sat outside
--- grug_mobs.RARE_LEASH_RANGE = 300 and reset — heal to full, drop the target —
--- on every single pull, i.e. it would have been unkillable. Since the WP6
--- review the leash measures DRAG from where the chase began (aggro.lua), so
--- the route length no longer constrains it at all. The short span stays for
--- its own sake: a legend that patrols one recognisable stretch of coast is
--- findable, and 250 nodes still fits inside one player's travel.
---
--- No `texture`: grug_mobs:skeleton_raider already wears the grimy war-coast
--- bones, and levels.lua lays the rare violet tint over them.
---
-
+-- Captain Bonerattle x2: skeleton raider, The Broken Causeway and The
+-- Shattered Line, at the spawn region's level. §3.3 lists "Captain
+-- Bonerattle (x2, one per continent)": both carry the SAME name, only the
+-- registry ids differ. The ids keep them apart where it matters: the
+-- liveness key is "rare:<id>", so the northern captain can never be mistaken
+-- for the southern one. No `texture`: the family already wears the grimy
+-- war-coast bones, and levels.lua lays the rare violet tint over them.
 grug_mobs.register_rare("bonerattle_south", {
 	name = "Captain Bonerattle",
 	mob = "grug_mobs:skeleton_raider",
@@ -616,12 +436,6 @@ grug_mobs.register_rare("bonerattle_south", {
 	respawn_max = 14400, -- 4 h
 })
 
--- Same |z|, same span, same level — different x because the coast noise is
--- not z-symmetric (see above). Two instances of ONE legend: §3.3 lists
--- "Captain Bonerattle (x2, one per continent)", so both carry the same
--- `name` and only the registry ids differ. The ids keep them apart where it
--- matters: the liveness key is "rare:<id>", so the northern captain can never
--- be mistaken for the southern one.
 grug_mobs.register_rare("bonerattle_north", {
 	name = "Captain Bonerattle",
 	mob = "grug_mobs:skeleton_raider",

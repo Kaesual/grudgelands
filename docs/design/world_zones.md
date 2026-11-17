@@ -171,7 +171,7 @@ binding future scope.
 - A capital is centered inside its city zone and has four fixed cardinal
   gates; the roads of §9 reach it through them. Its directional neighbors
   follow the world progression:
-  - toward the outer starting side: a level-10–20 zone;
+  - toward the outer starting side: a level-11–20 zone;
   - laterally along the central faction/capital axis: medium-level heartland;
   - toward the contested front: high-level territory.
 - Capitals remain protected POIs and major waypoint/service hubs. They are
@@ -350,8 +350,10 @@ replaced.
   envelope size stays. The former goal of smaller, denser capitals (Round 22
   §11) is retired (user decision 2026-09-29, WP audit A3): a capital's size
   fits its content, with a characteristic look (§12).
-- Every anchor slot keeps its stable id and fixed x/z position. No world seed
-  selects, moves or rejects a 2D anchor; terrain fitting adapts to the anchor.
+- Every anchor slot keeps its stable id. The fixed anchors (starts,
+  capitals, dragon arenas, apex mines and the four rift sites) keep their
+  x/z on every seed, and terrain fitting adapts to them; every other anchor
+  is placed per world by its kind's rules (§8.5).
 - The macro silhouette remains legible as three outer prongs, one connected
   capital/heartland belt and one connected frontier per faction, joined by the
   Battlegrounds band.
@@ -399,9 +401,9 @@ replaced.
   zones, the gameplay neighbours, the dragon islands, channels, boat paths
   and landings are unchanged. The anchors in the strip the contested zones
   gave up (outposts, frontier bandit camps, Ashenward's and Bannerbreak's
-  clash sites, rares) moved about 120 nodes toward their home side and stay
-  in their zones; Coalbrand Yard and Sunderstrap Camp also moved to
-  |x| = 96 so the middle road (§9.2) runs straight.
+  clash sites, rares) moved toward their home side in Round 29; since
+  Round 46 they are placed per world, and the middle road's clearance is
+  the placement rule |x| ≥ max(80, core/2 + 58) (§8.5).
 - The warp is damped near every fixed anchor, so each fixed anchor's
   footprint (start town, capital envelope, dragon arena, apex mine, rift
   site) stays inside its own zone. If an anchor would still leave its zone,
@@ -766,8 +768,9 @@ replaced.
   Claims may contain roads; the corridor stays protected inside them.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
   flat 112-node civic core and its 40-node collar (§12).
-- **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps its
-  x/z, and its height comes from the terrain: the lower median of the natural
+- **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps the
+  x/z it was given (fixed, or placed per world, §8.5), and its height comes
+  from the terrain: the lower median of the natural
   ground under its building core (village and home bandit camp 24; frontier
   bandit camp (`bandit_frontier`, user decision 2026-09-29, WP audit E1),
   outpost, Mirefolk camp and clash site 16; mine 20; apex mine 32; dragon arena
@@ -1127,6 +1130,11 @@ placed per world, §8.5):
 - **F** = the faction's PvP fortress, **P×4** = four PvP camps (per faction
   one lower and one higher; Round 31, §16).
 
+The Round 58 camps are not lettered in the rows: a **mining camp** stands in
+every non-capital zone of levels 11–40 (20 zones) and a **camp under
+construction** in every contested 31–40 zone (6 zones); both are placed per
+world (§8.5, [settlements.md](settlements.md)).
+
 Peaceful §8.1 zones use `territory_rule = "accord_home"` and peaceful §8.2
 zones use `territory_rule = "throng_home"`. Every level-31–60 ordinary
 frontier or island uses `territory_rule = "contested_land"`: both factions may
@@ -1153,7 +1161,7 @@ or rights (§7.1).
 | `elandor_silverleaf_glades` | Silverleaf Glades | Elf | 1–10 peaceful | elf forest 95 / deep forest 5 | Pale trees, clear streams and circular glades; **S** |
 | `elandor_starbough_vale` | Starbough Vale | Elf | 11–20 peaceful | elf forest 80 / deep forest 20 | Terraced silverwood slopes and early canopy paths; sunleaf; **V, O, B** |
 | `elandor_lethariel` | Lethariel | Elf | capital, civic L20–30 profile, peaceful | elf forest 90 / deep forest 10 | Treehouse crown around a lake and white-marble roots; the city has no hostile spawns, the zone around it a 20–30 spawn recipe (§3); **C** |
-| `elandor_lorindor` | Lorindor | Elf | 21–30 peaceful | elf forest 50 / deep forest 30 / swamp 20 | Small woodland state southwest of Lethariel, remembered for pale stags, silverwood orchards, white flowers and marsh-fed berry terraces; **V, O, M, W** |
+| `elandor_lorindor` | Lorindor | Elf | 21–30 peaceful | elf forest 50 / deep forest 30 / swamp 20 | Small woodland state west of Lethariel, remembered for pale stags, silverwood orchards, white flowers and marsh-fed berry terraces; **V, O, M, W** |
 | `elandor_moonfall_wood` | Moonfall Wood | Elf | 21–30 peaceful | elf forest 40 / deep forest 45 / swamp 15 | Crescent lake beneath a fallen great silverwood; **O** |
 | `elandor_glassroot_wilds` | Glassroot Wilds | Elf | 31–40 **contested** | deep forest 45 / jungle fringe 35 / elf forest 10 / swamp 10 | Huge roots gripping glassy pale cliffs; **O, B** |
 
@@ -1956,7 +1964,8 @@ Capital protection remains effective; editable ground requires no housing.
     faces its street, with a short path to it; the four districts stay
     recognisable groups (one quarter each where the ground allows, overflow
     into a neighbouring quarter). Required plots (the inn, the eight service
-    plots with the cook and the stable) are always placed (a capital missing
+    plots with the cook and the stable, the Miner's Guild house since
+    Round 58) are always placed (a capital missing
     one fails the load, named); named buildings are left out only when no
     legal spot remains anywhere (rare), fill dressings first. Placement runs in tiers
     (required, other named buildings, fill), each through all its passes
@@ -2145,7 +2154,9 @@ The final registry exposes:
   first hard-protected footprint holding a column of the rectangle, or nil
   (Claim Stone placement in `grug_housing`, the town test of the location
   line in `grug_map/location.lua`; `grug_core/zone_authority.lua`
-  `PUBLIC_METHODS` is the list).
+  `PUBLIC_METHODS` is the list);
+- `water_query_at` (Round 51 T2): the water class, owning zone, level,
+  distance, depth and protection of a column in one call.
 
 The mask-based `housing_eligible_at` centre predicate is removed with the
 housing masks (Round 25 ruling 4). `grug_housing` validates a claim itself
@@ -2173,11 +2184,13 @@ numeric-truncated seed.
   `terrain_height_at` means elevation. Existing
   `grug_core.surface_level_at(x,z)` already means terrain height and retains
   that semantic through the `terrain_height_at` adapter.
-- `mob_level_at(pos)` combines the surface difficulty
-  (`surface_mob_level_at`) with the independent depth floor on land and zone-owned planned water. Exterior shelf returns nil
-  at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
-  channels have no ordinary mob-level result; the Kraken remains a
-  separate fixed entity (a level-70 elite).
+- `mob_level_at(pos)` combines the surface level
+  (`surface_mob_level_at`) with the independent depth floor: on land,
+  zone-owned planned water, the coastal belt (`coastal_shelf`) and the
+  dragon channels the surface level is the owning zone's (or island's)
+  level (Round 51 T2), returned at y >= 0; below y = 0 the higher of it and
+  the depth floor. Deep ocean has no ordinary mob-level result; the Kraken
+  remains a separate fixed entity (a level-70 elite).
 - `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
   protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 inside the capital's protected volume (from the capital anchor's
@@ -2203,13 +2216,15 @@ numeric-truncated seed.
   callers use the level APIs directly. `open_sea_at` maps to deep ocean, not
   planned water or a dragon channel. The old
   `core/inner/outer/coast/war_coast/ocean/strait/underground` buckets are not
-  current spawn authority and have no compatibility path.
+  current spawn authority; only the compatibility `zone_at`
+  (`grug_core.zone_at`) still answers them.
 - All fixed placements resolve through stable zone anchor ids. Slot vocabulary
   remains `start`, `capital`, `village_<n>`, `outpost_<n>`,
   `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,
   `apex_mine` and `rare_<stable_rare_id>`, plus the Round 31 PvP slots
   `pvp_fortress`, `pvp_accord_low`, `pvp_accord_high`, `pvp_throng_low` and
-  `pvp_throng_high` (§16). An absent slot returns nil;
+  `pvp_throng_high` (§16), and the Round 58 slots `mining_camp` and
+  `camp_construction`. An absent slot returns nil;
   consumers never synthesize a replacement coordinate.
 - Zone lookup scans only the small eligible macro-region set. Hot paths do
   not scan every feature record and reuse one x/z classification for the
@@ -2229,8 +2244,9 @@ numeric-truncated seed.
   builds its sessions from the texts, exactly as emerge does. Every other
   case builds the layouts afresh and atomically replaces the file.
 - The key holds a format version, the full world seed, a digest of every Lua
-  file of the `grug_mapgen` mod (the whole tree, so a new or edited module
-  can never be missed; any edit to the mapgen code rebuilds once), the v7
+  file of the `grug_mapgen` mod and of its building templates, town layouts
+  and capital rosters (`.tpl`, `.layout`, `.roster`; the whole tree, so a
+  new or edited module can never be missed; any edit rebuilds once), the v7
   mapgen settings and the Lua interpreter. Nothing else feeds the layouts.
 - The file is text (format `grug_world_layouts_v2` since Round 46): a format
   line, the key lines, one section per text (placement, water, road,
@@ -2254,8 +2270,9 @@ numeric-truncated seed.
 - The key parts (seed, mapgen tree digest, settings, interpreter) are
   published as `grug_mapgen.wp40.world_key` (nil without a key) for the
   other world-folder caches: the region maps
-  ([spawn_regions.md](spawn_regions.md#cache-and-memory)) and, until Round
-  44, the Map tab's zone grid ([world_map.md](world_map.md)).
+  ([spawn_regions.md](spawn_regions.md#cache-and-memory)), the map's claim
+  and flight overlays (`grug_map/base.lua`, keyed on `world_key.source`)
+  and, until Round 44, the Map tab's zone grid ([world_map.md](world_map.md)).
 - The full-world preparation identity (the "authority changed" guard) binds
   a digest of the four texts besides its source files, so it changes when
   a world's layouts or those sources change, whether the layouts were built

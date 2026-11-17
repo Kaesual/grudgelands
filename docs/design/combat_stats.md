@@ -552,11 +552,16 @@ Normal tier at level L:
   consequence, not the definition. The tier is what owns all four critter
   properties; a mob def never hand-writes any of them (§3.0 for the field
   name and the one engine trap).
-- **Speed**: every melee attacker has `run_velocity` **at least 4.6** against
-  the player's 4.0, including retaliating passive prey, the Zombie and the
-  Stone/Mesa Golem. The Bandit Archer and two Skeleton ranged families remain
-  **4.0**; harmless critters that never attack remain **3.4**. The Bog Ooze
-  remains **2.6** because its roster role is explicitly the one slow tank. The
+- **Speed**: every land melee attacker has `run_velocity` **at least 4.6**
+  against the player's 4.0, including retaliating passive prey, the Zombie,
+  the Stone/Mesa Golem and the Lava Seep (raised from 3.4 in Round 81,
+  ruling 5). The ranged families (Bandit Archer, Poacher, Skeleton Archer,
+  Skeleton Raider, Frost Stray, Bog Witch) remain **4.0**; harmless
+  critters that never attack remain **3.4**. Named exceptions: the Bog Ooze
+  remains **2.6** because its roster role is explicitly the one slow tank;
+  the shore and pond animals stay slow, the Frog and the Shore Crab at
+  **3.4** and the Tortoise at **2** (`biomes_mobs.md`); the swimmers keep
+  their own water speeds (the Stingray 3.5, the sharks 4 and 5). The
   deep-sea Kraken runs **10** inside a deep-ocean column and **5**
   elsewhere (`world.md` §2b). The ordinary 4.6 band keeps
   the Swiftness Draught below it (4.0 × 1.10 = 4.4), and continues to feed the
@@ -575,8 +580,12 @@ Normal tier at level L:
   `walk_velocity`, so the Glowwing (walk 2) changes height at 2 m/s in
   combat (accepted).
 - **Reach**: player swing abilities (Strike, Mighty Blow and Hamstring) use
-  **3 m**, and every ordinary explicit mob reach is **3 m**. The Kraken keeps
-  its model-specific **4 m** and non-combatant villagers keep 0. **A ground mob
+  **3 m**, and an ordinary ground melee mob's reach is **3 m**. The small
+  mobs and the fliers reach **2 m** (the Frog, the Tortoise, the Stingray,
+  the Spiderling, the Stone Mite, the hostile bats, the Glowwing, the Ember
+  Wisp and the Wisp), the Kraken and the Abyssal Shark keep their
+  model-specific **4 m**, the dragons **6 m**, and non-combatant villagers
+  keep 0. **A ground mob
   measures melee edge to edge** (Round 78, ruling 6; `mobs/grug_obstacle.lua`
   `melee_measure`): the horizontal gap between the two collision boxes, a height
   difference of up to one node between the feet free (a target on a step or in
@@ -784,7 +793,10 @@ Normal tier at level L:
   (`mobs/api.lua` `grug_winding_up`, `grug_mobs/telegraph.lua`).
   Cadence: the first wind-up needs **4 s of MELEE engagement** (a fight
   always opens with normal swings, and a ranged elite at distance never
-  winds up into empty air), afterwards one every **10 s**. The same
+  winds up into empty air), afterwards one every **10 s**. Only against a
+  **player** target: the cone hits players only, so an elite fighting a mob
+  (an elite guard against a wolf) swings plainly and never winds up (Round 81,
+  ruling 7). The same
   mechanic later scales up to bosses. **One behavior
   verb per mob family** (boars charge, wolves hunt in packs and flee
   low to return with friends, zombies pursue while damage sustains the fight, skeleton archers
@@ -840,6 +852,13 @@ not change.
 The mandatory baseline bands are normal TTK **8–12 s** (Priest **12–16 s**),
 elite TTK **3–4 times** its normal row, and raw normal-mob TTD **25–30 s**.
 The KAT allows ±10% around those bands to absorb whole-hit rounding.
+**The TTD band and the table's Raw TTD column hold at
+`grug_mob_damage_scale` 1.0** (Round 81 ruling 4, documentation only): the
+pressure fit divides by the unscaled damage curve, and the setting then
+multiplies the hit. At the shipped default **1.5** every Raw TTD is two
+thirds of the table's, about **18 s** against the neutral pool (Warrior
+about 22 s, Mage about 17 s); see "Global non-player damage scale" below.
+The TTK columns do not depend on the setting.
 
 | L | Class | Effective hit | Normal TTK | Elite TTK | Raw TTD |
 |---:|---|---:|---:|---:|---:|
@@ -1546,9 +1565,10 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
 
   Players keep their relation colours: own faction green, enemy red, gray when there is nothing at stake.
 
-- **No skull tier** and no extra damage modifier for high-level mobs —
+- **No skull tier** and no extra damage bonus for high-level mobs —
   mob damage already scales via the level formulas; the nametag carries
-  the exact level anyway.
+  the exact level anyway. The only level modifier is §2's malus on player
+  damage against higher-level mobs.
 - Implementation: shared carrier in `grug_core`, mob text and gray-XP rule in
   `grug_mobs`, player text in `grug_factions`, target frame HUD alongside WP6.
 
@@ -1596,7 +1616,7 @@ accumulates without time decay; valid rivals need more than 120% of a valid
 current target's threat. Taunt and player threat refuse evading mobs before
 forcing a target or changing the ledger. A suppressed switch remains pending through the forced
 window and is reconsidered after expiry even without a new hit. Invalid current
-targets do not impose hysteresis on valid rivals. Charge stun lasts 1.5 seconds
+targets do not impose hysteresis on valid rivals. Charge stun lasts 0.75 seconds
 on accepted hits, excluding kings and dragons; it cancels pending attacks and
 blocks movement and attack execution, preserving gravity.
 
@@ -1610,7 +1630,9 @@ It covers melee, projectiles, auras, DoTs and authored attack ground effects,
 including fixed-damage consumers as well as level-derived damage. Player
 attacks, fall damage and ordinary environmental damage are unaffected.
 Derived arrow/boss damage must not be multiplied again. This setting does not
-change HP, density, aggression range, armor, rewards or ability cadence.
+change HP, density, aggression range, armor, rewards or ability cadence. The
+same-level TTK check's raw TTD band is stated at 1.0; at the default 1.5 a
+player takes half again as much per hit (Round 81 ruling 4).
 
 ## Nametag categories and injured health sprites
 

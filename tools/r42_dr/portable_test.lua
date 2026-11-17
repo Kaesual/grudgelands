@@ -274,6 +274,18 @@ grug_mobs = {
 }
 grug_mapgen = {wp40 = {}}
 dofile(repo .. "/mods/ENTITIES/grug_mobs/npc_doors.lua")
+-- Round 81 MOBRUN (MOB1-06): the stuck snap's watch reads grug_core's player
+-- snapshot (the nearest player's squared distance), here the players above.
+grug_core = {nearest_tag_player_d2 = function(pos)
+	local best
+	for _, o in ipairs(players) do
+		local p = o:get_pos()
+		local dx, dy, dz = p.x - pos.x, p.y - pos.y, p.z - pos.z
+		local d2 = dx * dx + dy * dy + dz * dz
+		if not best or d2 < best then best = d2 end
+	end
+	return best
+end}
 dofile(repo .. "/mods/ENTITIES/grug_mobs/patrol.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/routes.lua")
 local D = grug_mobs.npc_doors

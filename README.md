@@ -98,30 +98,22 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.80.0** adds the second phase of website accounts: link your characters to your
-account on the realm's website (grudgelands.com/play), by a code entered on the Account
-tab or with the character's password on the website, and the account's rewards reach every
-linked character: the **Cheer** emote for every account, and the Supporter and six donor
-cloaks an administrator grants. The quickbar's emotes are icon buttons now. Accounts are
-optional; the tab shows only on realms with the website
-([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)).
-Compatible: existing worlds play on.
-
-**0.78.0** fixes what a game night found: bosses and every mob with both attacks keep about
-a node of distance and choose ranged or melee by distance, heals reach the tank past the
-boss, a 10 s respawn wait while the Expedition group still fights, Expedition lights that
-cannot be knocked down, nametags that come back, a 30 s potion cooldown in the status row,
-half-price repairs, armor numbers ×10, the emotes Wave and Dance, and towering again.
-Compatible.
+**0.81.0** fixes what a code audit found: ability cooldowns and mana survive a relog,
+a level-up no longer delays your next swing, bucket water stays off roads and out of
+villages and camps, the Expedition texts point to the Registrar at the great hall, and the
+server does less work per step with many players online. Since 0.79.0 you can link your
+characters to an account on the realm's website (grudgelands.com/play); the account's
+rewards, such as the **Cheer** emote and the Supporter and donor cloaks, reach every linked
+character. Accounts are optional ([rules](docs/design/accounts.md),
+[contract](docs/technical/web-accounts.md)). Compatible: existing worlds play on.
 
 Read the [changelog](CHANGELOG.md) for every earlier version and the upgrade
 requirements of each.
 
-**What I want to improve next:** the second phase of website accounts, then
-more meaningful choices while leveling, stronger class identities and better
-group and PvP balance, richer sound and scenery, more varied and useful
-crafting, unique items to find and earn, and quests that teach the game more
-naturally. The [roadmap](ROADMAP.md#next-priorities--deepening-the-playable-game)
+**What I want to improve next:** more meaningful choices while leveling,
+stronger class identities and better group and PvP balance, richer sound and
+scenery, more varied and useful crafting, unique items to find and earn, and
+quests that teach the game more naturally. The [roadmap](ROADMAP.md#next-priorities--deepening-the-playable-game)
 has the direction and the next steps.
 
 ## Feedback and contributions

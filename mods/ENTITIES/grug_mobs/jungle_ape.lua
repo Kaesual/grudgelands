@@ -7,16 +7,34 @@
 -- _grug_leash_range (aggro.lua) — an ape gives up after 20 nodes instead of
 -- the default 40, so leaving its patch is enough. Identical to bear.lua.
 --
--- Elite variant "Silverback" (§3.1, ×1.4 scale): rolled per spawn in the
--- mobs:spawn row below, no second registration and no extra texture
--- (wp6_model_notes §0.4 — elites are a runtime tint + scale).
+-- Elite variant "Silverback" (§3.1, ×1.4 scale): rolled once per fresh spawn
+-- on the definition's activation path (silverback_roll below), no second
+-- registration and no extra texture (wp6_model_notes §0.4 — elites are a
+-- runtime tint + scale).
 --
 -- ONE registration for both continents (§8.4: the Accord jungle fringe reuses
 -- the troll jungle nodes 1:1; §3.2 shares the jungle tables).
 
 local SILVERBACK_CHANCE = 10 -- 1 in 10 spawns is a Silverback (elite tier)
 
+-- The Silverback roll, the same as bear.lua's elder_roll (Round 81, ruling 6):
+-- in the definition's after_activate, for a fresh entity of this name only
+-- (no staticdata: a reactivated ape or a spawn with its own staticdata never
+-- rolls; a sub-type copying this definition never rolls either). Before the
+-- first tick, so set_tier only records the tier and ensure_init applies the
+-- rest; the description is set first, so the first nametag already says
+-- "Elite Silverback". Both fields persist in staticdata.
+local function silverback_roll(self, staticdata)
+	if self.name ~= "grug_mobs:jungle_ape" or (staticdata ~= nil and staticdata ~= "") or
+			math.random(SILVERBACK_CHANCE) ~= 1 then
+		return
+	end
+	self.description = "Silverback"
+	grug_mobs.set_tier(self, "elite")
+end
+
 local ape = {
+	after_activate = silverback_roll,
 	description = "Jungle Ape",
 	_grug_voice = "beast",
 	clock = "day",
@@ -84,41 +102,3 @@ local ape = {
 }
 
 grug_mobs.register_mob("grug_mobs:jungle_ape", ape)
-
--- Silverback roll, identical in shape to bear.lua's elder_roll: mobs_redo
--- calls on_spawn(luaentity, pos) right after core.add_entity (api.lua:4450-4460),
--- i.e. AFTER on_activate but BEFORE the first on_step — so before
--- grug_mobs.ensure_init has assigned a level. grug_mobs.set_tier documents
--- exactly that case: with no _grug_level yet it only records the tier, and
--- ensure_init then applies level, elite multipliers, x1.4 scale, gold tint
--- and nametag together on the first tick. `description` is a plain entity
--- field (levels.lua tag_text reads it) and is set first, so the very first
--- nametag already says "Elite Silverback". Both fields persist in staticdata.
-local function silverback_roll(ent)
-	if not ent or math.random(SILVERBACK_CHANCE) ~= 1 then
-		return
-	end
-	ent.description = "Silverback"
-	grug_mobs.set_tier(ent, "elite")
-end
-
--- §4 row "Jungle Ape | rainforest litter | 20 | 2800 | 2 | min 10 | outer,
--- coast".
-mobs:spawn({
-	name = "grug_mobs:jungle_ape",
-	-- Two nodes since WP36: grug_deep_jungle stopped sharing the jungle
-	-- edge's rainforest litter and has its own top (§1.3). Without the
-	-- second name the Throng half of the jungle group would lose its whole
-	-- outer/coast day roster.
-	nodes = {
-		"default:dirt_with_rainforest_litter", -- jungle edge / jungle fringe
-		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle
-	},
-	min_light = 10,
-	interval = 20,
-	chance = 2800,
-	active_object_count = 2,
-	min_height = 0,
-	max_height = 600,
-	on_spawn = silverback_roll,
-})

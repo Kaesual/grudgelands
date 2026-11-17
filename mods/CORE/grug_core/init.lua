@@ -17,6 +17,12 @@ end)
 -- no saved state at load (docs/technical/upgrade-contract.md).
 dofile(modpath .. "/migrations.lua")
 dofile(modpath .. "/world_version.lua")
+-- The privilege cache (Round 81): grug_core.has_priv, which mobs.has_priv
+-- and every per-step privilege test ask.
+dofile(modpath .. "/privs.lua")
+-- Join slots for per-player periodic passes (Round 81):
+-- grug_core.register_player_pass.
+dofile(modpath .. "/player_slots.lua")
 
 -- Player-facing faction identity remains core-owned. World coordinates,
 -- ownership, levels and anchors are installed later by the validated WP40
@@ -58,6 +64,10 @@ end
 -- same file; install_main relays its reports to chat.
 grug_core.severe = dofile(modpath .. "/severe.lua")
 grug_core.severe.install_main()
+-- Text rules for untrusted input (Round 81): the cut of a raw form field
+-- before any trim or event parse, and the UTF-8 byte-length rule the mail,
+-- bridge and account cleaners share. Pure, no engine calls.
+grug_core.text = dofile(modpath .. "/text.lua")
 -- The bottom-centre HUD column. Pure data plus arithmetic, depends on
 -- nothing, and every HUD writer in the game reads it.
 dofile(modpath .. "/hud_layout.lua")
@@ -91,6 +101,9 @@ dofile(modpath .. "/starts_preload.lua")
 -- everything in grug_core is loaded in dependency order; it needs nothing
 -- from it, and grug_mapgen fills it once the authority is installed.
 dofile(modpath .. "/settlement_sockets.lua")
+-- "May this player still use this NPC's window" (Round 81 GUARDS): every
+-- settlement service window asks it; it reads the socket registry above.
+dofile(modpath .. "/npc_window.lua")
 dofile(modpath .. "/protection.lua")
 -- The pointed node's on_rightclick for items with their own on_place.
 dofile(modpath .. "/node_rightclick.lua")

@@ -560,7 +560,7 @@ class Validator:
 
     # -- zones -----------------------------------------------------------
     def spawns(self, zone, data):
-        """zones/<zone>.spawns.json: {"zone", "recipe", "palette"?, "notes"?}.
+        """zones/<zone>.spawns.json: {"zone", "recipe", "notes"?}.
         The recipe is parsed like the game (r28common.parse_recipe mirrors
         spawn_regions_core.lua); its roles, critters, leaders and, with an
         atlas, its band, `from` anchor and `to` borders are checked here."""
@@ -569,26 +569,19 @@ class Validator:
             self.E("E-type", file, "$", "spawns file must be an object")
             return
         for key in data:
-            if key not in C.SPAWNS_FILE_KEYS:
+            if key == "palette":
+                # The game refuses it at load (spawn_regions.lua install_zone).
+                self.E("E-recipe-key", file, "palette",
+                       "the palette layer is retired (Round 81): a zone spawns from its recipe")
+            elif key not in C.SPAWNS_FILE_KEYS:
                 self.E("E-recipe-key", file, "$", "unknown field %r (%s)" % (key, ", ".join(C.SPAWNS_FILE_KEYS)))
         if data.get("zone") != zone:
             self.E("E-zone-mismatch", file, "zone", "zone %r does not match the file name %s" % (data.get("zone"), zone))
         info = self.zone_info(zone)
         if self.atlas and info is None:
             self.E("E-unknown-zone", file, "zone", "zone %s is not in the atlas" % zone)
-        palette = data.get("palette")
-        if palette is not None:
-            if not isinstance(palette, dict):
-                self.E("E-type", file, "palette", "palette must be an object")
-            else:
-                for key in palette:
-                    if key not in C.PALETTE_KEYS:
-                        self.E("E-recipe-key", file, "palette", "unknown field %r (%s)"
-                               % (key, ", ".join(C.PALETTE_KEYS)))
-        if "recipe" not in data:
-            if palette is None:
-                self.E("E-required", file, "recipe", "a spawns file needs a recipe (a shipped file without one "
-                       "keeps its palette)")
+        if data.get("recipe") is None:
+            self.E("E-required", file, "recipe", "a zone needs its recipe")
             return
         band = info["levels"] if info is not None and info.get("levels") else None
         parsed, errors = C.parse_recipe(zone, data["recipe"], band, self.role_levels,
@@ -1783,7 +1776,7 @@ class Validator:
 
     def zone_drops(self, zone, tier):
         """Items a designed zone's kinds and camps drop in band `tier`; None
-        when the zone has no recipe yet (today's palette, not checked)."""
+        when the zone has no recipe yet (nothing to check)."""
         areas = self.d.areas(zone)
         if not areas:
             return None
@@ -2486,7 +2479,7 @@ def _mutations():
         ("unknown field in a kind", S, kind_key, "E-recipe-key"),
         ("old area list in the file", S, file_key, "E-recipe-key"),
         ("unknown field in the recipe", S, recipe_key, "E-recipe-key"),
-        ("no recipe and no palette", S, no_recipe, "E-required"),
+        ("no recipe", S, no_recipe, "E-required"),
         ("from anchor not in zone (atlas)", S, bad_anchor, "E-unknown-anchor"),
         ("from anchor by settlement key (the game takes id or slot)", S, settlement_anchor, "E-unknown-anchor"),
         ("from anchor by anchor id", S, anchor_id, None),
@@ -2716,7 +2709,7 @@ def _scenarios():
         del recipe["from"]
 
     def palette_only(target):
-        """A shipped file without a recipe: only today's palette."""
+        """A file with only a palette: the game refuses it (Round 81)."""
         _save(target / "zones" / "elandor_goldmead_vale.spawns.json",
               {"zone": "elandor_goldmead_vale", "palette": {"families": ["fox", "poacher"], "boar": "grug_mobs:boar"}})
 
@@ -2853,7 +2846,7 @@ def _scenarios():
          "E-zone-leader"),
         ("leader role in two zones' recipes", leader_in_two_zones, "E-duplicate"),
         ("kill of another zone's leader without an area", kill_leader_elsewhere, "!W-recipe-target"),
-        ("a palette-only spawns file (shipped form)", palette_only, None),
+        ("a palette-only spawns file (retired, Round 81)", palette_only, "E-recipe-key"),
         ("camp on the zone's bandit POI", goldmead_camps([poi_camp()]), None),
         ("camp on a POI named by its name", goldmead_camps([poi_camp(
             site={"poi": "bandit", "name": "Goldmead Bandit Camp"})]), None),

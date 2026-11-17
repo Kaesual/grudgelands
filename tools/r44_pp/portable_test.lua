@@ -289,6 +289,8 @@ dofile(repo .. "/mods/PLAYER/grug_inventory/welcome.lua")
 modname = "grug_parties"
 dofile(repo .. "/mods/PLAYER/grug_parties/ui.lua")
 modname = "grug_pvp"
+-- Round 81: the per-player passes register through grug_core.
+dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile(repo .. "/mods/PLAYER/grug_pvp/page.lua")
 local V = dofile(repo .. "/mods/PLAYER/grug_pvp/view.lua")
 for _, fn in ipairs(mods_loaded) do fn() end

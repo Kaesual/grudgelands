@@ -13,12 +13,15 @@
 --   S  proximity stations: the forge, the four benches and the brewing stand
 --      (lit or not) have no on_rightclick and no lists, open nothing, take
 --      and give nothing; the furnace and the dual furnace keep their dialog;
---      the activation LBM names only the furnaces; a lit brewing stand goes
---      out at its node timer;
+--      the activation LBM names only the furnaces; a proximity station has
+--      no node timer;
 --   D  the dig refund: an old forge's crafting grid, an old brewing stand's
 --      mixture, fuel and output lists and every saved workspace record come
 --      out when a player-placed station is dug or blasted; an authored public
 --      station stays undiggable and blast-proof;
+--   W  (Round 81) a personal workspace's empty record (no item, no fuel) is
+--      deleted instead of stored; empty records stored before are pruned at
+--      the station's first opening, others' records with fuel or items stay;
 --   C  Cooking at join: a character who does not know it learns it at T1
 --      (existing characters at join, new ones at their arrival), quietly; a
 --      player still creating a character stores nothing; known tiers and
@@ -468,6 +471,10 @@ local factions = {}
 grug_factions = {get_faction = function(player)
 	return factions[player:get_player_name()] or "accord"
 end}
+-- Round 81: the shared NPC-window check; the player's faction through
+-- grug_core's stub, which grug_factions resolves in the game.
+dofile(ROOT .. "/mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = grug_factions.get_faction
 grug_smelting = {match = function() return nil end}
 
 -- The settlement of the trainer readers: one start with the Cooking trainer
@@ -697,11 +704,10 @@ do
 		check(not named[name], "S the activation LBM skips " .. name)
 	end
 	eq(lbms["grug_jobs:activate_stations"], nil, "S the old grid LBM is gone")
-	-- A brewing stand lit before Round 45 goes out at its node timer.
-	local pos = vector.new(9, 10, 1)
-	local def = place(pos, "grug_brewing:brewing_stand_active")
-	eq(def.on_timer(pos, 1), false, "S the lit stand's timer stops")
-	eq(nodes[pos_key(pos)], "grug_brewing:brewing_stand", "S ...and the stand goes out")
+	-- Round 81 (DEAD, X5-07): a proximity station has no timer; a stand lit
+	-- before Round 45 cannot exist after the 0.46.0 map reset.
+	local def = core.registered_nodes["grug_brewing:brewing_stand_active"]
+	eq(def and def.on_timer, nil, "S a proximity station has no timer")
 end
 
 -- Compatible output growth: old shared and saved personal dual furnaces.
@@ -730,6 +736,35 @@ do
  check(grug_jobs.workspaces.open(pos, player), "G personal workspace reopens after save")
  eq(last_detached:get_size("output"), 4, "G personal reopen retains four slots")
  eq(last_detached:get_stack("output", 4):get_count(), 9, "G fourth output survives save and reopen")
+end
+
+-- Round 81 (P2-03): an empty workspace record (no item, no fuel) is deleted
+-- instead of stored; empty records stored before go at the station's first
+-- opening in a server run.
+do
+ local pos = vector.new(0, 10, 5)
+ local player = new_player("tidy", {x = 0, y = 10, z = 4})
+ local _, meta = place(pos, "grug_smelting:dual_furnace")
+ factory.register_public_position("dual_furnace", pos)
+ local empty_lists = {input = {"", ""}, fuel = {""}, output = {"", "", "", ""}}
+ meta:set_string(PREFIX .. "ghost", core.serialize({lists = empty_lists,
+  process = {fuel = 0, progress = 2, last = 5}}))
+ meta:set_string(PREFIX .. "burning", core.serialize({lists = empty_lists, process = {fuel = 4}}))
+ meta:set_string(PREFIX .. "keeper", core.serialize({lists = {input = {"default:stick 2", ""}},
+  process = {}}))
+ check(grug_jobs.workspaces.open(pos, player), "W the station opens")
+ eq(meta:get_string(PREFIX .. "ghost"), "", "W an empty stored record is pruned at the opening")
+ check(meta:get_string(PREFIX .. "burning") ~= "", "W a record with fuel left stays")
+ check(meta:get_string(PREFIX .. "keeper") ~= "", "W a record holding an item stays")
+ check(grug_jobs.workspaces.open(pos, player), "W the station reopens")
+ eq(meta:get_string(PREFIX .. "tidy"), "", "W an empty workspace stores no record")
+ last_detached:set_stack("input", 1, ItemStack("default:stick 3"))
+ check(grug_jobs.workspaces.open(pos, player), "W reopened holding an item")
+ check(meta:get_string(PREFIX .. "tidy") ~= "", "W a workspace holding an item is stored")
+ eq(last_detached:get_stack("input", 1):get_count(), 3, "W ... and restored")
+ last_detached:set_stack("input", 1, ItemStack(""))
+ check(grug_jobs.workspaces.open(pos, player), "W reopened after taking it out")
+ eq(meta:get_string(PREFIX .. "tidy"), "", "W emptied again: the record is deleted")
 end
 
 ------------------------------------------------------------------------------

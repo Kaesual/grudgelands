@@ -68,19 +68,3 @@ local zebra = {
 grug_mobs.passive_prey(zebra)
 
 grug_mobs.register_mob("grug_mobs:zebra", zebra)
-
--- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
--- grass | 20 | 1800 | 3 | min 10 | inner, outer" — the Zebra's share of that
--- family row is the savanna top. T5's stag.lua already put the Gaunt Stag on
--- dry grass too; both rows carry the family numbers, which is correct because
--- mobs_redo counts active_object_count per registered entity name.
-mobs:spawn({
-	name = "grug_mobs:zebra",
-	nodes = {"default:dry_dirt_with_dry_grass"}, -- grug_savanna
-	min_light = 10,
-	interval = 20,
-	chance = 1800,
-	active_object_count = 3,
-	min_height = 0,
-	max_height = 600,
-})

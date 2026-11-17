@@ -360,9 +360,12 @@ as in 0.54.1, the new item icons kept):
   and the page refreshed second; there is exactly one page refresh.
 - The hotbar selection has no server-side change hook, so §4's display rule is
   driven by **one throttled poll, once a second per player**, on top of the
-  equipment-change callback. That poll is also the retry for an attachment the
-  engine refused (no loaded block yet, an entity budget) — a weapon that failed
-  to appear reappears on the next pass instead of staying invisible.
+  equipment-change callback. The poll compares the shown stack with the one it
+  last showed and derives the look again only on a change, or once after the
+  callback re-applied the look (Round 81). That poll
+  is also the retry for an attachment the engine refused (no loaded block yet,
+  an entity budget) — a weapon that failed to appear reappears on the next pass
+  instead of staying invisible.
 
 The state of the implementation — what is already tuned and what still needs a
 look in the client — lives in the increment record,
@@ -446,6 +449,7 @@ are kept per character, and so is the choice.
   | Our Oaths Are Ours | complete The Throng's main questline (`quest:throng_main_final`); cloak The Unbought Banner | 1 |
   | The Last Claim Denied | defeat the rift boss, Isquarre the Tithe-Eater (`boss:rift`); cloak Mantle of the Broken Due | 1 |
   | Supporter | granted by an admin (manual, below); cloak Supporter Cloak, with wings | 1 |
+  | Miner's Guild | reach a reputation rank with the character's Miner's Guild ([miners_guild.md](miners_guild.md) §6); cloaks Lamp Badge Workcloth, Lamp and Pick Workcloth, Lamplight Mantle (with wings) | rank 3 / 6 / 10 |
 
   "Wild animals" are every animal mob, critters and hostile beasts included,
   but no humanoid, construct, spirit or slime, and not the dragons or their
@@ -573,7 +577,7 @@ frames 0–220).
   succeeds, Mighty Blow when its swing lands (a refused cast, a dodged swing
   and the Strike fallback play none). Casts are instant, so `cast1` and
   `cast2` hold **0.6 s** (a second cast extends it); Hold Ground's guard
-  holds **1.0 s**, not the whole 8 s buff, because the Warrior fights on
+  holds **1.0 s**, not the whole 5 s shield, because the Warrior fights on
   under it and a held guard would hide every swing. Charge's pose lasts as
   long as the dash. The newest pose replaces a
   running one; a second Mighty Blow restarts `swing`. `swing` starts at

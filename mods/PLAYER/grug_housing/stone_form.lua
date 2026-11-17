@@ -645,9 +645,15 @@ function grug_housing.open_stone_interface(player, claim)
 	return show(player, session)
 end
 
+-- The bytes of the raw name and list fields that are read (the cut before
+-- the trim or the event parse, grug_core.text.cut): a player name has at
+-- most 20 characters, a list event is "CHG:<row>".
+local NAME_BYTES = 4 * 20
+local LIST_EVENT_BYTES = 32
+
 -- The typed name, else the selected row.
 local function target_name(session, fields)
-	local typed = (fields.perm_name or ""):trim()
+	local typed = grug_core.text.cut_trim(fields.perm_name, NAME_BYTES)
 	if typed ~= "" then return typed end
 	return session.selected and session.names and session.names[session.selected]
 end
@@ -755,7 +761,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	for index in ipairs(session.tab_ids or {}) do
 		if fields["stone_tab_" .. index] then fields.stone_tab = tostring(index); break end
 	end
-	if fields.perm_name then session.typed = fields.perm_name end
+	if fields.perm_name then session.typed = grug_core.text.cut(fields.perm_name, NAME_BYTES) end
 	-- The Claim Stone inventory's scroll value, as the bag view keeps its own.
 	local scroll_kind, scroll_value
 	if type(fields[RECOVERED_SCROLL]) == "string" then
@@ -773,7 +779,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	if fields.perm_list then
-		local event = core.explode_textlist_event(fields.perm_list)
+		local event = core.explode_textlist_event(
+			grug_core.text.cut(fields.perm_list, LIST_EVENT_BYTES))
 		if (event.type == "CHG" or event.type == "DCL") and session.names and
 				session.names[event.index] then
 			session.selected = event.index

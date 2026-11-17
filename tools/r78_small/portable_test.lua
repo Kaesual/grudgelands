@@ -102,6 +102,8 @@ end
 grug_core = {}
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/status_icons.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile(repo .. "/mods/CORE/grug_core/status.lua")
 grug_traders = {}
 dofile(repo .. "/mods/ENTITIES/grug_traders/potion.lua")

@@ -1068,6 +1068,8 @@ do
 			return group == "lava" and (name == LAVA or name == "default:lava_flowing") and 3 or 0
 		end}
 	_G.grug_core = {}
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 	dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
 	local reason = {type = "node_damage", from = "engine", node = LAVA}
 	check(grug_core.is_engine_lava_damage(reason), "N the engine's lava tick")

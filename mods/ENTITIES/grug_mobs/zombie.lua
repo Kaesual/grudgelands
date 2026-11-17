@@ -4,12 +4,15 @@
 grug_mobs.register_mob("grug_mobs:zombie", {
 	description = "Buried Miner",
 	_grug_voice = "undead",
-	clock = {settled = "night", war = "night", blight = "any"},
+	-- The spawn clock of its only row, the cave row below, which runs around
+	-- the clock (light-driven). On the surface the recipes' zombie sub-types
+	-- spawn from the spawn regions with their own clocks (Round 81 removed
+	-- the base family's surface rows, ruling 6).
+	clock = "any",
 	type = "monster",
 	-- "underground" is the T7 addition: §3.1's cave paragraph reuses Zombie,
 	-- Giant Spider and Stone Golem below y -1 with the depth axis supplying
-	-- the level. Surface and cave habitat remain controlled by the accepted
-	-- node/biome and height whitelists; no retired surface ring is recreated.
+	-- the level.
 	-- HP/damage/XP and armor come from the level engine (levels.lua); the
 	-- floor keeps the zombie above the boar even in the safe core.
 	_grug_min_level = 3,
@@ -72,78 +75,6 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	light_damage_max = 15,
 })
 
--- At night on the accepted R7 settled surface nodes; named-zone-gated like
--- the boar. Bare stone is absent because no authored land palette uses it as
--- a surface.
---
--- §4 calibration row: interval 20 / chance 1600 / aoc 4, max light 5.
--- FIVE settled tops, not six: grug_nodes:blight_dirt has its own 24 h row
--- below and would otherwise be covered by two ABMs at night.
---
--- This row is also the NIGHT half of the core/inner filler (boar.lua's "role
--- is not ring" note): the wild land tops below make every wild patch inside
--- the accepted R7 palettes. No separate ring gate remains.
-mobs:spawn({
-	name = "grug_mobs:zombie",
-	_grug_clock_palette = "settled",
-	nodes = {
-		"default:dirt_with_grass", -- grug_meadows
-		"default:dirt_with_coniferous_litter", -- grug_pine_hills
-		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
-		"default:dry_dirt_with_dry_grass", -- grug_savanna
-		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
-		-- Wild/universal tops as core/inner/war_coast patches (see above).
-		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
-		-- grug_deep_jungle (own top since WP36, §1.3). This is the only night
-		-- row that reaches the deep jungle's INNER patches — panther and
-		-- jungle spider are outer/coast — and, with the raider, one of two on
-		-- its war-coast strip.
-		"grug_nodes:dirt_with_canopy_litter",
-		"grug_nodes:mesa_clay", -- grug_badlands (+ grug_badlands_east)
-		"default:gravel", -- grug_crags
-		"default:snowblock", -- grug_crags_snowy
-		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-		"grug_nodes:mud_with_wet_grass", -- grug_swamp
-		"default:sand", -- grug_beach
-	},
-	max_light = 5,
-	day_toggle = false,
-	interval = 20,
-	chance = 1600,
-	active_object_count = 4,
-	min_height = 0,
-	max_height = 600,
-})
-
--- The blight identity (biomes_mobs.md §3.1 "in grug_blight: 24 h — Undead
--- identity", §4 light column "blight: any"): on grug_nodes:blight_dirt the
--- zombie spawns around the clock, so NO light gate and NO day_toggle.
--- Everything else is the same row — same aoc budget (mobs_redo counts the
--- cap per entity name, so both rows share it), same node/biome authority.
---
--- The def's daylight burn would make a 24 h row pointless (spawn at noon,
--- die at noon), so a blight zombie is exempted from it: mobs_redo reads
--- `self.light_damage` per entity on every environment tick (api.lua:1050-1176),
--- and a plain number field persists in staticdata — so this survives
--- unload/reload with the mob and touches nobody else's zombie.
-mobs:spawn({
-	name = "grug_mobs:zombie",
-	_grug_clock_palette = "blight",
-	nodes = {"grug_nodes:blight_dirt"}, -- grug_blight
-	interval = 20,
-	chance = 1600,
-	active_object_count = 4,
-	min_height = 0,
-	max_height = 600,
-	-- mobs_redo calls this as on_spawn(luaentity, pos) (api.lua:4450-4460); the
-	-- entity is nil if core.add_entity failed.
-	on_spawn = function(ent)
-		if ent then
-			grug_mobs.blight_sunproof(ent)
-		end
-	end,
-})
-
 --
 -- CAVE ROW (WP6/T7) — biomes_mobs.md §3.1 "Caves (depth axis, WP6 note):
 -- reuse Zombie, Giant Spider, Stone Golem with `underground` zone gating;
@@ -162,10 +93,10 @@ mobs:spawn({
 -- HEIGHTS: min_height -31000 / max_height -1 (grug_mobs.UNDERGROUND_TOP,
 -- Round 46; -40 before) with the ZONE gate doing the real work. The two are
 -- consistent, but read api.lua before touching them: mobs_redo calls
--- mobs:spawn_abm_check with the ABM's NODE position (api.lua:4322-4510) and
--- only THEN moves the spawn position one node up (api.lua:4390-4448), and the
+-- mobs:spawn_abm_check with the ABM's NODE position (api.lua spawn_action) and
+-- only THEN moves the spawn position one node up (api.lua spawn_action), and the
 -- min/max height comparison happens on that raised position
--- (api.lua:4390-4448). So max_height -1 admits node y <= -2, and
+-- (api.lua spawn_action). So max_height -1 admits node y <= -2, and
 -- spawn_policy.lua returns "underground" for exactly y < -1 — every node
 -- this row can match is inside the zone, and nothing is silently thrown away
 -- at the boundary. The row's on_spawn gets the underground sight and elite
@@ -178,7 +109,7 @@ mobs:spawn({
 --
 -- PERFORMANCE: `default:stone` sounds like "every node in the world", but
 -- the ABM's implicit neighbour list is {"air"} (mobs_redo's default,
--- api.lua:4498-4510), so only stone with air next to it — cave walls, ceilings
+-- api.lua mobs:spawn), so only stone with air next to it — cave walls, ceilings
 -- and floors — is ever a candidate. Solid rock costs nothing.
 --
 -- WHY THE mod.conf DEPENDENCY ON grug_materials IS *NOT* A LOAD-ORDER FIX:

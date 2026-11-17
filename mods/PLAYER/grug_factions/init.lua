@@ -47,11 +47,23 @@ end
 -- API
 --
 
+-- The stored faction string per player (Round 81 PASSES; audit C3-02,
+-- MOB1-01: the crosshair, can_harm, nametags and every faction mob's
+-- per-step target sweep read it). Filled on the first read, rewritten by
+-- set_faction (the one writer of META_FACTION: character creation and
+-- /faction); keyed weakly by the ObjectRef, so a rejoin reads the meta
+-- afresh.
+local stored_faction = setmetatable({}, {__mode = "k"}) -- player -> meta string
+
 -- A player's faction id, or nil while none has been chosen yet. Validated
 -- against the registry (like get_class/get_race): an id from an old save
 -- that no longer exists counts as unset instead of nil-crashing callers.
 function grug_factions.get_faction(player)
-	local id = player:get_meta():get_string(META_FACTION)
+	local id = stored_faction[player]
+	if id == nil then
+		id = player:get_meta():get_string(META_FACTION)
+		stored_faction[player] = id
+	end
 	if grug_core.factions[id] then
 		return id
 	end
@@ -100,9 +112,17 @@ function grug_factions.player_tag_text(name, level, hp, hp_max)
 	return ("%s [Lv %d] %d/%d"):format(name, level, math.floor(hp), math.floor(hp_max))
 end
 
+-- hp_max from grug_classes' last applied value, the one writer of the
+-- property (Round 81 PASSES; audit C3-04: this runs on every hp change);
+-- before grug_classes has applied it, or without grug_classes, the property.
+local function max_hp(player)
+	local applied = core.global_exists("grug_classes") and
+		grug_classes.applied_max_hp and grug_classes.applied_max_hp(player)
+	return applied or player:get_properties().hp_max
+end
+
 local function tag_text(player, hp)
-	local properties = player:get_properties()
-	local hp_max = properties.hp_max or math.max(1, hp or player:get_hp())
+	local hp_max = max_hp(player) or math.max(1, hp or player:get_hp())
 	local current = math.max(0, math.min(hp_max, hp or player:get_hp()))
 	return grug_factions.player_tag_text(player:get_player_name(),
 		player_level(player), current, hp_max)
@@ -229,6 +249,7 @@ function grug_factions.set_faction(player, id)
 		return false
 	end
 	player:get_meta():set_string(META_FACTION, id)
+	stored_faction[player] = id
 	grug_factions.refresh_player_tag(player)
 
 	local meta = player:get_meta()

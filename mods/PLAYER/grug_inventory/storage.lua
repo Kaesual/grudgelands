@@ -145,6 +145,74 @@ local function belt_cells(inv, given)
 	return cells_of(inv, slots, given)
 end
 
+-- The give order as list ranges {list, first, last}: main[9..], each bag's
+-- content list, the hotbar (ordered_slots without a table per slot).
+local function give_ranges(inv)
+	local size = inv:get_size("main")
+	local ranges = {{"main", HOTBAR + 1, size}}
+	for i = 1, grug_inventory.BAG_COUNT do
+		local list = grug_inventory.content_list(i)
+		local count = inv:get_size(list)
+		if count > 0 then ranges[#ranges + 1] = {list, 1, count} end
+	end
+	ranges[#ranges + 1] = {"main", 1, math.min(HOTBAR, size)}
+	return ranges
+end
+
+-- fill and commit over `ranges` with the same result, for the hot path
+-- (every dug node and pickup, Round 81 P3-03): a list is read (get_list) only
+-- when the walk reaches it, so a stack that merges into main[9..] never
+-- copies the bags; no table per slot. Pass 1 merges into partial stacks over
+-- the whole order, pass 2 fills empty cells in order; the changed cells are
+-- written in the give order. Returns the leftover.
+local function fill_ranges(inv, ranges, stack)
+	local lists, changed = {}, {}
+	for pass = 1, 2 do
+		for _, range in ipairs(ranges) do
+			if stack:is_empty() then break end
+			local name = range[1]
+			local list = lists[name]
+			if not list then
+				list = inv:get_list(name) or {}
+				lists[name] = list
+			end
+			for index = range[2], range[3] do
+				if stack:is_empty() then break end
+				local cell = list[index]
+				if not cell then
+					cell = ItemStack("")
+					list[index] = cell
+				end
+				if cell:is_empty() == (pass == 2) then
+					local before = cell:get_count()
+					stack = cell:add_item(stack)
+					if cell:get_count() ~= before then
+						changed[name] = changed[name] or {}
+						changed[name][index] = true
+					end
+				end
+			end
+		end
+	end
+	for _, range in ipairs(ranges) do
+		local name = range[1]
+		local marks = changed[name]
+		if marks then
+			for index = range[2], range[3] do
+				if marks[index] then inv:set_stack(name, index, lists[name][index]) end
+			end
+		end
+	end
+	return stack
+end
+
+-- Callbacks func(player, name) after give placed some of an item named
+-- `name` (grug_jobs' Basic unlock notices new ingredients here, Round 81).
+local give_callbacks = {}
+function grug_inventory.register_on_give(func)
+	give_callbacks[#give_callbacks + 1] = func
+end
+
 -- The one way items enter a player's inventory (spec §2.4): returns the
 -- leftover, which the caller drops, refuses, queues or keeps as before.
 -- Every stack gets the weapon-tooltip setup an engine pickup or craft gives
@@ -155,19 +223,19 @@ function grug_inventory.give(player, stack, skip_quiver)
 	local inv = player and player:get_inventory()
 	if stack:is_empty() or not inv then return stack end
 	grug_gear.initialize_weapon_tooltip(stack, player)
+	local name, count = stack:get_name(), stack:get_count()
 	if not skip_quiver then
 		stack = grug_inventory.add_to_quiver(player, stack)
 	end
-	if stack:is_empty() then return stack end
-	if grug_inventory.belt_accepts(stack) then
-		local belt = belt_cells(inv)
-		stack = fill(belt, stack)
-		commit(inv, belt)
-		if stack:is_empty() then return stack end
+	if not stack:is_empty() and grug_inventory.belt_accepts(stack) then
+		stack = fill_ranges(inv, {{BELT, 1, inv:get_size(BELT)}}, stack)
 	end
-	local cells = cells_of(inv, ordered_slots(inv))
-	stack = fill(cells, stack)
-	commit(inv, cells)
+	if not stack:is_empty() then
+		stack = fill_ranges(inv, give_ranges(inv), stack)
+	end
+	if stack:get_count() < count then
+		for _, func in ipairs(give_callbacks) do func(player, name) end
+	end
 	return stack
 end
 

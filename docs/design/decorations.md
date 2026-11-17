@@ -6,7 +6,7 @@ city dressing. Prices use copper: 100 copper = 1 silver, 100 silver = 1 gold.
 
 ## Access and prices
 
-The Decoration Merchant in every capital offers the same fixed-price catalog,
+The Decor Merchant in every capital offers the same fixed-price catalog,
 independent of level. Ordinary vendor buy-back remains 5%. Household details
 are affordable; paintings and elaborate fixtures are the expensive pieces.
 The implementation's complete ordered shelf is

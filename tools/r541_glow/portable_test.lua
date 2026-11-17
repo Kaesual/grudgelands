@@ -206,8 +206,9 @@ do
 			"dragon_return", "depth_windup", "depth_burst", "oerkki_blink", "wisp_blink", "hex_bottle"}) do
 		LIT[id] = true
 	end
+	-- Round 81 MOBRUN: the rift's dark motes joined the catalogue with their look.
 	local MATERIAL = {"^mobs_blood", "^grug_mobs_rock%.png$", "^mobs_bubble", "#d8eef4", "^default_snow",
-		"^mobs_tnt_smoke"}
+		"^mobs_tnt_smoke", "^grug_mobs_rift_particle%.png$"}
 	local function material(tex)
 		for _, pattern in ipairs(MATERIAL) do
 			if tex:find(pattern) then return true end

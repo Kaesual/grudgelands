@@ -4,6 +4,15 @@ Prepared on 2026-11-11 in the existing `round75.5` worktree. The user requested
 an actual Silverleaf moon-shrine update and a browser overview with a proposal
 for every structure excluded from the previous city architecture pass.
 
+**Frozen (Round 81).** The study is finished and is not rebuilt. Its
+screenshots (`captures/`), `contact_sheets/` and the self-contained
+`viewer.html` left the tracked tree; they are in history at
+[`4cb49044`](https://github.com/Kaesual/grudgelands/tree/4cb49044/tools/city_architecture_specials)
+(`git show 4cb49044:tools/city_architecture_specials/<path>`). `index.html`
+now opens without its thumbnails and its viewer links lead nowhere until
+`viewer.html` is restored from there. `catalog.json` and `export.lua` stay:
+`r75_5_architecture` reads them.
+
 ## Open
 
 Serve the **repository root** on the existing preview server:
@@ -66,7 +75,8 @@ later city-decoration overlay are not displayed. The page states this limit.
 Roof tops and raised bases use full exported bounds for camera framing.
 `catalog.json` records placements, bindings, source hashes, proposals, actual
 materials and planting; `build-report.json` pins the input audit, templates,
-layouts and viewer. `captures/` and `contact_sheets/` provide visual evidence.
+layouts and viewer. `captures/` and `contact_sheets/` provided the visual evidence (in history
+at `4cb49044` since Round 81).
 
 ## Moon shrine implementation
 

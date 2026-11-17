@@ -3,7 +3,6 @@
 local INACTIVE = "grug_smelting:dual_furnace"
 local ACTIVE = "grug_smelting:dual_furnace_active"
 grug_smelting.NODE = INACTIVE
-grug_smelting.NODE_ACTIVE = ACTIVE
 
 local function register(name, active)
 	local groups = {cracky = 2}

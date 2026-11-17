@@ -272,8 +272,8 @@ Sections: [World version and migrations](#world-version-and-migrations), [Player
   for a JSON save without a filter, written into the world folder).
 - **What a step interval is:** the `dtime` a globalstep receives. The engine
   measures each server step whole with its own clock, unclamped and
-  unsmoothed, and passes it on unchanged (Luanti 5.17
-  `src/server.cpp:136-170`, `:152`; `src/serverenvironment.cpp:1073`;
+  unsmoothed, and passes it on unchanged (read in Luanti 5.17, line numbers
+  of then: `src/server.cpp:136-170`, `:152`; `src/serverenvironment.cpp:1073`;
   `src/script/cpp_api/s_env.cpp:134-143`), so a long step arrives whole in
   the next step's `dtime` and the monitor needs no clock call. The interval
   includes the server's wait for the next step (`dedicated_server_step`,
@@ -316,7 +316,10 @@ nothing and logs one line, so local and browser worlds play as without it.
   alone and never blocks the queue. The request is assembled from those strings,
   which also keeps its byte bound exact and writes empty lists as `[]`. A queued
   event is valid UTF-8 (`L.valid_utf8`): the JSON writer copies bytes, `M.clean`
-  keeps a stray lead byte, and a bridge refusing that body would stop the queue.
+  checks only the byte count against the lead byte (`grug_core.text.utf8_whole`,
+  shared with the account cleaner, 0.81.0), so an overlong form or a surrogate
+  still passes and a text stored before 0.81.0 may hold stray bytes, and a
+  bridge refusing that body would stop the queue.
 - **Errors** never reach the engine: `core.after` and the HTTP callback run in the
   server step, where an uncaught error ends the server, so every hook, command and
   callback is caught and the exchange goes on. Requests set `quiet`: otherwise the

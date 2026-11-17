@@ -588,6 +588,21 @@ do
 		for name in pairs(child.observers or {}) do shown[name] = (shown[name] or 0) + 1 end
 	end
 	check(shown.ann == 1 and shown.bob == 1, "T each observer sees exactly one marker")
+	-- Round 81 (audit P3-05): a marker's set goes out only when it changed.
+	local sends = 0
+	for _, child in ipairs(children) do
+		local real_set = child.set_observers
+		child.set_observers = function(self, o) sends = sends + 1; return real_set(self, o) end
+	end
+	visibility(npc_parent, {ann = true, bob = true}, false)
+	eq(sends, 0, "T an unchanged partition sends no observer set again")
+	visibility(npc_parent, {ann = true}, false)
+	shown = {}
+	for _, child in ipairs(children) do
+		for name in pairs(child.observers or {}) do shown[name] = (shown[name] or 0) + 1 end
+	end
+	check(sends == 1 and shown.ann == 1 and shown.bob == nil,
+		"T a changed partition sends the one marker whose set changed")
 	visibility(npc_parent, {}, true)
 	local removed = true
 	for _, child in ipairs(children) do removed = removed and not child.valid end
@@ -808,6 +823,8 @@ do
 	core.colorize = function(_, text) return text end
 	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 	dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 	dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 	local character_step = registered.register_globalstep[steps_before + 1]
 	check(character_step ~= nil and #registered.register_globalstep == steps_before + 1,

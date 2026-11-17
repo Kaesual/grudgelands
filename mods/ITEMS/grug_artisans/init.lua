@@ -1,9 +1,7 @@
 -- R9 Woodcarver and Goldsmith content. The catalog files own recipes while
 -- this entry point owns their shared registration and audit seams.
 
-grug_artisans = {
-	INGREDIENT_TIERS = {},
-}
+grug_artisans = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 
@@ -21,7 +19,6 @@ end
 
 function grug_artisans.register_ingredient(item, tier)
 	grug_jobs.register_ingredient_tier(item, tier)
-	grug_artisans.INGREDIENT_TIERS[item] = tier
 	return item
 end
 

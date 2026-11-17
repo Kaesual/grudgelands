@@ -115,7 +115,6 @@ local function accepts(objective, name)
 	if objective.item then return name == objective.item end
 	return name ~= "" and core.get_item_group(name, objective.group) > 0
 end
-Q.accepts_item = accepts
 -- The variant of quest `def` an active entry follows (Round 57, ruling 9):
 -- the one it was taken in, else the first (an entry saved before variants,
 -- a quest accepted without an NPC, or a variant the data no longer has).
@@ -665,9 +664,20 @@ end
 -- once a counter actually rises. A kill of the player's own faction (its
 -- guards) credits nothing; the load checks let only the other faction's
 -- quests name a garrison (validate.lua, E-garrison-faction).
+-- The copy a kill credits (Round 81 P3-04): new top-level and `active`
+-- tables and a copy of each credited quest's counters; everything else
+-- (`completed`, which only grows, above all) is shared with the cached state
+-- it came from. Nothing writes into a loaded table, so sharing is safe.
+local function kill_copy(state)
+	local copy = {}
+	for key, value in pairs(state) do copy[key] = value end
+	copy.active = {}
+	for id, counters in pairs(state.active) do copy.active[id] = counters end
+	return copy
+end
 function Q.credit_kill(player, mob, pos)
 	if grug_factions.same_faction(player, mob.object) then return end
-	local state, copy = load(player), nil
+	local state, copy, copied = load(player), nil, {}
 	for id, counters in pairs(state.active) do
 		local def = Q.registered_quests[id]
 		if permitted(player, def, state) then
@@ -676,7 +686,11 @@ function Q.credit_kill(player, mob, pos)
 					local before = counters[index] or 0
 					local after = math.min(objective.count, before + 1)
 					if after ~= before then
-						copy = copy or editable(player)
+						copy = copy or kill_copy(state)
+						if not copied[id] then
+							copied[id] = true
+							copy.active[id] = table.copy(counters)
+						end
 						copy.active[id][index] = after
 					end
 				end

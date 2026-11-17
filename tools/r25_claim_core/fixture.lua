@@ -471,6 +471,14 @@ clock = clock + 2 * L + 100
 check(not M.is_active(a), "downtime burns fuel")
 local again = M.expiry_scan()
 check(#again == 1 and again[1] == a, "the new expiry is reported again")
+-- Round 81: a direct paid_until write (the engine probe's faked clock) is
+-- seen by the scan only after note_expiry.
+check(M.add_fuel(a, 2) == 2, "refuel before the faked expiry")
+a.paid_until = clock - 1
+check(#M.expiry_scan() == 0, "a direct write alone: the scan returns early")
+M.note_expiry(a)
+local faked = M.expiry_scan()
+check(#faked == 1 and faked[1] == a, "note_expiry: the faked expiry is reported")
 
 -- ---------------------------------------------------------------------------
 -- 4. Daily limits and state transitions
@@ -638,6 +646,10 @@ grug_housing.notify_claim_changed = function(claim, event)
 end
 grug_housing.sync_stone_node = function() end
 dofile(housing_dir .. "/stone.lua")
+-- Round 81: the soulbound rule belongs to grug_inventory's bound-item seam
+-- (bound.lua) and registers once every mod has loaded.
+grug_inventory = {}
+dofile(repo .. "/mods/PLAYER/grug_inventory/bound.lua")
 dofile(housing_dir .. "/soulbound.lua")
 for _, fn in ipairs(mods_loaded) do fn() end
 local STONE = "grug_housing:claim_stone"

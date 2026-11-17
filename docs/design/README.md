@@ -65,8 +65,8 @@ changed the topic), not a full history. What each round shipped:
 
 Open work lives in [BACKLOG](../../BACKLOG.md), the current state in
 [project status](../STATUS.md).
-The [documentation audit](../maintenance/documentation-round.md) records review
-coverage and unresolved discrepancies. Approved future systems remain labeled;
+The [2026-09 documentation audit](../archive/maintenance/documentation-round.md)
+records that round's review coverage and discrepancies. Approved future systems remain labeled;
 “decided” alone never means “implemented”.
 
 ### Round 6 supporting records

@@ -320,6 +320,8 @@ local function boot()
 	function grug_core.in_combat() return false end
 	dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 	dofile(repo .. "/mods/CORE/grug_core/status_icons.lua")
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 	dofile(repo .. "/mods/CORE/grug_core/status.lua")
 	function grug_core.zone_authority_installed() return true end
 	function grug_core.feed(player, _, text)

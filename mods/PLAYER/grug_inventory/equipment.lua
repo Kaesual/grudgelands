@@ -200,11 +200,6 @@ function grug_inventory.equipment_changed(player, listname, reason)
 	grug_core.notify_equipment_change(player, listname, reason)
 end
 
--- WP7 name, kept because AGENTS.md and the WP7 armor pipeline document it.
--- It now drops the weapon/offhand caches and notifies as well -- strictly more
--- than it used to do, and never less.
-grug_inventory.invalidate_armor = grug_inventory.equipment_changed
-
 core.register_on_joinplayer(function(player)
 	local inv = player:get_inventory()
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
@@ -750,11 +745,10 @@ local function compute_equipped_armor(player)
 		if not stack:is_empty() and not grug_core.equipment_is_broken(stack) then
 			local def = core.registered_items[stack:get_name()]
 			local armor = def and def._grug_armor
-			local gear = rawget(_G, "grug_gear")
-			if gear and gear.describe_stack_base then
+			if grug_gear.describe_stack_base then
 				local ilvl = stack:get_meta():get_int("grug_ilvl")
 				if ilvl <= 0 then ilvl = def and def._grug_ilvl end
-				local _, stats = gear.describe_stack_base(stack, ilvl)
+				local _, stats = grug_gear.describe_stack_base(stack, ilvl)
 				armor = stats.armor or armor
 			end
 			if type(armor) == "number" and armor > 0 then
@@ -869,7 +863,9 @@ function grug_inventory.get_cosmetic_hand(player, slot)
 	return cached_slot_item(player, grug_inventory.hand_list(player, slot))
 end
 
--- Base fallback until grug_quality adds shield and affix rating.
+-- Base rating; grug_quality (which loads later) replaces it with the rating
+-- that adds the shield and the affixes, so the game reads this only where
+-- grug_quality is absent (fixtures).
 function grug_core.get_armor_rating(player)
 	return grug_inventory.get_equipped_armor(player)
 		+ grug_classes.get_talent_bonus(player, "armor_percent_add")
@@ -1188,17 +1184,19 @@ local WEAPON_HINT_KEY = "grug_weapon_hint"
 local WEAPON_HINT_DELAY = 5 -- seconds, so it lands after the join/creation chatter
 
 -- Condition 3. `main` and the bags: the Inventory tab shows them as one
--- inventory and the give helper and the sort fill both (Round 44).
+-- inventory and the give helper and the sort fill both (Round 44). Only a
+-- weapon this class's slot takes (the hand rule) at the character's level
+-- counts, so the flag is never spent on one the slot would refuse.
 local function owns_slot_eligible_weapon(player)
 	local inv = player:get_inventory()
 	if not inv then
 		return false
 	end
-	local weapon_group = slot_group[WEAPON_LIST]
+	local class_id = grug_classes.get_class(player)
 	for _, listname in ipairs(grug_inventory.carried_lists(inv)) do
 		for _, stack in ipairs(inv:get_list(listname) or {}) do
-			if not stack:is_empty() and
-					core.get_item_group(stack:get_name(), weapon_group) > 0 then
+			if grug_inventory.hand_accepts(class_id, WEAPON_LIST, stack) and
+					grug_core.can_use_item_level(player, stack) then
 				return true
 			end
 		end
@@ -1222,7 +1220,8 @@ local function try_weapon_hint(name)
 	if not grug_classes.get_class(player) then
 		return -- still in character creation: stay armed
 	end
-	if grug_inventory.get_equipped_weapon(player) then
+	-- Occupied at all, a broken weapon included: the slot is not empty.
+	if grug_inventory.get_cosmetic_weapon(player) then
 		return -- nothing to say, and the flag is not spent on saying it
 	end
 	if not owns_slot_eligible_weapon(player) then

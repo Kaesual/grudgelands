@@ -20,7 +20,7 @@ end
 --      C13; the scrolling itself: tools/r52_graph);
 --   4. the hotbar-only rule for each target list (hotbar, main[9..], every
 --      bag, the potion belt, craft, equipment, the quiver), swaps, puts from
---      the catalog, one copy; mount items keep main and bags; and, on a
+--      the catalog, one copy; a bound non-skill item goes nowhere; and, on a
 --      model of the engine's move (inventorymanager.cpp IMoveAction::apply),
 --      a drag from the catalog onto the hotbar and a drag back that removes;
 --   5. grants: grant_initial_kit with a free and with a full hotbar (Round
@@ -213,14 +213,15 @@ eq(move("main", 20, "main", 5), nil, "a stray in main[9..] onto the hotbar")
 eq(move("main", 20, "main", 21), 0, "but not within main[9..]")
 eq(move("grug_bag2_content", 3, "main", 6), nil, "a stray in a bag onto the hotbar")
 eq(move("grug_bag2_content", 3, "grug_bag2_content", 4), 0, "but not within the bag")
--- Mount items keep main and the bags.
+-- Round 81 (DEAD, ruling 10): the mount items are aliases of "", so a
+-- bound item that is no skill is never entitled and goes nowhere.
 inv:set_stack("main", 2, "grug_mounts:horse")
 inv:get_stack("main", 2) -- (copies: set the owner on the stored stack)
 inv.lists.main[2]:get_meta():set_string("grug_mounts:owner", "rules")
 player.mount_tier = 1
-eq(move("main", 2, "main", 14), nil, "a mount item to main[9..]")
-eq(move("main", 2, "grug_bag1_content", 2), nil, "a mount item into a bag")
-eq(move("main", 2, "grug_potion_belt", 1), 0, "but not into the belt")
+eq(move("main", 2, "main", 14), 0, "a bound non-skill item to main[9..] refused")
+eq(move("main", 2, "grug_bag1_content", 2), 0, "a bound non-skill item into a bag refused")
+eq(move("main", 2, "grug_potion_belt", 1), 0, "and not into the belt")
 inv:set_stack("main", 2, "")
 
 -- Puts from the catalog: a free hotbar slot, one copy.

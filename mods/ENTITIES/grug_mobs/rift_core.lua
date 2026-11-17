@@ -48,17 +48,17 @@ end
 M.SPAWN_RANGE = 48
 M.SPAWN_CLEAR = 6
 M.PARTICLE_RANGE = 48
--- One particle spawner per near player every PARTICLE_PERIOD seconds, each
--- with PARTICLE_AMOUNT particles living PARTICLE_LIFE seconds: about
--- amount x mean life / period alive at once per player (the web budget:
--- hundreds, never thousands).
-M.PARTICLE_PERIOD = 5
-M.PARTICLE_AMOUNT = 80
-M.PARTICLE_LIFE = {2, 4}
+-- While a player is near, PARTICLE_RATE motes a second over the whole crack
+-- (one 1 s spawner per stretch, the "rift_crack" effect of
+-- grug_core/particle_effects.lua), each living PARTICLE_LIFE seconds (the
+-- effect's `exp`): about rate x mean life alive at once, seen by every
+-- player in range (the web budget: hundreds, never thousands).
+M.PARTICLE_RATE = 20
+M.PARTICLE_LIFE = {2, 3}
 
 function M.particles_alive()
 	local life = (M.PARTICLE_LIFE[1] + M.PARTICLE_LIFE[2]) / 2
-	return M.PARTICLE_AMOUNT * life / M.PARTICLE_PERIOD
+	return M.PARTICLE_RATE * life
 end
 
 -- When the boss may come back: `due` is the wall-clock time stored at its

@@ -27,9 +27,11 @@ L.EVENT_MAX = L.MAX_REQUEST / 2
 local REPLACEMENT = "\239\191\189" -- U+FFFD
 
 -- `text` as valid UTF-8, each stray byte replaced. The JSON writer copies bytes
--- as they are, and M.clean keeps a lead byte without its continuation, which a
--- modified client can place in a ticket: a bridge that refuses such a body
--- would never acknowledge the event, and the queue would stand still.
+-- as they are, and M.clean checks only the byte count, so an overlong form or
+-- a surrogate, which a modified client can place in a ticket, still passes
+-- (and letters stored before 0.81.0 may hold worse): a bridge that refuses
+-- such a body would never acknowledge the event, and the queue would stand
+-- still.
 function L.valid_utf8(text)
 	if not text:find("[\128-\255]") then return text end
 	local out, at, length = {}, 1, #text

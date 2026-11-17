@@ -303,11 +303,11 @@ for event, spec in pairs(saved) do EVENTS[event] = spec end
 if EVENTS.click then
 	eq(S.CLICK_STYLE, "style_type[button,image_button,checkbox,tabheader,dropdown;sound=" ..
 		EVENTS.click.name .. "]", "K click style names the click file")
-	eq(#joins, 1, "K one join callback extends the prepend")
-	local carol = player("carol")
-	joins[1](carol)
-	eq(carol:get_formspec_prepend(), "bgcolor[#080808BB;true]" .. S.CLICK_STYLE,
-		"K the prepend ends with the click style")
+	-- Round 81 (DEAD, X1-04): grug_core's join callback sets the whole
+	-- prepend, which ends with the click style; grug_sounds adds none.
+	eq(#joins, 0, "K no join callback of grug_sounds")
+	check(read(ROOT .. "/mods/CORE/grug_core/ui.lua"):find("\t\tgrug_sounds.CLICK_STYLE\nend", 1, true) ~= nil,
+		"K grug_core.ui.prepend ends with the click style")
 else
 	eq(S.CLICK_STYLE, "", "K no click style without a click spec")
 	eq(#joins, 0, "K no join callback without a click spec")

@@ -240,7 +240,6 @@ function sfinv.inventory_suspended(player)
 end
 
 -- The native layout is separate from the creation/arrival state machine.
-local esc = core.formspec_escape
 
 local function valid_race(faction, race)
 	local def = grug_classes.registered_races[race or ""]
@@ -654,8 +653,8 @@ local function window_fields(fields)
 		return true
 	end
 	for field in pairs(fields) do
-		if field:match("^faction_") or field:match("^race_") or
-				field:match("^class_") or field:match("^look_") then
+		if field:match("^race_") or field:match("^class_") or
+				field:match("^look_") then
 			return true
 		end
 	end

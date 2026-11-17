@@ -27,6 +27,15 @@
 -- Prints "R44 QB PORTABLE PASS checks=<n>" or the failures (exit 1).
 
 local ROOT = arg and arg[1] or "."
+-- The shared potion cooldown runs on os.time, and grug_traders keeps its
+-- expiry per player (Round 81): the fixture ends a cooldown by moving the
+-- clock past it, not by rewriting the meta.
+local clock_skew = 0
+local real_time = os.time
+os.time = function(...) -- luacheck: ignore
+	if select("#", ...) > 0 then return real_time(...) end
+	return real_time() + clock_skew
+end
 local failures, checks = 0, 0
 local function check(ok, label)
 	checks = checks + 1
@@ -109,6 +118,7 @@ local serial, chat, shown, afters, emerges = {}, {}, {}, {}, {}
 local callbacks = {hp = {}, die = {}, leave = {}, join = {}, shutdown = {}, fields = {},
 	globalstep = {}}
 local registered_entities, registered_items = {}, {}
+local registered_aliases = {} -- Round 81 (DEAD): what register_alias recorded
 local connected = {}
 
 core = {
@@ -131,6 +141,8 @@ core = {
 	end,
 	register_entity = function(name, def) registered_entities[name] = def end,
 	register_craftitem = function(name, def) registered_items[name] = def end,
+	-- Round 81 (DEAD, ruling 10): the retired mount items are aliases of "".
+	register_alias = function(name, target) registered_aliases[name] = target end,
 	register_on_player_hpchange = function(fn) callbacks.hp[#callbacks.hp + 1] = fn end,
 	register_on_dieplayer = function(fn) callbacks.die[#callbacks.die + 1] = fn end,
 	register_on_leaveplayer = function(fn) callbacks.leave[#callbacks.leave + 1] = fn end,
@@ -531,7 +543,7 @@ click(ada, {grug_quickbar_belt_2 = ""})
 eq(ada.lists.grug_potion_belt[2]:get_count(), 2, "alchemy potion on the shared cooldown: kept")
 has(last_feed(), "You cannot drink another potion for", "the alchemy potion's feed refusal")
 -- Cooldown over: the alchemy potion heals.
-ada.meta["grug_traders:potion_cd"] = tostring(os.time() - 1)
+clock_skew = clock_skew + grug_traders.POTION_COOLDOWN
 open_bar(ada)
 click(ada, {grug_quickbar_belt_2 = ""})
 eq(ada.hp, 5 + 50, "the alchemy potion healed")
@@ -547,7 +559,7 @@ open_bar(ada)
 writes = ada.writes
 click(ada, {grug_quickbar_belt_3 = ""})
 eq(ada.writes, writes, "a click on an empty slot writes nothing")
-ada.meta["grug_traders:potion_cd"] = tostring(os.time() - 1)
+clock_skew = clock_skew + grug_traders.POTION_COOLDOWN
 ada.hp = 5
 click(ada, {grug_quickbar_belt_1 = ""})
 eq(ada.hp, 5, "no window open: the click drinks nothing")
@@ -666,23 +678,15 @@ end
 eq(mount_items(cy), 0, "no mount item after purchase and join")
 eq(cy.writes, cy_writes, "purchase and join write no inventory")
 has(grug_quickbar.formspec(cy), "grug_quickbar_mount_5", "the bought boat is in the quickbar")
--- An old stack from an earlier version stays as it is until the migration.
-cy.lists.main[12] = ItemStack("grug_mounts:apprentice_mount")
-cy_writes = cy.writes
-for _, fn in ipairs(callbacks.join) do fn(cy) end
-for _, record in ipairs(afters) do
-	if record.delay == 0 then record.fn(unpack(record.args)) end
+-- Round 81 (DEAD, ruling 10): the six retired item names are aliases of
+-- "" (an old stack clears when the engine loads it), no tier names an item.
+for _, name in ipairs({"apprentice_mount", "journeyman_mount", "expert_mount",
+		"master_mount", "boat", "improved_boat"}) do
+	check(registered_items["grug_mounts:" .. name] == nil and
+		registered_aliases["grug_mounts:" .. name] == "", name .. ": an alias of nothing")
 end
-eq(cy.lists.main[12]:get_name(), "grug_mounts:apprentice_mount", "an old mount item stays")
-eq(cy.writes, cy_writes, "join leaves the old stack unwritten")
-for tier_id, tier in ipairs(grug_mounts.TIERS) do
-	local def = registered_items[tier.item]
-	check(def and def.on_use == nil and def.on_secondary_use == nil and def.on_place == nil,
-		tier.name .. ": the retired item stays registered and does nothing")
-	check(def and def.groups.grug_bound_skill == 1 and def.on_drop().name == "",
-		tier.name .. ": still bound, a drop deletes it")
-	eq(def and def.inventory_image, tier.icon, tier.name .. ": its icon")
-	eq(def and def._grug_mount_tier, tier_id, tier.name .. ": its tier")
+for _, tier in ipairs(grug_mounts.TIERS) do
+	eq(tier.item, nil, tier.name .. ": no item")
 end
 -- The tip in both dialogues.
 local rows = {{id = 1, name = "Apprentice Riding", level = 15, state = "owned"}}

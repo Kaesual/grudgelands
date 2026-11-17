@@ -272,6 +272,17 @@ local function lands_ok(label, list, centre, reach)
 end
 
 grug_core = {particles = helper(nil)}
+-- Round 81 MOBRUN (X4-12): the ambusher and the aura ask grug_core's player
+-- snapshot first (the nearest player's squared distance).
+function grug_core.nearest_tag_player_d2(pos)
+	local best
+	for _, p in ipairs(players) do
+		local dx, dy, dz = p.pos.x - pos.x, p.pos.y - pos.y, p.pos.z - pos.z
+		local d2 = dx * dx + dy * dy + dz * dz
+		if not best or d2 < best then best = d2 end
+	end
+	return best
+end
 local P = grug_core.particles
 
 ------------------------------------------------------------------------------
@@ -1221,9 +1232,9 @@ for _, file in ipairs({"skeleton_archer.lua", "golem.lua", "crystal_shard.lua", 
 		"F " .. file .. "'s projectile carries an impact tint")
 end
 -- The files that called the engine directly before this lane: what is left
--- are the rift's per-player stretches and its pulse (unchanged, rift.lua)
--- and the arrow tail (verbs.lua).
-local KNOWN = {["bosses.lua"] = 0, ["rift.lua"] = 2, ["verbs.lua"] = 1, ["boss_dragons.lua"] = 0,
+-- is the arrow tail (verbs.lua); the rift's particles moved onto the helper
+-- in Round 81 MOBRUN (MOB3-03).
+local KNOWN = {["bosses.lua"] = 0, ["rift.lua"] = 0, ["verbs.lua"] = 1, ["boss_dragons.lua"] = 0,
 	["telegraph.lua"] = 0, ["oerkki.lua"] = 0, ["bog_witch.lua"] = 0, ["rift_spawn.lua"] = 0}
 for file, expected in pairs(KNOWN) do
 	local n = 0

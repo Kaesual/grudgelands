@@ -1,8 +1,6 @@
 -- Profession materials, equipment recipes and named enchant catalogs.
 
-grug_professions = {
-	INGREDIENT_TIERS = {},
-}
+grug_professions = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 grug_professions.enchant_data = dofile(modpath .. "/enchant_data.lua")
@@ -33,7 +31,6 @@ end
 
 function grug_professions.register_ingredient(item, tier)
 	grug_jobs.register_ingredient_tier(item, tier)
-	grug_professions.INGREDIENT_TIERS[item] = tier
 	return item
 end
 
@@ -65,7 +62,7 @@ for index = 1, #SUPPLIES do
 	grug_professions.register_item("grug_professions:" .. row[1], row[2], row[3],
 		{grug_profession_supply = 1})
 	grug_traders.register_all_vendor_stock({
-		item = "grug_professions:" .. row[1], price = row[4], category = "goods",
+		item = "grug_professions:" .. row[1], price = row[4],
 	})
 end
 

@@ -340,6 +340,34 @@ function grug_core.aim_raycast(origin, destination, liquids, pointabilities)
 	end
 end
 
+-- A player's eye height and collision box (Round 81 HOT; audit C1-05,
+-- C1-06, X4-09): get_properties() builds the whole property table (about 55
+-- fields and eight nested tables, c_content.cpp push_object_properties) for
+-- them, on every aiming ray, environment-damage tick and homing step. They
+-- are read once and kept until a writer reports a change through
+-- grug_core.player_body_changed: player_api's set_model and set_animation
+-- (a new animation class: stand, sit, lay; GRUG PATCH) and
+-- grug_mounts.apply_camera (the rider's eye) are every write of either
+-- property for players in the game. Keyed by the ObjectRef (weak), so a
+-- rejoin starts afresh. The record is shared: never write into it.
+local bodies = setmetatable({}, {__mode = "k"})
+
+-- {eye_height = n | nil, collisionbox = box | nil} of `player`.
+function grug_core.player_body(player)
+	local body = bodies[player]
+	if not body then
+		local props = player:get_properties() or {}
+		body = {eye_height = props.eye_height, collisionbox = props.collisionbox}
+		bodies[player] = body
+	end
+	return body
+end
+
+-- Call after writing `eye_height` or `collisionbox` of a player.
+function grug_core.player_body_changed(player)
+	bodies[player] = nil
+end
+
 -- First-person interaction starts at the camera head. Eye offsets are stored
 -- in tenths of a node: the engine's own pointed-face helper applies
 -- `eye_offset_first / 10` (builtin/common/misc_helpers.lua:754-774), while
@@ -353,7 +381,7 @@ function grug_core.combat_eye_pos(player)
 	if not pos then
 		return nil
 	end
-	local props = player:get_properties() or {}
+	local eye_height = grug_core.player_body(player).eye_height
 	local first = player:get_eye_offset()
 	first = first or vector.new(0, 0, 0)
 	local look = player:get_look_dir()
@@ -371,7 +399,7 @@ function grug_core.combat_eye_pos(player)
 	local right_z = -forward_x
 	return vector.new(
 		pos.x + (first.x * right_x + first.z * forward_x) * EYE_OFFSET_SCALE,
-		pos.y + (props.eye_height or 1.5) + first.y * EYE_OFFSET_SCALE,
+		pos.y + (eye_height or 1.5) + first.y * EYE_OFFSET_SCALE,
 		pos.z + (first.x * right_z + first.z * forward_z) * EYE_OFFSET_SCALE)
 end
 

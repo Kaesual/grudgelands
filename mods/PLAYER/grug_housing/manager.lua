@@ -63,27 +63,11 @@ end
 local sessions = {}
 
 -- The dialog is bound to the live Steward standing on its own socket, within
--- talking range, and to players of the capital's faction.
+-- talking range, and to players of the capital's faction
+-- (grug_core.npc_window_permitted).
 local function permitted(player, entity)
-	if not player or not player.is_player or not player:is_player() or
-			player:get_hp() <= 0 or type(entity) ~= "table" or
-			entity._grug_socket_role ~= "housing_manager" or not entity.object then
-		return false
-	end
-	local faction = FACTION[entity._grug_start]
-	if not faction or grug_factions.get_faction(player) ~= faction then return false end
-	local pos, npc = player:get_pos(), entity.object:get_pos()
-	if not pos or not npc then return false end
-	local dx, dy, dz = pos.x - npc.x, pos.y - npc.y, pos.z - npc.z
-	if dx * dx + dy * dy + dz * dz > 64 then return false end
-	for _, socket in ipairs(grug_core.settlement_sockets_at(entity._grug_start)) do
-		if socket.id == entity._grug_socket and socket.role == "housing_manager" then
-			local sx, sy, sz = npc.x - socket.pos.x, npc.y - socket.pos.y,
-				npc.z - socket.pos.z
-			return sx * sx + sy * sy + sz * sz <= 4
-		end
-	end
-	return false
+	return grug_core.npc_window_permitted(player, entity, "housing_manager",
+		type(entity) == "table" and FACTION[entity._grug_start] or nil)
 end
 
 local LINES = {

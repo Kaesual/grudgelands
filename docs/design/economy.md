@@ -27,8 +27,9 @@ The Miner's Guild's reputation is no ledger currency: [miners_guild.md](miners_g
   the meta key directly.
 - **Display rule:** leading zero units are omitted, copper is always shown and
   interior zeros are retained: `5c`, `1s 5c`, `1g 0s 5c`. One formatter owns
-  Character-screen, chat and trade UI output. The current balance is shown
-  on Character and relevant trade screens; there is no persistent money HUD.
+  inventory-window, chat and trade UI output. The current balance is shown
+  on the Inventory tab's Money box and relevant trade screens; there is no
+  persistent money HUD.
 - Money is a **ledger-only universal transaction currency**. No NPC drops
   money, and one world node does: the **Miner's Remains** (Round 58), the
   block a Treasure Hunt hides in the rock, gives whoever digs it a Bag of
@@ -40,7 +41,7 @@ The Miner's Guild's reputation is no ledger currency: [miners_guild.md](miners_g
   bag.
 - **Bag of Coins** (Round 34): the one way money leaves the balance as an
   item, so players can give money to each other. **Withdraw** in the
-  Inventory tab's money row (the Character page until the Round 45
+  Inventory tab's Money box (the Character page until the Round 45
   playtest) opens a dialog with gold, silver and copper fields; a whole
   amount from 1c up to the balance is taken and one Bag of Coins holding it
   is put into the first empty slot in the give order (`main[9..]`, the
@@ -63,9 +64,8 @@ The Miner's Guild's reputation is no ledger currency: [miners_guild.md](miners_g
   1–6 (4 × the tier factor), so a kill pays half a tier factor of copper on
   average, about the mean the removed rows paid (`grug_mobs.COIN_BAG`,
   `tools/r29_e4/income.py` LOOT_PER_KILL).
-- **Automatic deposit** (Round 46, the user): the Inventory tab's money row
-  has a checkbox "Auto" (tooltip "Deposit coin bags automatically on
-  pickup"), on by default (player meta `grug_money:auto_deposit` is "off"
+- **Automatic deposit** (Round 46, the user): the Inventory tab's Money box
+  has a checkbox "Auto deposit", on by default (player meta `grug_money:auto_deposit` is "off"
   only when unticked). While it is on, picking up a Bag of Coins credits it
   at once under the deposit slot's rules, with one feed line "Deposited
   Xc."; a bag the slot would refuse (empty, or over the clamp) is picked up

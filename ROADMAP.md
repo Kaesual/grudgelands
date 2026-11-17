@@ -22,8 +22,8 @@ next step.
 - **Website accounts** ([rules](docs/design/accounts.md),
   [concept](docs/planning/accounts-concept.md)): characters linked to an
   account on the realm's website, with account rewards that reach every
-  linked character. Phase 1 shipped in 0.79.0, phase 2 (the Cheer emote
-  for every account, six donor cloaks) in 0.80.0. Next: the end-to-end test
+  linked character: the Cheer emote for every account, the Supporter and
+  donor cloaks. Next: the end-to-end test
   on the rehearsal realm; more Supporter content, account bans, characters
   created through a bridge command, character deletion and the shared
   Claim Stone are later phases.

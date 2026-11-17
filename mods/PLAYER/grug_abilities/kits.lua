@@ -157,8 +157,9 @@ function grug_abilities.spell_base(player)
 		grug_abilities.caster_weapon_ilvl(player))
 end
 
--- Heal, Mend, Shield, Recompense and Glacial Ward: a share of the base pool
--- times the support factor (gear Intelligence, grug_classes stats.lua).
+-- Heals, shields and absorbs (Heal, Mend, Shield, Hearten, Haven, Hold
+-- Ground ...): a share of the base pool times the support factor (gear
+-- Intelligence, grug_classes stats.lua).
 local function support_value(player, percent)
 	local base = grug_core.base_pool(grug_core.get_player_level(player))
 	return base * percent / 100 * grug_classes.get_support_factor(player)

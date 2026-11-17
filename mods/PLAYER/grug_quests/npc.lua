@@ -405,8 +405,18 @@ core.register_entity("grug_quests:marker", {
 		static_save = false, nametag = "", selectionbox = {0,0,0,0,0,0}},
 	on_activate = function(self) self.object:set_observers({}) end,
 })
+-- parent -> {marker value -> the observer set last sent to that child}
+-- (Round 81, audit P3-05: a child's set is sent only when it changed).
+local sent_sets = {}
+local NO_OBSERVERS = {}
+local function same_set(left, right)
+	for name in pairs(left) do if not right[name] then return false end end
+	for name in pairs(right) do if not left[name] then return false end end
+	return true
+end
 local function clear_markers(parent)
 	local children = markers[parent]
+	sent_sets[parent] = nil
 	if not children then return end
 	for _, child in pairs(children) do if child:is_valid() then child:remove() end end
 	markers[parent] = nil
@@ -430,6 +440,8 @@ grug_core.register_tag_visibility(function(parent, observers, removed)
 	end
 	local children = markers[parent] or {}
 	markers[parent] = children
+	local sent = sent_sets[parent] or {}
+	sent_sets[parent] = sent
 	for state, look in pairs(MARKERS) do
 		local child = children[state]
 		if partitions[state] and (not child or not child:is_valid()) then
@@ -439,8 +451,16 @@ grug_core.register_tag_visibility(function(parent, observers, removed)
 				child:set_properties({mesh = "grug_quests_" .. look.symbol .. ".obj",
 					textures = {"[fill:16x16:" .. look.color}})
 				children[state] = child
+				-- A new marker starts with nobody observing (on_activate).
+				sent[state] = nil
 			end
 		end
-		if child and child:is_valid() then child:set_observers(partitions[state] or {}) end
+		if child and child:is_valid() then
+			local wanted = partitions[state] or NO_OBSERVERS
+			if not same_set(sent[state] or NO_OBSERVERS, wanted) then
+				child:set_observers(wanted)
+				sent[state] = wanted
+			end
+		end
 	end
 end)

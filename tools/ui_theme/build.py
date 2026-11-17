@@ -26,18 +26,6 @@ def symbol(name):
     ink = (238, 234, 225, 255)
     def line(points): d.line(points, fill=ink, width=5, joint='curve')
     if name == 'emblem': line([(48, 9), (80, 48), (48, 87), (16, 48), (48, 9)])
-    elif name == 'inventory':
-        d.rounded_rectangle((21, 32, 75, 82), radius=5, outline=ink, width=5)
-        d.arc((32, 12, 64, 53), 180, 360, fill=ink, width=5)
-        line([(22, 49), (74, 49)])
-    elif name == 'character':
-        d.ellipse((34, 12, 62, 40), outline=ink, width=5)
-        d.arc((19, 43, 77, 105), 180, 360, fill=ink, width=5)
-    elif name == 'talents':
-        line([(48, 9), (59, 35), (87, 39), (66, 58), (72, 86), (48, 72),
-              (24, 86), (30, 58), (9, 39), (37, 35), (48, 9)])
-    elif name == 'crafting':
-        line([(24, 75), (66, 31), (80, 42), (86, 33), (60, 9), (51, 18), (62, 28)])
     elif name == 'party':
         d.ellipse((30, 12, 54, 36), outline=ink, width=5)
         d.arc((14, 40, 70, 104), 180, 360, fill=ink, width=5)
@@ -51,12 +39,6 @@ def symbol(name):
         d.ellipse((12, 12, 84, 84), outline=ink, width=5)
         d.arc((35, 26, 61, 52), 180, 470, fill=ink, width=5)
         line([(48, 49), (48, 59)]); d.ellipse((45, 68, 51, 74), fill=ink)
-    elif name == 'mail':
-        d.rectangle((12, 23, 84, 75), outline=ink, width=5)
-        line([(12, 23), (48, 52), (84, 23)])
-    else:
-        d.rectangle((17, 17, 79, 79), outline=ink, width=5)
-        line([(17, 48), (79, 48)]); line([(48, 17), (48, 79)])
     return image.resize((32, 32), Image.Resampling.LANCZOS)
 
 def build(check=False):
@@ -69,7 +51,9 @@ def build(check=False):
         image = image.resize((32, 32), Image.Resampling.LANCZOS)
         images[name] = image
     images['clear'] = Image.new('RGBA', (32, 32))
-    for name in ['emblem', 'inventory', 'character', 'talents', 'crafting', 'party', 'map', 'help', 'mail', 'creative']:
+    # The navigation header is text-only since Round 66; the inventory,
+    # character, talents, crafting, mail and creative icons left in Round 81.
+    for name in ['emblem', 'party', 'map', 'help']:
         images['icon_' + name] = symbol(name)
     for name, image in images.items():
         out = io.BytesIO()

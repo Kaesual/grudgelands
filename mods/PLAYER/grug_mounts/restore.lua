@@ -29,12 +29,17 @@ local RESTORE_WAIT = 5
 -- (the last resort). Never into lava: a column whose landing or way down
 -- holds a harmful node gives way to the nearest safe column within
 -- SET_DOWN_RADIUS (the emerge covers them); with none, the rider stays held
--- until that last resort.
+-- until that last resort. A rider moved off the column meanwhile (more than
+-- SET_DOWN_MOVED nodes across: the hold zeroes movement, so only a teleport
+-- such as /home gets there) or attached to something is released where they
+-- are, never set back; a death drops the restore (the hold goes with it,
+-- grug_core.clear_movement), so a quick respawn is not set back either.
 local SET_DOWN_STEP = 128
 local SET_DOWN_REACH = 512
 local SET_DOWN_RADIUS = 4
 local SET_DOWN_RETRY = 1
 local SET_DOWN_TIMEOUT = 30
+local SET_DOWN_MOVED = 1
 -- player name -> the restore under way (a table: a newer join's replaces it)
 local pending = {}
 
@@ -120,6 +125,11 @@ local function set_down(player, token)
 		local p = core.get_player_by_name(name)
 		if not p or pending[name] ~= token then return end
 		if p:get_hp() <= 0 then return release(p, token) end
+		local now_pos = p:get_pos()
+		local dx, dz = now_pos.x - pos.x, now_pos.z - pos.z
+		if p:get_attach() or dx * dx + dz * dz > SET_DOWN_MOVED * SET_DOWN_MOVED then
+			return release(p, token)
+		end
 		local result, ground = column_ground(x, z, top, bottom)
 		if result == "ground" then
 			p:set_pos({x = pos.x, y = ground.y, z = pos.z})
@@ -204,6 +214,13 @@ local function keep(player)
 end
 
 core.register_on_leaveplayer(keep)
+
+-- A death ends the restore: the hold is already cleared by
+-- grug_core.clear_movement, and a pending poll or set-down must not move the
+-- respawned player back to the logout column.
+core.register_on_dieplayer(function(player)
+	pending[player:get_player_name()] = nil
+end)
 
 core.register_on_shutdown(function()
 	for _, player in ipairs(core.get_connected_players()) do keep(player) end

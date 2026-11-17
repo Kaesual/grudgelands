@@ -238,6 +238,8 @@ grug_inventory.get_cosmetic_hand = function(player, slot)
 end
 
 current_mod = "grug_visuals"
+-- Round 81: the wield poll registers through grug_core's per-player passes.
+dofile(ROOT .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 grug_visuals = {}
 for _, file in ipairs({"looks", "compose", "enchant", "wield_geometry", "appearance", "apply"}) do
 	dofile(ROOT .. "/mods/PLAYER/grug_visuals/" .. file .. ".lua")
@@ -257,7 +259,8 @@ end)
 -- start would have.
 local function set_look(on)
 	V.OFFHAND_VISUALS = on
-	for key in pairs(V.cache) do V.cache[key] = nil end
+	-- grug_visuals.cache is no longer exported (Round 81 P1-01); clear it through the API.
+	V.clear_compose_cache()
 end
 
 ------------------------------------------------------------------------------
@@ -335,7 +338,8 @@ local BOOK = function(bracket) return "grug_gear:spellbook_" .. GRADES[bracket] 
 -- N. The names.
 ------------------------------------------------------------------------------
 do
-	eq(#polls, 1, "N the wield poll registered")
+	-- Round 81: the orphan sweep of the wield entities is a second globalstep.
+	eq(#polls, 2, "N the wield poll and the orphan sweep registered")
 	local GEAR = ROOT .. "/mods/ITEMS/grug_gear/textures/"
 	for bracket, grade in ipairs(GRADES) do
 		local shield = V.offhand_appearance[SHIELD(bracket)]

@@ -30,13 +30,14 @@ grug_mobs.register_simple_arrow("grug_mobs:rock_entity", {
 	impact = "#8a8a8a", -- grey dust (Round 40 PM)
 })
 
--- Race-region side gate. Unlike every T5 family, the golem pair cannot be
--- split by its spawn nodes alone: §4 lists `default:stone` for both halves and
--- rock exists on both continents, so a node-only split would let Stone Golems
--- spawn in the badlands and Mesa Golems in the crags. Contested zones have no
--- political faction, so the stable cultural race region supplies the side.
--- _grug_spawn_check is registered per mob NAME (init.lua) and ANDed with the
--- named-zone palette gate, which is exactly the granularity needed here.
+-- Race-region side gate for the cave rows below. The golem pair cannot be
+-- split by its spawn nodes: both rows host on `default:stone` and the
+-- stratum rock, which exist under both continents, so a node-only split would
+-- let Stone Golems spawn under the badlands and Mesa Golems under the crags.
+-- Contested zones have no political faction, so the stable cultural race
+-- region supplies the side. _grug_spawn_check is registered per mob NAME
+-- (init.lua) and ANDed with the spawn policy, which is exactly the
+-- granularity needed here.
 
 local function in_faction_region(faction_id)
 	return function(pos)
@@ -53,9 +54,6 @@ local function golem_def(description, texture)
 		-- Elite by design (§3.1). Everything the tier implies is engine-owned
 		-- (levels.lua): do NOT add armor/hp/damage here.
 		_grug_tier = "elite",
-		-- Surface habitat is the common named palette plus the node whitelist.
-		-- The cave row has its own max-height and stone/stratum whitelist, so no
-		-- retired ring category is recreated here.
 
 		reach = 3,
 		attack_type = "dogshoot",
@@ -67,22 +65,19 @@ local function golem_def(description, texture)
 		-- Ranged loadout, same reading as skeleton_archer.lua:
 		-- dogshoot_switch = 1 opens in the RANGED mode; since Round 78 the mode
 		-- follows the distance (mobs/api.lua grug_dogshoot_mode: melee inside
-		-- 4 nodes edge to edge, ranged beyond 6, the mode kept between). The
-		-- two count fields are upstream's 10 s / 3 s clock, no longer read.
+		-- 4 nodes edge to edge, ranged beyond 6, the mode kept between).
 		arrow = "grug_mobs:rock_entity",
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 3,
 		-- Aim lift. mobs_redo spawns the projectile at the collisionbox
-		-- midpoint (api.lua:2824-2864) and aims at target_feet - 0.5 from
-		-- self_origin + 0.5 (api.lua:2824-2864). This mesh has a NEGATIVE-y box
+		-- midpoint (api.lua do_states) and aims at target_feet - 0.5 from
+		-- self_origin + 0.5 (api.lua do_states). This mesh has a NEGATIVE-y box
 		-- (see below), so the origin sits 1 node above the golem's feet and
 		-- the aim vector points ~2 nodes DOWN for a target on the same
 		-- ground: +2 cancels that and the rock flies flat into the torso.
 		-- The correction is distance-independent (the same constant vec.y).
 		shoot_offset = 2,
 		dogshoot_switch = 1,
-		dogshoot_count_max = 10,
-		dogshoot_count2_max = 3,
 
 		-- Ranged golems retain their rock attack, but their contact run now uses
 		-- the same 4.6 floor as every melee-capable attacker. The 25 m soft
@@ -155,7 +150,7 @@ local function golem_def(description, texture)
 		water_damage = 0,
 		-- 4 like every other family, deliberately NOT 0: mobs_redo's
 		-- is_node_dangerous reads lava_damage to keep a mob away from lava
-		-- (api.lua:977-1001), and a lava-immune golem would happily park itself
+		-- (api.lua is_node_dangerous), and a lava-immune golem would happily park itself
 		-- in a lava lake where nothing can reach it. Flavour loses to
 		-- reachability here.
 		lava_damage = 4,
@@ -171,68 +166,6 @@ local stone_golem = golem_def("Stone Golem", "grug_mobs_stone_golem.png")
 stone_golem._grug_spawn_check = in_faction_region("accord")
 grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 
--- §4 row "Stone/Mesa Golem (elite) | gravel, stone, mesa_clay | 30 | 9000 |
--- 1 | any | outer, coast, underground", split by continent-side top node;
--- default:stone is shared (bare crag/mesa rock) and therefore listed in both
--- rows, with the continent check above keeping each golem on its own side.
--- mobs_redo counts the aoc per entity NAME, so neither row can exceed 1
--- active golem.
--- "any light" = no min_light/max_light and no day_toggle: 24 h.
--- max_height 600 like every surface row (§4); min_height 0 keeps this row
--- on the surface — the cave row (same nodes, negative heights) is T7's,
--- which is why the zone list above already allows "underground".
---
--- ABM CANDIDATE VOLUME (T10 sanity check, the same argument the cave rows
--- make in zombie.lua): `default:stone` between y 0 and 600 is not "the whole
--- world". mobs:spawn defaults the ABM's neighbour list to {"air"}
--- (api.lua:4498-4510), so only stone with air beside it counts — on the surface
--- that is exposed bare rock: crag and badlands outcrops, rocky shores and,
--- since Round 22 Phase 6, the rock faces of all steep natural ground (the
--- zone gate below still keeps the golem to its own ring). On top of that this row is
--- interval 30 / chance 9000 (the rarest in the roster) and gated to the outer
--- ring and one continent, and the check order in api.lua's spawn_action spends
--- the cheap tests first: max_per_block, mob_active_limit, then our arithmetic
--- zone_at/territory_at check (mobs:spawn_abm_check), then the active-object
--- count — which is a get_objects_inside_radius and therefore NOT free — and
--- only afterwards the light/space/player queries. Our check running BEFORE
--- count_mobs and not after it is the good direction: a golem candidate in the
--- wrong ring is rejected by two subtractions and never costs an object scan.
--- (The order was stated backwards in the T10 notes and in
--- docs/research/wp6_spawn_budget.md §5; corrected in the WP6 review.)
---
--- HEIGHT SPLIT (Round 22 Phase 6): above y 300 the stone golem land is bare
--- crag, rock and snow almost everywhere, so it offers about 1.3x the host
--- nodes per column of the land below (measured on two seeds: 0.83-0.96 vs
--- 0.67-0.70 spawnable hosts per eligible column). The upper row's chance is
--- scaled by that ratio, so the high mountains spawn golems at about the
--- per-area rate the land below 300 had before the cap was raised to 600.
-local function stone_golem_nodes()
-	return {
-		"default:gravel", -- grug_crags
-		"default:snowblock", -- grug_crags_snowy (eagle.lua explains why no
-		-- row had this node before)
-		"default:stone", -- bare rock in the crags
-	}
-end
-mobs:spawn({
-	name = "grug_mobs:stone_golem",
-	nodes = stone_golem_nodes(),
-	interval = 30,
-	chance = 9000,
-	active_object_count = 1,
-	min_height = 0,
-	max_height = 300,
-})
-mobs:spawn({
-	name = "grug_mobs:stone_golem",
-	nodes = stone_golem_nodes(),
-	interval = 30,
-	chance = 12000,
-	active_object_count = 1,
-	min_height = 300,
-	max_height = 600,
-})
-
 --
 -- Mesa Golem — grug_badlands (Throng)
 --
@@ -240,19 +173,6 @@ mobs:spawn({
 local mesa_golem = golem_def("Mesa Golem", "grug_mobs_mesa_golem.png")
 mesa_golem._grug_spawn_check = in_faction_region("throng")
 grug_mobs.register_mob("grug_mobs:mesa_golem", mesa_golem)
-
-mobs:spawn({
-	name = "grug_mobs:mesa_golem",
-	nodes = {
-		"grug_nodes:mesa_clay", -- grug_badlands
-		"default:stone", -- bare rock in the badlands
-	},
-	interval = 30,
-	chance = 9000,
-	active_object_count = 1,
-	min_height = 0,
-	max_height = 600,
-})
 
 --
 -- Flintback (Round 71): the boss of The Stilled Seam, the level 20 Expedition
@@ -271,7 +191,8 @@ grug_mobs.register_mob("grug_mobs:flintback", flintback)
 
 --
 -- CAVE ROWS (WP6/T7) — §3.1's cave paragraph, §4 zone column "outer, coast,
--- underground". Level, height math, day_toggle and the `default:stone`
+-- underground"; the golems' only spawn rows since Round 81 (their surface
+-- rows went with ruling 6). Level, height math, day_toggle and the `default:stone`
 -- performance question are explained once at the cave row in zombie.lua.
 --
 -- TWO rows, one per golem, because the mesa/stone split by TERRITORY holds
@@ -285,8 +206,7 @@ grug_mobs.register_mob("grug_mobs:flintback", flintback)
 -- The elite tier travels with the def, so a cave golem is an elite golem —
 -- and thanks to the depth axis a deep one is a HIGH-level elite. §4's row
 -- numbers (interval 30 / chance 9000 / aoc 1, any light) are kept verbatim;
--- with aoc counted per entity name, surface and cave rows share the cap of 1
--- active golem per area, which is exactly what makes that number safe.
+-- aoc is counted per entity name, so one active golem of each name per area.
 --
 mobs:spawn({
 	name = "grug_mobs:stone_golem",

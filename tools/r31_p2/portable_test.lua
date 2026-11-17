@@ -246,6 +246,8 @@ do
 	})
 	rawset(_G, "grug_pvp", fake_pvp())
 	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 	dofile(repo .. "/mods/PLAYER/grug_pvp/page.lua")
 	local section = grug_parties.pvp_section
 	check(section and type(section.get) == "function" and
@@ -408,6 +410,8 @@ do
 			pointed = {type = "object", ref = target}}}
 	end}})
 	rawset(_G, "grug_pvp", nil)
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 	dofile(repo .. "/mods/ENTITIES/grug_mobs/target_frame.lua")
 	local viewer = fake_player("dana")
 	local friend, enemy = fake_player("eli"), fake_player("finn")

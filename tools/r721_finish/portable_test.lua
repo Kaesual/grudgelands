@@ -110,6 +110,9 @@ rawset(_G, "core", {
 })
 local in_combat, sources = {}, {}
 rawset(_G, "grug_core", {
+ -- Round 81: waypoints.lua's discovery pass rides the join slots
+ -- (player_slots.lua, not loaded here); nothing here steps it.
+ register_player_pass=function() end,
  FLASH_COLOR={notice=1, error=2}, flash=function() end,
  hold_movement=function() end, release_movement=function() end,
  get_player_race=function(name) return players[name].race end,
@@ -125,6 +128,10 @@ rawset(_G, "grug_core", {
  zone_authority_installed=function() return true end,
  map_reset={clear=function() end, register_on_relocate=function() end}})
 dofile(repo .. "/mods/CORE/grug_core/settlement_sockets.lua")
+-- Round 81: the shared NPC-window check; the player's faction through
+-- grug_core's stub, as grug_factions resolves it in the game.
+dofile(repo .. "/mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = function(p) return p:get_meta():get_string("faction") end
 local LOCATIONS = dofile(repo .. "/mods/PLAYER/grug_home/locations.lua")
 local STONE = {}
 for i, location in ipairs(LOCATIONS) do
@@ -295,10 +302,18 @@ local function enter_by_tab(p, run, id)
  finish()
  check(E.run_inside(p) == run, p:get_player_name() .. " entered")
 end
+-- Round 81: the registrar stands on highcourt's socket and the player beside it
+-- (it checks its socket like every service window), as at_stone puts one at a stone.
 local function registrar(p)
  shown[p:get_player_name()] = nil
- local npc = {_grug_socket_role=E.registrar.ROLE, _grug_start="highcourt",
-  object={get_pos=function() return p:get_pos() end}}
+ local spot
+ for _, socket in ipairs(grug_core.settlement_sockets_at("highcourt")) do
+  if socket.id == E.registrar.SOCKET then spot = socket.pos end
+ end
+ p.pos = vnew(spot.x + 1, spot.y, spot.z)
+ local npc = {_grug_socket_role=E.registrar.ROLE, _grug_start="highcourt", _grug_socket=E.registrar.SOCKET}
+ npc.object = {get_pos=function() return vnew(spot) end,
+  get_luaentity=function() return npc end} -- Round 81: the live-entity check
  check(E.open_registrar(p, npc), "the registrar opens for " .. p:get_player_name())
  return fs_of(p)
 end

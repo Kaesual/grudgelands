@@ -32,7 +32,7 @@ end
 
 grug_traders.stock = {} -- ordered; the UI renders it in registration order
 
--- {item = <name>, price = <copper>, category = "goods" | "tools"}
+-- {item = <name>, price = <copper>}
 function grug_traders.register_stock(def)
 	assert(type(def) == "table", "grug_traders.register_stock: table expected")
 	assert(type(def.item) == "string" and def.item ~= "",
@@ -41,29 +41,24 @@ function grug_traders.register_stock(def)
 	assert(price and price > 0 and price == math.floor(price),
 		"grug_traders.register_stock: price must be a positive whole copper " ..
 		"amount (" .. tostring(def.item) .. ")")
-	local category = def.category or "goods"
-	assert(category == "goods" or category == "tools",
-		"grug_traders.register_stock: unknown category '" .. tostring(category) ..
-		"' (" .. def.item .. ")")
 	table.insert(grug_traders.stock, {
 		item = def.item,
 		price = price,
-		category = category,
 	})
 end
 
-grug_traders.register_stock({item = "grug_inventory:bag_small", price = 20, category = "goods"})
-grug_traders.register_stock({item = "grug_traders:potion_healing_weak", price = 8, category = "goods"})
-grug_traders.register_stock({item = "default:torch", price = 1, category = "goods"})
-grug_traders.register_stock({item = "grug_gear:arrow", price = 3, category = "goods"})
+grug_traders.register_stock({item = "grug_inventory:bag_small", price = 20})
+grug_traders.register_stock({item = "grug_traders:potion_healing_weak", price = 8})
+grug_traders.register_stock({item = "default:torch", price = 1})
+grug_traders.register_stock({item = "grug_gear:arrow", price = 3})
 
-grug_traders.register_stock({item = "grug_materials:pick_wood", price = 5, category = "tools"})
-grug_traders.register_stock({item = "grug_materials:shovel_wood", price = 5, category = "tools"})
-grug_traders.register_stock({item = "grug_materials:axe_wood", price = 5, category = "tools"})
-grug_traders.register_stock({item = "grug_materials:pick_stone", price = 10, category = "tools"})
-grug_traders.register_stock({item = "grug_materials:shovel_stone", price = 10, category = "tools"})
-grug_traders.register_stock({item = "grug_materials:axe_stone", price = 10, category = "tools"})
-grug_traders.register_stock({item = "grug_materials:pick_bronze", price = 40, category = "tools"})
+grug_traders.register_stock({item = "grug_materials:pick_wood", price = 5})
+grug_traders.register_stock({item = "grug_materials:shovel_wood", price = 5})
+grug_traders.register_stock({item = "grug_materials:axe_wood", price = 5})
+grug_traders.register_stock({item = "grug_materials:pick_stone", price = 10})
+grug_traders.register_stock({item = "grug_materials:shovel_stone", price = 10})
+grug_traders.register_stock({item = "grug_materials:axe_stone", price = 10})
+grug_traders.register_stock({item = "grug_materials:pick_bronze", price = 40})
 
 --
 -- The gear shelf (round33-plan.md §2.6, item_tiers.md §6). Vendors sell the
@@ -82,12 +77,10 @@ function grug_traders.bracket_stock(bracket)
 	if not gear_shelf then
 		gear_shelf = {}
 		local tier = grug_traders.GEAR_BRACKET
-		local ilvl = grug_gear.BRACKETS[tier].ilvl
 		for _, itemname in ipairs(grug_gear.catalog[tier].all) do
 			gear_shelf[#gear_shelf + 1] = {
 				item = itemname,
 				price = grug_gear.get_price(itemname),
-				ilvl = ilvl,
 			}
 		end
 	end
@@ -196,8 +189,7 @@ local function profession_shelf(kind, entries)
 			price > 0 and price == math.floor(price),
 			"grug_traders profession shelf: " .. kind .. " entry " .. index ..
 			" differs")
-		shelf[index] = {item = row[1], price = price,
-			category = row[3] or "goods"}
+		shelf[index] = {item = row[1], price = price}
 	end
 	grug_traders.profession_stock[kind] = shelf
 	return shelf
@@ -213,7 +205,7 @@ function grug_traders.register_all_vendor_stock(def)
 	for kind, shelf in pairs(grug_traders.profession_stock) do
 		if not NO_SUPPLIES[kind] then
 			shelf[#shelf + 1] = {
-				item = source.item, price = source.price, category = source.category,
+				item = source.item, price = source.price,
 			}
 		end
 	end
@@ -247,9 +239,9 @@ profession_shelf("tailor", {
 -- The smith: the bronze tools. The GEAR is the T1 gear tab this vendor keeps
 -- (see the note above), not a list here.
 profession_shelf("smith", {
-	{"grug_materials:pick_bronze", 40, "tools"},
-	{"grug_materials:axe_bronze", 36, "tools"},
-	{"grug_materials:shovel_bronze", 32, "tools"},
+	{"grug_materials:pick_bronze", 40},
+	{"grug_materials:axe_bronze", 36},
+	{"grug_materials:shovel_bronze", 32},
 })
 
 -- The mason: the ground a district is paved and walled with. All of it is made

@@ -166,7 +166,6 @@ local function current_offer(player, session, vendor, discount)
 			item = entry.item,
 			base = entry.price,
 			price = grug_traders.apply_discount(entry.price, discount),
-			ilvl = entry.ilvl,
 		}
 	end
 	return offer

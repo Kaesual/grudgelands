@@ -125,6 +125,8 @@ function grug_core.in_combat() return fighting end
 
 dofile("mods/CORE/grug_core/hud_layout.lua")
 dofile("mods/CORE/grug_core/status_icons.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile("tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile("mods/CORE/grug_core/status.lua")
 dofile("mods/CORE/grug_core/movement.lua")
 dofile("mods/CORE/grug_core/combat_hud.lua")

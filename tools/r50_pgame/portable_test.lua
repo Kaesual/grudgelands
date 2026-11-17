@@ -732,10 +732,16 @@ dofile(ROOT .. "/mods/CORE/grug_core/node_rightclick.lua")
 grug_sounds = {play = function() end, CLICK_STYLE = ""}
 dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 grug_factions = {get_faction = function() return "accord" end}
+-- Round 81: the shared NPC-window check (the Steward); the player's faction
+-- through grug_core's stub, which grug_factions resolves in the game.
+dofile(ROOT .. "/mods/CORE/grug_core/npc_window.lua")
+grug_core.get_player_object_faction = grug_factions.get_faction
 grug_mobs = {register_start_socket_role = function() end}
 current_mod = "grug_housing"
 grug_housing = {}
 local HP = ROOT .. "/mods/PLAYER/grug_housing/"
+-- Round 81: the bound-item seam soulbound.lua registers its rule with.
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/bound.lua")
 for _, file in ipairs({"api.lua", "soulbound.lua", "packed.lua", "recovered.lua",
 		"interface.lua"}) do
 	dofile(HP .. file)
@@ -1299,7 +1305,9 @@ do
 		"F the notice's wording")
 	eq(feeds[1] and feeds[1].name, "ann", "F ...to that player")
 	local entity = {_grug_socket_role = "housing_manager", _grug_start = "highcourt",
-		_grug_socket = "steward_socket", object = {get_pos = function() return {x = 0, y = 0, z = 0} end}}
+		_grug_socket = "steward_socket"}
+	entity.object = {get_pos = function() return {x = 0, y = 0, z = 0} end,
+		get_luaentity = function() return entity end} -- Round 81: the live-entity check
 	ann.pos, carl.pos = {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}
 	check(H.open_manager(ann, entity), "F the Steward talks to ann")
 	has(last_shown("ann").fs, "Belongings from the old map wait in your Claim Stone.",

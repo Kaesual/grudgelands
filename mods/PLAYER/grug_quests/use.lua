@@ -129,7 +129,6 @@ local function ground(x, z)
 	end
 	return nil, unloaded
 end
-Q._use_ground = ground -- read by the fixture
 
 -- A town place's stand (Round 59): the socket's own cell, authored as a
 -- standing cell in a yard, a hall or a cellar alike, so no open air is

@@ -96,7 +96,6 @@ grug_jobs.QUEUE_KEY = QUEUE_KEY
 grug_jobs.QUEUE_MAX = QUEUE_MAX
 grug_jobs.OUTPUT_LIST = OUTPUT
 grug_jobs.OUTPUT_SIZE = OUTPUT_SIZE
-grug_jobs.STATION_RADIUS = STATION_RADIUS
 
 -- os.time() has whole seconds only, which would end a 1 s job anywhere
 -- between 0 and 1 s after its start. The clock is os.time() anchored once per

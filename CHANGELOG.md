@@ -9,8 +9,78 @@ are kept across versions: an entry that says **map reset** regenerates an
 existing world's map from its seed while the characters stay
 ([upgrade contract](docs/technical/upgrade-contract.md)).
 
-The development record behind each round (reviews, tests, acceptance) is in
-the [project status](docs/STATUS.md) and the round plans.
+The development record behind each round (lanes, reviews, tests) is in its
+round plan, section "Completion", linked from the
+[project status](docs/STATUS.md).
+
+## 0.81.0 — fixes from the code audit (2026-11-17)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Cooldowns survive a relog:** logging out and back in keeps your running
+  ability cooldowns, skill charges and your mana for as long as the server
+  keeps running (a server restart resets them). Rage still starts at 0.
+- **No swing delay on a level-up:** levelling up mid-fight, or equipping
+  gear with Strength or Dexterity, no longer restarts your weapon's swing
+  timer.
+- **Water stays off roads:** water poured from a bucket no longer flows onto
+  roads and bridges or into the cores of villages, camps, fortresses and the
+  other places on the map; it stops at their edge, as it already did at towns
+  and capitals. Water that got there before can still drain away. Planned
+  canals and rivers and Claim Stone claims are unchanged.
+- **Logging in on a flyer:** if you use `/home`, move away or die while the
+  game sets you down after a login in the air, it no longer pulls you back to
+  where you logged out.
+- **The Expedition Registrar's place:** the Expeditions notice and the
+  Registrar's level-20 letter now send you to the door of a capital's great
+  hall, where the Registrar has stood since 0.75.3 (letters already received
+  keep their text).
+- **Crops:** a crop that may no longer grow where it was planted (for example
+  inside a claim that became active) no longer flashes the claim's
+  "protected" line at its planter every 15 seconds; harvesting and digging
+  still say so.
+- **The weapon hint** comes only when you carry a weapon that your empty
+  weapon slot takes at your level, and no longer while the slot holds a broken
+  weapon.
+- **Windows of NPCs** check the same things on every click: you must still be
+  near, alive and of the right faction, and the NPC must still be at its
+  place. A profession trainer's window now closes when you click after
+  walking away, and the Crownbinder's closes with "You walked away from the
+  Crownbinder."
+- **Soulbound items** (Claim Stones, packed containers, quest items) can no
+  longer be put into a crafting station, as their rules always said.
+- **Mobs:**
+  - elite mobs show their "!!" wind-up only against players; against other
+    mobs they swing plainly;
+  - a dragon's whelps count like a king's guards: hitting one puts you on the
+    dragon's loot list, and a player a whelp kills keeps their claim to the
+    loot for 60 s;
+  - the Lava Seep now runs as fast as every other aggressive melee mob, so
+    walking no longer outruns it;
+  - the rift's crack, pulse and rise particles follow the game's particle
+    scale setting.
+- **Faster to notice a recipe:** a Basic recipe unlocked by an item you pick
+  up or receive as a reward is announced within half a second instead of up
+  to 10 s.
+- **Six retired mount items** that older versions handed out now vanish
+  wherever they still were (a crafting station's grid was the last place).
+- **Less work per server step with many players online:** the per-player
+  passes (status effects, regeneration, the target frame, the PvP zone, the
+  Character page, the sky, drowning and suffocation, the held-item look,
+  nametags, party frames, waystones) and the Claim Stone and settlement spawn
+  checks now spread their work over time, and repeated reads are kept. While
+  you shoot, the Character page's quiver total may lag by up to a second.
+- **Server admins:** an error in an ability's hit is now reported as a
+  `[GRUG-SEVERE]` line (and one red chat line); a crafted, very long answer
+  from the coin, Claim Stone, profession or Help window is cut before the
+  game reads it, so it can no longer stall the server; letters and account
+  texts drop broken characters. The web bridge's address and token
+  (`grug_bridge.url`, `grug_bridge.token`) are now listed in the game's
+  settings; the main menu shows the token in plain text, so keep that screen
+  private.
+- Internal: dead code and stale comments removed, the documentation brought
+  in line with the code, and about 270 MB of design-study images left the
+  repository (its history keeps them).
 
 ## 0.80.1 — character creation for the website (2026-11-16)
 

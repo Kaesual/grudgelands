@@ -1,30 +1,12 @@
--- Shore Crab and its high-level elite beach variant, the Reef Lurker.
---
--- Both live on sandy sea shore (Round 22 D36): the host is dry
--- `default:sand` at y 0..20 with water at or below the sea surface within
--- NEAR_WATER nodes, so the coast's wide sand band and inland sand stay
--- crab-free, the sand of rivers and lakes above sea level included (Round 22
--- Phase 5). The level split is spawn_policy.lua's: the Shore Crab below
--- level 45, the Reef Lurker 45-60, so every sandy sea shore carries one of
--- the pair.
+-- Shore Crab and its high-level elite beach variant, the Reef Lurker: the
+-- base families of the recipes' shore crab sub-types (spawn_regions.lua puts
+-- them on the shore kinds; their own ABM rows went in Round 81, ruling 6).
 
-local NEAR_WATER = 6
-local SEA_SURFACE = 1 -- the world's water_level: the sea's top water node
-
-local function near_water(pos)
-	local top = math.min(pos.y + NEAR_WATER, SEA_SURFACE)
-	if top < pos.y - NEAR_WATER then return false end
-	return #core.find_nodes_in_area(
-		{x = pos.x - NEAR_WATER, y = pos.y - NEAR_WATER, z = pos.z - NEAR_WATER},
-		{x = pos.x + NEAR_WATER, y = top, z = pos.z + NEAR_WATER},
-		"group:water") > 0
-end
-
-local function crab_def(description, tier, spawn_check, drop_scale)
+local function crab_def(description, tier, drop_scale)
 	local def = {
 		description = description, clock = "any", type = "animal",
 		_grug_voice = "aquatic",
-		_grug_tier = tier, _grug_spawn_check = spawn_check,
+		_grug_tier = tier,
 		attack_type = "dogfight", group_attack = false, reach = 3,
 		pathfinding = 1, walk_velocity = 1.5, run_velocity = 3.4,
 		-- The engine steps an object up only when its bottom plus stepheight
@@ -61,18 +43,6 @@ local function crab_def(description, tier, spawn_check, drop_scale)
 end
 
 grug_mobs.register_mob("grug_mobs:shore_crab",
-	crab_def("Shore Crab", "normal", near_water, 1))
+	crab_def("Shore Crab", "normal", 1))
 grug_mobs.register_mob("grug_mobs:reef_lurker",
-	crab_def("Reef Lurker", "elite", near_water, 3))
-
--- The near-water strip holds about 18 % of the shore's open sand (measured
--- in the engine on two seeds, Round 22 Phase 6: 17.5 % and 18.3 %), so both
--- chances are 0.18 of their former all-sand values (1650, 6000) to keep the
--- attempt rate per stretch of beach. The scan above costs about 2-3 us per
--- ABM hit (measured); a find_node_near-first variant was 5x slower.
-mobs:spawn({name = "grug_mobs:shore_crab", nodes = {"default:sand"},
-	interval = 20, chance = 300, active_object_count = 3,
-	min_height = 0, max_height = 20})
-mobs:spawn({name = "grug_mobs:reef_lurker", nodes = {"default:sand"},
-	interval = 30, chance = 1100, active_object_count = 1,
-	min_height = 0, max_height = 20})
+	crab_def("Reef Lurker", "elite", 3))

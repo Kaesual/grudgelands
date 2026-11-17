@@ -27,7 +27,7 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
 - In V1 the rift's crack at Tombroad Ambush and ten ember-tinted corrupted
   creatures (§2a) foreshadow a connection from below; no Nether portal or
   crossing is built. Scorched breaches and twisted vegetation are not built
-  (an open question, BACKLOG "Audit 2026-10 open questions", DW-08).
+  in V1.
   V2 introduces the portals and the walkable Nether, revealing that
   **something opened the connections from the other side.**
 
@@ -134,8 +134,8 @@ threat, beats, objects, cloaks), the quest structure is in
 
 - Corruption visuals at overworld breaches (scorched ground, twisted
   vegetation) — the darkness leaks through. Not built in V1, whose only
-  corruption is the rift's crack and the ember-tinted creatures (§2a; open
-  question DW-08 in BACKLOG). There are no Nether portals in V1.
+  corruption is the rift's crack and the ember-tinted creatures (§2a).
+  There are no Nether portals in V1.
 - Distinct from the Undead race's blight home region (§7 world.md):
   the Undead are a *faction people*, not the demon threat — their blight
   is old death, the Nether corruption is fresh, fiery evil.

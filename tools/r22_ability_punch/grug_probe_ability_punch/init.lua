@@ -237,7 +237,7 @@ local function run_scenario(index, sc)
 	grug_abilities.restore_mana(ref, 1000000)
 	if sc.start_rage then grug_abilities.add_rage(ref, sc.start_rage) end
 	aim(ref, fake, mob)
-	local cost = grug_abilities.cost_for(ref, def.cost, sc.ability).mana or 0
+	local cost = grug_abilities.cost_for(ref, def.cost).mana or 0
 	local before = {
 		mana = grug_abilities.get_mana(ref), rage = grug_abilities.get_rage(ref),
 		health = ent.health,

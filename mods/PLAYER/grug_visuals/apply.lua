@@ -35,13 +35,18 @@ local WIELD_ENTITY = "grug_visuals:wield"
 local WIELD_BONE = grug_visuals.WIELD.bone
 local wield_transform = grug_visuals.wield_transform
 
--- How often an orphaned wield entity notices that its character is gone.
--- Luanti DETACHES the children of a removed object instead of removing them,
--- so without this a killed guard leaves its sword floating for good. The cost
--- is one float add and one compare per entity per step; the price of the
--- interval is that a dropped weapon hangs in the air for up to a second after
--- its owner dies.
+-- How often an orphaned wield entity is noticed and removed. Luanti DETACHES
+-- the children of a removed object instead of removing them
+-- (src/server/unit_sao.cpp clearChildAttachments), so without this a killed
+-- guard leaves its sword floating for good. One shared sweep over the live
+-- wield entities does it (Round 81 PASSES; audit P1-03): the entity has no
+-- on_step, which cost every armed character a Lua call per server step. The
+-- price of the interval is that a dropped weapon hangs in the air for up to
+-- a second after its owner dies.
 local ORPHAN_CHECK = 1.0
+-- The active wield entities: ObjectRef -> true. Weak, so an object removed
+-- without on_deactivate (clear_objects) cannot keep its entry.
+local wield_entities = setmetatable({}, {__mode = "k"})
 
 core.register_entity(WIELD_ENTITY, {
 	initial_properties = {
@@ -60,18 +65,27 @@ core.register_entity(WIELD_ENTITY, {
 		visual_size = grug_visuals.WIELD.size,
 		textures = {"air"},
 	},
-	_grug_age = 0,
-	on_step = function(self, dtime)
-		self._grug_age = self._grug_age + dtime
-		if self._grug_age < ORPHAN_CHECK then
-			return
-		end
-		self._grug_age = 0
-		if not self.object:get_attach() then
-			self.object:remove()
-		end
+	on_activate = function(self)
+		wield_entities[self.object] = true
+	end,
+	on_deactivate = function(self)
+		wield_entities[self.object] = nil
 	end,
 })
+
+local orphan_elapsed = 0
+core.register_globalstep(function(dtime)
+	orphan_elapsed = orphan_elapsed + dtime
+	if orphan_elapsed < ORPHAN_CHECK then
+		return
+	end
+	orphan_elapsed = 0
+	for obj in pairs(wield_entities) do
+		if not obj:get_attach() then
+			obj:remove()
+		end
+	end
+end)
 
 -- Nothing to draw for an item nobody registered: `wielditem` would render the
 -- engine's "unknown item" cube, which looks like a bug and is one.
@@ -238,7 +252,9 @@ local IRRELEVANT_LIST = {
 
 -- player name -> {base_key, base, written_key, back, back_card,
 -- appearance_key, stature, _grug_wield_obj, _grug_wield_item,
--- _grug_wield_stature, _grug_wield_pose, _grug_wield_scale}
+-- _grug_wield_stature, _grug_wield_pose, _grug_wield_scale, and the wield
+-- poll's record of its last sync: wield_key, wield_key_stature,
+-- wield_key_obj}
 local players = {}
 
 local function player_entry(name)
@@ -657,6 +673,9 @@ function grug_visuals.apply(player)
 		end
 	end
 	sync_wield(entry, player, shown, result.stature)
+	-- The poll's record is of its own last sync; this one may have
+	-- re-textured the same entity, so the next poll compares afresh.
+	entry.wield_key = nil
 	return result
 end
 
@@ -708,33 +727,48 @@ end
 -- pass simply tries again), which is the "the sword was once not shown at all"
 -- report from the playtest.
 --
--- One second per player, throttled the AGENTS.md way. The work per player is
--- one `get_wielded_item`, one group lookup and one string compare; everything
--- expensive (compose, the texture list, the entity write) is behind the
--- unchanged-item compare inside `sync_wield`. A Scout with the offhand look
--- on adds one or two cosmetic hand reads and a compare for the back card;
--- the texture list is rewritten only when the card changes (a hotbar swap
--- between showing the bow and anything else).
+-- One second per player, on the player's join slot (Round 81 PASSES; audit
+-- X4-05, P1-02). The work per player is the shown stack (one
+-- `get_wielded_item` and one group lookup; an ability item adds a cosmetic
+-- hand read), its `to_string` and one compare against the stack the last
+-- poll showed. Only a different stack, a stature change, a wield entity
+-- that went away, a failed spawn or an apply() since the last poll reaches
+-- `sync_wield`, which derives the appearance, the pose and the scale and
+-- writes only what changed. A Scout
+-- with the offhand look on adds one or two cosmetic hand reads and a compare
+-- for the back card; the texture list is rewritten only when the card
+-- changes (a hotbar swap between showing the bow and anything else).
 local WIELD_POLL = 1.0
-local poll_accumulator = 0
 
-core.register_globalstep(function(dtime)
-	poll_accumulator = poll_accumulator + dtime
-	if poll_accumulator < WIELD_POLL then
+grug_core.register_player_pass(WIELD_POLL, function(player)
+	local entry = players[player:get_player_name()]
+	if not entry then
+		-- `entry.stature` is written by apply(); before the first apply
+		-- there is no entry at all, so this cannot race the join hook.
 		return
 	end
-	poll_accumulator = 0
-	for _, player in ipairs(core.get_connected_players()) do
-		local entry = players[player:get_player_name()]
-		if entry then
-			-- `entry.stature` is written by apply(); before the first apply
-			-- there is no entry at all, so this cannot race the join hook.
-			local shown = shown_item(player)
-			sync_wield(entry, player, shown, entry.stature)
-			if entry.back_card then
-				write_textures(player, entry, back_image(player, shown))
-			end
+	local shown = shown_item(player)
+	-- Everything sync_wield derives (the item, its appearance, pose and
+	-- scale) follows from the stack and the registered definitions.
+	-- The record is the stack, the stature and the entity of the last sync
+	-- here; apply() clears it after its own sync, and a wield entity that
+	-- changed otherwise is a mismatch.
+	local key = shown and shown:to_string() or ""
+	local obj = entry._grug_wield_obj
+	if key ~= entry.wield_key or entry.stature ~= entry.wield_key_stature or
+			obj ~= entry.wield_key_obj or (obj and not obj:get_pos()) then
+		sync_wield(entry, player, shown, entry.stature)
+		-- A failed spawn records nothing, so the next poll retries.
+		local wanted = shown and drawable(shown:get_name())
+		if entry._grug_wield_obj or not wanted then
+			entry.wield_key, entry.wield_key_stature, entry.wield_key_obj =
+				key, entry.stature, entry._grug_wield_obj
+		else
+			entry.wield_key, entry.wield_key_stature, entry.wield_key_obj = nil, nil, nil
 		end
+	end
+	if entry.back_card then
+		write_textures(player, entry, back_image(player, shown))
 	end
 end)
 

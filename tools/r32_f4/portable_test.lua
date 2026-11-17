@@ -12,7 +12,9 @@
 --   M  (the Map tab poll's spreading; since Round 44 the map window's pass
 --      budget, checked by tools/r44_mq section B);
 --   P  party HUD: every player is polled exactly once per 0.5 s in one of
---      five slots; players without a party never build a view; the row
+--      five slots, a party's members in their party's slot, which builds the
+--      party's view once per poll (Round 81, audit P5-03); players without
+--      a party never build a view; the row
 --      layout is recomputed only when a player's window (or the row count)
 --      changes; a member's HP change shows within 0.5 s; a player who left
 --      the party loses the rows on the next poll; a player who leaves the
@@ -128,6 +130,9 @@ grug_parties.in_party = function(player)
 	member_reads[name] = (member_reads[name] or 0) + 1
 	return membership[name] ~= nil
 end
+grug_parties.party_id = function(player)
+	return membership[type(player) == "string" and player or player:get_player_name()]
+end
 grug_parties.hud_enabled = function() return true end
 -- Round 67: nobody here holds an invitation (tools/r67_social checks the box).
 grug_parties.newest_invitation = function() return nil end
@@ -140,14 +145,14 @@ local hud_step = steps[#steps]
 local function hud_pass() us = us + 100000; hud_step(0.1) end
 
 local party_players, solo = {}, {}
-groups = {a = {}, b = {}}
+groups = {["1"] = {}, ["2"] = {}}
 for i = 1, 23 do
 	local p = new_player(("p%02d"):format(i), i * 10)
 	p.hp = 20
 	windows[p.name] = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
 	-- members of two parties of five, interleaved with players alone
 	if i % 2 == 0 and i <= 20 then
-		local id = i <= 10 and "a" or "b"
+		local id = i <= 10 and "1" or "2"
 		membership[p.name] = id
 		groups[id][#groups[id] + 1] = p.name
 		party_players[#party_players + 1] = p
@@ -175,12 +180,19 @@ do
 		per_pass[k] = after - before
 	end
 	local once = true
-	for _, p in ipairs(party_players) do once = once and views[p.name] == 4 end
+	local party_views = {}
+	for _, p in ipairs(party_players) do
+		once = once and member_reads[p.name] == 4
+		party_views[membership[p.name]] = (party_views[membership[p.name]] or 0) + (views[p.name] or 0)
+	end
 	for _, p in ipairs(solo) do once = once and views[p.name] == nil and member_reads[p.name] == 4 end
 	check(once, "P1 every player is polled once per 0.5 s; players alone never build a view")
+	check(party_views["1"] == 4 and party_views["2"] == 4,
+		"P1 a party's view is built once per poll for all its members")
 	local most = 0
 	for _, n in ipairs(per_pass) do most = math.max(most, n) end
-	check(most <= 5, "P1 at most five of 23 players per pass (" .. most .. ")")
+	-- Slot 2 holds party 1 (five) and three players alone, slot 3 party 2.
+	check(most <= 8, "P1 at most one party and three players alone per pass (" .. most .. ")")
 	check(layout_calls == 0, "P1 no layout work while no window changes (" .. layout_calls .. ")")
 end
 

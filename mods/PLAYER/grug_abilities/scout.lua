@@ -104,7 +104,6 @@ local function bow_speed(bow)
 	end
 	return math.max(0, speed)
 end
-grug_abilities.bow_speed = bow_speed
 
 -- Loose's cast interval (init.lua's clock seam): the base without a player.
 local function loose_interval(player)

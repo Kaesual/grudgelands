@@ -4,9 +4,9 @@
 -- The budget of a zone and clock is round(REFERENCE[clock] x DENSITY_SCALE x
 -- ZONE_DENSITY), "about 1.5x" the pre-Round-24 area population (ruling 27).
 -- Round 24 also shared it per spawn point among the ABM rows of the
--- named-zone palettes; no zone has a palette since the Round 28 spawn
--- recipes, and Round 30 retired those surface rows (spawn_policy.lua
--- spawn_row_kept), so that per-point half is gone.
+-- named-zone palettes; no zone has had a palette since the Round 28 spawn
+-- recipes (Round 81 removed the layer), and Round 30 retired those surface
+-- rows, so that per-point half is gone.
 
 grug_mobs.DENSITY_SCALE = 1.5
 
@@ -98,6 +98,15 @@ end
 -- `pos` is where the mob would stand, `kind` the region's kind, `name` its
 -- entity, `weight` its roster weight and `total_weight` the roster's total.
 -- Returns true to allow.
+--
+-- The count stops as soon as the answer is a refusal (Round 81 SPAWN, audit
+-- X4-06): both counts only grow, and area_density_decision refuses exactly
+-- when the species is past its refill floor and either at its share or the
+-- point budget is full, so the first object that makes that true settles it.
+-- An allowed attempt still counts the whole sphere. The answer is the full
+-- count's in every case; where players crowd an area whose budget is full,
+-- the sweep ends after the first counted mobs instead of reading every
+-- object (carriers, bars, drops) within the radius.
 function grug_mobs.region_density_allows(pos, zone_id, clock, kind, name, weight,
 		total_weight)
 	if not count_radius then
@@ -106,6 +115,7 @@ function grug_mobs.region_density_allows(pos, zone_id, clock, kind, name, weight
 	end
 	local budget = grug_mobs.region_budget(zone_id, clock, kind.density)
 	local share = grug_mobs.density_share(budget, weight, total_weight)
+	local refill = math.ceil(share / grug_mobs.DENSITY_SCALE)
 	local by_tag = grug_mobs.spawn_regions.area_by_tag
 	local total, same = 0, 0
 	local objects = core.get_objects_inside_radius(pos, count_radius)
@@ -118,6 +128,9 @@ function grug_mobs.region_density_allows(pos, zone_id, clock, kind, name, weight
 				total = total + 1
 				if ent.name == name then
 					same = same + 1
+				end
+				if same >= refill and (same >= share or total >= budget) then
+					return false
 				end
 			end
 		end

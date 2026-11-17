@@ -101,6 +101,9 @@ rawset(_G, "core", {
 })
 local in_combat = {}
 rawset(_G, "grug_core", {
+ -- Round 81: waypoints.lua's discovery pass rides the join slots
+ -- (player_slots.lua, not loaded here); nothing here steps it.
+ register_player_pass=function() end,
  FLASH_COLOR={notice=1, error=2}, flash=function() end,
  hold_movement=function() end, release_movement=function() end,
  get_player_race=function(name) return players[name].race end,
@@ -257,8 +260,9 @@ local function last_feed(name)
   if feeds[i].name == name then return feeds[i].text end
  end
 end
-local NOTHING = "You have no Expedition to enter. The Expedition Registrar at a capital's " ..
- "waystone plaza opens one."
+-- Round 81 (DD4-01): the Registrar stands outside the great hall since 0.75.3.
+local NOTHING = "You have no Expedition to enter. The Expedition Registrar outside a " ..
+ "capital's great hall opens one."
 
 local eve = new_player("Eve", 25)
 local cid = new_player("Cid", 25)

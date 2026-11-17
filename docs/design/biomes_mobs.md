@@ -273,7 +273,7 @@ placeholder.
 | grug_pine_hills | pine (generated; two rows) (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss `[herb T1]`, sunleaf `[spice T1]`, dragonweed `[herb T2]` (in their zones) | scattered boulders (deco) |
 | grug_elf_forest | silverwood + apple mix (generated) (fill 0.007) | pale grass, pastel flowers (Round 51); wild berries `[food]`; sunleaf `[spice T1]`, gravemoss `[herb T1]`, dragonweed `[herb T2]` (in their zones) | great-silverwood only via settlement schematics |
 | grug_deep_forest | apple + aspen (generated) dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food]`; dragonweed edge `[herb T2]`; crimson lotus `[herb T3]` (in its zones, Round 60) | dark, high tree density |
-| grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`; lichen patches and alpine plants (Round 51) | band-specific nature biome (Dwarf area only) |
+| grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above the snow line (y 280 ± its field, [world_zones.md](world_zones.md) §7.6); dragonweed `[herb T2]`; lichen patches and alpine plants (Round 51) | band-specific nature biome (Dwarf area only) |
 | grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]`, gravemoss `[herb T1]` (in their zones) | waterhole ponds (deco) |
 | grug_badlands (+ `_east`) | large_cactus, dead shrub, withered bush (Round 51) | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
 | grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, the land kit's bone finds, graveyards and ruins (§2.1); gravemoss `[herb T1]`, sunleaf `[spice T1]`, dragonweed `[herb T2]` (in their zones) | fireflies/wisp particles optional |
@@ -343,8 +343,9 @@ manifest still names these two site rules by their flat-world tokens
 the rules above. Every dry shrub has exact `param2 = 4`.
 
 **The trees are generated per world** (Round 47 rulings 1–3; the approved
-concept is `tools/r46_tree/concept/DESIGN.md`). The fourteen tree rows
-(apple, aspen, silverwood, jungle tree, kapok, pine, acacia and gravewood)
+concept is `tools/r46_tree/concept/DESIGN.md`). The fifteen tree rows
+(apple, aspen, silverwood, jungle tree, kapok, pine, acacia, gravewood and
+the swamp tree)
 name a species of the seeded generator (`wp40/treegen.lua`), not a
 schematic. Every world builds its own variants of each species from its
 seed at every server start: 32 per species, 16 kapoks
@@ -511,8 +512,8 @@ the region an ingredient comes from):
   literally true — today exactly The Skyglass Canopy on the shared
   contested front, both factions on foot, plus Stormscale Summit as the
   island bonus; the WP40 authored surface pass owns the zone binding),
-  **stormkelp** and **rock salt** on the coast-zone beaches
-  (45–60), and the meat of the 51–60 zones' jungle ape and panther (The
+  **stormkelp** (41–60) and **rock salt** (51–60) on the coast-zone
+  beaches, and the meat of the 51–60 zones' jungle ape and panther (The
   Skyglass Canopy, Stormscale Summit) and plaguehide bear (Gravesalt
   Escarpment; [zone_mobs.md](zone_mobs.md)). Every one of them is reachable
   by both factions
@@ -716,7 +717,7 @@ The current family classification is:
 | Disposition | Existing families and named variants |
 |---|---|
 | Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker; Tortoise |
-| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Frog, Stingray, Bay Shark, Abyssal Shark; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; Bedrock Sentinel (the land guard, no guard role since Round 72), Auditor Nemm, Duewarden; kings and the PvP fortress Generals |
+| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master, Isquarre (the rift boss); Flintback; Kraken; Frog, Stingray, Bay Shark, Abyssal Shark; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; Bedrock Sentinel (the land guard, no guard role since Round 72), Auditor Nemm, Duewarden; kings and the PvP fortress Generals |
 | Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish, Tide Goby |
 | Independent role | Accord/Throng guards, royal guards, PvP camp captains and the Generals' bodyguards, and peaceful settlement NPCs |
 
@@ -766,11 +767,24 @@ in parentheses, same drop tables):
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
 | Wolf (Blightfang Wolf) | hunts in packs; flees low, returns with pack | 24 h | 4.6 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
-| Bear (Plaguehide Bear) — elite variant "Elder" ×1.4 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
+| Bear (Plaguehide Bear) — elite variant "Elder" ×1.4 scale, rolled **1 in 10 at a fresh spawn of the base entity** (see below; dormant today, no recipe spawns the base name) | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | raw silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 4.6 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
 | Skeleton Archer | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2 (arrows no longer drop, Round 46) | mobs_mc_skeleton |
 | **Bone Weevil** — bone forest **and blight** (the two "creepy" biomes; one entity name, one `aoc` budget, per-biome tint stamped at spawn) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_silverfish, bone-pale + blight tints |
+
+**Elder Bear and Silverback (Round 81, ruling 6).** The roll sits in the base
+definition's activation (`after_activate` of `grug_mobs:bear`,
+`grug_mobs:plaguehide_bear` and `grug_mobs:jungle_ape`): a freshly added entity
+of that name (no staticdata) becomes the elite "Elder Bear", "Elder Plaguehide
+Bear" or "Silverback" 1 time in 10, whoever spawns it; a reactivated one never
+rolls again, nor does a spawn that hands its own staticdata (the Marrowclaw
+rare). Until Round 81 it ran only as the surface ABM rows' `on_spawn`, which no
+zone used after the spawn recipes. The bear and ape roles of the recipes are
+sub-types with an authored tier (§4.2 Sub-types), so they never roll. The
+rolls exist for the base names, but today no recipe spawns a base name, so
+neither elite appears in the world; only other spawns of a base name reach the
+roll (the spawner node, an admin's `/spawnentity`).
 
 **Mountain pair — grug_crags (A) ↔ grug_badlands (T):**
 
@@ -810,7 +824,7 @@ grug_jungle_edge:
 | **Jungle Lynx** (the Raptor slot) | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; Cat Claw 1/3 (`raptor_claw` item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.6 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
-| Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
+| Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at a fresh spawn of the base entity** (see the Elder below the forest table; dormant today, no recipe spawns the base name) | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
 | Giant Spider (jungle tint) | webs | night | 4.6 | spider table | mobs_monster spider |
 | Parrot — jungle_edge critter | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (feather moved to the bird-of-prey table) | mobs_mc_parrot |
 
@@ -1087,29 +1101,39 @@ the tier sits between normal and elite: tougher than a normal, weaker than an
 elite, with the elite's gear-drop rates); special loot
 rolls ride on WP5's item/enchantment tables.
 
-| Name | Base family | Named-zone route | ~L |
+A rare's level is the level where its route runs (the region level in a
+recipe zone, `grug_mobs/rares.lua`); its den is placed per world in the
+third of its zone's range that its anchor row names (`wp40/placement.lua`,
+relaxed only when no spot is found):
+
+| Name | Base family | Named-zone route | Den: zone range, third |
 |------|-------------|------------------|----|
-| Grimtusk | Boar | Goldmead Vale | 12 |
-| Old Whitefang | Wolf | Ashenward March | 36 |
-| Korgan's Bane | Stone Golem | Stormvault Heights | 40 |
-| Silkfang | Giant Spider | The Skyglass Canopy | 55 |
-| Marrowclaw | Plaguehide Bear | Blackwind Rise | 35 |
-| Dustwing | Vulture | Bannerbreak Mesa | 38 |
+| Grimtusk | Boar | Goldmead Vale | 11–20, middle |
+| Old Whitefang | Wolf | Ashenward March | 31–40, middle |
+| Korgan's Bane | Stone Golem | Stormvault Heights | 31–40, middle |
+| Silkfang | Giant Spider | The Skyglass Canopy | 51–60, high |
+| Marrowclaw | Plaguehide Bear | Blackwind Rise | 31–40, middle |
+| Dustwing | Vulture | Bannerbreak Mesa | 31–40, middle |
 | Emerald Coil | Serpent | Stormscale Summit approach | 60 |
-| Ashmaw | Boar (plague) | Redtusk Savanna | 12 |
-| Captain Bonerattle (×2) | Skeleton Raider | The Broken Causeway / The Shattered Line (41–50: the spawn region's level at the spot) | zone |
+| Ashmaw | Boar (plague) | Redtusk Savanna | 11–20, middle |
+| Captain Bonerattle (×2) | Skeleton Raider | The Broken Causeway / The Shattered Line | 41–50, high |
 
 ## 4. Spawn parameter table
 
-Mechanism: mobs_redo `mobs:spawn` plus the named-zone spawn policy. In a
-zone with a spawn recipe the surface rows other than the recipe's critters
-are refused and the spawn regions of §4.2 spawn instead.
+Mechanism: mobs_redo `mobs:spawn` plus the spawn policy
+(`spawn_policy.lua`). Every zone spawns its surface mobs from its spawn
+recipe's regions (§4.2): on the surface the policy admits only the recipe's
+critters and the Rift Spawn's surface row, and outside every zone no surface
+row.
 **Retired and merged rows (Round 30, the user's ruling on perf review
 2026-10 #11):** a surface row that no zone can use registers no ABM
 (`spawn_policy.lua` `spawn_row_kept`): every zone has a recipe, and the only
 land outside every zone is dragon-channel floor under water, so on the
 surface only the recipes' critters and the Rift Spawn's surface row stay
-(the list below; the pre-recipe row table is archived). The
+(the list below; the pre-recipe row table is archived). Round 81 (ruling 6)
+deleted the 56 surface rows this retired from the mob files, with their
+spawn checks and the named-zone palette layer that once served a zone
+without a recipe; the merged spawn table did not change. The
 remaining rows run through three merged ABMs, one per node set: underground
 (stone and strata, rows whose top is y −1 or lower), water (Kraken, Reed
 Angelfish; since Round 51 the Bay and Abyssal Sharks and the Tide Goby) and surface
@@ -1124,17 +1148,19 @@ everything after the trigger (light, clock, cap, players, policy) is the
 row's own unchanged code, called as often as before. The engine scanned an active block for some spawn
 ABM nearly every second before (88 ABMs on independent timers); now three
 ABMs do it every 20–30 s.
-Host nodes, authored zone palettes, regional identity and local level must all
-admit the family. The retired `_grug_spawn_zones` field is not a current gate. `min_height 0, max_height 600` (the flight
+Host nodes and the spawn policy (with a row's own `_grug_spawn_check` and
+`_grug_spawn_domains`) must admit the row. The retired `_grug_spawn_zones`
+field is not a current gate. `min_height 0, max_height 600` (the flight
 ceiling) on all surface entries, since the natural terrain reaches past
-y 500 and the zone palettes already gate the habitat (Round 22 D37). Only
-water-bound rows keep a low cap, for a gameplay reason: the Kraken at 4
-(sea surface) and the Shore Crab and Reef Lurker at 20 (sea shore). The
+y 500 (Round 22 D37). Only water-bound rows keep a low cap, for a gameplay
+reason: the Kraken and the sharks at 4 (sea surface). The
 Reed Angelfish uses the flight ceiling too ("Round 51 water families").
-Every family declares one spawn role, `clock = "day" | "night" | "any"`;
-Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any), and
-a `"zone:<zone id>"` key sets the clock in one named zone ahead of the palette
-keys (Scorpion in Sunscar, Viper in Kapok: `any`, Round 24). `grug_mobs`
+Every family declares one spawn role, `clock = "day" | "night" | "any"`, or
+a table that picks one by place: a `"zone:<zone id>"` key in one named zone
+(it wins) and a `blight` key on `grug_blight` ground; elsewhere a table
+names no clock. No family with a surface row has a table since Round 81
+(the Zombie's, the Scorpion's and the Viper's went with their surface rows;
+the cave rows ignore the clock). `grug_mobs`
 stamps day rows with `min_light = 10` plus `day_toggle = true` (so torch light
 at night never opens a day row), night rows with `max_light = 5` plus
 `day_toggle = false`, and leaves any-time rows ungated.
@@ -1144,17 +1170,12 @@ light filter (light ≤ 7, or none for the golems), and they never receive a
 `day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
 and chance stay unchanged; the Rift Spawn's surface row states its final
 chance 4000 and cap 3 (the effective numbers of its Round 24 palette budget,
-gone in Round 30). The zone-palette path (a named zone with fewer than two
-explicit night-role families admits a fallback: Zombie for settled/war,
-Skeleton Archer for forest/mountain, Jungle Spider for jungle, or Bog Ooze for
-swamp) runs only in a zone without a recipe, and every zone has one since
-Round 28. An ABM-row mob alive at a clock boundary is not despawned (free
+gone in Round 30). An ABM-row mob alive at a clock boundary is not despawned (free
 region mobs spawned for the night leave at dawn: "Dawn departure" below).
 
 **`aoc` is per entity NAME, not per family** (mobs_redo counts objects
 of that one name inside a 128-node sphere). Two spawn rows of the same
-name — the Skeleton Archer's two node lists, a family's surface + cave
-rows — share ONE budget; the per-biome tints are separate entities and
+name — the Bone Weevil's two node lists — share ONE budget; the per-biome tints are separate entities and
 each carries the full row of its family. Until Round 30 the row `aoc` of
 the species under the palette density budget (§0) was the species' weight
 within its zone's budget; every row still running is its own cap.
@@ -1184,9 +1205,10 @@ beach ground, Parrot, Bone Weevil, Bog Fowl, Wild Turkey and Song Bird;
 row (Gravesalt, Skyglass and both islands), every underground row (top at
 y −1 or lower,
 the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken,
-Reed Angelfish, Bay and Abyssal Shark, Tide Goby). Every other surface row registers no ABM, the Shore Crab's
-and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
-(§4.2), the Reef Lurker only as its 51–60 shore sub-type.
+Reed Angelfish, Bay and Abyssal Shark, Tide Goby). No other surface row
+exists since Round 81, the Shore Crab's and the Reef Lurker's included:
+crabs spawn only as the recipes' crab roles (§4.2), the Reef Lurker only as
+its 51–60 shore sub-type.
 Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
 
 **The Expedition slots** (Round 71, the user's ruling): no natural mob spawns over
@@ -1194,11 +1216,10 @@ the slot field plus 320 nodes on every side, at any y, the water rows included, 
 that no random mob's nametag shows through an Expedition's wall. `grug_expeditions`
 sets the rectangle (`grug_mobs.set_spawn_free_field`).
 
-**Registered but placed nowhere** (open questions, [BACKLOG "Audit 2026-10
-open questions"](../../BACKLOG.md#audit-2026-10-open-questions)): the ambient
+**Registered but placed nowhere:** the ambient
 War Construct sub-types `causeway_construct` and `siege_war_construct` are in
 the catalogue (`data/subtypes.json`) but in no recipe, so the War Construct
-appears only as the two leaders (DW-04). The elite Reef Lurker spawns only as
+appears only as the two leaders. The elite Reef Lurker spawns only as
 its sub-type on the 51–60 shores (§3, Round 37); its base entity
 `grug_mobs:reef_lurker` has no recipe role and no ABM row.
 
@@ -1266,7 +1287,9 @@ never places, digs or removes a node.
 footprint, hard-protected ground, an active claim, a player within 3 nodes;
 at the end of the warning the spot is checked again (room, nobody standing
 in it), and mobs_redo's global limit of 600 applies (the arrivals are not
-authored). A refused or failed arrival stays owed; a full cap drops it.
+authored). An arrival whose spot is not found or refused, or that the re-check
+at the end of the warning refuses, stays owed; a full cap, or mobs_redo's
+global limit when the mob is added, drops it.
 
 **Warning:** **2 s**, silent (no sound without the user's pick): the
 particle effect `depth_windup` (12 glowing dark-violet motes drawn in to the
@@ -1319,21 +1342,16 @@ the offline renderer), `spawn_regions.lua` (data, spawner, leaders, seams),
 `camps.lua` (camp slots), `density.lua` (budget), `spawn_policy.lua` (ABM
 gate, protected surface).
 
-- **One data file per zone**, `mods/ENTITIES/grug_mobs/data/zones/<zone_id>.spawns.json`:
-  either `palette` (the zone's named-zone palette of §4 /
-  `world_zones.md` §8 as data: `families`, Lorindor's `exact_mobs` and
-  `night_fallback`, the zone's `boar` tint and its `lookalikes` per family)
-  or `recipe` (belts, kinds, camps, leaders, quest places, critters). A missing file means
-  no palette and no recipe; a file without a recipe needs its palette (the
-  load fails otherwise).
-- **Trigger:** a zone without a recipe keeps its palette and the level field
-  exactly as before. A zone with a recipe spawns its surface mobs only from
-  its regions: its ABM rows keep only the recipe's critters (the Gull with
-  its beach host) and, in Gravesalt, Skyglass and both islands (the zones
-  whose palette had it), the Rift Spawn's surface row with its host ground
-  and night clock (the catalogue keeps its spawning, Round 28 S2c); shore crabs
-  and every other surface row are refused there, and since Round 30 a
-  surface row no zone keeps registers no ABM at all (§4).
+- **One data file per zone**, `mods/ENTITIES/grug_mobs/data/zones/<zone_id>.spawns.json`,
+  with its `recipe` (belts, kinds, camps, leaders, quest places, critters).
+  A file without a recipe, or with a `palette` (the named-zone palettes of
+  before Round 28, removed in Round 81, ruling 6), fails the load.
+- **Every zone spawns from its regions:** its ABM rows keep only the
+  recipe's critters (the Gull with its beach host) and, in Gravesalt,
+  Skyglass and both islands (the zones whose palette had it), the Rift
+  Spawn's surface row with its host ground and night clock (the catalogue
+  keeps its spawning, Round 28 S2c); every other surface row is refused, and
+  since Round 30 a surface row no zone keeps registers no ABM at all (§4).
   Unchanged everywhere: underground rows and their depth level, the water
   rows (Kraken, Reed Angelfish, the sharks, the Tide Goby; the zone water
   families spawn from the recipes' water kinds since Round 51), named rares, vendors, guards and
@@ -1412,11 +1430,16 @@ gate, protected surface).
   refilled after a roll in `respawn` (30–60 s), a spot within 40 nodes of the
   camp centre and at least `min_player_distance` (16) from every player.
   Members roam free under the normal wander leash and carry the camp's tag
-  and levels. The first look after a server start, once a player is within
-  64 nodes of the centre, fills what is missing at once; later refills
-  follow the slot queue with dormant catch-up (world.md §4a). In a zone with
-  a recipe the bandit camp fires stay scenery (so a recipe camp on a POI is
-  its only population); guard posts keep spawning.
+  and levels. A camp is counted and refilled only while a player stands
+  within 48 nodes of its centre horizontally (the leaders' range,
+  `active_block_range` − 1 mapblocks) and the centre's mapblock is active
+  (Round 81, audit MOB2-03: from further out its far members were inactive,
+  read as dead and refilled, and the camp overfilled). The first look after a
+  server start fills what is missing at once; later refills follow the slot
+  queue with dormant catch-up (world.md §4a), and a look after an absence
+  starts the refills of newly missing members at the last look plus one
+  interval. The camp fires are scenery (so a recipe camp on a POI is its only
+  population; since Round 81 they keep no timer); guard posts keep spawning.
 - **Leaders (ruling 38)** at their rule-placed spot on every seed (a camp
   centre, or the cell farthest from roads of the largest region of a kind,
   with a fallback chain inside the belt and 32 nodes between leaders,
@@ -1553,9 +1576,10 @@ nodes and, thinner, one and two tiers deeper (Round 46). The signature wood foll
 
 - At y = −501 and below, territory is contested. Players can mine through
   opposing deep columns without gaining ownership of the surface above.
-- Abyssal Crystal begins in T5 on both sides before a T6 pick is required. The
-  initial density target is approximately one crystal per 2,048 eligible host
-  nodes through T5/T6. Ordinary ores, Diamond and Abyssal Crystal receive +25%
+- Abyssal Crystal begins in T5 on both sides before a T6 pick is required;
+  its density is `world_zones.md` §11's (one per 512 host nodes in the lower
+  half of T5, one per 256 in T6). Ordinary ores, the T6 gems (Diamond, Ruby,
+  Sapphire) and Abyssal Crystal receive +25%
   density at y = −1500..−1999 and +50% at y ≤ −2000, capped and implemented as
   placement rather than respawn.
 - The Wyrmglass Crown and Stormscale Summit apex camps have no renewable gem
@@ -1575,13 +1599,13 @@ nodes and, thinner, one and two tiers deeper (Round 46). The signature wood foll
 | Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
 | Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 21–60 | deep-forest/fringe spiders; both 41–50 fronts by night (Round 46); T5–T6 outlaws | bone-forest/jungle spiders; the same fronts and outlaws |
 | Food plants (everyone, farmable) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), mushrooms (deep forest/swamp), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, mushrooms (bone forest/swamp), meat/fish |
-| Food plants, **found-only** (everyone, never farmable) | 45–60 (wild cocoa 51–60) | wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
+| Food plants, **found-only** (everyone, never farmable) | 51–60 | wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemy; Round 60: by level band) | 1–30 | gravemoss (every start zone, Copperfell, Whitebridge) | gravemoss (every start zone, Mournfen, Whispering Reedlands) |
 | Healing herbs T2 | 11–40 | dragonweed (every 11–20 zone, Frostbarrow, Ashenward) | dragonweed (every 11–20 zone, Ossuary, Bannerbreak) |
 | Healing herbs T3 | 21–60 | crimson lotus (Whitebridge, Glassroot; Broken Causeway, Skyglass shared) | crimson lotus (Whispering Reedlands, Thunderroot; the same fronts, Stormscale) |
 | Spices T1 (everyone gathers; Alchemy + Cooking use) | 1–20 | sunleaf (every start and 11–20 zone) | sunleaf (every start and 11–20 zone) |
-| Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
-| Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |
+| Spices T2 | 21–30 | marshbloom (swamp) | marshbloom (swamp) |
+| Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 41–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, bear claw (slime gel, one faction, has no recipe use since Round 33) | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |

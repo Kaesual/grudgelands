@@ -162,6 +162,8 @@ do
 		return {ray = {range = 30, reason = "object", distance = 5,
 			pointed = {type = "object", ref = looking_at}}}
 	end}}
+	-- Round 81: the per-player passes register through grug_core.
+	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 	dofile(repo .. "/mods/ENTITIES/grug_mobs/target_frame.lua")
 	local huds = {}
 	local viewer = {

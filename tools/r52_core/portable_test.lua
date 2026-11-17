@@ -217,6 +217,8 @@ local globals_before = {}
 for name in pairs(_G) do globals_before[name] = true end
 dofile(ROOT .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(ROOT .. "/mods/CORE/grug_core/status_icons.lua")
+-- Round 81: the per-player passes register through grug_core.
+dofile(ROOT .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
 dofile(ROOT .. "/mods/CORE/grug_core/status.lua")
 dofile(ROOT .. "/mods/CORE/grug_core/particles.lua")
 dofile(ROOT .. "/mods/CORE/grug_core/particle_effects.lua")

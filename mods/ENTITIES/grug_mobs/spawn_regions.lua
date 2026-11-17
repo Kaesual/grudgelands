@@ -1,17 +1,13 @@
 --
 -- Round 28 rulings 34, 37 and 38, Lane S1: rule-based spawn regions.
 --
--- Every named zone has ONE data file, data/zones/<zone_id>.spawns.json. It
--- carries either
---   * `palette`  today's named-zone mob palette (world_zones.md §8 families,
---                the boar tint and lookalike choices) for the zone's ABM
---                rows: a zone WITHOUT a recipe keeps today's spawning exactly
---                (the trigger of ruling 34); or
---   * `recipe`   the rules its spawn regions are built from (belts, kinds,
---                camps, leaders, quest places, critters;
---                docs/design/spawn_regions.md). A
---                zone WITH a recipe spawns its surface mobs only from its
---                regions; its ABM rows keep the recipe's critters.
+-- Every named zone has ONE data file, data/zones/<zone_id>.spawns.json, with
+-- its `recipe`: the rules its spawn regions are built from (belts, kinds,
+-- camps, leaders, quest places, critters; docs/design/spawn_regions.md). A
+-- zone spawns its surface mobs only from its regions; its ABM rows keep the
+-- recipe's critters. The named-zone palettes that stood beside the recipes
+-- for a zone without one are gone (Round 81, ruling 6): a `palette` key, or
+-- a file without a recipe, is a load error.
 -- A recipe holds no coordinate: the world differs per seed. Every recipe
 -- zone's REGION MAP is built from the analytic world (spawn_regions_core.lua,
 -- the same file the offline renderer tools/r28_regions runs) once at server
@@ -44,13 +40,9 @@ local DATA_DIR = MODPATH .. "/data/zones"
 local CORE = dofile(MODPATH .. "/spawn_regions_core.lua")
 SR.core = CORE
 
-local FILE_KEYS = {zone = true, palette = true, recipe = true, notes = true}
-local PALETTE_KEYS = {families = true, exact_mobs = true, night_fallback = true,
-	boar = true, lookalikes = true}
+local FILE_KEYS = {zone = true, recipe = true, notes = true}
 
-local zones = {} -- zone_id -> {id, palette, boar, lookalikes, recipe}
--- The fallback tables spawn_policy.lua reads, kept current by install_zone.
-local palette_by_zone, boar_by_zone, lookalikes_by_zone = {}, {}, {}
+local zones = {} -- zone_id -> {id, recipe}
 local unit_by_tag = {} -- "zone/kind" or "zone/camp" -> kind or camp (recipe)
 local leader_by_role = {} -- role -> {zone, leader (parsed)}
 local maps = {} -- zone_id -> compact map, or false after a failed build
@@ -105,59 +97,6 @@ local function catalogue_rows()
 		end
 	end
 	return catalogue
-end
-
-local function set_of(list, where, what)
-	if list == nil then
-		return {}
-	end
-	if type(list) ~= "table" then
-		fail(where, what .. " must be a list")
-	end
-	local out = {}
-	for i = 1, #list do
-		if type(list[i]) ~= "string" or list[i] == "" then
-			fail(where, what .. " entries must be strings")
-		end
-		out[list[i]] = true
-	end
-	return out
-end
-
--- Today's named-zone palette, in the shape spawn_policy.lua reads.
-local function parse_palette(palette, where)
-	if palette == nil then
-		return nil
-	end
-	if type(palette) ~= "table" then
-		fail(where, "palette must be an object")
-	end
-	known_keys(palette, PALETTE_KEYS, where .. " palette")
-	local out = set_of(palette.families, where, "palette.families")
-	if palette.exact_mobs ~= nil then
-		out.exact_mobs = set_of(palette.exact_mobs, where, "palette.exact_mobs")
-	end
-	if palette.night_fallback ~= nil then
-		out.night_fallback = set_of(palette.night_fallback, where,
-			"palette.night_fallback")
-	end
-	if palette.boar ~= nil and type(palette.boar) ~= "string" then
-		fail(where, "palette.boar must be an entity name")
-	end
-	local lookalikes
-	if palette.lookalikes ~= nil then
-		if type(palette.lookalikes) ~= "table" then
-			fail(where, "palette.lookalikes must be an object")
-		end
-		lookalikes = {}
-		for family, name in pairs(palette.lookalikes) do
-			if type(family) ~= "string" or type(name) ~= "string" then
-				fail(where, "palette.lookalikes maps a family to an entity name")
-			end
-			lookalikes[family] = name
-		end
-	end
-	return out, palette.boar, lookalikes
 end
 
 -- The world model's anchor source (simple_map) and settlement roster, read
@@ -218,47 +157,38 @@ function SR.install_zone(zone_id, data)
 	if type(data) ~= "table" then
 		fail(where, "spawns file must be an object")
 	end
+	if data.palette ~= nil then
+		fail(where, "the palette layer is retired (Round 81): a zone spawns from its recipe")
+	end
 	known_keys(data, FILE_KEYS, where)
 	if data.zone ~= zone_id then
 		fail(where, "zone " .. tostring(data.zone) .. " does not match the file")
 	end
-	local palette, boar, lookalikes = parse_palette(data.palette, where)
-	local recipe
-	if data.recipe ~= nil then
-		recipe = CORE.parse_recipe(zone_id, data.recipe, recipe_context(zone_id))
-	elseif not palette then
-		-- Without a recipe the palette IS the zone's surface rule.
-		fail(where, "a zone without a recipe needs its palette (today's spawn rule)")
+	if data.recipe == nil then
+		fail(where, "a zone needs its recipe")
 	end
-	if recipe then
-		for _, leader in ipairs(recipe.leaders) do
-			local taken = leader_by_role[leader.role]
-			if taken and taken.zone ~= zone_id then
-				fail(where, "leader role " .. leader.role .. " is placed by " .. taken.zone)
-			end
+	local recipe = CORE.parse_recipe(zone_id, data.recipe, recipe_context(zone_id))
+	for _, leader in ipairs(recipe.leaders) do
+		local taken = leader_by_role[leader.role]
+		if taken and taken.zone ~= zone_id then
+			fail(where, "leader role " .. leader.role .. " is placed by " .. taken.zone)
 		end
 	end
 	-- Everything parsed: replace the zone's previous data in one go.
 	local old = zones[zone_id]
-	if old and old.recipe then
+	if old then
 		for _, kind in ipairs(old.recipe.kinds) do unit_by_tag[kind.tag] = nil end
 		for _, camp in ipairs(old.recipe.camps) do unit_by_tag[camp.tag] = nil end
 		for _, leader in ipairs(old.recipe.leaders) do leader_by_role[leader.role] = nil end
 	end
-	if recipe then
-		for _, kind in ipairs(recipe.kinds) do unit_by_tag[kind.tag] = kind end
-		for _, camp in ipairs(recipe.camps) do unit_by_tag[camp.tag] = camp end
-		for _, leader in ipairs(recipe.leaders) do
-			leader_by_role[leader.role] = {zone = zone_id, leader = leader}
-		end
+	for _, kind in ipairs(recipe.kinds) do unit_by_tag[kind.tag] = kind end
+	for _, camp in ipairs(recipe.camps) do unit_by_tag[camp.tag] = camp end
+	for _, leader in ipairs(recipe.leaders) do
+		leader_by_role[leader.role] = {zone = zone_id, leader = leader}
 	end
-	zones[zone_id] = {id = zone_id, palette = palette, boar = boar,
-		lookalikes = lookalikes, recipe = recipe}
+	zones[zone_id] = {id = zone_id, recipe = recipe}
 	maps[zone_id] = nil
 	from_file[zone_id] = nil
-	palette_by_zone[zone_id] = palette
-	boar_by_zone[zone_id] = boar
-	lookalikes_by_zone[zone_id] = lookalikes
 	return zones[zone_id]
 end
 
@@ -504,13 +434,6 @@ function SR.zone_ids()
 	for zone_id in pairs(zones) do ids[#ids + 1] = zone_id end
 	table.sort(ids)
 	return ids
-end
-
--- The three fallback tables spawn_policy.lua consumes, keyed by zone id:
--- named-zone palettes, the boar tint and the lookalike choices. Live tables
--- (read-only for the caller): a later install_zone shows through.
-function SR.fallback_palettes()
-	return palette_by_zone, boar_by_zone, lookalikes_by_zone
 end
 
 --
@@ -1290,15 +1213,6 @@ local SLOW_STEP = SR.SLOW_PERIOD / SR.SLOW_SLICES
 local attempt_acc, slow_acc, slice, slow_slice = 0, 0, 0, 0
 local spawning = core.settings:get_bool("mobs_spawn") ~= false
 
-local function any_recipe()
-	for _, rec in pairs(zones) do
-		if rec.recipe then
-			return true
-		end
-	end
-	return false
-end
-
 core.register_globalstep(function(dtime)
 	attempt_acc = attempt_acc + dtime
 	slow_acc = slow_acc + dtime
@@ -1306,7 +1220,7 @@ core.register_globalstep(function(dtime)
 		return
 	end
 	attempt_acc = 0
-	if not spawning or not any_recipe() then
+	if not spawning or next(zones) == nil then
 		slow_acc = 0
 		return
 	end
@@ -1397,10 +1311,7 @@ end
 -- another key), never a stop.
 function SR.start_maps()
 	local t0, heap0 = core.get_us_time(), collectgarbage("count")
-	local ids = {}
-	for _, zone_id in ipairs(SR.zone_ids()) do
-		if zones[zone_id].recipe then ids[#ids + 1] = zone_id end
-	end
+	local ids = SR.zone_ids()
 	local key, world_dir, cached, reason, damaged, size
 	do
 		local ok, a, b, c = pcall(cache_key)

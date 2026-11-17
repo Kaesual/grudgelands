@@ -16,7 +16,8 @@
 --    arrives beside the destination stone (the next free side when the
 --    first is blocked), never touches the home cooldown, is canceled by
 --    combat during the emerge, stays in place when no side is free, and a
---    second request while one is pending is refused.
+--    second request while one is pending is refused; a player without a
+--    faction has no markers and discovers nothing (Round 81).
 -- C. The mapgen data: every start blueprint has one waystone, at its
 --    `travel_waypoint` socket, on a signature-stone cross; every capital
 --    core has one at its socket; the shared stable publishes the
@@ -146,6 +147,13 @@ rawset(_G, "core", {
 local dismounts, generation = 0, 0
 rawset(_G, "grug_core", {
  FLASH_COLOR={notice=1, error=2},
+ -- Round 81: the discovery pass rides the join slots (player_slots.lua);
+ -- here it runs on every step for the connected player.
+ register_player_pass=function(_, fn)
+  register("step")(function()
+   for _, p in ipairs(core.get_connected_players()) do fn(p, 1) end
+  end)
+ end,
  flash=function(_, text) flashes[#flashes + 1] = text end,
  hold_movement=function() end, release_movement=function() end,
  get_player_race=function() return player.race end,
@@ -178,7 +186,11 @@ for i, fortress in ipairs({{"pvp_fortress_accord", "human", "Ashenward Bastion"}
 end
 rawset(_G, "grug_mobs", {register_start_socket_role=function() end})
 rawset(_G, "grug_mounts", {dismount=function() dismounts = dismounts + 1 end})
-rawset(_G, "grug_factions", {get_faction=function(p) return p:get_meta():get_string("faction") end,
+-- Like the real one: nil while no faction is chosen.
+rawset(_G, "grug_factions", {get_faction=function(p)
+  local id = p:get_meta():get_string("faction")
+  return id ~= "" and id or nil
+ end,
  display_name=function(id) return "The " .. id:sub(1, 1):upper() .. id:sub(2) end})
 -- The shared refusal line (Round 31, ruling 13) on the fake faction table.
 core.get_us_time = function() return 0 end
@@ -227,6 +239,18 @@ check(known() == "highcourt" and flashes[#flashes] == "Waypoint discovered: High
 local messages = #chat
 step()
 check(#chat == messages and known() == "highcourt", "B discovered once")
+-- Round 81 (audit P4-03): the pass decodes the stored list once per
+-- session, not every second.
+do
+ local reads, real_get = 0, meta.get_string
+ meta.get_string = function(self, k)
+  if k == "grug_home:waypoints" then reads = reads + 1 end
+  return real_get(self, k)
+ end
+ for _ = 1, 5 do step() end
+ check(reads == 0, "B the discovery pass reads the stored list once, not every second")
+ meta.get_string = real_get
+end
 player.pos = vnew(STONE.sunscar.x + 1, 101, 0); step()
 check(known() == "highcourt", "B enemy stone not discovered by proximity")
 player.pos = vnew(STONE.lethariel.x + 9, 101, 0); step()
@@ -339,7 +363,16 @@ local marks = home.known_waypoints(player)
 check(#marks == 4, "B known_waypoints: own start plus three discovered")
 data.faction = "throng"
 check(#home.known_waypoints(player) == 0, "B known_waypoints follows the faction")
-data.faction = "accord"
+-- Round 81 fix: a player without a faction (character creation) has no
+-- network: no markers, no discovery, no error from the per-faction cache.
+data.faction = nil
+local before = known()
+local ok, factionless = pcall(home.known_waypoints, player)
+check(ok and #factionless == 0, "B known_waypoints without a faction: empty, no error")
+local was = player.pos
+player.pos = vnew(STONE.silverleaf.x + 1, 101, 0)
+check(pcall(step) and known() == before, "B no discovery without a faction")
+data.faction, player.pos = "accord", was
 
 -- ---------------------------------------------------------------------------
 -- C: mapgen data
