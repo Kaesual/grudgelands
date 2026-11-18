@@ -25,7 +25,10 @@
 --      attempt limit and its window, stale and duplicate answers, the
 --      refusal texts, can_link;
 --   K  the change callbacks and the link-state callbacks;
---   S  no code in the server log.
+--   S  no code in the server log;
+--   D  the deletion (Round 83): the tombstone, also without an entry; the
+--      binding row leaves the stored list at once, the version stays, no log
+--      line; half_deleted (a tombstone beside a used login).
 
 local repo = arg and arg[1] or "."
 local MOD = repo .. "/mods/PLAYER/grug_accounts"
@@ -106,6 +109,10 @@ _G.core = {
 		world.timers[#world.timers + 1] = {at = clock + delay, func = func}
 	end,
 	get_player_by_name = function(name) return world.players[name] end,
+	-- Round 83: the logins half_deleted reads.
+	get_auth_handler = function()
+		return {get_auth = function(name) return world.auth[name] end}
+	end,
 }
 for _, kind in ipairs({"joinplayer", "leaveplayer", "mods_loaded"}) do
 	core["register_on_" .. kind] = function(func) world.hooks[kind] = func end
@@ -122,7 +129,7 @@ _G.grug_factions = {get_faction = function(player) return player.faction end}
 
 local function boot(storage)
 	world = {storage = storage or new_storage(), logs = {}, timers = {}, hooks = {}, players = {},
-		feed = {}}
+		feed = {}, auth = {}}
 	_G.grug_accounts = nil
 	dofile(MOD .. "/init.lua")
 	grug_accounts.register_reward("cloak:supporter", {kind = "cloak", name = "Supporter Cloak",
@@ -304,6 +311,48 @@ do
 	local first = grug_accounts.character_id(early)
 	world.hooks.joinplayer(early)
 	eq(early.data["grug_accounts:character_id"], first, "I an early read and the join agree")
+end
+
+-- D. The deletion of a character (Round 83) ------------------------------------
+do
+	boot()
+	grug_accounts.apply_list(list(7, {
+		{name = "Rowan", character_id = ID_ROWAN, account_id = "a_1842"},
+		{name = "Elara", character_id = ID_ELARA, account_id = "a_1842"}}, {JAN}))
+	local rowan = join(new_player("Rowan", true, {["grug_accounts:character_id"] = ID_ROWAN}))
+	eq(grug_accounts.index_entry("ROWAN"), ID_ROWAN, "D index_entry, any letter case")
+	leave(rowan)
+	local logged = #world.logs
+	grug_accounts.forget_character("Rowan")
+	eq(world.storage.rows["id:rowan"], grug_accounts.TOMBSTONE, "D the tombstone")
+	eq(grug_accounts.account_of("Rowan"), nil, "D its binding counts no more")
+	local stored = deserialize(world.storage.rows.list)
+	eq(#stored.characters, 1, "D its row left the stored list")
+	eq(stored.characters[1].name, "Elara", "D the other row stays")
+	eq(stored.version, 7, "D the version stays")
+	eq(grug_accounts.accounts_version(), 7, "D also in memory")
+	eq(grug_accounts.account_of("Elara").id, "a_1842", "D another binding still counts")
+	eq(#world.logs, logged, "D no log line")
+	-- Always a tombstone, also without an entry (no binding is adopted).
+	eq(grug_accounts.index_entry("Elara"), nil, "D Elara never joined")
+	grug_accounts.forget_character("Elara")
+	eq(world.storage.rows["id:elara"], "tombstone", "D a tombstone without an entry")
+	local elara = join(new_player("Elara"))
+	check(elara.data["grug_accounts:character_id"] ~= ID_ELARA, "D a new Elara adopts nothing")
+	-- The stored list after a restart lacks the row.
+	boot(world.storage)
+	eq(grug_accounts.account_of("Rowan"), nil, "D across a restart")
+	-- half_deleted: a tombstone beside a login that was used.
+	world.auth.Rowan = {last_login = 1794000000}
+	world.storage.rows["id:rowan"] = "tombstone"
+	eq(grug_accounts.half_deleted("Rowan"), true, "D half deleted")
+	world.auth.Rowan.last_login = -1
+	eq(grug_accounts.half_deleted("Rowan"), false, "D a login never used is a new character's")
+	world.auth.Rowan = nil
+	eq(grug_accounts.half_deleted("Rowan"), false, "D no login: deleted")
+	world.auth.Rowan = {last_login = 1794000000}
+	world.storage.rows["id:rowan"] = ID_ROWAN
+	eq(grug_accounts.half_deleted("Rowan"), false, "D an id: a character")
 end
 
 -- U. Unlink, delete, rename, unknown rewards ----------------------------------

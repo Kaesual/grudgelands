@@ -151,9 +151,18 @@ The user's choices during Round 79 (2026-11-15), on the screenshots:
 - **Online rows** carry the character id, and the account id for a linked
   character; a binding change resends them.
 
+## Character deletion (Round 83)
+
+The website erases a character on a player's request (or an administrator's, for
+a request by e-mail), online or offline, with the bridge command
+`character.delete` ([contract](../technical/web-bridge.md#amendment-2026-11-18-characterdelete)):
+the login and the character go, the name's index entry becomes the tombstone, and
+a new character of the name starts with a new id and adopts nothing. The server
+administrator's character cannot be deleted this way.
+
 ## Later phases
 
-More Supporter content (the money-cannon emote and others), account bans, characters created through a bridge command, character deletion
+More Supporter content (the money-cannon emote and others), account bans, characters created through a bridge command
 and the shared Claim Stone are the
 [concept's](../planning/accounts-concept.md) §4–§5; each comes with its own
 amendment to the [contract](../technical/web-accounts.md#10-outlook-later-amendments).

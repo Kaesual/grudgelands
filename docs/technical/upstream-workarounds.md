@@ -319,6 +319,28 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
 - **What we do:** `grug_expeditions/preparation.lua` deletes `BLOCKS_PER_STEP` mapblocks per server step, one call each.
 - **Fixed when:** `l_delete_area` wraps its loop in one transaction. Then one call over the box may do.
 
+## 10. `record_login` asserts an auth entry a deletion removed
+
+- **Upstream problem:** builtin's `on_joinplayer` hook calls the auth
+  handler's `record_login`, which reads the entry and `assert`s it
+  (`builtin/game/auth.lua:120-126`, the hook at `:203-206`); an error in a
+  join callback ends the server (`src/server.cpp:160-163`). A client checks
+  `on_prejoinplayer` once, at its first packet (`src/network/serverpackethandler.cpp:183-193`),
+  and copies the password verifier then (`:211-222`); its handshake and media
+  download can outlast the removal of its login by `core.remove_player_auth`,
+  after which `ClientReady` emerges a fresh player and the assert fails.
+- **What we do (Round 83):** `grug_bridge/init.lua` wraps
+  `core.builtin_auth_handler.record_login` (builtin's `auth_pass` looks the
+  function up at each call, `auth.lua:174-182`): without an entry it logs a
+  warning and returns. Its join hook (`delete.lua` `D.on_join`) disconnects such
+  a character and removes the record its join created, by the deletion's own
+  sequence. Reached only when `character.delete` removes a login while a client
+  of that name is mid-handshake.
+- **Fixed when:** builtin's `record_login` tolerates a missing entry, or the
+  engine refuses a join whose auth entry is gone. Then the wrapper goes; the
+  join hook stays while it is the one place such a record is removed.
+- **Affected versions:** 5.18.0 (`e8f12bf1b`).
+
 ## Checked and not listed
 
 - `grug_mobs/door_click.lua` (doors before NPCs, 0.49.1): the engine's

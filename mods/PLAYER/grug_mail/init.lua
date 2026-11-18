@@ -10,6 +10,9 @@ local path = core.get_modpath(core.get_current_modname())
 grug_mail.model = dofile(path .. "/model.lua")
 grug_mail.store = dofile(path .. "/store.lua")
 dofile(path .. "/api.lua")
+-- Round 83 ruling 10: every list loses its expired entries at the start.
+core.log("action", ("[grug_mail] pruned the expired mail of %d lists at the start"):format(
+	grug_mail.store.prune_all()))
 dofile(path .. "/window.lua")
 dofile(path .. "/admin.lua")
 -- The starter quest and the game's own letters (lane QUEST).

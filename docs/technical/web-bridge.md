@@ -229,6 +229,7 @@ down.
 | `action.revoke_priv` | same | `name`, `priv` | `core.set_player_privs` |
 | `account.link_answer` **(accounts)** | `accounts` | `request_id`, `name`, `outcome`, `account_name` or `reason` | `grug_accounts.link_answer` ([web-accounts.md](web-accounts.md) §5.4) |
 | `account.set_password` **(accounts)** | `accounts.password` | `name`, `account_id`, `entry` | `core.set_player_password` after the auth entry, the binding and the entry's form are checked ([web-accounts.md](web-accounts.md) §6b) |
+| `character.delete` (0.83.0) | `characters.delete` | `name`, optional `character_id`, `admin` | erases the character, online or offline, and answers once it is done ([amendment](#amendment-2026-11-18-characterdelete)) |
 
 - Chat and kick text from the website is untrusted: the mod removes colour escapes
   and control characters, and a line break becomes a space. An empty `text` is
@@ -308,3 +309,77 @@ This file lists what it adds, marked **(accounts)**: the capabilities `accounts`
 online rows' `character_id` and `account_id`, the response's `accounts`, the
 `resync` value `"reward_catalog"`, the three `account.link_*` events and the
 commands `account.link_answer` and `account.set_password`. Protocol stays `1`.
+
+## Amendment 2026-11-18: character.delete
+
+Game 0.83.0 (Round 83). The website erases a character on a player's request
+(GDPR Art. 17), online or offline. Protocol stays `1`; everything above holds.
+
+- **Capability** `characters.delete`, at the end of `capabilities`.
+- **Type** `character.delete`, args:
+
+  | Arg | Value |
+  | --- | --- |
+  | `name` | the character's name in the game's spelling (`[A-Za-z0-9_-]`, 1 to 20 characters); another letter case is no such character |
+  | `character_id` | optional, 32 lower-case hex digits: the command acts only on a character with exactly this id (an online character's own, else the game's index entry) |
+  | `admin` | the acting website account's name, at most 64 characters, for the log line |
+
+  The command must carry `expires_at` (`invalid_args` without it): the website
+  sends at most 60 seconds.
+- **The answer comes later.** The game checks the command at once and then
+  answers when the deletion is done: about 6 seconds offline (one mod-storage
+  commit), a second or two more online, plus the next request. Until then a
+  repeated delivery gets nothing, as for any running command; afterwards the
+  stored result. The result is sent exactly once per boot. A deletion running
+  when the server stops is lost unanswered (the website marks it `unknown` at
+  the next boot); a retry finishes it or answers `unknown_target`.
+- **Codes:**
+
+  | Code | When | `message` |
+  | --- | --- | --- |
+  | `ok` | deleted; the name's index entry is the tombstone | `<name> (character <id>) deleted by admin <admin>.`, or `<name> (no character id) deleted by admin <admin>.` for a character that never joined since 0.79.0 |
+  | `unknown_target` | no such character (no login and no character id in the index; another letter case), or `character_id` does not match. Not after a deletion that stopped after its clears (the tombstone beside the login): the retry finishes it with the `character_id` it carries, which the `ok` line then names | `There is no character called <name>.` / `<name> has another character id.` |
+  | `refused` | the server administrator's character (the name in the server setting `name`, any letter case: the engine gives that name every privilege, so a new character of the name would inherit them) | `<name> is the server administrator's character.` |
+  | `refused` | a deletion of the name is already running | `<name> is already being deleted.` |
+  | `expired` | at arrival: at most `max(10, server_map_save_interval + 4.5)` seconds (10 by default) before `expires_at` | `The command expires too soon for a deletion.` |
+  | `expired` | an online character was disconnected but was not gone from the engine before that margin: nothing deleted | `<name> was not deleted: the command expired first.` |
+  | `expired` | the clears ran but the removal could not finish before `expires_at` (the character came back between the steps and was not gone again in time, or the server lagged): the login remains, refused at login until a retry finishes it | `<name> was not deleted completely: the command expired first. Send it again.` |
+  | `invalid_args` | `name`, `character_id`, `admin` or `expires_at` malformed or missing | `Invalid <field>.` |
+  | `error` | a step failed; the server log has the detail. The name stays refused at login while a tombstone stands beside its login; a retry finishes it | `The deletion failed; see the server log.` |
+
+  A character still in character creation counts like any other. Nothing
+  destructive runs after `expires_at`.
+- **Online:** the game disconnects the character with
+  `This character was deleted on the website.` (through `core.disconnect_player`,
+  so without `Kicked: `), waits until the engine has saved and dropped the player,
+  and only then deletes. While a deletion runs, the name is refused at login (any
+  letter case) with the same text.
+- **The log line:** exactly one `action` line per deletion, the bridge's
+  command line at the answer:
+  `[grug_bridge] command <id> (character.delete): ok <name> (character <character id>) deleted by admin <admin>.`
+  Nothing else in the deletion logs the name with more detail (the engine logs
+  its own leave line for an online character).
+- **What goes:** the engine's auth entry (name, password verifier, privileges,
+  last login) and player record (meta and inventories); the index entry becomes
+  the tombstone, always, and the game's copy of the account list drops the
+  character's row at once (the version stays); the character's mailbox (its
+  attachments with it), sent copies, messages to the admin and its row in the
+  recipient index; its clan and party membership (a leader's lead passes on by the
+  group's rule, a group of two dissolves; the other members read `<name> is no
+  longer a member.`); every housing claim it owns is released and its Claim Stone
+  removed at once (containers and blocks inside stay), its rights in other claims,
+  its map-reset belongings; a pending "claim lost" notice; queued achievement
+  grants; an Expedition it owns alone ends.
+- **What stays:** letters it wrote in other mailboxes, other players' sent copies
+  addressed to it and their reports of its letters (the bare name as text; all
+  expire after 30 days, and every list is pruned at each server start); admin
+  fields naming it if it was an admin (closed tickets, announcements); other
+  characters' party favourites; the website's ban list and an engine IP ban; a
+  copy of unreadable clan storage kept for an administrator (`clans_unreadable`,
+  only after the clan store was corrupt; the user, 2026-11-18); in
+  the world, the owner name of locked chests, steel doors and trapdoors and the
+  personal furnace slots of public furnaces (a new character of the same name gets
+  access to them), crop marks, written books and sign texts; the server log.
+  Deleted rows may survive in database free pages until a vacuum.
+- **A new character of the name** gets a new character id and adopts nothing:
+  no binding counts for it ([web-accounts.md](web-accounts.md) §2).

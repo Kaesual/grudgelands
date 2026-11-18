@@ -367,6 +367,17 @@ function grug_clans.leave(player)
 	emit(remove_member(name, name .. " left the clan."), "membership")
 	return true, "Left the clan."
 end
+-- The deletion of a character (Round 83 ruling 19; grug_core/character_delete.lua):
+-- its row goes by the one path above, with the clan's successor and dissolve
+-- rules (ruling 2). Offline, after its leave hook.
+function grug_clans.forget_character(name)
+	local changed = clear_sent(name, clear_incoming(name))
+	last_send[name] = nil
+	if membership[name] then
+		emit(remove_member(name, name .. " is no longer a member."), "membership")
+	end
+	emit(changed, "invitation")
+end
 
 -- The clan and both records when `viewer` and `target` are two members of
 -- one clan, else nil.

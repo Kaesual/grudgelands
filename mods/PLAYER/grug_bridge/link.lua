@@ -74,7 +74,8 @@ Link.__index = Link
 -- opts: boot, version, capabilities (list); encode(table) -> JSON;
 -- decode(JSON) -> table or nil; now() -> Unix seconds; log(level, text);
 -- clean(text, max) -> one line of at most `max` characters; online_rows() ->
--- list; banlist_version() -> number; run_command(command) -> code, message;
+-- list; banlist_version() -> number; run_command(command, defer) -> code,
+-- message (or, after calling defer(), anything: Link:command);
 -- on_banlist(banlist); on_resync(name). For accounts (web-accounts.md §5),
 -- optional: accounts_version() -> number; catalog_rows() -> list;
 -- on_accounts(list).
@@ -204,6 +205,13 @@ end
 -- At most once: the id is written before anything acts, and an id seen before
 -- never acts again. Its stored result goes out again unless it is still
 -- queued; nothing goes out while it is running.
+--
+-- A command that answers later (Round 83: character.delete) calls the
+-- `defer` it is handed, before it schedules anything: defer() returns
+-- done(code, message), which logs and keeps the result exactly once (a
+-- second call is ignored and logged); until then the entry has no result,
+-- so a repeated delivery stays silent. What run_command returns after
+-- defer() is ignored; an error it raises is the result.
 function Link:command(command)
 	if type(command) ~= "table" or type(command.id) ~= "string" or command.id == "" then
 		self.opts.log("warning", "ignored a command without an id")
@@ -216,25 +224,35 @@ function Link:command(command)
 	end
 	local entry = {}
 	self.ledger[command.id] = entry
-	local code, message
-	if type(command.expires_at) == "number" and self.opts.now() > command.expires_at then
-		code, message = "expired", "The command expired before it reached the game."
-	else
-		local ok, a, b = pcall(self.opts.run_command, command)
-		if ok then
-			code, message = a, b
-		else
-			self.opts.log("error", ("command %s (%s) raised: %s"):format(command.id,
-				tostring(command.type), tostring(a)))
-			code, message = "error", "The action raised an error; see the server log."
+	local function done(code, message)
+		if entry.json then
+			self.opts.log("warning", ("command %s (%s) answered twice; the second %s is ignored"):format(
+				command.id, tostring(command.type), tostring(code)))
+			return false
 		end
+		self.opts.log("action", ("command %s (%s): %s %s"):format(command.id,
+			tostring(command.type), tostring(code), tostring(message or "")))
+		entry.json = self.opts.encode({id = command.id,
+			status = code == "ok" and "done" or "failed", code = code,
+			message = self.opts.clean(message or "", L.MESSAGE_MAX)})
+		self:keep_result(entry)
+		return true
 	end
-	self.opts.log("action", ("command %s (%s): %s %s"):format(command.id,
-		tostring(command.type), tostring(code), tostring(message or "")))
-	entry.json = self.opts.encode({id = command.id,
-		status = code == "ok" and "done" or "failed", code = code,
-		message = self.opts.clean(message or "", L.MESSAGE_MAX)})
-	self:keep_result(entry)
+	if type(command.expires_at) == "number" and self.opts.now() > command.expires_at then
+		return done("expired", "The command expired before it reached the game.")
+	end
+	local deferred = false
+	local function defer()
+		deferred = true
+		return done
+	end
+	local ok, a, b = pcall(self.opts.run_command, command, defer)
+	if not ok then
+		self.opts.log("error", ("command %s (%s) raised: %s"):format(command.id,
+			tostring(command.type), tostring(a)))
+		return done("error", "The action raised an error; see the server log.")
+	end
+	if not deferred then done(a, b) end
 end
 
 function Link:accept(reply, flight)

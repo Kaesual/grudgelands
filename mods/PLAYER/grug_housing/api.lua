@@ -159,10 +159,11 @@ end
 
 -- fn(claim, event) runs after every change; event is one of "placed",
 -- "activated", "fuel", "permission", "picked_up", "destroyed", "removed",
--- "draft_expired", "expired". "picked_up", "destroyed", "removed" (an admin,
--- admin.lua) and "draft_expired" pass the removed claim table. "expired" and
--- "draft_expired" come from a periodic check every few seconds (stone.lua);
--- "expired" once per burnt-out paid_until.
+-- "deleted", "draft_expired", "expired". "picked_up", "destroyed", "removed"
+-- (an admin, admin.lua), "deleted" (the owner's deletion, Round 83; not a
+-- loss the owner hears of) and "draft_expired" pass the removed claim table.
+-- "expired" and "draft_expired" come from a periodic check every few seconds
+-- (stone.lua); "expired" once per burnt-out paid_until.
 local claim_changed_callbacks = {}
 
 function grug_housing.register_on_claim_changed(fn)

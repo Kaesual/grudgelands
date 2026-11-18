@@ -225,6 +225,37 @@ function grug_accounts.accounts_version()
 end
 
 --
+-- The deletion of a character (Round 83, docs/technical/web-bridge.md
+-- "character.delete"): grug_bridge's deletion reads the index and runs the
+-- clear through grug_core.character_delete.
+--
+
+grug_accounts.TOMBSTONE = model.TOMBSTONE
+
+-- nil, a character id or grug_accounts.TOMBSTONE (web-accounts.md §2).
+function grug_accounts.index_entry(name)
+	return model.index_entry(name)
+end
+
+function grug_accounts.forget_character(name)
+	model.forget(name)
+	ids[name], own_success[name] = nil, nil
+end
+
+-- A tombstone beside a login that has been used is a deletion that stopped
+-- before the engine removed the login (a crash, an error): grug_bridge's
+-- pre-join hook keeps the character out until the website's retry finishes
+-- it (web-accounts.md §2). A
+-- new character of the name never meets this: the engine creates its login
+-- with last_login -1 at the first connection, and its join replaces the
+-- tombstone.
+function grug_accounts.half_deleted(name)
+	if model.index_entry(name) ~= model.TOMBSTONE then return false end
+	local auth = core.get_auth_handler().get_auth(name)
+	return auth ~= nil and tonumber(auth.last_login) ~= nil and auth.last_login ~= -1
+end
+
+--
 -- Hooks
 --
 

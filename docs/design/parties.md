@@ -64,7 +64,9 @@ Invitation rules:
   at least two members remain, the earliest-joined remaining member becomes
   leader, regardless of online status. This is one deterministic leave rule,
   without a mandatory successor-selection dialog. Logout never triggers it.
-  Leaving a two-member party dissolves it instead.
+  Leaving a two-member party dissolves it instead. A character deleted on the
+  website (Round 83) leaves by the same rule; the online members read
+  `[Party] X is no longer a member.`
 - No automatic party cleanup for inactivity, region change, death or logout.
 - Party HUD rows are not click targets, and party membership does not widen
   the spell ally and targeting rules.

@@ -272,6 +272,12 @@ core.register_chatcommand("achievement", {
 	end,
 })
 
+-- The deletion of a character (Round 83; grug_core/character_delete.lua): the
+-- grants and revokes waiting for its next join go.
+function grug_achievements.forget_character(name)
+	storage:set_string(R.KEY_QUEUE .. name, "")
+end
+
 core.register_on_joinplayer(function(player)
 	local meta = player:get_meta()
 	-- Grants and revokes queued while the player was offline, once; an id

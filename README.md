@@ -98,15 +98,14 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.82.0** makes world generation faster: new land is ready sooner and a server restart
-is quicker, while the world comes out exactly as before. 0.81.0 fixed what a code audit
-found (cooldowns and mana survive a relog, bucket water stays off roads and out of
-villages). Since 0.79.0 you can link your characters to an account on the realm's website
-(grudgelands.com/play); the account's rewards, such as the **Cheer** emote and the
-Supporter and donor cloaks, reach every linked character. Accounts are optional
-([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)). Compatible:
-existing worlds play on; a world made in full preparation mode needs a map reset (see the
-changelog).
+**0.83.0** lets you delete a character from the realm's website: the game erases it, online
+or offline, and a new character of the same name starts fresh. 0.82.0 made world generation
+faster while the world comes out exactly as before. Since 0.79.0 you can link your characters
+to an account on the realm's website (grudgelands.com/play); the account's rewards, such as
+the **Cheer** emote and the Supporter and donor cloaks, reach every linked character. Accounts
+are optional ([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)).
+Compatible: existing worlds play on (a world made in full preparation mode needs a map reset
+once since 0.82.0, see the changelog).
 
 Read the [changelog](CHANGELOG.md) for every earlier version and the upgrade
 requirements of each.

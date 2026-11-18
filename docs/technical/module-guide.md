@@ -30,6 +30,25 @@ and code comments cite them) and points to the section's file.
 | Shared core (`grug_core`) | no file of its own | [Shared core](#shared-core-grug_core) |
 
 
+## Rules for every mod
+
+- **A store keyed by a character takes part in its deletion** (Round 83, the
+  bridge command `character.delete`, [platform](modules/platform.md#web-bridge)).
+  Mod storage, a file or memory that outlives a logout and holds a character's
+  data, keyed by its name or not, gets its clear in the same change: the mod
+  defines `<its table>.forget_character(name)` and adds its name to
+  `grug_core.character_delete.MODS`, at a place that keeps the order the
+  registry's header names (`mods/CORE/grug_core/character_delete.lua`). The
+  clear works for an offline character, is idempotent and cheap when nothing is
+  stored, keeps what other characters hold about the name as their data, and
+  applies the mod's own rules to a shared record (a successor, a dissolve).
+  Player meta needs none: it goes with the engine's player record. A listed mod
+  without its clear stops the server's start. **The reviewer rejects a new
+  per-character store without its clear.**
+- **No login by accident:** code never calls `core.set_player_privs` or
+  `core.set_player_password` for a name without checking its auth entry first:
+  both create a login for a missing name, a deleted character's included.
+
 ## Shared core (grug_core)
 
 `grug_core` is the lowest gameplay mod: shared constants and helpers that the
@@ -61,6 +80,9 @@ its topic lives:
 - the world version record, start guard, migration runner and map reset:
   [world version and migrations](modules/platform.md#world-version-and-migrations)
   and the [upgrade contract](upgrade-contract.md);
+- the registry of the per-character clears a deletion runs
+  (`character_delete.lua`): the [rule](#rules-for-every-mod) and
+  [the deletion](modules/platform.md#web-bridge);
 - world protection and the water and lava guards: the design rules R1 and R1b
   in [world.md](../design/world.md); the settlement service windows'
   permission check (`npc_window.lua`): the mod map's row.

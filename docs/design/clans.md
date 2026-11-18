@@ -52,7 +52,8 @@ row style; the clan list has Online and Offline tabs with pages of seven
 
 ## Membership
 
-- **Succession:** when the leader leaves, is kicked or changes faction, the
+- **Succession:** when the leader leaves, is kicked, changes faction or is
+  deleted on the website (Round 83), the
   first captain in join order leads; without a captain, the first member in
   join order. Offline leaders keep the lead indefinitely, as in a party;
   logout never moves it.
@@ -108,6 +109,7 @@ clan, also after the inviter's earlier clan dissolved.
 - **Membership lines**, in the same green to the online members, the
   leaving player included: "X joined the clan.", "X left the clan.", "X was
   removed from the clan by Y.", "X left the clan (changed faction).", "X is
+  no longer a member." (a character deleted on the website, Round 83), "X is
   now a captain.", "X is now a member.", "X now leads the clan." (a hand-over
   or a succession) and "The clan has been dissolved." (to the last two).
 

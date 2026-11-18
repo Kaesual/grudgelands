@@ -24,6 +24,23 @@
 --      account.set_password (the entry's form with the cases of
 --      tools/web_accounts/luanti_password.py's self-test, the auth entry, the
 --      binding, the results, the feed line, a log line without the entry).
+--   C (Round 83) also a command that answers later: silent while it runs,
+--      one result, a second done ignored, expired, an error before or after
+--      its defer.
+--   I. character.delete (Round 83): the capability, the arguments, no such
+--      character (another letter case, a wrong id), the refusals (the server
+--      admin's character, a deletion running), too little time; online end
+--      to end (the disconnect text, the pre-join block, a repeated delivery
+--      silent, nothing cleared before the engine is done, the tombstone, the
+--      binding row, the mailbox, one commit wait, the removal, the answer,
+--      one log line with name, id and admin); offline without an id; an index
+--      id without a login; expired while still online; back in the game
+--      between the steps; a failing clear and remove_player answering 2
+--      (error, the half-deleted pre-join refusal, the retry); the
+--      record_login guard and the removal of a join without a login.
+--   J. grug_mail (Round 83): every list pruned at the start; a deleted
+--      character's box, sent list, tickets and index row go, others' letters
+--      from it and reports of them stay.
 --
 -- Usage (repo root): luajit tools/r691_bridge/portable_test.lua [REPO]
 
@@ -173,6 +190,14 @@ local function new_storage(rows)
 	function storage:set_string(key, value) rows[key] = value end
 	function storage:get_int(key) return tonumber(rows[key]) or 0 end
 	function storage:set_int(key, value) rows[key] = value end
+	function storage:get_keys()
+		local keys = {}
+		for key, value in pairs(rows) do
+			if value ~= "" then keys[#keys + 1] = key end
+		end
+		table.sort(keys)
+		return keys
+	end
 	return storage
 end
 
@@ -180,7 +205,8 @@ local world -- what one setup changed
 local function fresh_world()
 	world = {players = {}, known = {}, privs = {}, logs = {}, chat = {}, kicked = {},
 		disconnected = {}, feed = {}, hooks = {}, after = {}, storage = {},
-		settings = {}, added = {}, http = nil, stores = {}, auth = {}, passwords = {}}
+		settings = {}, added = {}, http = nil, stores = {}, auth = {}, passwords = {},
+		removed = {}, records = {}}
 end
 fresh_world()
 
@@ -252,7 +278,33 @@ _G.core = {
 	request_http_api = function() return world.http end,
 	after = function(delay, func) world.after[#world.after + 1] = {delay, func} end,
 	get_auth_handler = function()
-		return {get_auth = function(name) return world.auth[name] end}
+		return {get_auth = function(name) return world.auth[name] end,
+			iterate = function()
+				local names = {}
+				for name in pairs(world.auth) do names[name] = true end
+				return pairs(names)
+			end}
+	end,
+	-- Round 83: the engine's side of a deletion.
+	builtin_auth_handler = {
+		get_auth = function(name) return world.auth[name] end,
+		record_login = function(name)
+			assert(world.auth[name])
+			world.auth[name].last_login = clock
+		end,
+	},
+	objects_by_guid = {},
+	remove_player = function(name)
+		world.removed[#world.removed + 1] = name
+		if world.still_connected or world.players[name] then return 2 end
+		if not world.records[name] then return 1 end
+		world.records[name] = nil
+		return 0
+	end,
+	remove_player_auth = function(name)
+		local had = world.auth[name] ~= nil
+		world.auth[name] = nil
+		return had
 	end,
 	set_player_password = function(name, entry)
 		world.passwords[#world.passwords + 1] = {name, entry}
@@ -666,6 +718,48 @@ do
 	local unknown = {C.run({type = "no.such", args = {}})}
 	eq(unknown[1], "unsupported", "C an unknown type")
 	eq(C.run({type = "kick"}), "invalid_args", "C args must be a table")
+
+	-- Round 83: a command that answers later. Silent while it runs, one
+	-- result at done, a second done ignored, an error before or after defer.
+	local later
+	local deferring = new_link({run_command = function(command, defer)
+		if command.type == "boom" then
+			if command.args and command.args.after then defer() end
+			error("kaboom")
+		end
+		later = defer()
+		return "ok", "ignored"
+	end})
+	deferring:command({id = "d1", type = "x", expires_at = clock + 60})
+	sent = decode(deferring:request())
+	eq(#sent.results, 0, "C deferred: no result while it runs")
+	deferring:finish(reply({commands = {{id = "d1", type = "x"}}}))
+	sent = decode(deferring:request())
+	eq(#sent.results, 0, "C deferred: a repeated delivery stays silent")
+	deferring:finish(reply({}))
+	local logged = #world.logs
+	eq(later("ok", "done later"), true, "C deferred: done answers")
+	eq(#world.logs, logged + 1, "C deferred: one log line at the answer")
+	check(world.logs[#world.logs][2]:find("command d1 (x): ok done later", 1, true), "C deferred: the line")
+	eq(later("error", "again"), false, "C deferred: a second done is ignored")
+	eq(world.logs[#world.logs][1], "warning", "C deferred: and logged")
+	sent = decode(deferring:request())
+	eq(#sent.results, 1, "C deferred: one result")
+	eq(sent.results[1].message, "done later", "C deferred: the first answer")
+	deferring:finish(reply({commands = {{id = "d1", type = "x"}}}))
+	sent = decode(deferring:request())
+	eq(sent.results[1].message, "done later", "C deferred: repeated after the answer, the stored result")
+	deferring:finish(reply({}))
+	deferring:command({id = "d2", type = "x", expires_at = clock - 1})
+	sent = decode(deferring:request())
+	eq(sent.results[1].code, "expired", "C deferred: an expired one never runs")
+	deferring:finish(reply({}))
+	deferring:command({id = "d3", type = "boom"})
+	deferring:command({id = "d4", type = "boom", args = {after = true}})
+	sent = decode(deferring:request())
+	eq(#sent.results, 2, "C deferred: an error before or after defer is a result")
+	eq(sent.results[1].code .. sent.results[2].code, "errorerror", "C deferred: error")
+	deferring:finish(reply({}))
 end
 
 -- D. The command types ------------------------------------------------------
@@ -1090,8 +1184,9 @@ do
 	world.after[1][2]()
 	local sent = decode(fetches[1].request.data)
 	local capabilities = table.concat(sent.capabilities, ",")
-	check(capabilities:find(",accounts,accounts.password$"), "H the capabilities")
-	eq(#sent.capabilities, 12, "H twelve capabilities")
+	-- Round 83 adds characters.delete at the end (section I).
+	check(capabilities:find(",accounts,accounts.password,characters.delete$"), "H the capabilities")
+	eq(#sent.capabilities, 13, "H thirteen capabilities")
 	eq(sent.accounts_version, 0, "H no list yet")
 	eq(sent.reward_catalog[1].id, "cloak:supporter", "H the registered catalogue")
 	eq(grug_accounts.enabled(), false, "H the bridge alone does not enable accounts")
@@ -1258,6 +1353,331 @@ do
 		check(not row[2]:find(salt, 1, true) and not row[2]:find(verifier:sub(1, 20), 1, true),
 			"H no entry in the log")
 	end
+end
+
+-- I. character.delete (Round 83) ----------------------------------------------
+-- The real commands.lua, delete.lua and init.lua's guards; the real registry
+-- (grug_core/character_delete.lua) with the real grug_accounts and grug_mail
+-- clears and a counting stand-in for the other mods.
+do
+	local fetches = {}
+	local http = {fetch = function(request, callback) fetches[#fetches + 1] = callback end}
+	boot(HTTP_KEYS, http)
+	world.after = {}
+	world.settings.name = "Owner"
+	world.settings.server_map_save_interval = "5.3"
+	local registry = dofile(repo .. "/mods/CORE/grug_core/character_delete.lua")
+	registry.MODS = {"grug_accounts", "grug_mail", "r83_store"}
+	grug_core.character_delete = registry
+	local cleared, failing = {}, false
+	_G.r83_store = {forget_character = function(name)
+		cleared[#cleared + 1] = name
+		if failing then error("store broken") end
+	end}
+	eq(#registry.missing(), 0, "I every listed mod has its clear")
+	_G.r83_store.forget_character, failing = nil, false
+	eq(registry.missing()[1], "r83_store", "I a missing clear is named")
+	_G.r83_store.forget_character = function(name)
+		cleared[#cleared + 1] = name
+		if failing then error("store broken") end
+	end
+	-- The instance init.lua loaded: its pre-join hook shares the deletions.
+	local C = grug_bridge.commands
+	local D = C.delete
+	local guids = core.objects_by_guid
+	local accounts = world.stores.grug_accounts
+	local mail = world.stores.grug_mail
+	local prejoin = world.hooks.register_on_prejoinplayer[2]
+	local deleted_login = world.hooks.register_on_joinplayer[2]
+
+	-- Runs the deferred jobs in order, each advancing the clock by its delay.
+	local function run_jobs(limit)
+		local ran = 0
+		while #world.after > 0 and ran < (limit or 1000) do
+			local job = table.remove(world.after, 1)
+			clock = clock + job[1]
+			job[2]()
+			ran = ran + 1
+		end
+		return ran
+	end
+	local link = new_link({run_command = C.run})
+	local function results()
+		local body = decode(link:request())
+		link:finish(reply({}))
+		return body.results
+	end
+	local function send(id, args, expires)
+		link:command({id = id, type = "character.delete", args = args,
+			expires_at = expires or clock + 60})
+	end
+	local function code_of(args, expires)
+		return (C.run({type = "character.delete", args = args, expires_at = expires or clock + 60}))
+	end
+	local function character(name, online)
+		world.auth[name] = {password = "#1#x#y", last_login = clock}
+		world.records[name] = true
+		world.known[name] = true
+		local player = new_player(name)
+		local id = grug_accounts.character_id(player)
+		if not online then world.players[name] = nil end
+		return player, id
+	end
+
+	-- The capability and the arguments.
+	eq(C.CAPABILITIES[#C.CAPABILITIES], "characters.delete", "I the capability")
+	eq(code_of({admin = "jan"}), "invalid_args", "I no name")
+	eq(code_of({name = "Ro wan", admin = "jan"}), "invalid_args", "I a name with a blank")
+	eq(code_of({name = ("x"):rep(21), admin = "jan"}), "invalid_args", "I a name over 20")
+	eq(code_of({name = "Rowan", admin = "jan", character_id = ("A"):rep(32)}), "invalid_args",
+		"I an upper-case id")
+	eq(code_of({name = "Rowan", admin = "jan", character_id = 5}), "invalid_args", "I an id no text")
+	eq(code_of({name = "Rowan"}), "invalid_args", "I no admin")
+	eq((C.run({type = "character.delete", args = {name = "Rowan", admin = "jan"}})), "invalid_args",
+		"I no expires_at")
+
+	-- No such character; another letter case; a wrong id; the refusals.
+	eq(code_of({name = "Nobody", admin = "jan"}), "unknown_target", "I no login, no index")
+	local rowan, rowan_id = character("Rowan", true)
+	eq(code_of({name = "rowan", admin = "jan"}), "unknown_target", "I another letter case")
+	local code, message = C.run({type = "character.delete", expires_at = clock + 60,
+		args = {name = "Rowan", admin = "jan", character_id = ("f"):rep(32)}})
+	eq(code, "unknown_target", "I a wrong character id")
+	eq(message, "Rowan has another character id.", "I its message")
+	character("Owner")
+	code, message = C.run({type = "character.delete", expires_at = clock + 60,
+		args = {name = "owner", admin = "jan"}})
+	eq(code, "unknown_target", "I the admin's name in another case is no character")
+	code, message = C.run({type = "character.delete", expires_at = clock + 60,
+		args = {name = "Owner", admin = "jan"}})
+	eq(code .. " " .. message, "refused Owner is the server administrator's character.",
+		"I the server admin's character")
+	eq(code_of({name = "Rowan", admin = "jan"}, clock + 9), "expired", "I too little time left")
+	eq(#world.after + #world.disconnected + #cleared, 0, "I nothing happened so far")
+
+	-- Online, end to end through the ledger.
+	grug_accounts.apply_list({version = 3, characters = {
+		{name = "Rowan", character_id = rowan_id, account_id = "a_1842"},
+		{name = "Kept", character_id = ("b"):rep(32), account_id = "a_1842"}},
+		accounts = {{id = "a_1842", name = "jan", rewards = {}}}})
+	grug_mail.send_system("Rowan", "admin", "Server Admin", "Hi", "Text")
+	check(mail:get_string("box:Rowan") ~= "", "I a mailbox to clear")
+	guids.Rowan = rowan
+	local logs = #world.logs
+	send("del1", {name = "Rowan", admin = "jan", character_id = rowan_id})
+	eq(#results(), 0, "I no answer yet")
+	eq(world.disconnected[1][1] .. ": " .. world.disconnected[1][2],
+		"Rowan: This character was deleted on the website.", "I disconnected with the text")
+	eq(#world.kicked, 0, "I not through kick_player")
+	eq(prejoin("ROWAN"), D.TEXT, "I no login during the deletion, any letter case")
+	eq(prejoin("Kept"), nil, "I others join")
+	code, message = C.run({type = "character.delete", expires_at = clock + 60,
+		args = {name = "Rowan", admin = "jan"}})
+	eq(code .. " " .. message, "refused Rowan is already being deleted.", "I a second deletion at once")
+	link:command({id = "del1", type = "character.delete"})
+	run_jobs(5)
+	eq(#cleared, 0, "I online: nothing cleared")
+	world.players.Rowan = nil -- left; the engine has not saved it yet
+	run_jobs(5)
+	eq(#cleared, 0, "I left but not saved: nothing cleared")
+	eq(#results(), 0, "I a repeated delivery stays silent")
+	guids.Rowan = nil
+	run_jobs(1)
+	eq(#cleared, 1, "I gone: the clears ran")
+	eq(accounts:get_string("id:rowan"), "tombstone", "I the tombstone")
+	eq(mail:get_string("box:Rowan"), "", "I the mailbox")
+	eq(grug_accounts.account_of("Kept").id, "a_1842", "I another binding stays")
+	check(not accounts:get_string("list"):find("Rowan", 1, true), "I the binding row went at once")
+	eq(world.auth.Rowan ~= nil, true, "I the login stays until the commit")
+	eq(#world.after, 1, "I one wait")
+	check(math.abs(world.after[1][1] - 5.8) < 1e-9, "I one mod-storage commit and a step")
+	run_jobs()
+	eq(#cleared, 2, "I the clears again")
+	eq(world.auth.Rowan, nil, "I the login went")
+	eq(world.records.Rowan, nil, "I the player record went")
+	local answer = results()
+	eq(#answer, 1, "I one answer")
+	eq(answer[1].code, "ok", "I ok")
+	eq(answer[1].message, "Rowan (character " .. rowan_id .. ") deleted by admin jan.", "I the message")
+	local named = 0
+	for index = logs + 1, #world.logs do
+		local text = world.logs[index][2]
+		if text:find("Rowan", 1, true) then
+			named = named + 1
+			eq(world.logs[index][1], "action", "I the log line is an action line")
+			check(text:find(rowan_id, 1, true) and text:find("jan", 1, true) and
+				not text:find("a_1842", 1, true), "I name, id and admin, no account")
+		end
+	end
+	eq(named, 1, "I one log line names the character")
+	eq(prejoin("Rowan"), nil, "I the name is free again")
+	eq(code_of({name = "Rowan", admin = "jan"}), "unknown_target", "I deleted: unknown_target")
+	eq(code_of({name = "Rowan", admin = "jan", character_id = rowan_id}), "unknown_target",
+		"I deleted: unknown_target with the id")
+
+	-- Offline, without an id and never indexed: the tombstone all the same.
+	world.auth.Cara, world.records.Cara = {password = "#1#x#y", last_login = clock}, true
+	cleared = {}
+	send("del2", {name = "Cara", admin = "jan"})
+	run_jobs()
+	answer = results()
+	eq(answer[1].message, "Cara (no character id) deleted by admin jan.", "I offline without an id")
+	eq(accounts:get_string("id:cara"), "tombstone", "I the tombstone without an entry")
+	eq(#cleared, 2, "I cleared twice")
+
+	-- A login gone but an index id left (a stopped deletion): found, finished.
+	accounts:set_string("id:hal", ("c"):rep(32))
+	send("del3", {name = "Hal", admin = "jan", character_id = ("c"):rep(32)})
+	run_jobs()
+	eq(results()[1].code, "ok", "I an index id without a login is finished")
+
+	-- Not gone before the deadline: expired, disconnected, nothing cleared.
+	local dora = character("Dora", true)
+	cleared = {}
+	send("del4", {name = "Dora", admin = "jan"}, clock + D.margin() + 3)
+	run_jobs()
+	answer = results()
+	eq(answer[1].code, "expired", "I not gone in time: expired")
+	eq(answer[1].message, "Dora was not deleted: the command expired first.", "I its message")
+	eq(#cleared, 0, "I nothing cleared")
+	check(world.auth.Dora and world.players.Dora == dora, "I nothing deleted")
+	eq(prejoin("Dora"), nil, "I the block is off")
+
+	-- Back in the game between the clears and the removal: once more.
+	character("Ella")
+	cleared = {}
+	local disconnects = #world.disconnected
+	send("del5", {name = "Ella", admin = "jan"})
+	run_jobs(1)
+	eq(#cleared, 1, "I Ella cleared")
+	world.players.Ella = new_player("Ella")
+	run_jobs(1)
+	eq(#world.disconnected, disconnects + 1, "I disconnected again")
+	world.players.Ella = nil
+	run_jobs()
+	eq(results()[1].code, "ok", "I then deleted")
+	eq(#cleared, 3, "I cleared again before the removal")
+
+	-- An error in a clear, and an engine that still holds the player.
+	local _, fay_id = character("Fay")
+	failing = true
+	send("del6", {name = "Fay", admin = "jan"})
+	run_jobs()
+	failing = false
+	answer = results()
+	eq(answer[1].code .. " " .. answer[1].message, "error The deletion failed; see the server log.",
+		"I a failing clear answers error")
+	eq(prejoin("Fay"), D.TEXT, "I its tombstone beside a used login keeps it out")
+	world.auth.Fay.last_login = -1
+	eq(prejoin("Fay"), nil, "I a login never used is a new character's")
+	world.auth.Fay.last_login = clock
+	world.still_connected = true
+	send("del7", {name = "Fay", admin = "jan"})
+	run_jobs()
+	world.still_connected = nil
+	eq(results()[1].code, "error", "I remove_player answering 2 is an error")
+	-- The website's retry carries the id; the game's index holds the
+	-- tombstone, so the id cannot be compared: it finishes the deletion.
+	local logged = #world.logs
+	send("del8", {name = "Fay", admin = "jan", character_id = fay_id})
+	run_jobs()
+	answer = results()
+	eq(answer[1].code .. " " .. answer[1].message,
+		"ok Fay (character " .. fay_id .. ") deleted by admin jan.", "I the retry with the id finishes it")
+	check(world.auth.Fay == nil and world.records.Fay == nil, "I its login and record went")
+	check(world.logs[#world.logs][2]:find("Fay (character " .. fay_id .. ") deleted by admin jan.", 1, true)
+		and #world.logs > logged, "I the log line names the id the website sent")
+	eq(prejoin("Fay"), nil, "I and the name is free")
+	eq(code_of({name = "Fay", admin = "jan", character_id = fay_id}), "unknown_target",
+		"I a tombstone without a login stays unknown_target")
+
+	-- A server lagging past expires_at between the steps removes nothing.
+	local _, gus_id = character("Gus")
+	send("del9", {name = "Gus", admin = "jan"}, clock + 30)
+	run_jobs(1)
+	clock = clock + 60
+	run_jobs()
+	answer = results()
+	eq(answer[1].code .. " " .. answer[1].message,
+		"expired Gus was not deleted completely: the command expired first. Send it again.",
+		"I past expires_at at the removal: expired")
+	check(world.auth.Gus and world.records.Gus, "I the login and the record stay")
+	eq(prejoin("Gus"), D.TEXT, "I and the login is refused until a retry")
+	send("del10", {name = "Gus", admin = "jan", character_id = gus_id})
+	run_jobs()
+	answer = results()
+	eq(answer[1].code, "ok", "I the retry with the id deletes it")
+	check(world.auth.Gus == nil and world.records.Gus == nil, "I its login and record went")
+
+	-- The record_login guard: a join after the login went.
+	local ghost = new_player("Ghost")
+	logs = #world.logs
+	core.builtin_auth_handler.record_login("Ghost")
+	eq(world.logs[#world.logs][1], "warning", "I record_login without an entry: a warning, no error")
+	check(not world.logs[#world.logs][2]:find("Ghost", 1, true), "I without the name")
+	disconnects = #world.disconnected
+	world.records.Ghost = true
+	deleted_login(ghost)
+	eq(world.disconnected[#world.disconnected][2], D.TEXT, "I sent away")
+	eq(prejoin("Ghost"), D.TEXT, "I blocked while its record goes")
+	world.players.Ghost = nil
+	run_jobs()
+	eq(world.records.Ghost, nil, "I its record went")
+	eq(prejoin("Ghost"), nil, "I then free")
+	eq(#results(), 0, "I no answer for it")
+	world.auth.Gil = {last_login = clock}
+	disconnects = #world.disconnected
+	deleted_login(new_player("Gil"))
+	eq(#world.disconnected, disconnects, "I a join with a login is left alone")
+	world.auth.Gil.last_login = 1
+	core.builtin_auth_handler.record_login("Gil")
+	eq(world.auth.Gil.last_login, clock, "I record_login still records")
+end
+
+-- J. grug_mail at the start and for a deleted character (Round 83) -----------
+do
+	fresh_world()
+	load_mail()
+	local M, S = grug_mail.model, grug_mail.store
+	local mail = world.stores.grug_mail
+	local old, new = clock - M.EXPIRY - 1, clock - 10
+	local function box(name, letters)
+		local b = M.new_box()
+		for _, letter in ipairs(letters) do M.deliver(b, letter) end
+		mail:set_string("box:" .. name, serialize(b))
+	end
+	box("Ann", {M.letter(1, "player", "Vex", "Old", "x", {}, old), M.letter(2, "player", "Vex", "New", "y", {}, new)})
+	box("Ben", {M.letter(3, "player", "Ann", "Old", "x", {}, old)})
+	mail:set_string("sent:Ann", serialize({M.sent_copy(4, "Vex", "Old", "x", 5, {}, old)}))
+	mail:set_string("sent:Vex", serialize({M.sent_copy(5, "Ann", "New", "y", 5, {}, new)}))
+	mail:set_string("tickets", serialize({M.ticket(6, "Vex", "Question", "Old", "x", {}, old),
+		M.ticket(7, "Vex", "Question", "Mine", "y", {}, new),
+		M.report_ticket(8, "Ann", M.letter(2, "player", "Vex", "New", "y", {}, new), "spam", "",
+			{}, {}, new)}))
+	mail:set_string("broadcasts", serialize({{id = 9, subject = "Old", body = "x", time = old}}))
+	eq(S.prune_all(), 6, "J the start reads every list")
+	eq(#S.box("Ann").letters, 1, "J an expired letter went")
+	eq(#S.box("Ben").letters, 0, "J a box of expired letters is empty")
+	eq(mail:get_string("sent:Ann"), "", "J an expired sent list goes whole")
+	eq(#S.tickets(), 2, "J an expired ticket went")
+	eq(#S.broadcasts(), 0, "J an expired broadcast went")
+
+	-- Vex is deleted: its box, sent copies, tickets and index row go; what
+	-- Ann holds about it stays (ruling 1).
+	S.index_player("Vex", "accord")
+	S.index_player("Ann", "accord")
+	box("Vex", {M.letter(10, "admin", "Server Admin", "Hi", "z", {"default:dirt 5"}, new)})
+	grug_mail.forget_character("Vex")
+	eq(mail:get_string("box:Vex"), "", "J its mailbox, attachments with it")
+	eq(mail:get_string("sent:Vex"), "", "J its sent copies")
+	local tickets = S.tickets()
+	eq(#tickets, 1, "J its own ticket went")
+	eq(tickets[1].from .. " " .. tickets[1].report.from, "Ann Vex", "J a report about its letter stays")
+	eq(S.lookup("vex"), nil, "J its index row")
+	eq(S.lookup("ann"), "Ann", "J others stay indexed")
+	eq(S.box("Ann").letters[1].from, "Vex", "J its letter to Ann stays")
+	grug_mail.forget_character("Vex")
+	eq(#S.tickets(), 1, "J a second clear changes nothing")
 end
 
 os.time = real_time -- luacheck: ignore

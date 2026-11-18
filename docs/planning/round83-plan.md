@@ -255,3 +255,89 @@ by a future deletion". Lane D owns `CHANGELOG.md`, `game.conf`, `tools/web_data/
   a private Xvfb.
 - **Compaction checkpoint:** after the review verdict, before the fix round or lane D.
 - Decided during the round: anything the lane reports under `## Blockers / questions`.
+
+## Completion (2026-11-18)
+
+Lane DEL (Opus) built the command on `round83`, an independent Opus review returned MERGE AFTER
+FIXES, a fix round closed its findings 1–3 and an independent delta review returned MERGE; lane
+D (this section) runs on the same branch. Release **0.83.0**, **compatible**: no new saved key
+and no format change (the index entry `id:<name>` takes the existing tombstone value; the other
+stores lose rows or entries).
+
+**What shipped (DEL):**
+
+- The bridge command `character.delete` (capability 13), answered deferred: the ledger's
+  `defer()` returns a `done(code, message)` that answers once; a repeated delivery while the
+  deletion runs stays silent, a second deletion of the name answers `refused`.
+- The sequence of §3.3: refuse or expire at arrival, disconnect an online character (the text
+  of §3.1), wait until it is gone from `core.objects_by_guid`, run the clears, wait for one
+  mod-storage commit, remove the player record and the auth entry, answer `ok` with the one
+  log line. Measured in the end-to-end scenario: disconnect → leave 1 ms → gone from the
+  engine 272 ms → clears at 272 ms → removal at 6.1 s; the website's fake had the answer after
+  about 7.8 s (online) and 8.0 s (offline).
+- The clears: `grug_core.character_delete.MODS`, an explicit ordered list of the mods with
+  per-character stores, each defining `forget_character(name)` (a listed mod without it stops
+  the start); accounts (the tombstone, always), mail, clans, parties, classes, Expeditions,
+  housing, home, achievements. Mail is pruned to 30 days at every server start (ruling 10).
+- Login guards: the name is refused at login while its deletion runs (any letter case) and
+  while a tombstone stands beside a used login; the engine's `record_login` tolerates a
+  missing auth entry (`docs/technical/upstream-workarounds.md` §10).
+- The rule in the module guide: a new per-character store defines its clear and is listed.
+- Tests: the new end-to-end scenario `tools/r83_del` (a real server and client: a character
+  seeded in every store, deleted online and offline, the world, auth, players, mod storage and
+  decompressed map blocks searched for its name and id; 54/54 checks, the allow-list no wider
+  than §3.2), its portable fixture, new cases in `r691_bridge` and `r79_acc`, stubs in three
+  mail fixtures. 45 files, about +2,560/−60 lines.
+- Docs: `web-bridge.md` (the command, codes, what goes and what stays), `web-accounts.md`
+  §1/§2/§10, the module docs of platform, mail, clans, parties, accounts, player systems.
+
+**Review:** the first review confirmed the deferred ledger, the engine claims, every clear
+against study A and the allow-list, and found one HIGH: a retry carrying `character_id` could
+not finish a deletion that stopped after its clears (it answered `unknown_target`, the website
+would drop its row and the login would stay). Fixed: a tombstone beside a login of an offline
+character resumes the deletion with the id the website sends; two fixture cases (an error, an
+expiry) retry with the id and end `ok`. Also fixed: a stale result in the scenario's later-boot
+check, and every deadline comparison is `>=` (no destructive step at `expires_at`). The delta
+review's one LOW (the doc said "less than" where the code expires at exactly the margin) is a
+doc fix ("at most").
+
+**Deviations from the plan:**
+
+- Wire form (§3.1): `expires_at` is required (`invalid_args`); `expired` also at arrival when
+  at most `max(10, server_map_save_interval + 4.5)` s remain; `expired` "not deleted
+  completely … Send it again." when the clears ran but the removal could not finish in time
+  (the login stays refused until the retry). §3.3's "at least 10 s remain" reads "more than
+  the margin" in the code.
+- Ruling 13 is narrowed to a **used** login (`last_login ≠ -1`) beside the tombstone, so a new
+  player whose first connection aborted after registration is not locked out.
+- The registry is an explicit list instead of each mod registering itself (a load-time call
+  broke 45 fixtures that load these files with partial stubs; the list also shows the order
+  traps in one place).
+- A store study A missed, `clans_unreadable` (a copy of a corrupt clan store kept for an
+  admin), **stays** (the user, 2026-11-18) and is listed under "What stays".
+
+**Gates** (round end, on `round83`): the full fixture run 375 passed and 1 failed:
+`r81_safe` loads `grug_bridge/commands.lua` without a `core` stub, and the command file now
+loads `delete.lua` through the mod path (the lane's selection missed it); the coordinator gave
+the fixture a `core.get_modpath` stub (tool-only), and `r81_safe` passes. `check_upgrade.py`
+PASS (0.83.0, compatible), `check_fresh_server.py` PASS, one smoke boot of the round branch
+PASS (listening, no error), besides the scenario's own boots.
+
+**Human test:** none in the game (the scenario kicks a real client); the acceptance is the
+website's first deletion on the rehearsal realm. The answer to the website went through the
+user (private: `~/projects/grudgelands-orchestration/r83/website-answer.md`).
+
+## Carry-overs
+
+Each line names where it came from; none is wanted work yet, so none has a BACKLOG line.
+
+- **Review note 4:** a client that joins while the deletion waits for the player to be gone is
+  not disconnected again; the command ends `expired` with nothing deleted (safe).
+- **Review note 5:** the login guards are installed only while the bridge is active; with the
+  bridge off, a half-deleted character could log in.
+- **Delta review note:** a never-joined login (`last_login = -1`) beside the tombstone also
+  takes the resume path (only after a full deletion whose answer was lost and a new
+  registration of the name that never joined); it removes that empty login and answers `ok`.
+  Using `grug_accounts.half_deleted(name)` for the resume would match the login guard.
+- **Delta review note:** a command with a wrong id during a running deletion answers `refused`
+  ("already being deleted") instead of `unknown_target` (harmless).

@@ -33,8 +33,10 @@ website must do, what it sends, what it receives and how the game behaves.
   "new random password" of the auto mode.
 
 Not part of phase 1, and never to be assumed by the website: account bans,
-characters created through a bridge command, character deletion, shared Claim
-Stones. Each comes later as its own amendment (§10). Names the
+characters created through a bridge command, shared Claim Stones. Each comes later
+as its own amendment (§10). **Character deletion** came with 0.83.0 (Round 83) as
+the bridge command `character.delete` ([web-bridge.md](web-bridge.md#amendment-2026-11-18-characterdelete)):
+it writes the tombstone below. Names the
 website reserves and the web client then creates at its first login are ordinary
 characters for the game.
 
@@ -61,10 +63,17 @@ name the index is in one of three states:
 |---|---|---|
 | none (not joined since 0.79.0; later: created through a bridge command) | yes | adopts the binding's id, if there is a binding |
 | id X | only with id X | takes X |
-| tombstone (written by a future deletion, never a plain clear) | never | gets a new id; nothing is adopted |
+| tombstone (written by `character.delete`, always, also where there was no entry; never a plain clear) | never | gets a new id; nothing is adopted |
 
 When the character's meta and the index disagree at a join, the meta wins and the
-index is rewritten, with a line in the server log. Adoption is the game's recovery
+index is rewritten, with a line in the server log. **One exception** (Round 83): a
+tombstone beside an auth entry that has been used (its last login is not the
+engine's `-1` of a login never used) is a deletion that stopped before the engine
+removed the login (a crash, an error). The game refuses that name at pre-join with
+`This character was deleted on the website.` until the website's retry of
+`character.delete` finishes it. A new character of the name never meets the rule:
+its login is created at its first connection with last login `-1`, and its join
+replaces the tombstone. Adoption is the game's recovery
 after a lost save, and later the way characters created through a bridge command get
 their id.
 
@@ -548,9 +557,12 @@ Each comes with its own capability:
   join. Later, an option may allow new characters only this way. Not needed for
   names the website reserves today: if someone else registers such a name natively
   first, the stored password does not match, and the website never binds it (§6a).
-- **Character deletion:** a command that the game runs itself. It answers
-  `not_offline` until the character is gone, and the website repeats it. The game
-  writes a tombstone for the name (§2); the website removes the binding.
+- **Character deletion:** built in 0.83.0 as `character.delete`
+  ([web-bridge.md](web-bridge.md#amendment-2026-11-18-characterdelete)). Instead of
+  the `not_offline` answer planned here, the game disconnects an online character
+  itself and answers once the deletion is done; it writes the tombstone (§2) and
+  drops the deleted character's row from its stored copy of the list at once; the
+  website removes the binding.
 - **Shared Claim Stone** per account and faction (with a future map reset). The game
   needs bindings of offline characters, which the list already provides.
 

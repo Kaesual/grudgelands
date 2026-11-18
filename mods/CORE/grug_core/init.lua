@@ -94,6 +94,16 @@ grug_core.FLIGHT_CEILING = 600
 -- The platform's map reset (upgrade contract): before every file and mod
 -- that clears its map-bound state during its load, starts_preload.lua first.
 dofile(modpath .. "/map_reset.lua")
+-- The deletion of a character (Round 83): the one list of every mod's
+-- per-character clear. A listed mod without its clear stops the start.
+grug_core.character_delete = dofile(modpath .. "/character_delete.lua")
+core.register_on_mods_loaded(function()
+	local missing = grug_core.character_delete.missing()
+	if #missing > 0 then
+		error("[grug_core] character_delete: no forget_character in " ..
+			table.concat(missing, ", "), 0)
+	end
+end)
 -- After zone_authority.lua: it reads grug_core.start_identities(), which that
 -- file publishes. The request itself waits for register_on_mods_loaded.
 dofile(modpath .. "/starts_preload.lua")

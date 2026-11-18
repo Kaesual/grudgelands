@@ -534,6 +534,16 @@ grug_home.register_on_teleport(function(player)
 	if now then mark_inside(now, name) end
 end)
 
+-- The deletion of a character (Round 83; grug_core/character_delete.lua): a run it
+-- owns alone ends (it outlives a logout). A party's run follows grug_parties' clear,
+-- which runs first: the member-left callback above expels the name or hands the run
+-- to the last member.
+function M.forget_character(name)
+	local run = by_player[name]
+	if run then M.end_run(run, "deleted") end
+	inside_of[name], marks[name] = nil, nil
+end
+
 -- An offline member does not count as inside.
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()

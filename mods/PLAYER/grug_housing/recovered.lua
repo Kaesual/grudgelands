@@ -106,6 +106,19 @@ function R.take(key, count)
 	return taken
 end
 
+-- The deletion of a character (Round 83): every entry and packed content of
+-- `name` goes. A packed item is soulbound, so it can only be in the owner's
+-- carried lists, which go with the engine's player record.
+function R.forget(name)
+	local entry, content = PREFIX .. name .. ":", "packed:" .. name .. ":"
+	for _, key in ipairs(storage:get_keys()) do
+		if key:sub(1, #entry) == entry or key:sub(1, #content) == content then
+			storage:set_string(key, "")
+		end
+	end
+	if index then index[name] = nil end
+end
+
 --
 -- The first start's clean-up of a pass (§3, the world marker; rulings 8,
 -- 13 and 14): every entry of pass `seq` loses the items this version does

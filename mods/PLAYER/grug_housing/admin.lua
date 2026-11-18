@@ -14,6 +14,11 @@
 -- on the Character page; a new stone from a Housing Steward at once, no
 -- placing lock), the "removed" event resets a claim home, nothing is
 -- refunded. Needs the `server` privilege.
+--
+-- The deletion of a character (Round 83 ruling 3) releases its claims the
+-- same way, with the event "deleted" (grug_home writes no "claim lost" notice
+-- for it) and without a log line (the deletion's one line is grug_bridge's);
+-- its record and its rights in other claims go too.
 
 local model = grug_housing.model
 local ORPHAN_RADIUS = 16
@@ -81,3 +86,20 @@ core.register_chatcommand("claim_remove", {
 		return true, remove_claim(claim, name)
 	end,
 })
+
+-- The deletion's clear (grug_core/character_delete.lua): every claim the name
+-- owns, not only its record's (an orphan from a crash goes as well), and its
+-- rights in the others.
+function grug_housing.forget_character(name)
+	for _, claim in ipairs(model.all_claims()) do
+		if claim.owner == name then
+			grug_housing.remove_stone_node(claim)
+			model.remove(claim, "deleted")
+			grug_housing.notify_claim_changed(claim, "deleted")
+		elseif claim.permissions[name] then
+			grug_housing.set_permission(claim, name, nil)
+		end
+	end
+	model.forget_player(name)
+	grug_housing.recovered.forget(name)
+end

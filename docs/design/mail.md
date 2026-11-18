@@ -249,5 +249,6 @@ quest with the welcome and level letters. Seams and storage: the
 ## 10. Persistence
 
 - Mail is not bound to the map: a map reset keeps every letter, ticket and
-  announcement. Expired entries are removed when a list is read and at join,
-  never by a pass over every player.
+  announcement. Expired entries are removed when a list is read, at join and
+  once at every server start (Round 83: every mailbox, sent list, the tickets
+  and the announcements), never by a pass while the server runs.

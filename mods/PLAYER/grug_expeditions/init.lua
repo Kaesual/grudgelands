@@ -98,7 +98,8 @@
 --   register_on_ready(function(run))           the box is written; set meta here
 --   register_on_end(function(run, reason))     "empty" (10 minutes), "joined_party"
 --                                              (the solo owner), "failed" (preparation),
---                                              "finished", "cancelled" (Round 72.1)
+--                                              "finished", "cancelled" (Round 72.1),
+--                                              "deleted" (the solo owner, Round 83)
 --   register_on_enter(function(run, name))     stands in the box now
 --   register_on_leave(function(run, name, reason))  "travel", "logout", "expelled"
 --                                              (left the party), "ended"

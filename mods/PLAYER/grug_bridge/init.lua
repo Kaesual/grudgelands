@@ -33,6 +33,8 @@ local B = dofile(path .. "/bans.lua")
 local C = dofile(path .. "/commands.lua")
 
 grug_bridge.active = true
+-- The command types, for the fixture and the engine probe (Round 83).
+grug_bridge.commands = C
 
 local storage = core.get_mod_storage()
 local banlist = B.load(storage, core.deserialize)
@@ -150,6 +152,32 @@ core.register_on_prejoinplayer(guarded("the ban check", function(name)
 	local ban = B.active(banlist, name, os.time())
 	if ban ~= nil then return B.text(ban) end
 end))
+
+-- Round 83, character.delete (delete.lua): no login while a deletion of the
+-- name runs (any letter case), nor while a stopped one left a tombstone
+-- beside a used login (web-accounts.md §2).
+core.register_on_prejoinplayer(guarded("the deletion check", function(name)
+	if C.delete.blocked(name) or grug_accounts.half_deleted(name) then return C.delete.TEXT end
+end))
+
+-- Engine workaround (docs/technical/upstream-workarounds.md, Round 83): a
+-- client that passed pre-join before a deletion removed its login can still
+-- finish its handshake and join; builtin's record_login then asserts the
+-- missing auth entry inside on_joinplayer, which ends the server
+-- (builtin/game/auth.lua). Tolerated here, and the join hook below sends the
+-- character away and removes its record.
+do
+	local builtin = core.builtin_auth_handler
+	local record_login = builtin.record_login
+	builtin.record_login = function(name)
+		if builtin.get_auth(name) == nil then
+			log("warning", "a login time was not recorded: no auth entry")
+			return
+		end
+		return record_login(name)
+	end
+end
+core.register_on_joinplayer(guarded("the deleted-login check", C.delete.on_join))
 
 -- Before the engine's own check of `shout`, so it is made here. What this
 -- hook returns would decide over the line: it returns nothing.

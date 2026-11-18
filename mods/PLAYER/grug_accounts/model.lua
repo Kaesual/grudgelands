@@ -17,7 +17,8 @@
 --                  {{name, character_id, account_id}}, accounts = {{id, name,
 --                  rewards = {id...}}}}
 --   id:<name>      the id index, the name in lower case: a character id, or
---                  M.TOMBSTONE (written only by a future deletion)
+--                  M.TOMBSTONE (written by the deletion of the character,
+--                  Round 83: M.forget)
 -- Names are unique per realm without regard to case (the engine refuses a
 -- second one), so every table here is keyed by the lower-case name.
 return function(api)
@@ -273,6 +274,30 @@ return function(api)
 
 	local function index_set(name, value)
 		storage:set_string(INDEX_PREFIX .. name:lower(), value)
+	end
+
+	-- The deletion of a character (Round 83, web-accounts.md §2): the index
+	-- entry becomes the tombstone, always, also when there is none (else a
+	-- new character of the name would adopt the binding's id), and the
+	-- binding row of the stored list goes at once (ruling 17; the version
+	-- stays, the website's next list replaces it anyway). Logs nothing: the
+	-- deletion's one line names the character.
+	function M.forget(name)
+		index_set(name, M.TOMBSTONE)
+		local key = name:lower()
+		if not bindings[key] then return end
+		bindings[key] = nil
+		local raw = storage:get_string(LIST_KEY)
+		local stored = raw ~= "" and api.deserialize(raw) or nil
+		if type(stored) ~= "table" or type(stored.characters) ~= "table" then return end
+		local kept = {}
+		for _, row in ipairs(stored.characters) do
+			if type(row) == "table" and type(row.name) == "string" and row.name:lower() ~= key then
+				kept[#kept + 1] = row
+			end
+		end
+		stored.characters = kept
+		storage:set_string(LIST_KEY, api.serialize(stored))
 	end
 
 	-- The id a joining character keeps or gets: its meta id (which wins over

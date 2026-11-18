@@ -496,6 +496,11 @@ function grug_mail.run_open_callbacks(player, pos)
 	for _, func in ipairs(open_callbacks) do func(player, pos) end
 end
 
+-- The deletion of a character (Round 83; grug_core/character_delete.lua).
+function grug_mail.forget_character(name)
+	S.forget(name)
+end
+
 --
 -- Join and faction choice
 --

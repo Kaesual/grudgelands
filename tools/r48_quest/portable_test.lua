@@ -92,6 +92,12 @@ function Storage:get_string(key) return mod_storage[key] or "" end
 function Storage:set_string(key, value) mod_storage[key] = value ~= "" and value or nil end
 function Storage:get_int(key) return tonumber(mod_storage[key]) or 0 end
 function Storage:set_int(key, value) mod_storage[key] = tostring(value) end
+-- Round 83: grug_mail prunes every list at the start (store.lua prune_all).
+function Storage:get_keys()
+	local keys = {}
+	for key in pairs(mod_storage) do keys[#keys + 1] = key end
+	return keys
+end
 
 core = {
 	registered_items = {}, registered_nodes = {}, detached_inventories = {},

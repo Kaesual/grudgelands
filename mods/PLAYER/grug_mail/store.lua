@@ -11,8 +11,9 @@
 --   next_id       the id counter of letters, tickets and broadcasts
 -- The per-player read set of the broadcasts is player meta
 -- (`grug_mail:broadcasts_read`); the player is online whenever it changes.
--- Expired entries are pruned when a list is read, never by a pass over every
--- player. Mail is not map-bound: a map reset clears none of it.
+-- Expired entries are pruned when a list is read, and once at every start
+-- (Round 83 ruling 10, S.prune_all), never by a pass while the server runs.
+-- Mail is not map-bound: a map reset clears none of it.
 
 local M = grug_mail.model
 local storage = core.get_mod_storage()
@@ -174,6 +175,51 @@ function S.lookup(name)
 	local row = load_index()[tostring(name or ""):lower()]
 	if row then return row.name, row.faction end
 	return nil
+end
+
+--
+-- Round 83: the start's pruning and the deletion of a character
+--
+
+-- Every mailbox, sent list, the tickets and the broadcasts lose their expired
+-- entries (the reads above prune and save). One pass at the start, before any
+-- join, so "removed after 30 days" holds within one restart. Returns the
+-- number of lists read.
+function S.prune_all()
+	local count = 0
+	for _, key in ipairs(storage:get_keys()) do
+		local kind, name = key:match("^(%a+):(.+)$")
+		if kind == "box" then
+			S.box(name)
+			count = count + 1
+		elseif kind == "sent" then
+			S.sent(name)
+			count = count + 1
+		end
+	end
+	S.tickets()
+	S.broadcasts()
+	return count + 2
+end
+
+-- The character's own mailbox (its attachments with it), its sent copies,
+-- its tickets and its row in the recipient index go. What others hold about
+-- it stays (Round 83 ruling 1): their letters from it, their sent copies to
+-- it, their reports of its letters.
+function S.forget(name)
+	storage:set_string("box:" .. name, "")
+	storage:set_string("sent:" .. name, "")
+	local tickets, kept = S.tickets(), {}
+	for _, ticket in ipairs(tickets) do
+		if ticket.from ~= name then kept[#kept + 1] = ticket end
+	end
+	if #kept < #tickets then S.save_tickets(kept) end
+	local rows = load_index()
+	local row = rows[name:lower()]
+	if row and row.name == name then
+		rows[name:lower()] = nil
+		save("factions", rows)
+	end
 end
 
 return S

@@ -9,7 +9,11 @@ local C = {}
 
 C.CAPABILITIES = {"online", "kick", "banlist", "chat", "mail", "action.give_money",
 	"action.give_xp", "action.give_item", "action.grant_priv", "action.revoke_priv",
-	"accounts", "accounts.password"}
+	"accounts", "accounts.password", "characters.delete"}
+
+-- The deletion of a character (Round 83); init.lua adds its login guards.
+local D = dofile(core.get_modpath("grug_bridge") .. "/delete.lua")
+C.delete = D
 
 C.REASON_MAX = 200
 C.CHAT_MAX = 500
@@ -344,14 +348,34 @@ TYPES["account.set_password"] = function(args)
 	return "ok", ("Password set for %s (account %s)."):format(name, account.id)
 end
 
--- A code and a message for `command`.
-function C.run(command)
+-- Round 83: the website erases a character, online or offline (delete.lua).
+-- Exactly the name's spelling: another letter case is no such character.
+-- Answers later; the one log line is link.lua's, at the answer.
+TYPES["character.delete"] = function(args, command, defer)
+	local name = args.name
+	if type(name) ~= "string" or #name > 20 or not name:find("^[A-Za-z0-9_%-]+$") then
+		return invalid("name")
+	end
+	local id = args.character_id
+	if id ~= nil and (type(id) ~= "string" or #id ~= 32 or not id:find("^[0-9a-f]+$")) then
+		return invalid("character_id")
+	end
+	local admin = line(args.admin, C.ADMIN_MAX)
+	if not admin then return invalid("admin") end
+	-- The deadline of the destructive steps (delete.lua) needs one.
+	if type(command.expires_at) ~= "number" then return invalid("expires_at") end
+	return D.start(name, id, admin, command.expires_at, defer)
+end
+
+-- A code and a message for `command`, or, for a type that answers later,
+-- whatever it returns after calling `defer` (link.lua).
+function C.run(command, defer)
 	local run = TYPES[command.type]
 	if not run then
 		return "unsupported", "Unknown command type: " .. tostring(command.type)
 	end
 	if type(command.args) ~= "table" then return invalid("args") end
-	return run(command.args)
+	return run(command.args, command, defer)
 end
 
 return C

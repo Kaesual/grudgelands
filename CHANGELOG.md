@@ -13,6 +13,49 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.83.0 — deleting a character from the website (2026-11-18)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **A character can be deleted on the website** (a player's right to
+  erasure): the website sends the game the new bridge command
+  `character.delete`, and the game erases the character, online or
+  offline. An online character is disconnected with "This character was
+  deleted on the website."; the game waits until the engine has saved and
+  dropped it, then deletes, and answers the website within about 8
+  seconds.
+- **What goes:** the login and the character itself (inventories,
+  progress, settings), its mailbox and sent letters, its clan and party
+  membership (a leader hands the lead on by the group's rule; a group of
+  two dissolves; the others read "<name> is no longer a member."), every
+  housing claim it owns (the Claim Stone is removed, the blocks and
+  containers inside stay), its rights in other claims, its map-reset
+  belongings, pending notices and achievement grants, and an Expedition
+  it runs alone.
+- **What stays:** letters it sent to other players (until they expire
+  after 30 days), the owner name on locked chests, steel doors,
+  trapdoors and furnace slots in the world (a new character of the same
+  name gets access to them), crop marks, written books, sign texts, and
+  ban lists. The full list is in the
+  [bridge contract](docs/technical/web-bridge.md).
+- **A new character of the same name starts fresh:** it gets a new
+  character id and none of the old website bindings.
+- **Old mail is cleared at every server start:** letters, sent copies
+  and reports older than 30 days are removed when the server starts,
+  not only when a list is opened.
+- **Server admins:**
+  - The deletion writes one `action` line to the server log with the
+    name, the character id and the website admin who sent it.
+  - The server administrator's own character (the server setting
+    `name`) cannot be deleted from the website.
+  - A deletion that stops halfway (an error or a lagging server) keeps
+    the name locked at login until the website sends the command again,
+    which finishes it.
+- Internal: every mod that keeps data per character now defines how to
+  forget it, listed in one place (`grug_core.character_delete`); the
+  [module guide](docs/technical/module-guide.md) makes that a rule for
+  new stores.
+
 ## 0.82.0 — faster world generation (2026-11-18)
 
 Compatible: no map reset, no new world, nothing for the host to do (one

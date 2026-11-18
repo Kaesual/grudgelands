@@ -129,6 +129,12 @@ if housing then
  end)
 end
 core.register_on_joinplayer(deliver)
+-- The deletion of a character (Round 83; grug_core/character_delete.lua): its
+-- pending notice goes. Listed after grug_housing's clear, whose claim removal
+-- writes none anyway (the event "deleted" is no loss).
+function grug_home.forget_character(name)
+ storage:set_string(LOST_PREFIX .. name, "")
+end
 -- The platform's map reset (grug_core/map_reset.lua): the claim target is
 -- map-bound player state; a relocated character's home is its innkeeper.
 grug_core.map_reset.register_on_relocate(grug_home.clear_home_claim)

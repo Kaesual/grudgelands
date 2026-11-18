@@ -856,7 +856,7 @@ function ui.stone_claim_changed(claim, event)
 			if not player then
 				sessions[name] = nil
 			elseif event == "picked_up" or event == "destroyed" or
-					event == "removed" or event == "draft_expired" then
+					event == "removed" or event == "deleted" or event == "draft_expired" then
 				sessions[name] = nil
 				core.close_formspec(name, FORMNAME)
 			elseif session.mode == "main" then

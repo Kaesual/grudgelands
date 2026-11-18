@@ -118,3 +118,9 @@ function grug_classes.clear_talent_windows(player)
 	-- player is dropped here, so the table never grows past the running ones.
 	prune_icds(core.get_us_time())
 end
+
+-- The deletion of a character (Round 83; grug_core/character_delete.lua): a
+-- running ICD would carry over to a new character of the same name.
+function grug_classes.forget_character(name)
+	ready[name], icds[name] = nil, nil
+end

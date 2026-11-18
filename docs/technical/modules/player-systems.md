@@ -241,8 +241,9 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   `next_id` (one monotonic counter for letters, tickets and broadcasts). The
   per-player read set of the broadcasts is player meta
   `grug_mail:broadcasts_read` (written only while the player is online).
-  Expired entries (30 days, `os.time()`) are pruned whenever a key is read;
-  there is no pass over every player. A read hands out a fresh table; the
+  Expired entries (30 days, `os.time()`) are pruned whenever a key is read,
+  and in one pass over every list at the start (`store.prune_all`, from
+  `init.lua`, Round 83); there is no pass while the server runs. A read hands out a fresh table; the
   last four keys read keep their stored string and an untouched decoded
   copy, so a read of an unchanged string copies instead of decoding again
   (Round 81: one mailbox click reads the box up to five times). Not map-bound: no
@@ -422,6 +423,7 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     `fuel_seconds`, `fuel_room_seconds`, `pick_up`, `set_permission`,
     `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,
     `activated`, `fuel`, `permission`, `picked_up`, `destroyed`, `removed`,
+    `deleted` (the owner's deletion, Round 83: no "claim lost" notice),
     `draft_expired`, `expired`. Constants `RADIUS = 50`, `MIN_Y = −100`.
     For the minimap's claim preview (0.50.2): `claims_in(min_x, min_z,
     max_x, max_z)` (the claims whose square meets the rectangle, by id,
@@ -440,7 +442,11 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     claim came or went); each claim is checked once per cycle, a new one
     from the next cycle on.
   - `admin.lua` (Round 26): `/claim_remove <player> | here | orphans`
-    (`server` privilege).
+    (`server` privilege); since Round 83 also `forget_character`, the
+    deletion's clear (every claim the name owns released with its stone and
+    the event `deleted`, its rights in other claims, its record through the
+    registry's `forget_player`, its map-reset belongings through
+    `recovered.forget`).
   - `packed.lua`, `recovered.lua` (Round 50): the soulbound
     `grug_housing:packed_container` (as the tool writes it: meta `node`,
     `lists`, `seq`; cleaned: `node`, `ref`, `seq`, description and image,

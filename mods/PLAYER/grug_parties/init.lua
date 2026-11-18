@@ -382,6 +382,25 @@ function grug_parties.leave(player)
 	emit(changed, "membership")
 	return true, "Left the party."
 end
+-- The deletion of a character (Round 83 ruling 19; grug_core/character_delete.lua):
+-- one line to the online members, then the one path above, with its lead and
+-- dissolve rules and the member-left callbacks (an Expedition's owner). Offline,
+-- after its leave hook.
+function grug_parties.forget_character(name)
+	local changed = clear_invitations(name)
+	last_send[name], connected[name] = nil, nil
+	local group = group_of(name)
+	if group then
+		local line = core.colorize(grug_parties.CHAT_COLOR, "[Party] " .. name ..
+			" is no longer a member.")
+		for _, member in ipairs(group.members) do
+			if member ~= name and connected[member] then core.chat_send_player(member, line) end
+		end
+		for member in pairs(remove_member(name)) do changed[member] = true end
+	end
+	changed[name] = nil
+	emit(changed, "membership")
+end
 local function leader_target(player, target)
 	local name = actor(player)
 	local group, id

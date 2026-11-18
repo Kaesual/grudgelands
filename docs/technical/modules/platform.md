@@ -343,9 +343,40 @@ nothing and logs one line, so local and browser worlds play as without it.
   account, and the entry's form is checked by decoding and re-encoding both base64
   parts before `core.set_player_password`. The bridge calls only `grug_accounts`'
   bridge functions; the rules live there.
-- **Tests:** `tools/r691_bridge`: `portable_test.lua` on a stub engine, `run.sh` a
+- **A command that answers later** (Round 83): `Link:command` hands each type a
+  `defer` function. A type that calls it gets `done(code, message)`, which logs the
+  one line and keeps the result exactly once (a second call is ignored and logged);
+  until then the ledger entry has no result, so a repeated delivery stays silent. A
+  deferred command lost in a shutdown or crash stays unanswered (the website marks
+  it `unknown` at the next boot).
+- **`character.delete`** (Round 83, capability `characters.delete`,
+  [contract](../web-bridge.md#amendment-2026-11-18-characterdelete)) lives in
+  `delete.lua`: at arrival the checks, the refusals and the deadline, then the name
+  is blocked at pre-join (any letter case) and the answer waits. An online character
+  is disconnected with `core.disconnect_player`; the deletion then waits until
+  `core.get_player_by_name(name) == nil` **and** `core.objects_by_guid[name] == nil`
+  (the engine saves a leaving player after its leave hooks and only then drops the
+  object, whose guid is the name; a removal before that would be undone by the save).
+  Then one call runs every clear of the registry (`grug_core.character_delete`, the
+  [rule](../module-guide.md#rules-for-every-mod)), a `core.after` waits one
+  mod-storage commit (`server_map_save_interval` + 0.5 s), and one call runs the
+  clears again, `core.remove_player` and `core.remove_player_auth` and answers. The
+  clears start only while `max(10, commit wait + 4)` seconds remain before
+  `expires_at`, so nothing destructive runs after it. A character back in the game
+  between the steps (a connection that passed pre-join before the deletion) is
+  disconnected again and the sequence goes on from the wait. Every deferred step
+  runs under `pcall` and answers `error` on failure. The login guards: the pre-join
+  block during a deletion, the refusal of a tombstone beside a used login
+  (`grug_accounts.half_deleted`), and the `record_login` guard
+  ([workarounds](../upstream-workarounds.md)) with a join hook that sends a
+  character without a login away and removes its record by the same sequence.
+  `init.lua` publishes the command table as `grug_bridge.commands` for the fixture
+  and the engine probe.
+- **Tests:** `tools/r691_bridge`: `portable_test.lua` on a stub engine (Round 83:
+  section C's deferred answer, I `character.delete`, J the mail clears), `run.sh` a
   real server and client against `fake_bridge.py` (also `--accounts`, the website's
-  part of accounts for the GUI test).
+  part of accounts for the GUI test); `tools/r83_del`: the per-mod clears on their
+  real code, and `run.sh` the end-to-end deletion with a search of the world.
 
 ## Website accounts
 
@@ -388,7 +419,8 @@ the mod keeps the website's list and never writes a binding.
   name live in the sfinv context (never stored or logged). During creation it shows
   only the `can_link` line (the user, 2026-11-15).
 - **Saved keys:** mod storage `list` (the applied list, serialized) and
-  `id:<lower-case name>` (the character id or `tombstone`, which phase 1 never writes);
+  `id:<lower-case name>` (the character id or `tombstone`, written by
+  `grug_accounts.forget_character` at a deletion, Round 83);
   player meta `grug_accounts:character_id` ([external
   table](#player-meta-read-by-external-tools)) and `grug_accounts:seen`. Mod storage and
   player meta are saved on separate timers, so a crash can lose one; the id adoption and

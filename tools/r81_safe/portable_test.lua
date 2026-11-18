@@ -205,7 +205,10 @@ do
 
 	-- The bridge's C.plain goes through the mail cleaner.
 	grug_mail = {model = M}
+	-- commands.lua loads delete.lua through the mod path (Round 83).
+	core = {get_modpath = function() return ROOT .. "/mods/PLAYER/grug_bridge" end}
 	local C = dofile(ROOT .. "/mods/PLAYER/grug_bridge/commands.lua")
+	core = nil
 	eq(C.plain("\27(T@grug)Ban\27E reason " .. stuffed), "Ban reason",
 		"U C.plain drops escapes and the malformed run")
 	eq(C.plain("caf\195\169"), "caf\195\169", "U C.plain keeps valid UTF-8")

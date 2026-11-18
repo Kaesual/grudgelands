@@ -676,7 +676,8 @@ return function(api)
 	-- `reason` "picked_up": the owner carries the stone again; "draft_expired":
 	-- the draft crumbled, the owner needs a new stone ("needs_stone", issued
 	-- at once); "removed": an admin removed it (state "removed", a new stone
-	-- at once); anything else ("destroyed"): the owner's state becomes
+	-- at once); anything else ("destroyed", and "deleted", whose caller then
+	-- drops the record with forget_player): the owner's state becomes
 	-- "destroyed".
 	function M.remove(claim, reason)
 		if not claims[claim.id] then return false end
@@ -751,6 +752,13 @@ return function(api)
 		note_expiry(claim)
 		save_claim(claim)
 		return accepted
+	end
+
+	-- The deletion of a character (Round 83): its record goes from memory and
+	-- storage. Its claims are removed first (M.remove saves the record).
+	function M.forget_player(name)
+		players[name] = nil
+		storage.set_string("player:" .. name, "")
 	end
 
 	function M.set_permission(claim, name, level)
