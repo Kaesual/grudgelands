@@ -16,7 +16,7 @@ return to a home you built yourself.
 
 **2 factions · 6 peoples · 4 classes · 390+ quests · Progression to level 60**
 
-**[Play in your browser](https://kaesual.com)** ·
+**[Play in your browser](https://grudgelands.com)** ·
 [Join our Luanti server](#play-with-luanti) ·
 [Discord](https://discord.gg/M4auM7yunk) · [Changelog](CHANGELOG.md)
 
@@ -60,7 +60,7 @@ beneath the world is beginning to profit from both sides.
 
 ## Play with Luanti
 
-**In your browser:** visit [kaesual.com](https://kaesual.com) to play.
+**In your browser:** visit [grudgelands.com](https://grudgelands.com) to play.
 
 **With the Luanti client:** open **Join Game**, search the public server
 list for **Grudgelands**, select the server and register or log in.
