@@ -8,7 +8,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 ## Now
 
 - **Game:** 0.83.0 (`game.conf`), Round 83 (the bridge command `character.delete`: the website
-  erases a character on request, compatible), `53d17e9b`, tag `round-83`, not pushed. Before
+  erases a character on request, compatible), `53d17e9b`, tag `round-83`, pushed 2026-11-18. Before
   it: 0.82.0, Round 82 (world generation speed), `8fd02cb1`, tag `round-82`, pushed.
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the read-only code audit of 2026-11
@@ -33,7 +33,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
-| 83 | 0.83.0 | compatible | no | [Round 83](planning/round83-plan.md#completion-2026-11-18) |
+| 83 | 0.83.0 | compatible | yes | [Round 83](planning/round83-plan.md#completion-2026-11-18) |
 | 82 | 0.82.0 | compatible | yes | [Round 82](planning/round82-plan.md#completion-2026-11-18) |
 | 81 | 0.81.0 | compatible | yes | [Round 81](planning/round81-plan.md#completion-2026-11-17) |
 | 80 | 0.80.0–0.80.1 | compatible | yes | [Round 80](planning/round80-plan.md#completion-2026-11-16), [80.1](planning/round80.1-plan.md#completion-2026-11-16) |
