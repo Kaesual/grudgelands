@@ -19,6 +19,13 @@
 --   R.new_vm(minp)     the fake VoxelManip of a chunk (sets the heightmap
 --                      the next write reads); R.written_hash(vm) the hash of
 --                      what it holds after a write
+--   R.record_light     false; set it true (Round 82 digest mode,
+--                      tools/r82_gen) and every later fake VoxelManip applies
+--                      the writer's set_lighting/set_light_data calls to a
+--                      light buffer and logs each calc_lighting and
+--                      update_liquids call with the light and the content
+--                      it starts from;
+--                      R.chunk then also returns `vm` and `light_hash`
 --   R.seconds          {main, build}: CPU seconds of the two constructions
 --   R.planner_source   the R6 planner's pure column query of the built
 --                      session (Round 60: the spawn regions' query adapter
@@ -149,7 +156,7 @@ return function(repo, seed, mode)
 	end
 
 	local runtime_factory = dofile(wp40 .. "/r7_runtime.lua")
-	local R = {fake = fake, seed = seed, sha = raw_sha256, seconds = {}}
+	local R = {fake = fake, seed = seed, sha = raw_sha256, seconds = {}, record_light = false}
 	-- The planner source (Round 60): r7_runtime.lua loads r6.lua when its
 	-- factory runs; its constructors return the identity holding it fifth.
 	local saved_dofile = dofile
@@ -264,6 +271,48 @@ return function(repo, seed, mode)
 		vm.calc_lighting = function() end
 		vm.update_liquids = function() end
 		vm.native = {data = data, param2 = param2}
+		if R.record_light then
+			-- The light the engine would hold: set_lighting writes param1 =
+			-- day | night << 4 over its box (Mapgen::setLighting), and the
+			-- engine's own spread is not modelled, so each calc_lighting and
+			-- update_liquids call is logged with the light and the content
+			-- (nodes and param2 set so far) it starts from.
+			local lit = fill(light)(nil, nil)
+			local calls = {}
+			vm.light, vm.light_calls = lit, calls
+			local function hash_light()
+				local a, b = 7, 11
+				for index = 1, #lit do
+					a = (a * 31 + lit[index]) % 2147483647
+					b = (b * 37 + lit[index]) % 2147483629
+				end
+				return ("%08x%08x"):format(a, b)
+			end
+			vm.hash_light = hash_light
+			vm.set_lighting = function(_, value, p1, p2)
+				local byte = value.day % 16 + (value.night % 16) * 16
+				p1, p2 = p1 or {x = eminx, y = eminy + 16, z = eminz},
+					p2 or {x = emaxx, y = emaxy - 16, z = emaxz}
+				for z = math.min(p1.z, p2.z), math.max(p1.z, p2.z) do
+					for y = math.min(p1.y, p2.y), math.max(p1.y, p2.y) do
+						local i = (z - eminz) * 12544 + (y - eminy) * 112 - eminx + 1
+						for x = math.min(p1.x, p2.x), math.max(p1.x, p2.x) do lit[i + x] = byte end
+					end
+				end
+			end
+			vm.set_light_data = function(_, buffer)
+				for index = 1, #buffer do lit[index] = buffer[index] end
+			end
+			local function box(p) return p and ("%d,%d,%d"):format(p.x, p.y, p.z) or "-" end
+			vm.calc_lighting = function(self, p1, p2, shadow)
+				calls[#calls + 1] = ("calc_lighting %s %s %s from %s %s"):format(box(p1), box(p2),
+					tostring(shadow), hash_light(), R.written_hash(self))
+			end
+			vm.update_liquids = function(self)
+				calls[#calls + 1] = ("update_liquids from %s %s"):format(hash_light(),
+					R.written_hash(self))
+			end
+		end
 		return vm
 	end
 
@@ -318,9 +367,15 @@ return function(repo, seed, mode)
 		local candidates = owner_candidates(plan)
 		local result = R.built.writer.apply(vm, minp, maxp, plan, generation)
 		local t3 = os.clock()
-		return {result = result, plan = plan, candidates = candidates,
+		local out = {result = result, plan = plan, candidates = candidates,
 			data_hash = R.written_hash(vm),
 			plan_seconds = t2 - t1, write_seconds = t3 - t2}
+		if R.record_light then
+			out.vm = vm
+			out.light_hash = common.hex(raw_sha256(table.concat(vm.light_calls, "\n") ..
+				"\nfinal " .. vm.hash_light()))
+		end
+		return out
 	end
 
 	-- The chunk origin holding a world coordinate.

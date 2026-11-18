@@ -431,10 +431,10 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		return row[1], row[2], row[3], level, row[4], row[5], row[6], row[7],
 			row[8], row[9]
 	end
+	-- The writer's trusted classifier (runtime mode): the same answer as
+	-- `classify` without its range checks and call count, for every changed
+	-- voxel of the engine's own buffers.
 	local function classify_runtime(cid, param2)
-		calls.classify = calls.classify + 1
-		integer(cid, "runtime classified CID", 0, MAX_SAFE)
-		integer(param2, "runtime classified param2", 0, 255)
 		local row = class_by_cid[cid]
 		if not row then return 9, 0, 0, 0, false, false, false, false, 0, "none" end
 		local level = row[3] == 2 and param2 % 8 or 0

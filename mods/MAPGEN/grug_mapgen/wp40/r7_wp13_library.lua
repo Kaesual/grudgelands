@@ -43,10 +43,12 @@ function M.path()
 	error("WP13: the building library directory is unknown", 0)
 end
 
--- `name` is a composition module in the library, e.g. "hearthpine".
-function M.composition(name)
+-- `name` is a composition module in the library, e.g. "hearthpine";
+-- `context` the optional loader context of the caller's build
+-- (`wp13/templates.lua`; without one the composition makes its own).
+function M.composition(name, context)
 	local library = M.path()
-	return dofile(library .. "/" .. name .. ".lua")(library)
+	return dofile(library .. "/" .. name .. ".lua")(library, context)
 end
 
 return M

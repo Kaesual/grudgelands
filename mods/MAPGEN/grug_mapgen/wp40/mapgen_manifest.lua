@@ -1,4 +1,7 @@
--- Pure offline manifest authority for the disabled WP40 R5 adapter.
+-- The WP40 R5 manifest authority: pure, loaded by `r7_runtime.lua` in both
+-- environments, its canonical bytes part of the R7 manifest. Its literals
+-- (the v7 flags among them) are frozen manifest identity, not the live
+-- settings: those `r7_runtime.lua` checks (`validate_live_scalars`).
 
 local MAX_SAFE = 9007199254740991
 local VALIDATED_MARKER = "grug_wp40_r5_validated_manifest_v1"

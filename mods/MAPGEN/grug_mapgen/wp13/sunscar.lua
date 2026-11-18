@@ -28,11 +28,13 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
+local function loader(directory, context)
+	-- One loader context (`templates.lua`) for everything this build loads.
+	context = context or {}
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local layout = dofile(directory .. "/layout.lua")(directory)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
+	local layout = dofile(directory .. "/layout.lua")(directory, context)
 
 	local RADIUS = 63
 	local SCHEMA = "grug_wp13_sunscar_blueprint_v1"
@@ -67,7 +69,7 @@ local function loader(directory)
 	-- warlord hall's deck and the warlord's platform point on it, the wagon
 	-- wheels on the hall, the armoury and the bone lodge, and each house's
 	-- small touches.
-	local templates = dofile(directory .. "/templates.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory, context)
 	local TOWN = templates.town("sunscar")
 
 	-- Destination order is part of the consumer contract and never changes.

@@ -1,7 +1,8 @@
--- Round 31 PvP POIs (pvp-plan rulings 17-22): the faction fortress and the
--- two Battlegrounds camp layouts. A pure cell builder in the form of
--- `r20_poi_blueprint.lua`; the R7 successor owns projection, clipping,
--- protection and the anchor root.
+-- Round 31 PvP POIs (pvp-plan rulings 17-22): the faction fortress, built
+-- here, and the two Battlegrounds camp kinds, which this file hands to the
+-- Round 63 camp builder (`r63_camp_blueprint.lua`) with their rolled race. A
+-- pure cell builder in the form of `r20_poi_blueprint.lua`; the R7 successor
+-- owns projection, clipping, protection and the anchor root.
 --
 -- `profile.art` names the composition:
 --   kind     "pvp_fortress" | "pvp_camp_low" | "pvp_camp_high"
@@ -99,7 +100,7 @@ return function(options, profile)
 		put(x,top+1,z,"default:torch",1)
 	end
 
-	if art.kind=="pvp_fortress" then
+	do
 		local f=FORT[art.faction]
 		fill(-r,0,-r,r,0,r,f.ground)
 		fill(-r,1,-r,r,height,r,"air")

@@ -41,7 +41,6 @@ local function loader(directory)
 	local palettes = dofile(directory .. "/palette.lua")
 	local parts = dofile(directory .. "/parts.lua")
 	local plot_approach = dofile(directory .. "/plot_approach.lua")
-	local wp40 = directory .. "/../wp40"
 	local floor, abs, sqrt, min, max = math.floor, math.abs, math.sqrt, math.min, math.max
 
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
@@ -100,13 +99,8 @@ local function loader(directory)
 	local CORE_HALF = dofile(directory .. "/precinct_ring.lua").PAD
 	M.REACH = 8 -- a tree's cells lie within 8 of its stem (tree_templates.lua)
 
-	local trees_module
-	local function trees()
-		if not trees_module then
-			trees_module = dofile(wp40 .. "/tree_templates.lua")(dofile(wp40 .. "/treegen.lua"))
-		end
-		return trees_module
-	end
+	local trees = dressing.tree_templates
+	local turn = dressing.tree_turn
 
 	-- The node names one race's city trees write (the overlay palette).
 	function M.names(race)
@@ -132,10 +126,11 @@ local function loader(directory)
 		return (h * 48271) % 2147483647
 	end
 
-	local function turn(x, z, turns)
-		for _ = 1, turns do x, z = z, -x end
-		return x, z
-	end
+	-- The city's tree pool per species (`dressing.tree_pool` with the
+	-- city's own seeds), built on the first `new` and kept: a city green is
+	-- rebuilt after every idle release, its pool is the same every time.
+	local pools = {}
+	local function city_seed(k) return ((k * 7919 + 104729) % 2147483646) - 1 end
 
 	-- opts: race, anchor {x, z}, layout (the deserialized capital layout),
 	-- plots {{min_x, max_x, min_z, max_z, turns}} (world rects of the placed
@@ -144,47 +139,12 @@ local function loader(directory)
 		local race, anchor, layout, column = opts.race, opts.anchor, opts.layout, opts.column
 		local species = M.SPECIES[race]
 		local palette = palettes.new(race)
-		local log, leaves = palette.node("tree_log"), palette.node("tree_leaves")
 		local T = trees()
-		local own = T.BY_KEY[species]
-		local wood_row
-		for _, row in ipairs(T.SPECIES) do
-			if row.trunk == log then wood_row = row break end
-		end
-		local function name_of(name)
-			if name == own.trunk then return log
-			elseif name == own.quarter then return wood_row.quarter
-			elseif name == own.base then return wood_row.base
-			elseif name == own.branch then return wood_row.branch
-			elseif name == own.twig then return wood_row.twig
-			elseif name == own.leaves then return leaves end
-			return name
-		end
-		-- the pool: {cells, runs, area}, and the narrowest first
-		local pool, smallest = {}, {}
-		for k = 1, POOL do
-			local cells, tree = T.tree(species, ((k * 7919 + 104729) % 2147483646) - 1)
-			local body, by_key = {}, {}
-			for _, cell in ipairs(cells) do
-				if cell.root then by_key[cell.x .. "," .. cell.y .. "," .. cell.z] = cell
-				else body[#body + 1] = cell end
-			end
-			local runs = {}
-			for _, run in ipairs(tree.root_runs) do
-				local list = {parent = run.parent}
-				for r = run.first, run.last do
-					local at = tree.roots[r]
-					list[#list + 1] = by_key[at[1] .. "," .. at[2] .. "," .. at[3]]
-				end
-				runs[#runs + 1] = list
-			end
-			pool[k] = {cells = body, runs = runs, area = tree.width * tree.depth}
-			smallest[k] = k
-		end
-		table.sort(smallest, function(a, b)
-			if pool[a].area ~= pool[b].area then return pool[a].area < pool[b].area end
-			return a < b
-		end)
+		local name_of = dressing.tree_names(species, palette.node("tree_log"),
+			palette.node("tree_leaves"))
+		-- the pool: {cells, runs, area, leaves}, and the narrowest first
+		pools[species] = pools[species] or dressing.tree_pool(species, city_seed)
+		local pool, smallest = pools[species].entries, pools[species].smallest
 
 		-- the wall line: inside (even-odd) and the distance to it
 		local W = layout.wall
@@ -298,7 +258,7 @@ local function loader(directory)
 		local function fit(entry, turns, sx, sz)
 			local base, water0, road0 = col(sx, sz)
 			if water0 or road0 then return nil end
-			local writes, skipped, leaf_count = {}, 0, 0
+			local writes, skipped, leaf_count = {}, 0, entry.leaves
 			for _, cell in ipairs(entry.cells) do
 				local cx, cz = turn(cell.x, cell.z, turns)
 				local x, z = sx + cx, sz + cz
@@ -314,16 +274,16 @@ local function loader(directory)
 						return nil
 					end
 				else
-					leaf_count = leaf_count + 1
 					if not ok or y <= ground or (water and y <= water) or
 							(road and y <= ground + 3) then
+						-- more than half the leaves left out: the shape does not fit
 						skipped = skipped + 1
+						if skipped * 2 > leaf_count then return nil end
 						ok = false
 					end
 				end
 				if ok then writes[#writes + 1] = {x, y, z, cell, turns, wood} end
 			end
-			if skipped * 2 > leaf_count then return nil end
 			local kept = {}
 			for index, run in ipairs(entry.runs) do
 				local ok = run.parent == 0 or kept[run.parent] == true
@@ -459,7 +419,6 @@ local function loader(directory)
 							if write then
 								local cell = w[4]
 								local name = name_of(cell.name)
-								if name == own.fruit and wood_row.fruit ~= own.fruit then name = leaves end
 								out[#out + 1] = {x = x, y = y, z = z, name = name,
 									param2 = parts.rotate_param2(cell.param2,
 										parts.param2_kind(name), w[5])}

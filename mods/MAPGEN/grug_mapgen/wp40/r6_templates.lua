@@ -548,13 +548,7 @@ return function(hash, content, template_source, generated)
 	-- slice's or node's probability (0..254 of 256). The draw chains the
 	-- row's stream at the root into the local slice y or node x/y/z. The
 	-- rotation is the root's own (decoration_rotation), so it adds nothing.
-	local function probability_include(full_seed, definition_id, root_x, root_y,
-			root_z, rotation, trial_kind, x, y, z, probability)
-		integer(probability, "template probability", 0, 254)
-		if probability == 0 then return false end
-		if probability == 254 then return true end
-		local mix, salt = stream(full_seed, "template_probability", definition_id)
-		local root = mix(root_x, root_y, root_z, salt)
+	local function probability_draw(mix, root, trial_kind, x, y, z, probability)
 		local draw
 		if trial_kind == "slice" then
 			draw = mix(-1, integer(y, "template slice y", 0, 63), -1, root)
@@ -566,6 +560,33 @@ return function(hash, content, template_source, generated)
 			fail("template probability trial kind differs")
 		end
 		return draw % 256 < probability
+	end
+	local function probability_include(full_seed, definition_id, root_x, root_y,
+			root_z, rotation, trial_kind, x, y, z, probability)
+		integer(probability, "template probability", 0, 254)
+		if probability == 0 then return false end
+		if probability == 254 then return true end
+		local mix, salt = stream(full_seed, "template_probability", definition_id)
+		return probability_draw(mix, mix(root_x, root_y, root_z, salt), trial_kind,
+			x, y, z, probability)
+	end
+	-- The trials of one root as one function (trial_kind, x, y, z,
+	-- probability), equal to `probability_include` at that root: the row's
+	-- stream at the root is drawn once, at the first trial that needs it.
+	local function probability_trials(full_seed, definition_id, root_x, root_y,
+			root_z)
+		local mix, root
+		return function(trial_kind, x, y, z, probability)
+			integer(probability, "template probability", 0, 254)
+			if probability == 0 then return false end
+			if probability == 254 then return true end
+			if not root then
+				local salt
+				mix, salt = stream(full_seed, "template_probability", definition_id)
+				root = mix(root_x, root_y, root_z, salt)
+			end
+			return probability_draw(mix, root, trial_kind, x, y, z, probability)
+		end
 	end
 
 	-- A generated record's copy: its own rotations, the variants shared
@@ -687,6 +708,14 @@ return function(hash, content, template_source, generated)
 		end
 		return cells, runs, v.bounds[rotation + 1]
 	end
+	-- The turned bounds `generated_cells` returns, without the cells.
+	function module.generated_bounds(definition_id, variant_index, rotation)
+		integer(rotation, "rotation index", 0, 3)
+		local record = by_id[definition_id]
+		local v = record and record.generated and record.variants[variant_index]
+		if not v then fail("generated variant differs") end
+		return v.bounds[rotation + 1]
+	end
 	function module.rotation_runtime(definition_id, rotation)
 		integer(rotation, "rotation index", 0, 3)
 		local record = by_id[definition_id]
@@ -694,6 +723,9 @@ return function(hash, content, template_source, generated)
 	end
 	function module.probability_include(...)
 		return probability_include(...)
+	end
+	function module.probability_trials(...)
+		return probability_trials(...)
 	end
 	return module
 end

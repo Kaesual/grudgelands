@@ -1,6 +1,7 @@
 -- Round 22 Phase 4: the road network (roads v2; world_zones.md §9, plan D9,
 -- D14, D15, D18, D19, D44-D51, D59, D67, D68). Float maths (D2), pure, no
--- chunk state and no cache file (D37).
+-- chunk state; the serialized text is a section of the world-folder layout
+-- cache (`layout_cache.lua`, D71).
 --
 --   local roads = dofile(".../road_layout.lua")
 --   local inputs = roads.inputs(source, position_of)   -- nodes, trails, order
@@ -1396,7 +1397,7 @@ local function new_module(P)
 				X, Z = {}, {}
 				for i, p in ipairs(pts) do X[i], Z[i] = p[1], p[2] end
 			end
-			-- positions on a 1/16-node lattice: the payload carries them exactly
+			-- positions on a 1/LAT-node lattice: the payload carries them exactly
 			for i = 1, #X do
 				X[i] = floor(X[i] * LAT + 0.5) / LAT
 				Z[i] = floor(Z[i] * LAT + 0.5) / LAT
@@ -2314,10 +2315,11 @@ local function new_module(P)
 	--   S.column(x, z, t, wy) -> kind, road_y, new_t, road_id, idx, extra
 	--   kind: nil (untouched), "surface" (road surface column; extra = class
 	--   "grade"/"cut"/"fill"/"deck"/"bridge"/"ford"), "cutslope",
-	--   "wall", "embslope"; new_t: the terrain after the road (for surface
-	--   columns on a deck/bridge: the untouched terrain). extra.pillar flags
-	--   pillar columns on a deck/bridge; extra.bridge flags every surface
-	--   column of a bridge run (below).
+	--   "wall" (extra.base: its lowest y), "embslope", "embwall"; new_t: the
+	--   terrain after the road (for surface columns on a deck/bridge: the
+	--   untouched terrain). extra.pillar flags pillar columns on a
+	--   deck/bridge; extra.bridge flags every surface column of a bridge run
+	--   (below); extra.rail a capital street's railing.
 	-- Bridge runs (D74): a raised run is a maximal run of consecutive deck
 	-- or bridge points ("D"/"B") of one road; it is a bridge run when it
 	-- holds at least one water-crossing point ("B"). It lands on each bank
@@ -2371,14 +2373,31 @@ local function new_module(P)
 	local STREET = {avenue = true, lane = true}
 	function M.sampler(layout)
 		local BUCKET = P.BUCKET
-		local buckets = {}
 		local SIDE = P.SIDE_MAX
 		local function bkey(bx, bz) return bz * 8192 + bx end
 		local bridge_at, straight_at = {}, {}
-		for _, r in ipairs(layout.roads) do
+		-- Every road's points end to end in flat arrays (the column walk
+		-- reads no road table): x, z, the profile R, the class and the road's
+		-- number; per road its half width, its first point and the squared
+		-- distance beyond which a segment's edge lies farther than SIDE (with
+		-- a 1e-9 relative margin, far above the rounding of sqrt and the
+		-- subtraction). A segment is its first point's number. Each segment
+		-- is listed in every BUCKET-node bucket within hw + SIDE + 1 of it
+		-- (`segs`), in road and point order.
+		local PX, PZ, PR, PC, PRD = {}, {}, {}, {}, {}
+		local RROAD, RHW, RLIM, RFIRST = {}, {}, {}, {}
+		local segs, np = {}, 0
+		local bucket_x, bucket_z = {}, {}
+		for n, r in ipairs(layout.roads) do
 			bridge_at[r.id] = M.bridge_points(r.cls)
 			if STREET[r.kind] then straight_at[r.id] = M.straight_points(r.X, r.Z) end
 			local X, Z = r.X, r.Z
+			RROAD[n], RHW[n], RFIRST[n] = r, r.hw, np + 1
+			RLIM[n] = (r.hw + SIDE) * (r.hw + SIDE) * (1 + 1e-9)
+			for i = 1, #X do
+				PX[np + i], PZ[np + i], PR[np + i], PC[np + i], PRD[np + i] =
+					X[i], Z[i], r.R[i], r.cls[i], n
+			end
 			local reach = r.hw + SIDE + 1
 			for i = 1, #X - 1 do
 				local x0, x1 = min(X[i], X[i + 1]) - reach, max(X[i], X[i + 1]) + reach
@@ -2386,79 +2405,129 @@ local function new_module(P)
 				for bz = floor(z0 / BUCKET), floor(z1 / BUCKET) do
 					for bx = floor(x0 / BUCKET), floor(x1 / BUCKET) do
 						local k = bkey(bx, bz)
-						local l = buckets[k]
-						if not l then l = {}; buckets[k] = l end
-						l[#l + 1] = r.id * 65536 + i
+						local l = segs[k]
+						if not l then
+							l = {}; segs[k] = l
+							bucket_x[#bucket_x + 1], bucket_z[#bucket_z + 1] = bx, bz
+						end
+						l[#l + 1] = np + i
 					end
+				end
+			end
+			np = np + #X
+		end
+		-- The column index: SUB-node cells, each holding the first and the
+		-- last entry of its bucket's list whose segment may come within
+		-- hw + SIDE of a column of the cell (the distance from the cell's
+		-- centre less its half diagonal, with a node to spare); a cell with
+		-- none holds nothing. The walk runs over that range of the list in
+		-- its order, so the answer is the full list's.
+		local SUB = 8
+		local subs = {}
+		local function skey(sx, sz) return sz * 4096 + sx end
+		local spare = (SUB - 1) / 2 * sqrt(2) + 1
+		for b = 1, #bucket_x do
+			local bx, bz = bucket_x[b], bucket_z[b]
+			local list = segs[bkey(bx, bz)]
+			for sz = bz * BUCKET / SUB, (bz + 1) * BUCKET / SUB - 1 do
+				for sx = bx * BUCKET / SUB, (bx + 1) * BUCKET / SUB - 1 do
+					local cx, cz = sx * SUB + (SUB - 1) / 2, sz * SUB + (SUB - 1) / 2
+					local first, last
+					for j = 1, #list do
+						local p = list[j]
+						local ax, az = PX[p], PZ[p]
+						local vx, vz = PX[p + 1] - ax, PZ[p + 1] - az
+						local l2 = vx * vx + vz * vz
+						local u = l2 > 0 and ((cx - ax) * vx + (cz - az) * vz) / l2 or 0
+						if u < 0 then u = 0 elseif u > 1 then u = 1 end
+						local rx, rz = cx - ax - u * vx, cz - az - u * vz
+						local reach = RHW[PRD[p]] + SIDE + spare
+						if rx * rx + rz * rz <= reach * reach then
+							first = first or j
+							last = j
+						end
+					end
+					if first then subs[skey(sx, sz)] = first * 65536 + last end
 				end
 			end
 		end
 		local roads = layout.roads
 		local function column(x, z, t, wy)
-			local list = buckets[bkey(floor(x / BUCKET), floor(z / BUCKET))]
-			if not list then return nil end
-			-- nearest surface segment (hard min of distance minus half width)
-			local best, br, bi, bu = INF, nil, nil, nil
+			local range = subs[skey(floor(x / SUB), floor(z / SUB))]
+			if not range then return nil end
+			local list = segs[bkey(floor(x / BUCKET), floor(z / BUCKET))]
+			local first = floor(range / 65536)
+			-- nearest surface segment (hard min of distance minus half width);
+			-- a segment whose edge lies beyond SIDE changes nothing: it is not
+			-- the nearest whenever another one is within SIDE (and with none
+			-- within SIDE the answer is nil), and it has no side zone
+			local best, bs, bu = INF, nil, nil
 			local cut_cap, fill_floor = INF, -INF
 			local wall_at, wall_base = false, nil
-			for j = 1, #list do
-				local code = list[j]
-				local rid, i = floor(code / 65536), code % 65536
-				local r = roads[rid]
-				local ax, az, bx, bz = r.X[i], r.Z[i], r.X[i + 1], r.Z[i + 1]
-				local vx, vz = bx - ax, bz - az
+			for j = first, range - first * 65536 do
+				local p = list[j]
+				local ax, az = PX[p], PZ[p]
+				local vx, vz = PX[p + 1] - ax, PZ[p + 1] - az
 				local l2 = vx * vx + vz * vz
 				local u = l2 > 0 and ((x - ax) * vx + (z - az) * vz) / l2 or 0
-				-- "interior": the projection falls on this segment, or past
-				-- its end onto a neighbour that is ground-supported too (so
-				-- the outside of a bend has no gaps; only the end of a
-				-- ground-supported run next to a deck is excluded)
-				local interior = true
-				if u < 0 then
-					local c0 = r.cls[i - 1]
-					interior = c0 == nil or c0 == "G"
-				elseif u > 1 then
-					local c2 = r.cls[i + 2]
-					interior = c2 == nil or c2 == "G"
-				end
-				if u < 0 then u = 0 elseif u > 1 then u = 1 end
-				local px, pz = ax + u * vx, az + u * vz
+				local cu = u
+				if cu < 0 then cu = 0 elseif cu > 1 then cu = 1 end
+				local px, pz = ax + cu * vx, az + cu * vz
 				local rx, rz = x - px, z - pz
-				local d = sqrt(rx * rx + rz * rz)
-				local e = d - r.hw
-				if e < best then best, br, bi, bu = e, r, i, u end
-				if e > 0 and e <= SIDE then
-					local idx = u < 0.5 and i or i + 1
-					local ry = r.R[i] + u * (r.R[i + 1] - r.R[i])
-					local c = r.cls[idx]
-					-- cut slope ~1:1 back from the edge, a low wall at its foot
-					-- where the cut is deep
-					-- (the wall height grows with the column's cut, so the
-					-- answer stays continuous)
-					local wh = min(P.WALL_H, max(0, t - ry - P.WALL_MIN))
-					-- ~1:1 soil slope for the first CUT_SOIL nodes, then a
-					-- steeper rock face (CUT_ROCK per node), so deep cuts end
-					-- inside the side zone instead of at its edge
-					local ee = max(0, e - 1)
-					local cap = ry + wh + min(ee, P.CUT_SOIL) * P.CUT_SLOPE +
-						max(0, ee - P.CUT_SOIL) * P.CUT_ROCK +
-						min(e, 1) * (1 - wh / P.WALL_H) * P.CUT_SLOPE
-					local walled = wh > 0 and e <= 1.5
-					if cap < cut_cap then
-						cut_cap, wall_at = cap, walled
-						wall_base = walled and floor(ry) + 1 or nil
-					end
-					-- embankment only beside ground-supported road, and only
-					-- straight out from it (not around the end of a
-					-- ground-supported stretch, which would spill under a deck)
-					if c == "G" and interior and e <= P.EMB_REACH then
-						local fl = ry - e * P.EMB_SLOPE
-						if fl > fill_floor then fill_floor = fl end
+				local d2 = rx * rx + rz * rz
+				local n = PRD[p]
+				if d2 <= RLIM[n] then
+					local e = sqrt(d2) - RHW[n]
+					if e < best then best, bs, bu = e, p, cu end
+					if e > 0 and e <= SIDE then
+						-- "interior": the projection falls on this segment, or
+						-- past its end onto a neighbour that is ground-supported
+						-- too (so the outside of a bend has no gaps; only the
+						-- end of a ground-supported run next to a deck is
+						-- excluded); no neighbour past a road's end
+						local interior = true
+						if u < 0 then
+							local c0 = PRD[p - 1] == n and PC[p - 1] or nil
+							interior = c0 == nil or c0 == "G"
+						elseif u > 1 then
+							local c2 = PRD[p + 2] == n and PC[p + 2] or nil
+							interior = c2 == nil or c2 == "G"
+						end
+						local r0 = PR[p]
+						local ry = r0 + cu * (PR[p + 1] - r0)
+						local c = cu < 0.5 and PC[p] or PC[p + 1]
+						-- cut slope ~1:1 back from the edge, a low wall at its
+						-- foot where the cut is deep
+						-- (the wall height grows with the column's cut, so the
+						-- answer stays continuous)
+						local wh = min(P.WALL_H, max(0, t - ry - P.WALL_MIN))
+						-- ~1:1 soil slope for the first CUT_SOIL nodes, then a
+						-- steeper rock face (CUT_ROCK per node), so deep cuts
+						-- end inside the side zone instead of at its edge
+						local ee = max(0, e - 1)
+						local cap = ry + wh + min(ee, P.CUT_SOIL) * P.CUT_SLOPE +
+							max(0, ee - P.CUT_SOIL) * P.CUT_ROCK +
+							min(e, 1) * (1 - wh / P.WALL_H) * P.CUT_SLOPE
+						local walled = wh > 0 and e <= 1.5
+						if cap < cut_cap then
+							cut_cap, wall_at = cap, walled
+							wall_base = walled and floor(ry) + 1 or nil
+						end
+						-- embankment only beside ground-supported road, and only
+						-- straight out from it (not around the end of a
+						-- ground-supported stretch, which would spill under a
+						-- deck)
+						if c == "G" and interior and e <= P.EMB_REACH then
+							local fl = ry - e * P.EMB_SLOPE
+							if fl > fill_floor then fill_floor = fl end
+						end
 					end
 				end
 			end
-			if not br then return nil end
+			if not bs then return nil end
 			if best <= 0 then
+				local n = PRD[bs]
+				local br, bi = RROAD[n], bs - RFIRST[n] + 1
 				local idx = bu < 0.5 and bi or bi + 1
 				local rc = br.R[bi] + bu * (br.R[bi + 1] - br.R[bi])
 				local ry = floor(2 * rc + 0.5) / 2
@@ -2514,19 +2583,17 @@ local function new_module(P)
 			local bx0, bz0 = floor(x / BUCKET), floor(z / BUCKET)
 			for bz = bz0 - k, bz0 + k do
 				for bx = bx0 - k, bx0 + k do
-					local list = buckets[bkey(bx, bz)]
+					local list = segs[bkey(bx, bz)]
 					if list then
 						for j = 1, #list do
-							local code = list[j]
-							local rid, i = floor(code / 65536), code % 65536
-							local r = roads[rid]
-							local ax, az = r.X[i], r.Z[i]
-							local vx, vz = r.X[i + 1] - ax, r.Z[i + 1] - az
+							local p = list[j]
+							local ax, az = PX[p], PZ[p]
+							local vx, vz = PX[p + 1] - ax, PZ[p + 1] - az
 							local l2 = vx * vx + vz * vz
 							local u = l2 > 0 and ((x - ax) * vx + (z - az) * vz) / l2 or 0
 							if u < 0 then u = 0 elseif u > 1 then u = 1 end
 							local dx, dz = x - ax - u * vx, z - az - u * vz
-							local lim = r.hw + pad
+							local lim = RHW[PRD[p]] + pad
 							if dx * dx + dz * dz <= lim * lim then return true end
 						end
 					end
@@ -2534,7 +2601,7 @@ local function new_module(P)
 			end
 			return false
 		end
-		return {column = column, near = near, buckets = buckets, roads = roads}
+		return {column = column, near = near, roads = roads}
 	end
 
 	---------------------------------------------------------------------------

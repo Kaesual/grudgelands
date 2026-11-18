@@ -497,6 +497,10 @@ function M.new(seed, source, o, warp_scale)
 	end
 
 	-- power scores in warped space, with bulges; best slot, score, 2nd slot, score
+	-- The bulge sums per slot live in one scratch array, reset after each
+	-- sample (no table per sample; the sums are formed in the same order).
+	local adj, touched = {}, {}
+	for k = 1, NM do adj[k] = 0 end
 	local function owner_scores(x, z, fx, fz)
 		local cell = bucket_get(bulge_grid, x, z)
 		local best, bs, second, ss = 0, math.huge, 0, math.huge
@@ -509,25 +513,27 @@ function M.new(seed, source, o, warp_scale)
 		end
 		if cell then
 			-- recompute with bulges for the affected zones only (few items)
-			local adj
+			local nt = 0
 			for n = 1, #cell do
 				local bu = cell[n]
 				local ddx, ddz = x - bu.x, z - bu.z
 				local w = plateau(sqrt(ddx * ddx + ddz * ddz), bu.r0, bu.falloff)
 				if w > 0 then
-					adj = adj or {}
-					adj[bu.slot] = (adj[bu.slot] or 0) + bu.beta * w
+					nt = nt + 1
+					touched[nt] = bu.slot
+					adj[bu.slot] = adj[bu.slot] + bu.beta * w
 				end
 			end
-			if adj then
+			if nt > 0 then
 				best, bs, second, ss = 0, math.huge, 0, math.huge
 				for k = 1, NM do
-					local sc = site(k, fx, fz) - (adj[k] or 0)
+					local sc = site(k, fx, fz) - adj[k]
 					if sc < ss then
 						if sc < bs then second, ss, best, bs = best, bs, k, sc
 						else second, ss = k, sc end
 					end
 				end
+				for n = 1, nt do adj[touched[n]] = 0 end
 			end
 		end
 		return best, bs, second, ss

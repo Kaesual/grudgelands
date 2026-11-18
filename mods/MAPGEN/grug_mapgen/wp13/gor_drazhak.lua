@@ -42,12 +42,15 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
+local function loader(directory, context)
+	-- One loader context (`templates.lua`) for everything this build loads.
+	context = context or {}
 	local parts = dofile(directory .. "/parts.lua")
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local layout = dofile(directory .. "/layout.lua")(directory)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
+	local layout = dofile(directory .. "/layout.lua")(directory, context)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
-	local templates = dofile(directory .. "/templates.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory, context)
+	local composition = dofile(directory .. "/composition.lua")(parts, layout, templates)
 	local gate_watch = dofile(directory .. "/gate_watch.lua")(directory)
 	local CAPITAL = templates.capital("gor_drazhak")
 
@@ -293,9 +296,9 @@ local function loader(directory)
 		local orc = CAPITAL.palettes.town
 		local ors = CAPITAL.palettes.ors
 		local buf = parts.buffer()
-		local doorways, rooms, sockets = {}, {}, {}
-		local placed, inside_by_id, plot_order = {}, {}, {}
-		local claimed, stamped = {}, {}
+		local c = composition.new(buf, "gor drazhak")
+		local doorways, rooms, sockets = c.doorways, c.rooms, c.sockets
+		local stamped = c.stamped
 		local deck_rings = 0
 
 		-- The court paving of the avenues and the cobble of the lanes, each
@@ -313,49 +316,12 @@ local function loader(directory)
 		local POINT = orc.maybe("stake_cap") or orc.node("roof_stair_outer")
 		local SIGNATURE = orc.maybe("signature") or KERB
 
-		local function outdoors(x, z)
-			for _, plot in ipairs(plot_order) do
-				if x >= plot.x and x <= plot.x + plot.w - 1 and
-						z >= plot.z and z <= plot.z + plot.d - 1 then
-					return false
-				end
-			end
-			return true
-		end
+		local outdoors = composition.outdoors(c)
 
-		-- Ground this composition laid itself and has built nothing on.
-		local GROUND = {}
-		for _, role in ipairs({"ground", "ground_patch", "ground_bare"}) do
-			GROUND[orc.node(role)] = true
-		end
+		-- Every prop the composition asks for MUST land (`composition.lua`).
+		local paved_prop = composition.paved_prop(c)
 
-		-- Every prop the composition asks for MUST land; a prop quietly skipped
-		-- is a hole in the authored scene no fixture can see (the Dawnmere
-		-- lesson, wp13-hearthpine-library.md round A).
-		local function refuse(name, x, z, reason)
-			error("wp13 gor drazhak: prop " .. name .. " at " .. x .. "," ..
-				z .. " was not placed: " .. reason, 0)
-		end
-		local function place(name, x1, z1, build)
-			if build() == false then
-				refuse(name, x1, z1, "the prop could not be completed")
-			end
-		end
-		local function paved_prop(name, x1, z1, x2, z2, build)
-			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
-				refuse(name, x1, z1, "the space is taken")
-			end
-			place(name, x1, z1, build)
-		end
-
-		local function pave(name, x1, z1, x2, z2, height)
-			for z = z1, z2 do
-				for x = x1, x2 do
-					buf:put(x, 0, z, name)
-				end
-			end
-			buf:clear(x1, 1, z1, x2, height or 4, z2)
-		end
+		local pave = composition.pave(c)
 
 		-- 1. The shelf: dry ochre grass with the bare dirt and blown sand of a
 		-- city that walks on it.
@@ -402,85 +368,14 @@ local function loader(directory)
 		dressing.waystone(buf, pad_x, pad_z)
 
 		-- 4. The plots.
+		-- Two plots may not share a cell (`composition.place`).
 		for _, plot in ipairs(PLOTS) do
 			local part = CAPITAL.part(plot.template, plot.id, plot.palette,
 				plot.roof)
-			-- Two plots may not share a cell. `parts.stamp` writes; it does not
-			-- ask, so a plot laid over another cuts a silent hole in the first
-			-- and the pad still builds -- the shape of defect that cost
-			-- Dawnmere twenty-two props. Overwriting the STREETS and the ground
-			-- under a plot is intended; overwriting another plot never is.
-			local source, count = part.buffer:cells()
-			for index = 1, count do
-				local cell = source[index]
-				local rx, rz = parts.rotate_footprint(cell.x, cell.z,
-					part.w, part.d, plot.turns)
-				local key = (plot.x + rx) .. ":" .. cell.y ..
-					":" .. (plot.z + rz)
-				local owner = claimed[key]
-				if owner ~= nil then
-					error("wp13 gor drazhak: the plot " .. plot.id ..
-						" writes " .. cell.name .. " into " .. owner ..
-						" at " .. key, 0)
-				end
-				claimed[key] = plot.id
-			end
-			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
-			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak}
+			local _, first = composition.place(c, plot, part, {activity = "copy"})
 			-- every dwelling wears its deck's breastwork, a part of its
 			-- template (`parapet_columns`, the ring's columns)
 			if part.parapet_columns then deck_rings = deck_rings + 1 end
-			plot_order[#plot_order + 1] = placed[plot.id]
-			for _, door in ipairs(points.doors or {}) do
-				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
-			end
-			local spot = (points.inside or {})[1]
-			if spot then
-				inside_by_id[plot.id] = {x = spot.x, y = spot.y, z = spot.z}
-			end
-			for index = 1, #(points.room_corner or {}), 2 do
-				local a = points.room_corner[index]
-				local b = points.room_corner[index + 1]
-				rooms[#rooms + 1] = {
-					min = {x = math.min(a.x, b.x), y = a.y,
-						z = math.min(a.z, b.z)},
-					max = {x = math.max(a.x, b.x), y = a.y,
-						z = math.max(a.z, b.z)},
-					top = a.top, closed = a.closed, id = plot.id,
-				}
-			end
-			-- The building's own sockets; a socket point without a role is the
-			-- position of one of the composition's own sockets.
-			templates.collect_sockets(stamped, points, plot.id)
-			local first = #sockets + 1
-			for _, entry in ipairs(points.sockets or {}) do
-				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
-				if not drop then
-					local recast = plot.recast and plot.recast[entry.role]
-					local out = {id = entry.id, role = entry.role,
-						x = entry.x, y = entry.y, z = entry.z,
-						face = entry.face,
-						group = entry.group,
-						order = entry.order, kind = entry.kind,
-						activity = entry.activity,
-						-- `spawn` travels with the socket: a generator that
-						-- publishes a spare must not lose it here.
-						spawn = entry.spawn,
-						tags = entry.tags}
-					if recast then
-						out.role = recast.role
-						out.tags = recast.tags
-						out.kind, out.group, out.order = nil, nil, nil
-						if recast.from then
-							out.id = out.id:gsub(recast.from, recast.to, 1)
-						end
-					end
-					sockets[#sockets + 1] = out
-				end
-			end
 			-- A core gatehouse's watch (Round 58, gate_watch.lua): the ground
 			-- guards' rectangle on the city side and the tower guard's post.
 			if plot.watch then
@@ -813,19 +708,15 @@ local function loader(directory)
 			dressing.CORE_PATCH)
 
 		-- 12. The sockets the composition owns.
-		local function socket(id, role, x, y, z, face, extra)
-			local entry = {id = id, role = role, x = x, y = y, z = z,
-				face = face % 4}
-			for key, value in pairs(extra or {}) do entry[key] = value end
-			sockets[#sockets + 1] = entry
-		end
+		local socket = composition.socket(c)
 		for _, booth in ipairs(VENDORS) do
 			socket(booth.id, "vendor", booth.x + 1, 1, booth.z - 1, 0,
 				{kind = booth.kind})
 		end
 		socket("travel_waypoint", "waypoint", pad_x, 1, pad_z, 0)
-		-- Public service a few nodes outside the {'highcourt': "king's hall", 'dur_brannoc': "king's hall", 'nhal_veyr': 'mausoleum', 'gor_drazhak': 'warlord hall', 'lethariel': "king's hall", 'kezamba': "king's hall"} door, beside its
-		-- approach and facing away from it, in plain view (the user, 2026-11-10).
+		-- Public service a few nodes outside the warlord hall door, beside its
+		-- approach and facing away from it, in plain view (the user,
+		-- 2026-11-10).
 		socket("expedition_registrar", "idle", -4, 1, 7, 2, {tags = {"work"}})
 		for _, corner in ipairs(CORNERS) do
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
@@ -881,75 +772,21 @@ local function loader(directory)
 		-- Round 58: the gate watch's corners stand on open ground.
 		gate_watch.clear_cover(buf, CAPITAL.palettes.town)
 		dressing.thin_cover(buf)
-		local source, count = buf:cells()
-		local cells = {}
-		for index = 1, count do cells[index] = source[index] end
-		parts.sort_cells_zyx(cells)
-		local light_names = {[orc.node("light_post")] = true,
-			[orc.node("light_wall")] = true,
-			[orc.node("light_indoor")] = true}
-		local lights = {}
-		local names, palette_list = {}, {}
-		local minp = {x = cells[1].x, y = cells[1].y, z = cells[1].z}
-		local maxp = {x = cells[1].x, y = cells[1].y, z = cells[1].z}
-		for index = 1, #cells do
-			local cell = cells[index]
-			if light_names[cell.name] then
-				lights[#lights + 1] = {x = cell.x, y = cell.y, z = cell.z}
-			end
-			if not names[cell.name] then
-				names[cell.name] = true
-				palette_list[#palette_list + 1] = cell.name
-			end
-			if cell.x < minp.x then minp.x = cell.x end
-			if cell.y < minp.y then minp.y = cell.y end
-			if cell.z < minp.z then minp.z = cell.z end
-			if cell.x > maxp.x then maxp.x = cell.x end
-			if cell.y > maxp.y then maxp.y = cell.y end
-			if cell.z > maxp.z then maxp.z = cell.z end
-		end
-		table.sort(palette_list, parts.less_bytes)
+		local cells, bounds, palette_list, lights = composition.finish(buf, orc)
 
-		-- The sockets contract carries `dir` as a unit vector; the parts carry
-		-- `face` as a facedir, because a facedir is what rotates with a stamped
-		-- part. This is the settlement boundary, so it is converted here, with
-		-- the library's own table rather than with an engine call.
-		for _, entry in ipairs(sockets) do
-			local dx, dz = parts.facedir_step(entry.face)
-			entry.dir = {x = dx, z = dz}
-		end
+		composition.face_dirs(sockets)
 
-		local destinations = {}
-		for _, id in ipairs(DESTINATION_ORDER) do
-			local spot = inside_by_id[id]
-			if not spot then
-				error("wp13 gor drazhak: destination " .. id .. " is missing", 0)
-			end
-			destinations[#destinations + 1] =
-				{id = id, x = spot.x, y = spot.y, z = spot.z}
-		end
+		local destinations = composition.destinations(c, DESTINATION_ORDER)
 
 		local function box(id, margin, lift)
-			local plot = placed[id]
-			return {
-				min = {x = plot.x - margin, y = -1, z = plot.z - margin},
-				max = {x = plot.x + plot.w - 1 + margin,
-					y = plot.peak + lift, z = plot.z + plot.d - 1 + margin},
-			}
+			return composition.box(c, id, margin, lift)
 		end
-		local function door_of(id)
-			for _, door in ipairs(doorways) do
-				if door.id == id then
-					return {x = door.x, y = door.y, z = door.z}
-				end
-			end
-			error("wp13 gor drazhak: no door for " .. id, 0)
-		end
+		local function door_of(id) return composition.door_of(c, id) end
 
 		return {
 			schema = SCHEMA,
 			cells = cells,
-			bounds = {min = minp, max = maxp},
+			bounds = bounds,
 			palette = palette_list,
 			landmarks = {
 				-- A capital core has no player spawn; `arrival` is the

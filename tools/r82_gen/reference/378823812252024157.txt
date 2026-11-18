@@ -1,0 +1,40 @@
+# tools/r82_gen digest v1 (tools/seed_fleet/seed.lua)
+seed 378823812252024157
+roster 2ef6a42f1e371e037db1940347bc3684574507d010be306d4d726463cc29dc12
+trees bebd880d2d5c7b8e12acea95da0ba70aa921d75de465c575d650a0bfc29e769a
+layout water 17d504155e9c1fbfb6bfa520ab4f73a8b19909ecad83bae1cd9d82c22cd6064a
+layout roads 53e55ba2380fffea447b33a9eef6a2ed5a1e3f678f7dbaad287a35fd5ac5eb9a
+layout capitals 61e1f978ab24b73f8fcf14e54e5e6472e79913a7cad58b460020c44521ec7ebf
+layout placement d8c642b881c1b1fc02caf8724cf9a2f36b1ada5c8d49311ebeea48f43eae0410
+layout handover a7997d05c95b7ae26f33810d639dc56059693cec50365f0bd9e4341c25f07bac
+layout sockets 5b3370f120c41a7de9283134e2a3925a2a9497234898408e893ac83201e333f9
+layout blueprints c0fcb2c6825476a71fae65a0696b579f3cee96fd1e6d98709c33c811ff884dda
+info manifest 02de02d2f68ec96bb7eb6992f513894a4d82723629fb05b4c30beb5b0098c954
+chunk -4192,-32,3728 nodes=0e0bc50f480ecb9e light=3bcbe045123f2b38 meta=0 corner
+info cover -4192,-32,3728 seconds=0.80 land=0 river=0 road=0 settlement=0 forest=0 ground=6400 decorations=0 settlement_written=0 p9g_accepted=0 modified_voxels=0
+chunk -2512,-32,2128 nodes=1fdc791017e1e7a5 light=9596a227c1c5ca0d meta=0 coast
+info cover -2512,-32,2128 seconds=0.27 land=3834 river=0 road=0 settlement=0 forest=6138 ground=6400 decorations=80 settlement_written=0 p9g_accepted=7 modified_voxels=50273
+chunk -592,-32,-2512 nodes=606681b559067326 light=f181e3a658809b2b meta=0 river mouth 26
+info cover -592,-32,-2512 seconds=0.38 land=3182 river=1105 road=0 settlement=0 forest=0 ground=6400 decorations=519 settlement_written=0 p9g_accepted=5 modified_voxels=50773
+chunk 1968,48,-1552 nodes=0c4ff86226076e65 light=ca7939907e498db8 meta=0 capital edge lethariel
+info cover 1968,48,-1552 seconds=0.41 land=4795 river=1605 road=93 settlement=0 forest=6400 ground=5293 decorations=370 settlement_written=11397 p9g_accepted=0 modified_voxels=29229
+chunk 368,48,1888 nodes=12967a231c2ccb91 light=155d05c888b07ebe meta=0 collar redtusk_bandit_camp
+info cover 368,48,1888 seconds=0.33 land=6400 river=0 road=306 settlement=1933 forest=0 ground=6400 decorations=1643 settlement_written=5183 p9g_accepted=6 modified_voxels=21703
+chunk -1792,48,-2192 nodes=02e15b1b6b1dbe29 light=d571320b7c5b784a meta=3:78aa119d18d4508d a waypost
+info cover -1792,48,-2192 seconds=0.37 land=6400 river=0 road=1474 settlement=2443 forest=0 ground=6400 decorations=552 settlement_written=8992 p9g_accepted=5 modified_voxels=33433
+chunk -1952,48,-1472 nodes=48eefd312bc5cb5a light=ed9f5623251e0687 meta=0 road
+info cover -1952,48,-1472 seconds=0.52 land=6400 river=0 road=1230 settlement=1355 forest=0 ground=6400 decorations=203 settlement_written=24039 p9g_accepted=0 modified_voxels=21858
+chunk 2048,-32,1888 nodes=1c18eed270a42b8c light=96142ab0b6d610f4 meta=0 river middle 12
+info cover 2048,-32,1888 seconds=0.83 land=5747 river=653 road=414 settlement=576 forest=6390 ground=6400 decorations=614 settlement_written=0 p9g_accepted=5 modified_voxels=47923
+chunk -1792,128,-352 nodes=78d5b72122fbe976 light=ce68026eccf31e70 meta=0 forest grug_bone_forest
+info cover -1792,128,-352 seconds=0.34 land=6400 river=0 road=0 settlement=0 forest=6393 ground=1369 decorations=30 settlement_written=0 p9g_accepted=2 modified_voxels=20981
+chunk -1632,448,-832 nodes=59f91f9e69654cae light=eca408e837b2ec73 meta=0 mountain
+info cover -1632,448,-832 seconds=0.22 land=6400 river=0 road=0 settlement=0 forest=0 ground=547 decorations=1 settlement_written=0 p9g_accepted=0 modified_voxels=974
+chunk -1632,368,-832 nodes=7d395a1b5be10b6c light=3167abfcf8825126 meta=0 under the mountain
+info cover -1632,368,-832 seconds=0.13 land=6400 river=0 road=0 settlement=0 forest=0 ground=1673 decorations=6 settlement_written=0 p9g_accepted=0 modified_voxels=4761
+chunk -1872,-32,1888 nodes=5d3ce39a6d0b8a58 light=56c314dd9a75a595 meta=0 village mournfen_village
+info cover -1872,-32,1888 seconds=0.38 land=6400 river=0 road=575 settlement=1385 forest=6282 ground=6400 decorations=105 settlement_written=5184 p9g_accepted=1 modified_voxels=19831
+chunk 1728,48,-1552 nodes=2ef4047f63105558 light=840151d52e9b7394 meta=0 capital core lethariel
+info cover 1728,48,-1552 seconds=0.78 land=6400 river=0 road=142 settlement=6400 forest=6400 ground=6400 decorations=0 settlement_written=86561 p9g_accepted=0 modified_voxels=40475
+chunk -1952,-112,-1472 nodes=13943b2d4143c2eb light=2aa68879ae29be09 meta=0 under the ground at the road
+info cover -1952,-112,-1472 seconds=0.13 land=6400 river=0 road=1230 settlement=1355 forest=0 ground=0 decorations=0 settlement_written=0 p9g_accepted=0 modified_voxels=509

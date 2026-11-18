@@ -60,7 +60,7 @@ local function record(repo)
 	for _, profile in ipairs(settlement.roster) do
 		local file = profile.blueprint_file
 		local r20 = file == "r20_poi_blueprint.lua" and profile.art.kind ~= "dragon"
-		local r14 = file:match("^r7_.*_blueprint%.lua$") and profile.slot ~= "capital" and
+		local r14 = file == "r14_poi_blueprint.lua" and profile.slot ~= "capital" and
 			profile.slot ~= "start"
 		if r20 or r14 then
 			local bp = dofile(wp40 .. "/" .. file)({}, profile)

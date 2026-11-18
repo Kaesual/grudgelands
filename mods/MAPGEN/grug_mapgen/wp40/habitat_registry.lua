@@ -152,12 +152,21 @@ function M.vegetation_rule(full_seed, land_zone_at)
 		return floor(t * t * (3072 - 2 * t) / 1048576)
 	end
 	local function lerp(a, b, t) return a + floor((b - a) * t / 1024) end
+	-- The four corners of the last lattice cell per salt (neighbouring
+	-- columns share them for whole runs; integers, so a hit is exact).
+	local corners = {}
 	local function noise(x, z, period, salt)
 		local ix, iz = floor(x / period), floor(z / period)
 		local tx, tz = weight(x - ix * period, period),
 			weight(z - iz * period, period)
-		return lerp(lerp(lattice(ix, iz, salt), lattice(ix + 1, iz, salt), tx),
-			lerp(lattice(ix, iz + 1, salt), lattice(ix + 1, iz + 1, salt), tx), tz)
+		local c = corners[salt]
+		if not c then c = {} corners[salt] = c end
+		if c[1] ~= ix or c[2] ~= iz or c[3] ~= period then
+			c[1], c[2], c[3] = ix, iz, period
+			c[4], c[5] = lattice(ix, iz, salt), lattice(ix + 1, iz, salt)
+			c[6], c[7] = lattice(ix, iz + 1, salt), lattice(ix + 1, iz + 1, salt)
+		end
+		return lerp(lerp(c[4], c[5], tx), lerp(c[6], c[7], tx), tz)
 	end
 	local SALT_JITTER, SALT_DETAIL = 40960001, 45613327
 	local SALT_GROVE, SALT_CLEARING, SALT_SNOW = 61247111, 23456789, 34567891
@@ -249,14 +258,6 @@ function M.vegetation_rule(full_seed, land_zone_at)
 	function rule.forest_scale(x, z)
 		assert(land_zone_at, "the forest field needs the zone source")
 		return scale_sum(x, z) / (SCALE_ONE * STEP * STEP)
-	end
-	-- The grid's per-zone samples (fixtures and receipts).
-	function rule.forest_normalisation()
-		local result = {}
-		for zone, count in pairs(zone_count) do
-			result[zone] = {count = count, sum = zone_sum[zone]}
-		end
-		return result, world_count, world_sum
 	end
 	local LOWEST_LINE = V.TREE_START - V.JITTER
 	-- Factors of the five classes at one column, in ONE units:
@@ -383,14 +384,6 @@ function M.vegetation_rule(full_seed, land_zone_at)
 		return false
 	end
 	return rule
-end
-
--- Density multiplier (a plain number, 1 = catalog density) of one
--- decoration class at a site; `values` holds x, z, terrain_y, biome and
--- zone. Runtime renewal applies it per species (vegetation_density.lua).
-function M.vegetation_factor(rule, class, values)
-	return rule.factor(class, values.x, values.z, values.terrain_y,
-		values.biome, values.zone) / V.ONE
 end
 
 -- THE P9G WATER PREDICATES (Round 70, the user's rulings of 2026-11-07), read

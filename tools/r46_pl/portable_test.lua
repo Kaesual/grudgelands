@@ -277,13 +277,14 @@ do
 	local cache = dofile(dir .. "/layout_cache.lua")({sha256 = hex, list_dir = function() return {} end,
 		write = function() return true end, identity = function() return "x" end})
 	local parts = cache.key(SEED, "digest", "settings", "interpreter")
-	local texts = {placement = text, water = "W", road = "R", capital = "C"}
+	-- (Round 82 R7, audit M4-03: the cache also keeps main's prepared handover)
+	local texts = {placement = text, water = "W", road = "R", capital = "C", prepared = {}}
 	local bytes = cache.encode(parts, texts, {seconds = {construction = 1, water = 2, roads = 3,
 		capitals = 4, placement = 5}})
 	local got = cache.decode(bytes, parts)
 	check(got and got.placement == text and got.water == "W" and got.meta.seconds.placement == 5,
 		"C the cache keeps the placement section")
-	check(cache.FORMAT == "grug_world_layouts_v2", "C the format moved on")
+	check(cache.FORMAT == "grug_world_layouts_v3", "C the format moved on")
 end
 
 print(("R46 PL PORTABLE PASS checks=%d (%.1f s)"):format(checks, os.clock() - t0))

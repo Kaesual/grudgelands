@@ -1,10 +1,9 @@
 -- Lethariel's four districts and their rosters (builder `lethariel_plot.lua`).
 --
--- `M.plots()` returns the plots in a FIXED order -- district by district in
--- the contract's own role order, each district's BUILDING plots in roster
--- order and then its FILL plots in roster order. Where they stand and how
--- they are turned is the capital planner's per-world layout (Round 22),
--- which keeps the mere precinct beside the crown lake (plan D72).
+-- `plots()` returns the plots in the FIXED order of `capital_districts.lua`.
+-- Where they stand and how they are turned is the capital planner's
+-- per-world layout (Round 22), which keeps the mere precinct beside the crown
+-- lake (plan D72).
 --
 -- THREE DISTRICTS OF NINE AND ONE OF THREE. The lore and spiritual district is
 -- the MERE PRECINCT and the lake is why it is smaller: three rosters carry nine
@@ -22,32 +21,23 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plots = dofile(directory .. "/lethariel_plot.lua")(directory)
-	-- The sizes of the fill dressings (their reach), in roster order; the
-	-- mere precinct carries two smaller ones.
-	local FILL_REACHES, MERE_FILL_REACHES = {11, 11, 8, 5}, {8, 5}
-
-	local M = {}
+local function loader(directory, context)
+	-- One loader context (`templates.lua`) for everything this build loads.
+	context = context or {}
+	local plots = dofile(directory .. "/lethariel_plot.lua")(directory, context)
+	local capital_districts = dofile(directory .. "/capital_districts.lua")
+	-- The sizes of the mere precinct's two fill dressings (their reach), in
+	-- roster order; every other district's are the plot engine's
+	-- `FILL_REACHES`.
+	local MERE_FILL_REACHES = {8, 5}
 
 	----------------------------------------------------------------------
 	-- Shared shopfront
 	----------------------------------------------------------------------
 
-	-- The counter every profession house carries, in one place so five of
-	-- them are the same counter: a four-node trestle on the street row of the
-	-- plot's own ring, clear of the two lantern pillars at the corners and of
-	-- the doorstep path down the middle. The vendor stands OUTSIDE it on the
-	-- plot's outermost row and looks at it, which is what a trader at a
-	-- counter is and also what makes the socket's `dir` name the feature.
-	local function shop_counter(buf, palette, area)
-		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
-	end
-	-- `face` (default 0, the shop) turns a trader whose shop front has a
-	-- post where the counter would be (Round 47, NPCs face away from walls).
-	local function shop_vendor(id, kind, area, face)
-		return plots.vendor(id, kind, area.x1 - 4, area.z0, face or 0)
-	end
+	-- The shopfront every profession house carries (`capital_plot.lua`).
+	local shop_counter = plots.shop_counter
+	local shop_vendor = plots.shop_vendor
 	-- A TRAINING DUMMY, the feature the sockets contract's `spar` activity
 	-- names: "another `spar` socket or a training dummy (a fence post or a
 	-- wool node)". A fence post with a wool head is both halves of that
@@ -690,61 +680,21 @@ local function loader(directory)
 	-- The four districts
 	----------------------------------------------------------------------
 
-	M.districts = {
+	return capital_districts.new({
 		plots.district({key = "lethariel_market",
 			role = "market_professions", patrol_group = MARKET_WATCH,
-			plots = MARKET, fill = MARKET_FILL,
-			fill_reaches = FILL_REACHES}),
+			plots = MARKET, fill = MARKET_FILL}),
 		plots.district({key = "lethariel_martial",
 			role = "martial_garrison", patrol_group = MARTIAL_WATCH,
-			plots = MARTIAL, fill = MARTIAL_FILL,
-			fill_reaches = FILL_REACHES}),
+			plots = MARTIAL, fill = MARTIAL_FILL}),
 		plots.district({key = "lethariel_mere",
 			role = "lore_spiritual", patrol_group = MERE_WATCH,
 			plots = MERE, fill = MERE_FILL,
 			fill_reaches = MERE_FILL_REACHES}),
 		plots.district({key = "lethariel_homes",
 			role = "residential_cultural", patrol_group = HOMES_WATCH,
-			plots = HOMES, fill = HOMES_FILL,
-			fill_reaches = FILL_REACHES}),
-	}
-
-	do
-		local roles = {"market_professions", "martial_garrison", "lore_spiritual",
-		"residential_cultural"}
-		if #M.districts ~= #roles then
-			error("wp13 lethariel: district roster differs", 0)
-		end
-		for index = 1, #roles do
-			if M.districts[index].role ~= roles[index] then
-				error("wp13 lethariel: district " .. index .. " is not " ..
-					roles[index], 0)
-			end
-		end
-	end
-
-	-- The plots in a FIXED order -- district by district in the contract's own
-	-- role order, each district's BUILDING plots in roster order and then its
-	-- FILL plots in roster order: {id, district, role, kind ("plot" or
-	-- "fill"), build}. Where a plot stands and how it is turned is the capital
-	-- planner's per-world layout (Round 22, `wp40/capital_planner.lua`); a
-	-- plot's identity is its cells, and its cells do not know where they will
-	-- stand.
-	function M.plots()
-		local list = {}
-		for index = 1, #M.districts do
-			local district = M.districts[index]
-			for _, pair in ipairs({{district.plots, "plot"}, {district.fill, "fill"}}) do
-				for _, plot in ipairs(pair[1]) do
-					list[#list + 1] = {id = plot.id, district = district.key,
-						role = district.role, kind = pair[2], build = plot.build}
-				end
-			end
-		end
-		return list
-	end
-
-	return M
+			plots = HOMES, fill = HOMES_FILL}),
+	}, "lethariel")
 end
 
 return loader

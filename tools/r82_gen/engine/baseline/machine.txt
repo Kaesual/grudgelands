@@ -1,0 +1,13 @@
+start 2026-11-18T10:04:06+0100 load 1.47 2.26 2.14 1/2897 140201
+lua slots in use: 09:59:54 lua[1] base-region end rc=1|10:00:02 lua[1] base-region start: luajit tools/r82_gen/pick_region.lua /home/jan/projects/grudgelands/.claude/worktrees/r82-base|10:00:32 lua[1] base-region end rc=0|10:02:15 lua[1] r82-base-dev start: /home/jan/projects/grudgelands/.claude/worktrees/r82-base/tools/luanti_headless.sh 330|10:03:44 lua[1] r82-base-dev end rc=0|
+end 2026-11-18T10:06:30+0100 load 3.52 2.71 2.32 5/2896 152924
+ledger: 10:04:06 measure1 r82-region start (/home/jan/projects/grudgelands/.claude/worktrees/r82-base)
+ledger: 10:04:06 lua[1] measure:r82-region start: /home/jan/projects/grudgelands/.claude/worktrees/r82-base/tools/luanti_headless.sh 330
+ledger: 10:04:41 lua[2] r82-boot-dump-final start: luajit /home/jan/projects/grudgelands/.claude/worktrees/r82-boot/tools/r82_boot/dump.lua /home/jan/projects/grudgelands/.claude/worktrees/r82-boot 12345 17713522922938657774
+ledger: 10:05:40 lua[3] r82-capital-check-py start: python3 tools/building_templates/check.py
+ledger: 10:05:49 lua[3] r82-capital-check-py end rc=0
+ledger: 10:05:54 lua[3 4] r82-capital-fixtures start: env JOBS=2 tools/run_fixtures.sh r82_capital r56_freeze_capitals
+ledger: 10:06:13 lua[3 4] r82-capital-fixtures end rc=0
+ledger: 10:06:17 lua[3] r82-capital-fixture-after start: luajit tools/r82_capital/portable_test.lua .
+ledger: 10:06:30 lua[1] measure:r82-region end rc=0
+ledger: 10:06:30 measure1 r82-region end rc=0

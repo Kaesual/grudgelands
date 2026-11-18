@@ -6,9 +6,11 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
+-- `context`: the build's optional loader context (`templates.lua`), for the
+-- dressing it makes.
+local function loader(directory, context)
 	local parts = dofile(directory .. "/parts.lua")
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
 
 	local M = {}
 
@@ -116,16 +118,6 @@ local function loader(directory)
 			math.max(x1, x2), height or 3, math.max(z1, z2))
 	end
 
-	-- An L shaped path of the given width from (ax, az) to (bx, bz): first
-	-- along z, then along x.
-	function M.path(buf, palette, ax, az, bx, bz, width, role)
-		local half = math.floor(((width or 3) - 1) / 2)
-		M.pave(buf, palette, ax - half, math.min(az, bz), ax + half,
-			math.max(az, bz), role or "path")
-		M.pave(buf, palette, math.min(ax, bx), bz - half, math.max(ax, bx),
-			bz + half, role or "path")
-	end
-
 	-- Is this ground cell free for a prop?
 	function M.free(buf, x, z, height)
 		local below = buf:at(x, 0, z)
@@ -151,7 +143,7 @@ local function loader(directory)
 				for y = 1, 4 do
 					local cell = buf:at(x + dx, y, z + dz)
 					if cell ~= nil and cell.name ~= "air" and
-							not leaves[(x + dx) .. ":" .. y .. ":" .. (z + dz)] then
+							not leaves[parts.cell_key(x + dx, y, z + dz)] then
 						return false
 					end
 				end

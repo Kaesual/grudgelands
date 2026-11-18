@@ -133,7 +133,6 @@ local function height_factory(dependencies)
 	local floor, ceil, abs, max, min, sqrt, exp = math.floor, math.ceil,
 		math.abs, math.max, math.min, math.sqrt, math.exp
 	local round_ratio = deterministic.round_ratio
-	local floor_div = deterministic.floor_div
 
 	local function fail(message)
 		error("WP40 height: " .. message, 0)
@@ -192,15 +191,17 @@ local function height_factory(dependencies)
 	-- Row and cell indices are shifted by FEATURE_BIAS so that they stay
 	-- positive on the map: LuaJIT cannot compile a lookup of a variable
 	-- negative key in a table that also has an array part ("NYI: mixed
-	-- sparse/dense table", Round 22 D4).
+	-- sparse/dense table", Round 22 D4). Cell indices are plain floored
+	-- quotients: the coordinates are integers (exact quotient, or at least
+	-- 1/128 from the next integer, far above rounding).
 	local FEATURE_BIAS = 1024
 	local function add_bucket(grid, record, min_x, max_x, min_z, max_z)
-		for iz = floor_div(min_z, FEATURE_CELL) + FEATURE_BIAS,
-				floor_div(max_z, FEATURE_CELL) + FEATURE_BIAS do
+		for iz = floor(min_z / FEATURE_CELL) + FEATURE_BIAS,
+				floor(max_z / FEATURE_CELL) + FEATURE_BIAS do
 			local row = grid[iz]
 			if not row then row = {} grid[iz] = row end
-			for ix = floor_div(min_x, FEATURE_CELL) + FEATURE_BIAS,
-					floor_div(max_x, FEATURE_CELL) + FEATURE_BIAS do
+			for ix = floor(min_x / FEATURE_CELL) + FEATURE_BIAS,
+					floor(max_x / FEATURE_CELL) + FEATURE_BIAS do
 				local bucket = row[ix]
 				if not bucket then bucket = {} row[ix] = bucket end
 				bucket[#bucket + 1] = record
@@ -208,8 +209,8 @@ local function height_factory(dependencies)
 		end
 	end
 	local function bucket_at(grid, x, z)
-		local row = grid[floor_div(z, FEATURE_CELL) + FEATURE_BIAS]
-		return row and row[floor_div(x, FEATURE_CELL) + FEATURE_BIAS] or nil
+		local row = grid[floor(z / FEATURE_CELL) + FEATURE_BIAS]
+		return row and row[floor(x / FEATURE_CELL) + FEATURE_BIAS] or nil
 	end
 
 	-- Start pad reference: the lower median of 9x9 natural samples, clamped
@@ -621,8 +622,8 @@ local function height_factory(dependencies)
 		local blocks, block_ring, block_cursor = {}, {}, 1
 		local memo_hits, memo_misses, block_builds = 0, 0, 0
 		local function block_for(x, z)
-			local bx = floor_div(x + BLOCK_OFFSET, BLOCK)
-			local bz = floor_div(z + BLOCK_OFFSET, BLOCK)
+			local bx = floor((x + BLOCK_OFFSET) / BLOCK)
+			local bz = floor((z + BLOCK_OFFSET) / BLOCK)
 			local key = bx * 1048576 + bz
 			local block = blocks[key]
 			if block then return block, bx, bz end
@@ -1594,7 +1595,22 @@ local function height_factory(dependencies)
 			end
 			return false
 		end
-		local function road_at(x, z, terrain_y, water_y)
+		-- The road fields of a memo block's road columns, by slot (made on
+		-- the block's first road column): kind, road y, road id, class,
+		-- pillar, bridge, rail, wall base and road kind ("square" only; the
+		-- others take their road's kind).
+		local function road_fields(block)
+			local f = block.roadf
+			if not f then
+				f = {kind = {}, y = {}, id = {}, class = {}, pillar = {}, bridge = {},
+					rail = {}, wall = {}, road_kind = {}}
+				block.roadf = f
+			end
+			return f
+		end
+		-- The terrain y after the road and whether the column is a road
+		-- column (its fields then in the block's road fields at `slot`).
+		local function road_at(x, z, terrain_y, water_y, block, slot)
 			local kind, road_y, new_y, road_id, index, extra =
 				road_sampler.column(x, z, terrain_y, water_y)
 			if kind ~= nil and in_capital_core(x, z) then return terrain_y, false end
@@ -1604,8 +1620,10 @@ local function height_factory(dependencies)
 			if kind ~= "surface" and not (water_y ~= nil and water_y > terrain_y) then
 				local q = square_at(x, z)
 				if q then
-					return floor(q.y), {kind = "surface", road_y = q.y, class = "grade",
-						road_kind = "square"}
+					local f = road_fields(block)
+					f.kind[slot], f.y[slot], f.class[slot] = "surface", q.y, "grade"
+					f.road_kind[slot] = "square"
+					return floor(q.y), true
 				end
 			end
 			if kind == nil then return terrain_y, false end
@@ -1639,14 +1657,15 @@ local function height_factory(dependencies)
 				local high = nearby_water_y(x, z)
 				if high and new_y < high then new_y = min(high, terrain_y) end
 			end
-			return new_y, {kind = kind, road_y = road_y, road_id = road_id,
-				index = index, class = class,
-				pillar = pillar, bridge = extra and extra.bridge or nil,
-				rail = extra and extra.rail or nil,
-				wall_base = extra and extra.base or nil}
+			local f = road_fields(block)
+			f.kind[slot], f.y[slot], f.id[slot], f.class[slot] = kind, road_y, road_id, class
+			f.pillar[slot], f.bridge[slot] = pillar, extra and extra.bridge or nil
+			f.rail[slot], f.wall[slot] = extra and extra.rail or nil, extra and extra.base or nil
+			return new_y, true
 		end
 
-		-- Final terrain y, functional kind, functional y, feature id.
+		-- Final terrain y, functional kind, functional y, feature id, whether
+		-- the column is a road column, and its memo block and slot.
 		local function final_values_at(x, z)
 			local block, slot = column(x, z)
 			local terrain_y = block.terrain[slot]
@@ -1663,7 +1682,8 @@ local function height_factory(dependencies)
 					end
 					local road = false
 					if road_sampler then
-						terrain_y, road = road_at(x, z, terrain_y, block.water[slot] or nil)
+						terrain_y, road = road_at(x, z, terrain_y, block.water[slot] or nil,
+							block, slot)
 					end
 					block.road[slot] = road
 					surface_y = kind and terrain_y or nil
@@ -1676,10 +1696,10 @@ local function height_factory(dependencies)
 				block.kind[slot] = kind or false
 				block.surface[slot] = surface_y or false
 				block.feature[slot] = feature_id or false
-				return terrain_y, kind, surface_y, feature_id, block.road[slot]
+				return terrain_y, kind, surface_y, feature_id, block.road[slot], block, slot
 			end
 			return terrain_y, block.kind[slot] or nil, block.surface[slot] or nil,
-				block.feature[slot] or nil, block.road[slot]
+				block.feature[slot] or nil, block.road[slot], block, slot
 		end
 
 		local function outside(x, z)
@@ -1901,15 +1921,6 @@ local function height_factory(dependencies)
 			end
 			return nil
 		end
-		local function bank_material_at(x, z, water_y, distance)
-			coordinate(x, "bank query x") coordinate(z, "bank query z")
-			if type(water_y) ~= "number" or type(distance) ~= "number" then
-				fail("bank material query needs a water y and a distance")
-			end
-			local owner = dry_owner_at(x, z)
-			if owner == nil then return nil end
-			return bank_material(x, z, owner, water_y, distance)
-		end
 
 		-----------------------------------------------------------------------
 		-- Published records.
@@ -2096,12 +2107,14 @@ local function height_factory(dependencies)
 		function session.road_column_at(x, z)
 			coordinate(x, "road query x") coordinate(z, "road query z")
 			if not road_sampler or outside(x, z) then return nil end
-			local terrain_y, _, _, _, road = final_values_at(x, z)
+			local terrain_y, _, _, _, road, block, slot = final_values_at(x, z)
 			if not road then return nil end
-			local r = road.road_id and road_sampler.roads[road.road_id]
-			return road.kind, road.road_y, terrain_y, road.class, road.pillar,
-				road.bridge, road.wall_base, road.road_kind or (r and r.kind) or nil,
-				road.rail or nil
+			local f = block.roadf
+			local road_id = f.id[slot]
+			local r = road_id and road_sampler.roads[road_id]
+			return f.kind[slot], f.y[slot], terrain_y, f.class[slot], f.pillar[slot],
+				f.bridge[slot], f.wall[slot], f.road_kind[slot] or (r and r.kind) or nil,
+				f.rail[slot] or nil
 		end
 		-- "road_corridor" on a road column (surface or side slope) and within
 		-- the module's EXCLUDE_PAD of a road's edge, else nil: the claim
@@ -2121,10 +2134,6 @@ local function height_factory(dependencies)
 				block.rexcl[slot] = cached
 			end
 			return cached and "road_corridor" or nil
-		end
-		-- True when a road's edge lies within `pad` nodes of (x, z).
-		function session.road_near(x, z, pad)
-			return road_sampler ~= nil and road_sampler.near(x, z, pad)
 		end
 		-- The serialized road layout (the ipc_set payload main hands emerge).
 		function session.road_layout_text()
@@ -2187,15 +2196,6 @@ local function height_factory(dependencies)
 			end
 			table.sort(names)
 			return names
-		end
-		-- The same rule for any water body: its surface y and the column's
-		-- distance to it (the Phase 5 lake and river bank hook).
-		function session.bank_material_at(x, z, water_y, distance)
-			return bank_material_at(x, z, water_y, distance)
-		end
-		-- Soft landmark fields exclude nothing (plan D13, Round 22 Phase 3).
-		function session.landmark_excluded_at()
-			return false
 		end
 		function session.functional_surface_values_at(x, z)
 			return final_functional_values_at(x, z)

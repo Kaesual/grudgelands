@@ -1,4 +1,5 @@
--- Internal, disabled WP40 R6 construction boundary. R7 owns activation.
+-- The WP40 R6 construction boundary: the production planner and writer
+-- of every generated chunk (r7_runtime.lua builds them).
 
 return function(dependencies)
 	if type(dependencies) ~= "table" then error("WP40 R6 dependencies missing", 0) end
@@ -23,7 +24,6 @@ return function(dependencies)
 			error("WP40 R6 dependency missing: " .. key, 0)
 		end
 	end
-	local STATUS = "disabled_r6_surface_resource_content"
 	local MAX_SAFE = 9007199254740991
 
 	local function fail(code, message)
@@ -61,9 +61,9 @@ return function(dependencies)
 			type(dependencies.content_factory) ~= "function" or
 			type(dependencies.templates_factory) ~= "function" or
 			type(dependencies.planner_factory) ~= "table" or
-			type(dependencies.planner_factory.new) ~= "function" or
+			type(dependencies.planner_factory.new_runtime) ~= "function" or
 			type(dependencies.settlement_factory) ~= "table" or
-			type(dependencies.settlement_factory.new) ~= "function" or
+			type(dependencies.settlement_factory.new_runtime) ~= "function" or
 			type(dependencies.r5_factory) ~= "function" then
 		fail("fail_status", "module factory seam differs")
 	end
@@ -87,7 +87,6 @@ return function(dependencies)
 	})
 
 	local module = {}
-	function module.status() return STATUS end
 	local function new_impl(construction_mode, full_seed_string, configured_water_level,
 			manifest_values,
 			content_contract, mapgen_context, wp43_projection, template_source,
@@ -145,20 +144,13 @@ return function(dependencies)
 			}
 		end
 
-		local runtime_mode = construction_mode == "runtime"
-		local r5_constructor
-		if runtime_mode then
-			r5_constructor = r5_module.new_runtime
-		else
-			r5_constructor = r5_module.new
-		end
-		if type(r5_constructor) ~= "function" then
+		if type(r5_module.new_runtime) ~= "function" then
 			fail("fail_status", "R5 runtime constructor is absent")
 		end
-		local zones_session, planner_source, r5_planner, r5_adapter = r5_constructor(
-			full_seed_string, configured_water_level,
-			content_module.r5_manifest_values(), content_contract.r5, mapgen_context,
-			runtime_mode and content_contract.classify_runtime or nil)
+		local zones_session, planner_source, r5_planner, r5_adapter =
+			r5_module.new_runtime(full_seed_string, configured_water_level,
+				content_module.r5_manifest_values(), content_contract.r5, mapgen_context,
+				content_contract.classify_runtime)
 		-- The water query reads the swamp's pools as lakes (Round 51 T2).
 		if type(zones_session.attach_swamp_pools) == "function" then
 			zones_session.attach_swamp_pools(content_module.swamp_pools(full_seed_string,
@@ -176,24 +168,7 @@ return function(dependencies)
 			"grug_wp40_r6_planner_allocator_v1")
 		local settlement_allocator = dependencies.allocator_factory.new(
 			"grug_wp40_r6_settlement_allocator_v1")
-		local evidence_only = construction_mode == "horizontal"
-		local capture_enabled = construction_mode == "capture"
-		if construction_mode ~= nil and not evidence_only and not capture_enabled and
-				not runtime_mode then
-			fail("fail_status", "private construction mode differs")
-		end
-		local planner_constructor
-		if evidence_only then
-			planner_constructor = dependencies.planner_factory.new_evidence
-		elseif runtime_mode then
-			planner_constructor = dependencies.planner_factory.new_runtime
-		else
-			planner_constructor = dependencies.planner_factory.new
-		end
-		if type(planner_constructor) ~= "function" then
-			fail("fail_status", "R6 planner construction mode is absent")
-		end
-		local planner, planner_fixture = planner_constructor({
+		local planner = dependencies.planner_factory.new_runtime({
 			full_seed_string = full_seed_string, planner_source = planner_source,
 			r5_planner = r5_planner, horizontal = horizontal,
 			content = content_module, hash = hash,
@@ -215,7 +190,7 @@ return function(dependencies)
 				zones_session = zones_session,
 				content = content_module, source = dependencies.source,
 				construction_identity = identity_holder,
-				runtime_mode = runtime_mode == true,
+				runtime_mode = true,
 			})
 			if type(successor_tail) ~= "table" or
 					type(successor_tail.plan_slice) ~= "function" or
@@ -230,39 +205,10 @@ return function(dependencies)
 			horizontal = horizontal, planner_source = planner_source,
 			construction_identity = identity_holder,
 			source = dependencies.source, counting_allocator = settlement_allocator,
-			planner_stable_refs = planner_fixture.stable_refs(),
 		}
 		if successor_tail then settlement_dependencies.successor_tail = successor_tail end
-		local settlement_constructor
-		if evidence_only then
-			settlement_constructor = dependencies.settlement_factory.new_evidence
-		elseif capture_enabled then
-			settlement_constructor = dependencies.settlement_factory.new_capture
-		elseif runtime_mode then
-			settlement_constructor = dependencies.settlement_factory.new_runtime
-		else
-			settlement_constructor = dependencies.settlement_factory.new
-		end
-		if type(settlement_constructor) ~= "function" then
-			fail("fail_status", "settlement construction mode is absent")
-		end
-		local settlement, settlement_fixture = settlement_constructor(settlement_dependencies)
-		local direct_evidence_fixture
-		if evidence_only and successor_tail then
-			local direct_allocator = dependencies.allocator_factory.new(
-				"grug_wp40_r6_settlement_allocator_v1")
-			local direct_dependencies = {
-				full_seed_string = full_seed_string, r5_adapter = r5_adapter,
-				content = content_module, templates = templates_module, hash = hash,
-				horizontal = horizontal, planner_source = planner_source,
-				construction_identity = identity_holder,
-				source = dependencies.source, counting_allocator = direct_allocator,
-				planner_stable_refs = planner_fixture.stable_refs(),
-			}
-			local _
-			_, direct_evidence_fixture =
-				dependencies.settlement_factory.new_evidence(direct_dependencies)
-		end
+		local settlement = dependencies.settlement_factory.new_runtime(
+			settlement_dependencies)
 		local session = {}
 		function session.plan_slice(minp, maxp)
 			local plan, generation = planner:plan_slice(minp, maxp)
@@ -292,7 +238,6 @@ return function(dependencies)
 			end
 			return result
 		end
-		function session.status() return STATUS end
 		local writer = {}
 		function writer.apply(vm, minp, maxp, plan, generation)
 			if not successor_tail then
@@ -300,32 +245,23 @@ return function(dependencies)
 			end
 			return settlement:apply(vm, minp, maxp, plan, generation, "production")
 		end
-		-- The fourth result is a private evidence seam. It is deliberately not a
-		-- method on the frozen public session and is never published by the loader.
-		return session, writer, zones_session, settlement_fixture, {
+		-- The fifth result is private: it is deliberately not a method on the
+		-- frozen public session and is never published by the loader. The
+		-- fourth is nil (the slot r7_runtime.lua reads as `settlement_fixture`).
+		return session, writer, zones_session, nil, {
 			schema = "grug_wp40_r6_private_identity_v1",
 			template_records = templates_module.records(),
 			template_identity = templates_module.identity(),
 			template_seconds = templates_module.generated_seconds(),
-			planner_fixture = planner_fixture, planner_source = planner_source,
+			planner_source = planner_source,
 			successor_tail = successor_tail,
-			direct_evidence_fixture = direct_evidence_fixture,
 		}
-	end
-	function module.new(...)
-		return new_impl(nil, ...)
 	end
 	function module.new_runtime(...)
 		return new_impl("runtime", ...)
 	end
 	function module.new_authority(...)
 		return new_impl("authority", ...)
-	end
-	function module.new_evidence(...)
-		return new_impl("horizontal", ...)
-	end
-	function module.new_capture(...)
-		return new_impl("capture", ...)
 	end
 	return module
 end

@@ -63,6 +63,12 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 		end
 		keys[settlement.key] = true
 	end
+	-- The fields of the R6 context P9G may read (its own `exact_fields` set).
+	local P9G_CONTEXT_FIELDS = {"schema", "plan", "generation", "call_mode",
+		"min_x", "min_y", "min_z", "max_x", "max_y", "max_z",
+		"inside_owner", "original_at", "settled_at", "production_content",
+		"analytic_p7_ref", "analytic_p7_tuple", "exclusion_at",
+		"column_values_at", "write_p9g"}
 	local config = {schema = "grug_wp40_r7_successor_config_v1"}
 	function config.new(dependencies)
 		local p9g = p9g_config.new({full_seed_string = dependencies.full_seed_string,
@@ -94,29 +100,14 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 				settlements[index]:bind_plan(minp, maxp, plan, generation)
 			end
 		end
-		function tail.plan_evidence_owner(self, min_x, max_x, min_z, max_z)
-			if not rawequal(self, tail) then fail("evidence receiver differs") end
-			local plan, generation = p9g:plan_evidence_owner(min_x, max_x, min_z, max_z)
-			world.bind(plan, generation)
-			anchors:bind_plan({x = min_x, y = -30912, z = min_z},
-				{x = max_x, y = 30927, z = max_z}, plan, generation)
-			for index = 1, #settlements do
-				settlements[index]:bind_plan({x = min_x, y = -30912, z = min_z},
-					{x = max_x, y = 30927, z = max_z}, plan, generation)
-			end
-			return plan, generation
-		end
 		function tail.settle(self, context)
 			if not rawequal(self, tail) then fail("settle receiver differs") end
 			if road_writer then road_writer.dress(context) end
 			if swamp then swamp.dress(context) end
 			if wreck then wreck.dress(context) end
 			local p9g_context = {}
-			for _, key in ipairs({"schema", "plan", "generation", "call_mode",
-					"min_x", "min_y", "min_z", "max_x", "max_y", "max_z",
-					"inside_owner", "original_at", "settled_at", "production_content",
-					"analytic_p7_ref", "analytic_p7_tuple", "exclusion_at",
-					"column_values_at", "write_p9g"}) do
+			for index = 1, #P9G_CONTEXT_FIELDS do
+				local key = P9G_CONTEXT_FIELDS[index]
 				p9g_context[key] = context[key]
 			end
 			local p9g_ledger = p9g:settle(p9g_context)

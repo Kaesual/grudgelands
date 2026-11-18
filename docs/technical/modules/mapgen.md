@@ -48,8 +48,9 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   flags (`nomountains` since Round 49: no v7 mountain stone for the writer to
   clear) are forced by `r7_native.lua` with `core.set_mapgen_setting(
   "mgv7_spflags", …, true)` over the world's `map_meta.txt`, like the noise
-  params, and checked at load in both environments (`r7_runtime.lua`, the
-  R5 manifest's `caverns,ridges`).
+  params, and checked at load in both environments (`r7_runtime.lua`
+  `validate_live_scalars`; the R5 manifest's `caverns,ridges` is a frozen
+  identity literal, not a check of the live flags).
 
 ### Registration order and the strata
 
@@ -165,8 +166,11 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   so a hit equals a miss): the planner column tuples (`zones.lua`
   `column_cache_limit`: 196,608 for the mapgen planner, `cache_purpose`
   "mapgen" from `r5.lua`; the main environment's sources keep 65,536), the
-  R6 decoration candidates per 16-node cell (`r6_planner.lua`, 4,096 cells)
-  and P9G's ranked roots per chunk column (`r7_p9g.lua`
+  R6 decoration candidates per 16-node cell (`r6_planner.lua`, 4,096 cells),
+  the surface row per column (`r6_content.lua` `surface_selector`, one
+  selector per world shared by the R6 planner and the writer, 65,536
+  direct-mapped slots, a hit only for the same column and arguments; Round
+  82) and P9G's ranked roots per chunk column (`r7_p9g.lua`
   `COLUMN_CACHE_LIMIT`, 256 columns, production only), which the second
   surface chunk of a column settles instead of scanning again. The engine
   generates a column's chunks in its distance-shell order around every
@@ -286,7 +290,7 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   **Current zone/level queries** (published by `grug_core/zone_authority.lua`,
   which is also the sole publisher of the `grug_zones` global — it refuses to
   install if something else already published it) — this is the whole
-  `grug_core` surface, not a sample: `territory_at`, `zone_at`, `mob_level_at`,
+  `grug_core` surface, not a sample: `mob_level_at`,
   `surface_mob_level_at`, `guard_level_at`, `open_sea_at`, `surface_level_at`,
   `start_position`, `start_anchor`, `start_identities`, `capital_anchor`,
   `outpost_at`, `outpost_patrol_target`, `outpost_position`, `rare_route`,
@@ -355,8 +359,8 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
 
   **Near-water materials (Round 22 D27):** the R8-MAP-A coast runs and
   profiles are retired. `height.lua` derives `coast_material_at` (sand,
-  gravel, stone or nil) from the final terrain and exposes the same rule as
-  `bank_material_at(x, z, water_y, distance)` for Phase 5 banks.
+  gravel, stone or nil) from the final terrain, with one bank rule for the
+  sea and the Phase 5 river and lake banks.
   `r6_content.lua` maps it to surface rows and is the only source of dry
   near-water sand; ordinary wet-bed sand remains unchanged. The one exception
   is the four dragon-island landing beaches (Round 30, `boats.md` §7.1):
@@ -501,6 +505,38 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   (`capital_services.decorate`), the plot dressing, lamps, gardens, paving,
   the city edge and the trees stay code (`freeze_report_capitals.txt`).
 
+  **One plot engine** (Round 82, audit W2-01, W2-04, W2-09): every capital's
+  district plots are built by `wp13/capital_plot.lua`; each
+  `<capital>_plot.lua` is that capital's short configuration (its palettes and
+  roof, reach, lamps, garden), and where the six former copies had drifted the
+  drift is a named option reproducing it (`garden_ignored`: Kezamba's four
+  `garden = true` rows plant nothing; `clear_to_top`: Dur Brannoc and Kezamba
+  also clear to the template's `top`; `extra_group_order`: only Gor Drazhak
+  and Lethariel keep an `extra_sockets` entry's `group` and `order`;
+  `fill_gate_spare`: Gor Drazhak's fill gates are spares). The six cores and
+  the engine share `wp13/composition.lua` (the building stamp with its cell
+  claim and socket copy, the paved-prop guard, the canonical cell pass, the
+  socket `dir`, destinations, boxes and doors; the start towns keep their own
+  copies), the district modules `wp13/capital_districts.lua` (the role check
+  and the fixed plot order). A building row stands on a lot of the engine's
+  `REACH`, a fill row on its district's `fill_reaches` (default
+  `FILL_REACHES`, 11, 11, 8, 5). `tools/r82_capital` pins every capital
+  blueprint whole against Round 82's base.
+
+  **One loader context per build** (Round 82 lane LOADER): every WP13
+  loader that makes a template loader or a dressing (`templates.lua`,
+  `dressing.lua`, `layout.lua`, `decor_kit.lua`, `dwarf_dressing.lua`,
+  `capital_plot.lua` and the plot, district, core and start modules) takes
+  an optional plain `context` table and hands it on. `r7_capital_blueprint.
+  kit` makes one per capital for its core and districts, a start town one
+  for itself; in it each template and roster file is parsed once
+  (`context.parsed`, by path) and the town tree pools and the tree generator
+  exist once (`context.tree_pools`, `context.tree_templates`). Both are pure
+  functions of their file or species that nothing writes into, so the build
+  order cannot change an answer; they live as long as the build's
+  blueprints (the kit's builders hold them, as each instance's own copies
+  did before). Without a context a loader parses and grows its own.
+
 ### Planted templates and the template gate
 
   **Planted templates** (lane TREES, format doc §4.2): the groves, orchards
@@ -514,8 +550,9 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   `tools/r56_trees`). The
   building generators are gone (`buildings.lua`, `capitals.lua`,
   `roofs.lua`, `interiors.lua`, `elf_parts.lua`, `troll_parts.lua`,
-  `undead_parts.lua`); `troll_palette.lua` stays for the tools (the game
-  reads the Kezamba roster). Gate:
+  `undead_parts.lua`); `troll_palette.lua` stays for the tools, in
+  `tools/building_templates/` since Round 82 (the game reads the Kezamba
+  roster). Gate:
   `python3 tools/building_templates/check.py` (structure always, the editor
   palette, reachability and the entrance only for cells edited against the
   commit `building_templates/BASELINE` names; `--self-test` runs every rule);
@@ -542,20 +579,15 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   the top down `band_depth - 1` nodes, over the column's stone and its own
   filler only (never a resource ore, a cave or water; a native gravel blob
   under a gravel-filled band row may take a band), and its ordinary strata
-  below. **The cave-mouth carve is switched off** (Round 9, R9-MAP-C,
-  [round 9 decisions](../../research/round9-decisions.md); the setting
-  `grug_mapgen_r8_cave_writer_disabled`, default true, read in
-  `r6_settlement.lua`), replaced by the surface-skin rule; the rest of this
-  paragraph describes the writer as it stands behind that switch.
-  `zones.lua` publishes 80-node owner-local cave candidates but
-  never an offline cut; the writer carves only after immutable native-v7 air
-  beneath a three-node roof is witnessed within 24 vertical and (for a
-  sinkhole) 24 horizontal nodes in the same mapchunk, then validates the exact
-  path against natural input and every surface exclusion. A commit additionally
-  requires at least 24 unchanged native-air nodes outside the lumen, continuation
-  to the boundary of a radius-12 proof box and no native-surface/sky contact in
-  that bounded component. Closed and isolated pockets are rejected. Do not move cave
-  connection decisions into the planner or infer them from emerge order.
+  below; a column whose top 40 nodes miss the chunk is skipped before any
+  query. **No cave-mouth writer runs** (Round 9, R9-MAP-C,
+  [round 9 decisions](../../research/round9-decisions.md); its switched-off
+  code went in Round 82): native v7 caves open only through the surface-skin
+  rule ([world_zones.md](../../design/world_zones.md) "Natural cave roofs and
+  openings"). `zones.lua` still publishes its 80-node surface-cave candidate
+  cells and `surface_cave_run_at` (always nil), which runtime renewal and
+  the swamp pools read. Do not move cave connection decisions into the
+  planner or infer them from emerge order.
 
 ### Spawn rows and fixed bosses
 
@@ -642,7 +674,9 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
 
 ### World-folder caches and the preparation identity
 
-  The world layouts are cached in the world folder under a key of the seed,
+  The world layouts and main's prepared handover of the lazy settlement
+  blueprints (Round 82: a cache hit builds and hashes no blueprint again)
+  are cached in the world folder under a key of the seed,
   a digest of the mapgen mod's Lua files, templates, layouts and rosters,
   the v7 settings and the interpreter (`wp40/layout_cache.lua`,
   `world_zones.md` §13.4); the region maps and the map's claim and flight

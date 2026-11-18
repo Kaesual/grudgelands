@@ -20,9 +20,9 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plots = dofile(directory .. "/dur_brannoc_plot.lua")(directory)
-
+-- `plots` is the capital's plot module (`dur_brannoc_plot.lua`), loaded once by
+-- `dur_brannoc_districts.lua` for all four districts.
+local function loader(directory, plots)
 	local M = {}
 
 	local WATCH = "dur_brannoc_forge_watch"
@@ -39,12 +39,8 @@ local function loader(directory)
 	-- feature (sockets contract section 8.1). The wave-1 version of this file
 	-- wrote its dressing at `x1 - 4, z0 + 3` and put a wood pile inside the
 	-- granary; the KAT's own "a bottom slab carries nothing" rule found it.
-	local function shop_counter(buf, palette, area)
-		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
-	end
-	local function shop_vendor(id, kind, area)
-		return plots.vendor(id, kind, area.x1 - 4, area.z0, 0)
-	end
+	local shop_counter = plots.shop_counter
+	local shop_vendor = plots.shop_vendor
 
 	local PLOTS = {
 		-- 1. The charcoal store: the fuel the forge court burns, kept dry in a
@@ -292,7 +288,6 @@ local function loader(directory)
 		patrol_group = WATCH,
 		plots = PLOTS,
 		fill = FILL,
-		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

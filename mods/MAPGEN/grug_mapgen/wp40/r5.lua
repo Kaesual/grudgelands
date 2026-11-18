@@ -1,4 +1,6 @@
--- Internal, disabled WP40 R5 construction boundary. R7 owns activation.
+-- The WP40 R5 construction boundary: the zones session, the column-run
+-- planner and the map adapter of every generated chunk (r6.lua builds them
+-- for r7_runtime.lua).
 
 return function(dependencies)
 	if type(dependencies) ~= "table" then
@@ -144,18 +146,6 @@ return function(dependencies)
 	end
 
 	local module = {}
-
-	function module.status()
-		return {
-			schema = "grug_wp40_simple_map_r5_status_v1",
-			planner_available = true,
-			adapter_available = true,
-			production_enabled = false,
-			callback_registered = false,
-			disabled_reason =
-				"WP40 R5 planner and adapter are internal and disabled until R7",
-		}
-	end
 
 	local function new_impl(runtime_mode, full_seed_string, configured_water_level,
 			manifest_values, content_contract, mapgen_context, trusted_classify)

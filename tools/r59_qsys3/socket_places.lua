@@ -77,8 +77,8 @@ function M.sockets(repo, keys, opts)
 		rawset(_G, "dofile", function(path)
 			local chunk = saved_dofile(path)
 			if path:match("/templates%.lua$") then
-				return function(directory)
-					local loader = chunk(directory)
+				return function(directory, ...)
+					local loader = chunk(directory, ...)
 					loader.ROOT = opts.templates
 					return loader
 				end

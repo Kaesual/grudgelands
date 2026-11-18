@@ -11,8 +11,9 @@
 --    memo) write the same bytes, return the same result and count the same
 --    modified voxels and dirty columns on surface and fill-floor chunks, also
 --    with flowing water of every level in the chunk.
--- 2. The memo hides no failure: an out-of-range param2 under a run, on a
---    content id the memo already holds, still fails in the classifier.
+-- 2. The validating adapter still fails on an out-of-range param2 under a
+--    run. (Since Round 82 (M4-06) the runtime classifier is a bare table read:
+--    the engine's param2 is a byte, so only the validating path checks it.)
 -- The byte identity against the two-pass adapter before Round 49 is shown by
 -- tools/r49_jit/fleet_digest.sh on both trees, not here.
 -- Prints "R49 JIT PORTABLE PASS checks=<n>" or raises.
@@ -136,10 +137,10 @@ end
 check(modified_total > 20000, "the moved ground makes the adapter write (" ..
 	modified_total .. " voxels)")
 
--- 2. A bad param2 still fails in the classifier.
+-- 2. A bad param2 still fails in the validating classifier.
 do
 	local minp = CHUNKS[1][2]
-	local ok, err = pcall(apply, runtime_planner, runtime_adapter, minp,
+	local ok, err = pcall(apply, checked_planner, checked_adapter, minp,
 		function(vm, plan)
 			-- the lowest voxel of the first planned column's first run
 			for column = 1, 6400 do
@@ -154,8 +155,8 @@ do
 				end
 			end
 		end)
-	check(not ok and tostring(err):find("runtime classified param2", 1, true) ~= nil,
-		"an out-of-range param2 on a memoised CID fails in the classifier (" ..
+	check(not ok and tostring(err):find("classification is invalid", 1, true) ~= nil,
+		"an out-of-range param2 fails in the validating classifier (" ..
 			tostring(err):match("^[^\n]*") .. ")")
 end
 

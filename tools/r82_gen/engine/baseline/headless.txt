@@ -1,0 +1,6 @@
+staged probe: grug_probe_r82_region
+headless boot: PASS (port 35397, 330 s)
+log: /tmp/grudgelands-headless.BePOHH/server.log
+seed = 12345
+116:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:35397.
+kept: /tmp/grudgelands-headless.BePOHH

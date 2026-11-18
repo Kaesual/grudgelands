@@ -28,8 +28,6 @@
 #   boot, a ROOT re-use included, and lands inside the scratch tree like
 #   everything else -- no directory of the repo is written.
 #   GAME_PATCH=<file> applies one disposable patch to the staged game only.
-#   R8_CAVE_WRITER_DISABLED=1 disables only the R8 cave-mouth transaction for
-#   the revision-bound native-baseline probe; every other mapgen pass remains.
 #   R8_NATIVE_BASELINE=1 disables the complete authored writer so a probe can
 #   inspect the unchanged native-v7 VM input.
 set -euo pipefail
@@ -47,11 +45,6 @@ if [[ -z "$port" ]]; then
 fi
 seed="${SEED:-}"
 
-[[ "${R8_CAVE_WRITER_DISABLED:-0}" == "0" ||
-	"${R8_CAVE_WRITER_DISABLED:-0}" == "1" ]] || {
-	echo "R8_CAVE_WRITER_DISABLED must be 0 or 1" >&2
-	exit 2
-}
 [[ "${R8_NATIVE_BASELINE:-0}" == "0" ||
 	"${R8_NATIVE_BASELINE:-0}" == "1" ]] || {
 	echo "R8_NATIVE_BASELINE must be 0 or 1" >&2
@@ -134,9 +127,6 @@ fi
 printf 'port = %s\nbind_address = 127.0.0.1\nserver_announce = false\n' "$port" >>"$root/server.conf"
 if [[ -n "$seed" ]]; then
 	printf 'fixed_map_seed = %s\n' "$seed" >>"$root/server.conf"
-fi
-if [[ "${R8_CAVE_WRITER_DISABLED:-0}" == "1" ]]; then
-	printf 'grug_mapgen_r8_cave_writer_disabled = true\n' >>"$root/server.conf"
 fi
 if [[ "${R8_NATIVE_BASELINE:-0}" == "1" ]]; then
 	printf 'grug_mapgen_r8_native_baseline = true\n' >>"$root/server.conf"

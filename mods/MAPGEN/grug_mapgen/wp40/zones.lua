@@ -1,4 +1,6 @@
--- Pure, disabled WP40 named-zone and policy payload. Publication remains R7.
+-- WP40 named zones: the zones session (zone, level, territory, PvP and water
+-- queries; R7 publishes it as the grug_zones authority) and the planner
+-- source, the column queries of the chunk planner and writer.
 
 local function new_surface_cave_factory(definition)
 	if type(definition) ~= "table" or type(definition.full_seed_string) ~= "string" or
@@ -305,6 +307,14 @@ local function zones_factory(dependencies)
 	end
 
 	local function normalize_xz(x, z, label)
+		-- Integer coordinates in the safe range are their own rounding (the
+		-- per-column path); NaN and infinities fail `% 1 == 0` and take the
+		-- full path, which raises.
+		if type(x) == "number" and type(z) == "number" and x % 1 == 0 and
+				z % 1 == 0 and x >= -MAX_SAFE and x <= MAX_SAFE and
+				z >= -MAX_SAFE and z <= MAX_SAFE then
+			return x, z, x < MIN_X or x > MAX_X or z < MIN_Z or z > MAX_Z
+		end
 		x = normalize_coordinate(x, label .. " x")
 		z = normalize_coordinate(z, label .. " z")
 		return x, z, x < MIN_X or x > MAX_X or z < MIN_Z or z > MAX_Z
@@ -374,9 +384,8 @@ local function zones_factory(dependencies)
 				type(deterministic.floor_div) ~= "function" then
 			fail("canonical/deterministic seam differs")
 		end
-		for _, name in ipairs({"compile_sparse_segments", "nearest_segment",
-				"nearest_segment_values", "compile_footprints",
-				"footprint_candidates", "sparse_metrics"}) do
+		for _, name in ipairs({"compile_footprints", "footprint_candidates",
+				"sparse_metrics"}) do
 			if type(index128[name]) ~= "function" then
 				fail("sparse index seam missing: " .. name)
 			end
@@ -387,7 +396,6 @@ local function zones_factory(dependencies)
 
 	local module = {
 		schema = ZONES_SCHEMA,
-		sparse_schema = SPARSE_SCHEMA,
 	}
 
 	local function construct(full_seed_string, configured_water_level,
@@ -440,8 +448,8 @@ local function zones_factory(dependencies)
 		if type(horizontal) ~= "table" or
 				type(horizontal.classification_values_at) ~= "function" or
 				type(horizontal.bay_shore_at) ~= "function" or
-				type(horizontal.warp_at) ~= "function" or
 				type(horizontal.zone_level_at) ~= "function" or
+				type(horizontal.band_ranges) ~= "function" or
 				type(horizontal.owner_at) ~= "function" or
 				type(horizontal.biome_lookup_at) ~= "function" or
 				type(horizontal.neighbors) ~= "function" or
@@ -476,7 +484,6 @@ local function zones_factory(dependencies)
 				type(height.inland_exclusion_at) ~= "function" or
 				type(height.road_exclusion_at) ~= "function" or
 				type(height.road_column_at) ~= "function" or
-				type(height.road_near) ~= "function" or
 				type(height.river_water_in) ~= "function" or
 				type(height.hydrology_transition_values_at) ~= "function" or
 				type(height.selected_anchor_3d_by_id) ~= "function" or
@@ -709,15 +716,8 @@ local function zones_factory(dependencies)
 		local START_FRONT_CELL = 8
 		local START_FRONT_CACHE_LIMIT = 65536
 		local function level_thirds(level_min, level_max)
-			local count = level_max - level_min + 1
-			if count < 3 then fail("start zone level range differs") end
-			local cut1 = math.floor(count / 3)
-			local cut2 = math.floor(count * 2 / 3)
-			return {
-				{level_min, level_min + cut1 - 1},
-				{level_min + cut1, level_min + cut2 - 1},
-				{level_min + cut2, level_max},
-			}
+			if level_max - level_min + 1 < 3 then fail("start zone level range differs") end
+			return horizontal.band_ranges(level_min, level_max)
 		end
 		local start_by_owner = {}
 		local start_band_top
@@ -842,8 +842,9 @@ local function zones_factory(dependencies)
 				x = math.min(MAX_X, math.max(MIN_X, qx))
 				z = math.min(MAX_Z, math.max(MIN_Z, qz))
 			end
-			local own_x = deterministic.floor_div(x, cell_size)
-			local own_z = deterministic.floor_div(z, cell_size)
+			-- integer x and z: the plain floored quotient is exact
+			local own_x = math.floor(x / cell_size)
+			local own_z = math.floor(z / cell_size)
 			local best_site, best_x, best_z, best_distance
 			for cell_x = own_x - 1, own_x + 1 do
 				for cell_z = own_z - 1, own_z + 1 do
@@ -1386,24 +1387,6 @@ local function zones_factory(dependencies)
 			local x, _, z = normalize_position(position, "open-sea query")
 			return session.water_class_at(x, z) == "deep_ocean"
 		end
-		function compatibility.territory_at(position)
-			return session.faction_at(position) or "ocean"
-		end
-		function compatibility.zone_at(position)
-			local x, y, z = normalize_position(position, "legacy-zone query")
-			if y < -40 then return "underground" end
-			local water_class = session.water_class_at(x, z)
-			if water_class == "deep_ocean" then return "ocean" end
-			if water_class == "immutable_dragon_channel" then return "strait" end
-			if water_class == "coastal_shelf" then return "coast" end
-			if session.pvp_rule_at({x = x, y = y, z = z}) == "contested" then
-				return "war_coast"
-			end
-			local level = session.surface_mob_level_at(x, z)
-			if level <= 5 then return "core" end
-			if level <= 15 then return "inner" end
-			return "outer"
-		end
 		function compatibility.world_protected_for_faction(position, actor_faction)
 			if actor_faction ~= "accord" and actor_faction ~= "throng" then
 				return true
@@ -1718,9 +1701,6 @@ local function zones_factory(dependencies)
 				local water_class, _, owner = horizontal.classification_values_at(x, z)
 				return water_class == "land" and owner and source.zones[owner].id or nil
 			end
-			function planner_source.landmark_excluded_at(x, z)
-				return height.landmark_excluded_at(x, z)
-			end
 			-- Narrow read-only runtime bridge. These are the same geometry owners the
 			-- planner and writer consume; ecology must not reconstruct their shapes.
 			-- `purpose` as in simple_map.lua (nil: the territory rule;
@@ -1844,4 +1824,4 @@ local function zones_factory(dependencies)
 	return module
 end
 
-return zones_factory, new_surface_cave_factory
+return zones_factory

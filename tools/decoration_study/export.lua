@@ -45,8 +45,8 @@ local original_dofile, captured = dofile, {}
 _G.dofile = function(path)
  local value = original_dofile(path)
  if path:match('/wp13/templates%.lua$') then
-  return function(directory)
-   local mod = value(directory)
+  return function(directory, ...)
+   local mod = value(directory, ...)
    local original_part = mod.part
    mod.part = function(t, id, race, palette_of)
     local part = original_part(t, id, race, palette_of)

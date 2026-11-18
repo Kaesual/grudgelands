@@ -195,7 +195,7 @@ for _, profile in ipairs(settlement.roster) do
 					end
 				end
 			end
-		elseif profile.blueprint_file:match("^r7_.*_blueprint%.lua$") then
+		elseif profile.blueprint_file == "r14_poi_blueprint.lua" then
 			group = "r14_" .. profile.slot:gsub("_1$", "")
 			emit("game", game)
 			local kind = ({village_1 = "village", outpost_1 = "outpost", bandit_1 = "camp"})[profile.slot]

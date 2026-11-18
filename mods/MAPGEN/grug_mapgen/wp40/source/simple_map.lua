@@ -5,10 +5,6 @@ local function point(x, z)
 	return {x = x, z = z}
 end
 
-local function fraction(numerator, denominator)
-	return {numerator = numerator, denominator = denominator}
-end
-
 local function polygon(...)
 	return {...}
 end
@@ -17,7 +13,6 @@ local source = {
 	schema = "grug_wp40_simple_map_source_v2",
 	layout_id = "wp40-simple-map-v1d",
 	layout_revision_id = "wp40-simple-map-v1e",
-	height_revision_id = "wp40-height-shore-v6",
 	-- The land's extent: every placed anchor lies in it (`placement.lua`),
 	-- and the zone field's construction check covers it (`zone_field.check`
 	-- below). Not a world bound: the world reaches further, as open sea.
@@ -260,12 +255,6 @@ source.island_landings = {
 	{id="landing_stormscale_south",boat_path_id="boat_stormscale_south",zone_numeric_id=38,position=point(2890,-125),width=96},
 	{id="landing_stormscale_north",boat_path_id="boat_stormscale_north",zone_numeric_id=38,position=point(2920,125),width=96},
 }
-source.boat_parity_policy = {
-	id="paired_axis_aligned_node_run_v1",metric="axis_aligned_polyline_node_run",
-	maximum_difference_numerator=1,maximum_difference_denominator=10,
-	pairs={{"boat_wyrmglass_south","boat_stormscale_south"},
-		{"boat_wyrmglass_north","boat_stormscale_north"}},
-}
 
 -- The anchors (Round 46, seed-dependent placement). A FIXED row carries its
 -- position: {zone, slot, template, mode, candidate index, x, z}, mode
@@ -485,40 +474,6 @@ source.rare_patrol_offsets = {}
 for route = 1, rare_routes do
 	source.rare_patrol_offsets[route] = source.rare_patrol_shape
 end
-
-source.relief_profiles = {
-	{id="wetland_delta",min_above_water=2,max_above_water=24,
-		detail_amplitude=3,
-		noise_domain="relief_wetland_delta",octaves={
-			{period=512,amplitude=fraction(2,5)},
-			{period=256,amplitude=fraction(3,5)}}},
-	{id="lowland",min_above_water=8,max_above_water=56,
-		detail_amplitude=9,
-		noise_domain="relief_lowland",octaves={
-			{period=768,amplitude=fraction(1,2)},
-			{period=256,amplitude=fraction(1,2)}}},
-	{id="rolling_hills",min_above_water=24,max_above_water=96,
-		detail_amplitude=12,
-		noise_domain="relief_rolling_hills",octaves={
-			{period=768,amplitude=fraction(9,20)},
-			{period=384,amplitude=fraction(11,20)}}},
-	{id="plateau",min_above_water=56,max_above_water=144,
-		detail_amplitude=10,
-		noise_domain="relief_plateau",octaves={
-			{period=1024,amplitude=fraction(11,20)},
-			{period=384,amplitude=fraction(9,20)}}},
-	{id="highland",min_above_water=96,max_above_water=224,
-		detail_amplitude=12,
-		noise_domain="relief_highland",octaves={
-			{period=1024,amplitude=fraction(11,20)},
-			{period=512,amplitude=fraction(9,20)}}},
-	{id="mountain",min_above_water=160,max_above_water=360,
-		detail_amplitude=16,
-		noise_domain="relief_mountain",octaves={
-			{period=1280,amplitude=fraction(9,20)},
-			{period=640,amplitude=fraction(7,20)},
-			{period=320,amplitude=fraction(1,5)}}},
-}
 
 source.logical_biome_selector = {
 	id="zone_palette_jittered_voronoi_t1_hash_v1",schema_version=1,

@@ -40,8 +40,8 @@ local PLANTERS = {"tree", "broadleaf", "columnar", "acacia", "gravewood", "jungl
 _G.dofile = function(path)
 	local loaded = saved_dofile(path)
 	if not path:match("/dressing%.lua$") then return loaded end
-	return function(directory)
-		local module = loaded(directory)
+	return function(directory, ...)
+		local module = loaded(directory, ...)
 		for _, name in ipairs(PLANTERS) do
 			local planter = module[name]
 			module[name] = function(buf, palette, x, z, height, ...)

@@ -2,8 +2,10 @@
 --
 -- Main builds the POI placement (Round 46) and the inland water, road and
 -- capital layouts once per world and hands their texts to emerge
--- (`ipc_set`). This module stores exactly those four texts in the world
--- folder after the first build, plus a small block
+-- (`ipc_set`), together with its prepared handover (the identity, palette,
+-- bounds and landmarks of every lazy settlement blueprint,
+-- `r7_settlement.handover`). This module stores exactly those four texts and
+-- the handover in the world folder after the first build, plus a small block
 -- of build diagnostics (log lines, road showcase spots, build seconds), and
 -- returns them on a later boot ONLY when the stored key equals the current
 -- one. The key names everything the layouts depend on: a format version, the
@@ -13,8 +15,10 @@
 -- with it), the mapgen settings and the Lua interpreter. Every text section
 -- carries its length and SHA-256 and the file ends in a SHA-256 over all
 -- bytes before it: a truncated, edited or half-written file never decodes.
--- A main boot with a hit is an emerge-style construction from the texts,
--- which is what emerge already does with main's payload.
+-- A main boot with a hit is an emerge-style construction from the texts and
+-- the handover (Round 82, audit M4-03: no blueprint is built or hashed again),
+-- which is what emerge already does with main's payload. The handover is a
+-- function of the seed and the mapgen tree alone, both in the key.
 --
 -- Plain Lua 5.1, no globals, no engine calls: hashing, directory listing and
 -- the atomic write are injected, so offline tools run this same code.
@@ -28,9 +32,10 @@ return function(deps)
 		type(deps.list_dir) == "function" and type(deps.write) == "function" and
 		type(deps.identity) == "function", "WP40 layout cache dependencies differ")
 	local sha256 = deps.sha256
-	local M = {FORMAT = "grug_world_layouts_v2", FILE = "grug_world_layouts.txt"}
-	-- The sections in file order; the first four are the ipc_set texts.
-	local SECTIONS = {"placement", "water", "road", "capital", "meta"}
+	local M = {FORMAT = "grug_world_layouts_v3", FILE = "grug_world_layouts.txt"}
+	-- The sections in file order; the first four are the ipc_set texts, the
+	-- fifth main's prepared handover (`M.encode_plain`).
+	local SECTIONS = {"placement", "water", "road", "capital", "prepared", "meta"}
 	local KEY_NAMES = {"format", "seed", "source", "settings", "interpreter"}
 
 	-- Byte order, never Lua's locale-dependent `<`.
@@ -84,6 +89,98 @@ return function(deps)
 			parts[index] = {name, value}
 		end
 		return parts
+	end
+
+	-- PLAIN DATA as bytes (the prepared handover): a table is "t<count>:" and
+	-- its key/value pairs, numbers before strings, each in ascending order
+	-- (byte order for strings); a string "s<length>:<bytes>"; a number
+	-- "n<%.17g>;" (exact for every double); a boolean "T" or "F". Anything else,
+	-- a non-finite number among it, does not encode (the store then fails and
+	-- warns, and the next start builds afresh).
+	local function key_less(a, b)
+		local ta, tb = type(a), type(b)
+		if ta ~= tb then return ta == "number" end
+		if ta == "number" then return a < b end
+		return less_bytes(a, b)
+	end
+	function M.encode_plain(value)
+		local out = {}
+		local function put(v)
+			local kind = type(v)
+			if kind == "table" then
+				local keys = {}
+				for key in pairs(v) do
+					local key_kind = type(key)
+					if key_kind ~= "string" and key_kind ~= "number" then
+						error("WP40 layout cache: plain data key differs", 0)
+					end
+					keys[#keys + 1] = key
+				end
+				table.sort(keys, key_less)
+				out[#out + 1] = "t" .. #keys .. ":"
+				for index = 1, #keys do
+					put(keys[index])
+					put(v[keys[index]])
+				end
+			elseif kind == "string" then
+				out[#out + 1] = "s" .. #v .. ":"
+				out[#out + 1] = v
+			elseif kind == "number" then
+				if v ~= v or v == math.huge or v == -math.huge then
+					error("WP40 layout cache: plain data number differs", 0)
+				end
+				out[#out + 1] = string.format("n%.17g;", v)
+			elseif kind == "boolean" then
+				out[#out + 1] = v and "T" or "F"
+			else
+				error("WP40 layout cache: plain data holds a " .. kind, 0)
+			end
+		end
+		put(value)
+		return table.concat(out)
+	end
+	-- The value of `M.encode_plain`'s bytes, or nil when they are not exactly
+	-- one encoded value.
+	function M.decode_plain(bytes)
+		local pos = 1
+		local get
+		function get()
+			local tag = bytes:sub(pos, pos)
+			if tag == "t" or tag == "s" then
+				local colon = bytes:find(":", pos + 1, true)
+				local count = colon and tonumber(bytes:sub(pos + 1, colon - 1))
+				if not count or count < 0 or count % 1 ~= 0 then error("count", 0) end
+				pos = colon + 1
+				if tag == "s" then
+					if pos + count - 1 > #bytes then error("string", 0) end
+					local text = bytes:sub(pos, pos + count - 1)
+					pos = pos + count
+					return text
+				end
+				local tbl = {}
+				for _ = 1, count do
+					local key = get()
+					if type(key) ~= "string" and type(key) ~= "number" then
+						error("key", 0)
+					end
+					tbl[key] = get()
+				end
+				return tbl
+			elseif tag == "n" then
+				local stop = bytes:find(";", pos + 1, true)
+				local number = stop and tonumber(bytes:sub(pos + 1, stop - 1))
+				if not number then error("number", 0) end
+				pos = stop + 1
+				return number
+			elseif tag == "T" or tag == "F" then
+				pos = pos + 1
+				return tag == "T"
+			end
+			error("tag", 0)
+		end
+		local ok, value = pcall(get)
+		if not ok or pos ~= #bytes + 1 then return nil end
+		return value
 	end
 
 	-- Diagnostics block: `logs` {{level, text}}, `spots` {{name, kind, x, y, z,
@@ -146,8 +243,12 @@ return function(deps)
 		for _, part in ipairs(parts) do
 			if part[1] ~= "format" then out[#out + 1] = part[1] .. "=" .. part[2] .. "\n" end
 		end
+		if type(texts.prepared) ~= "table" then
+			error("WP40 layout cache: the prepared handover is missing", 0)
+		end
 		local bodies = {placement = texts.placement, water = texts.water, road = texts.road,
-			capital = texts.capital, meta = encode_meta(meta or {})}
+			capital = texts.capital, prepared = M.encode_plain(texts.prepared),
+			meta = encode_meta(meta or {})}
 		for _, name in ipairs(SECTIONS) do
 			local body = bodies[name]
 			if type(body) ~= "string" or body == "" then
@@ -162,8 +263,8 @@ return function(deps)
 	end
 
 	-- `bytes` against the current key parts. Returns {placement, water, road,
-	-- capital, meta} on a match; otherwise nil, the reason and whether the file is
-	-- damaged (a warning) rather than merely built for another key.
+	-- capital, prepared, meta} on a match; otherwise nil, the reason and whether
+	-- the file is damaged (a warning) rather than merely built for another key.
 	function M.decode(bytes, parts)
 		if type(bytes) ~= "string" or bytes == "" then return nil, "empty cache file", true end
 		local pos = 1
@@ -215,8 +316,10 @@ return function(deps)
 		if pos ~= #bytes + 1 then return nil, "trailing bytes after the file hash", true end
 		local meta = decode_meta(out.meta)
 		if not meta then return nil, "diagnostics block differs", true end
+		local prepared = M.decode_plain(out.prepared)
+		if type(prepared) ~= "table" then return nil, "prepared handover differs", true end
 		return {placement = out.placement, water = out.water, road = out.road,
-			capital = out.capital, meta = meta}
+			capital = out.capital, prepared = prepared, meta = meta}
 	end
 
 	function M.path(world_dir)

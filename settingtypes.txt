@@ -10,8 +10,7 @@
 #
 # Deliberately not listed (Round 81): the test and measurement switches,
 # namely grug_core/world_version.lua's migration test hook (bool, default
-# false), `grug_mapgen_r8_native_baseline` (bool, default false) and
-# `grug_mapgen_r8_cave_writer_disabled` (bool, default true), both in
+# false), `grug_mapgen_r8_native_baseline` (bool, default false) in
 # grug_mapgen/wp40; and the vendored mobs fork's own `mobs_spawn`,
 # `mob_nospawn_range` and `enable_peaceful_player`, which grug_mobs reads too
 # (the game's minetest.conf sets mob_nospawn_range).

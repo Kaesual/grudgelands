@@ -6,7 +6,8 @@
 --     luajit tools/building_templates/viewer/palettes.lua palettes NAMES
 --         JSON on stdout: the declared roles (required, optional, families),
 --         every race's bindings (wp13/palette.lua), the Kezamba override
---         tables (wp13/troll_palette.lua), and for every node name listed in
+--         tables (tools/building_templates/troll_palette.lua), and for every
+--         node name listed in
 --         the file NAMES (one per line) the wp13/parts.lua predicates the
 --         template stamp uses: param2_kind, place_param2, is_pane,
 --         pane_connects, and shaped (a stair or a slab, the only nodes that
@@ -67,7 +68,7 @@ if MODE == "palettes" then
 		races[race] = bindings
 	end
 	local overrides = {}
-	local handles = dofile(WP13 .. "troll_palette.lua")()
+	local handles = dofile("tools/building_templates/troll_palette.lua")()
 	for key, value in pairs(handles) do
 		if type(value) == "table" then
 			palette.new("troll", value)

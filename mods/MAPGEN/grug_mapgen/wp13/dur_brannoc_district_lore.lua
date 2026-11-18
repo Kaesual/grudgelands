@@ -21,19 +21,15 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plots = dofile(directory .. "/dur_brannoc_plot.lua")(directory)
-
+-- `plots` is the capital's plot module (`dur_brannoc_plot.lua`), loaded once by
+-- `dur_brannoc_districts.lua` for all four districts.
+local function loader(directory, plots)
 	local M = {}
 
 	local WATCH = "dur_brannoc_deep_watch"
 
-	-- The shopfront of every profession house of this capital; see
-	-- `dur_brannoc_district.lua` for why the apron's front row is the one place
-	-- a building plot's dressing may stand.
-	local function shop_counter(buf, palette, area)
-		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
-	end
+	-- The shopfront every profession house carries (`capital_plot.lua`).
+	local shop_counter = plots.shop_counter
 
 	local PLOTS = {
 		-- 1. The hall of record: the district's temple, which publishes the
@@ -242,7 +238,6 @@ local function loader(directory)
 		patrol_group = WATCH,
 		plots = PLOTS,
 		fill = FILL,
-		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

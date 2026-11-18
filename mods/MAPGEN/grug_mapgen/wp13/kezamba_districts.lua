@@ -2,10 +2,11 @@
 --
 -- `M.plots()` returns the 53 plots in a FIXED order -- district by district in
 -- the contract's own role order, each district's building plots in roster
--- order and then its fill plots in roster order. Their sizes (`reach`) come
--- from `kezamba_lots.lua`; where they stand and how they are turned is the
--- capital planner's per-world layout (Round 22), which keeps the shore market
--- beside the cenote (plan D72).
+-- order and then its fill plots in roster order. A building plot's reach is
+-- the plot engine's 13 and a fill plot's its district's `fill_reaches` (the
+-- engine's 11, 11, 8 and 5 unless the totem grounds say otherwise); where they
+-- stand and how they are turned is the capital planner's per-world layout
+-- (Round 22), which keeps the shore market beside the cenote (plan D72).
 --
 -- WHAT EACH DISTRICT IS, against the contract's section 2.1 roles:
 --
@@ -27,13 +28,13 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plot = dofile(directory .. "/kezamba_plot.lua")(directory)
-	local lots = dofile(directory .. "/kezamba_lots.lua")()
+local function loader(directory, context)
+	-- One loader context (`templates.lua`) for everything this build loads.
+	context = context or {}
+	local plot = dofile(directory .. "/kezamba_plot.lua")(directory, context)
+	local capital_districts = dofile(directory .. "/capital_districts.lua")
 
 	local M = {}
-
-	M.lots = lots
 
 	local work, vendor, spare, guard_post =
 		plot.work, plot.vendor, plot.spare, plot.guard_post
@@ -56,8 +57,9 @@ local function loader(directory)
 	-- `grug_nodes:mud`, so these three fields were a rectangle of bare mud
 	-- (playtest 5, user: "Fields in Kezamba grow 'Mossy Stone'? That cannot be
 	-- right."). The three rows that call this one carry `handle = "crop"`,
-	-- which is `wp13/troll_palette.lua`'s `M.CROP` -- tilled furrows with
-	-- papyrus in every second row -- and the KAT counts the reeds.
+	-- which is `tools/building_templates/troll_palette.lua`'s `M.CROP` --
+	-- tilled furrows with papyrus in every second row -- and the KAT counts
+	-- the reeds.
 	local function crop_field(buf, palette, area)
 		area.dressing.crop_rows(buf, palette, area.x0 + 1, area.z0 + 3,
 			area.x1 - 1, area.z1 - 1, "x")
@@ -492,6 +494,8 @@ local function loader(directory)
 	local TOTEM = "kezamba_totem_watch"
 	local totem = {
 		key = "totem", role = "lore_spiritual", patrol_group = TOTEM,
+		-- the burial ground is the second fill plot and the smallest
+		fill_reaches = {11, 5, 8, 5},
 		plots = {
 			{id = "totem_scriptorium", template = "kezamba_totem_scriptorium",
 				order = 1,
@@ -574,18 +578,10 @@ local function loader(directory)
 
 	M.definitions = {shore, vine, canopy, totem}
 
-	do
-		local roles = lots.ROLES
-		if #M.definitions ~= #roles then
-			error("wp13 kezamba: district roster differs", 0)
-		end
-		for index = 1, #roles do
-			if M.definitions[index].role ~= roles[index] then
-				error("wp13 kezamba: district " .. index .. " is not " ..
-					roles[index], 0)
-			end
-		end
-	end
+	-- Contract section 2.1's district roles, in the order the districts are
+	-- resolved and the manifest's fields are written.
+	capital_districts.check_roles(M.definitions, {"market_trades",
+		"residential_cultural", "martial_garrison", "lore_spiritual"}, "kezamba")
 
 	local built
 	local function districts()
@@ -593,33 +589,14 @@ local function loader(directory)
 		built = {}
 		for index = 1, #M.definitions do
 			local definition = M.definitions[index]
-			local plots, fill = lots.of(definition.key)
-			built[index] = plot.district(definition, plots, fill)
+			built[index] = plot.district(definition)
 		end
 		return built
 	end
 	M.districts = districts
 
-	-- The plots in a FIXED order -- district by district in the contract's own
-	-- role order, each district's BUILDING plots in roster order and then its
-	-- FILL plots in roster order: {id, district, role, kind ("plot" or
-	-- "fill"), build}. Where a plot stands and how it is turned is the capital
-	-- planner's per-world layout (Round 22, `wp40/capital_planner.lua`); a
-	-- plot's identity is its cells, and its cells do not know where they will
-	-- stand.
-	function M.plots()
-		local list = {}
-		for index = 1, #districts() do
-			local district = districts()[index]
-			for _, pair in ipairs({{district.plots, "plot"}, {district.fill, "fill"}}) do
-				for _, plot in ipairs(pair[1]) do
-					list[#list + 1] = {id = plot.id, district = district.key,
-						role = district.role, kind = pair[2], build = plot.build}
-				end
-			end
-		end
-		return list
-	end
+	-- The plots in the fixed order of `capital_districts.lua`.
+	function M.plots() return capital_districts.plots(districts()) end
 
 	return M
 end

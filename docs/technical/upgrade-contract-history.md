@@ -1,7 +1,7 @@
 # Upgrade contract: the declared releases
 
 The per-release case history of the [upgrade contract](upgrade-contract.md) §2 (the
-declaration): why each release from 0.41.0 to 0.81.0 declared its map reset, step or
+declaration): why each release from 0.41.0 to 0.82.0 declared its map reset, step or
 neither. Section numbers (§) refer to the upgrade contract. The rules are in the
 contract; this file only records the cases.
 
@@ -149,10 +149,14 @@ contract; this file only records the cases.
   Lethariel and Kezamba. Item, node and socket ids stay. `map_reset_pass`
   stays 0.50.0. The production world moves from 0.65.0 to 0.70.0 across one
   reset and runs the steps 0.67.0 and 0.69.0.
-- 0.71.0 to 0.73.0, 0.74.0, 0.75.4, 0.76.0 to 0.76.2 and 0.78.0 to 0.81.0
+- 0.71.0 to 0.73.0, 0.74.0, 0.75.4, 0.76.0 to 0.76.2 and 0.78.0 to 0.82.0
   are compatible: no map reset, no step. The stores they add are not
   map-bound and stay at a map reset: the clans (0.76.0) and the website
-  accounts (0.79.0), §3.2.
+  accounts (0.79.0), §3.2. 0.82.0 (Round 82, faster world generation with
+  byte-identical output) changes 16 files of the preparation digest, so a
+  world in full preparation mode stops at its next start (its CHANGELOG
+  names `grug_prepare_full_world`; §5.9), and the world-folder layout cache
+  moves to format 3 and rebuilds once with the same content.
 - 0.73.1 (Round 73.1, character creation and capital polish) needs the
   fourteenth map reset: the capitals' halls, gates and furniture, the start
   towns' tables and the Expedition Registrar's place change what world

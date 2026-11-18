@@ -727,18 +727,6 @@ return function(canonical, raw_sha256, settlement_order)
 			canonical_bytes = bytes, values = values}
 	end
 
-	-- Private construction-time helper. It exists so the offline acceptance
-	-- tools can bind the same typed graph without duplicating its encoding.
-	function module.graph_digest_for_evidence(value)
-		return graph_digest(value)
-	end
-	function module.successor_windows_for_evidence(production_count, settlement_count)
-		local values = successor_windows(production_count, settlement_count)
-		local result = {}
-		for key, value in pairs(values) do result[key] = value end
-		return result
-	end
-
 	function module.validate(receipt, expected_sha256)
 		if type(receipt) ~= "table" or receipt.schema ~= SCHEMA or
 			type(receipt.values) ~= "table" or

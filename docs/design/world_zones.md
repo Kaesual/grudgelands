@@ -404,11 +404,15 @@ replaced.
   clash sites, rares) moved toward their home side in Round 29; since
   Round 46 they are placed per world, and the middle road's clearance is
   the placement rule |x| ≥ max(80, core/2 + 58) (§8.5).
-- The warp is damped near every fixed anchor, so each fixed anchor's
-  footprint (start town, capital envelope, dragon arena, apex mine, rift
-  site) stays inside its own zone. If an anchor would still leave its zone,
-  the fix is stronger damping or a smaller warp, never a repair pass. A
-  placed POI (§8.5) is chosen on the finished field and never bends it.
+- Each fixed anchor's footprint (start town, capital envelope, dragon arena,
+  apex mine, rift site) stays inside its own zone and on land through one
+  ordered construction pass over the fixed anchors (`zone_field.lua`): a
+  flat-topped bulge on the anchor's own zone score where the warped border
+  would cut the footprint, and a land bonus where the warped coast would
+  drown it. The warp itself is damped only for the coast, near the
+  landings, the boat paths' mainland ends and the islands. A construction self-check rebuilds the field
+  with a weaker warp when it fails. A placed POI (§8.5) is chosen on the
+  finished field and never bends it.
 - Every zone stays one connected region. This is checked (§14), not solved.
 - **Gameplay neighbors are geometric.** Two zones are neighbors when they
   share a land border of meaningful length; a single-point or very short
@@ -834,8 +838,7 @@ replaced.
   | `mountain` | 130 | 32 | 200 | 0.95 |
 
   The further channels (fBm gain, cliff share, erosion, small-scale
-  roughness, coast ramp width) are in the same table; the older
-  `source.relief_profiles` of `source/simple_map.lua` is not read. Noise and
+  roughness, coast ramp width) are in the same table. Noise and
   landmarks shape the ground around these values. Biome patches do not
   change relief.
 - **Landmarks** are one or two strong features per zone (§8.4). Each is a
@@ -2115,11 +2118,13 @@ Capital protection remains effective; editable ground requires no housing.
   native terrain is v7's 2-D base height, cut by its ridge channels, without
   v7 mountains, so where the final surface lies above it the terrain fill
   (§7.6) builds the relief. A world with other flags is refused at load.
-- The pure horizontal module exposes at least
-  `macro_region_at(x,z)`, `land_at(x,z)`, `id_at(x,z)`,
-  `water_class_at(x,z)`, `neighbors(id)` and
-  `selected_anchor_2d(zone_id,slot_id)`. The world-map renderer and the mapgen
-  adapter consume this same evaluator; no renderer-owned geometry exists.
+- The pure horizontal module (`simple_map.lua`) answers the column
+  classification (`classification_values_at(x,z)`: water class, macro
+  region, owning zone, bay, channel), `water_class_at(x,z)`, the levels by
+  zone (`zone_level_at`), `neighbors(id)` and the static claim exclusions.
+  The zones session is built on it, and the world-map renderer and the
+  mapgen consume that session (`grug_zones`); no renderer-owned geometry
+  exists.
 - Engine climate competition is not authoritative inside the authored world.
   A full-seed selector chooses only from the owning zone's logical-biome
   palette. Surface content maps that frozen logical id to nodes and
@@ -2210,14 +2215,13 @@ numeric-truncated seed.
   `hard_protected` and `hard_protection_kind_at` `guild_room`; `pvp_rule_at`
   is unchanged, so a room at −650 and below is contested ground like all
   land below −501.
-- Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,
-  `guard_level_at`, `open_sea_at` and protection callers consume the
-  `grug_zones` authority through explicit adapters. `difficulty_at` is gone;
-  callers use the level APIs directly. `open_sea_at` maps to deep ocean, not
-  planned water or a dragon channel. The old
-  `core/inner/outer/coast/war_coast/ocean/strait/underground` buckets are not
-  current spawn authority; only the compatibility `zone_at`
-  (`grug_core.zone_at`) still answers them.
+- Current `grug_core.mob_level_at`, `guard_level_at`, `open_sea_at` and
+  protection callers consume the `grug_zones` authority through explicit
+  adapters. `difficulty_at` is gone; callers use the level APIs directly.
+  `open_sea_at` maps to deep ocean, not planned water or a dragon channel.
+  The old `core/inner/outer/coast/war_coast/ocean/strait/underground`
+  buckets and their `grug_core.zone_at` and `territory_at` adapters are gone
+  (Round 82).
 - All fixed placements resolve through stable zone anchor ids. Slot vocabulary
   remains `start`, `capital`, `village_<n>`, `outpost_<n>`,
   `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,
@@ -2237,21 +2241,26 @@ numeric-truncated seed.
   (§7.4), roads (§9) and the capital layouts (§12). They travel to emerge as
   texts in the `ipc_set` payload; emerge never builds them. The same payload carries
   `prepared_blueprints`, main's preparations of the lazy settlement
-  blueprints (`docs/design/settlements.md`), which the cache does not store.
-- After the first build, main stores exactly those four texts in the world
-  folder, in `grug_world_layouts.txt` (`wp40/layout_cache.lua`). A later boot
-  loads them **only when the stored key equals the current key** and then
-  builds its sessions from the texts, exactly as emerge does. Every other
+  blueprints (`docs/design/settlements.md`).
+- After the first build, main stores exactly those four texts and the
+  prepared blueprints (since Round 82) in the world folder, in
+  `grug_world_layouts.txt` (`wp40/layout_cache.lua`). A later boot loads them
+  **only when the stored key equals the current key** and then builds its
+  sessions from the texts and takes the prepared blueprints, exactly as
+  emerge does: it builds and hashes no lazy blueprint again. Every other
   case builds the layouts afresh and atomically replaces the file.
 - The key holds a format version, the full world seed, a digest of every Lua
   file of the `grug_mapgen` mod and of its building templates, town layouts
   and capital rosters (`.tpl`, `.layout`, `.roster`; the whole tree, so a
   new or edited module can never be missed; any edit rebuilds once), the v7
-  mapgen settings and the Lua interpreter. Nothing else feeds the layouts.
-- The file is text (format `grug_world_layouts_v2` since Round 46): a format
+  mapgen settings and the Lua interpreter. Nothing else feeds the layouts
+  or the prepared blueprints.
+- The file is text (format `grug_world_layouts_v3` since Round 82): a format
   line, the key lines, one section per text (placement, water, road,
-  capital) and one small diagnostics section (the first start's placement,
-  capital and road log lines, the road showcase spots for
+  capital), one with the prepared blueprints as plain data, and one small
+  diagnostics section (the first start's placement,
+  capital and road log lines and its `[GRUG-SEVERE]` placement line, the
+  road showcase spots for
   `/road_spots`, the build seconds), each with its length and SHA-256, and a
   final SHA-256 over everything before it. A missing, truncated, edited or
   otherwise damaged file is never used: it is rebuilt (a damaged file with

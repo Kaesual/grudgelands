@@ -9,12 +9,13 @@
 -- the WP13 convention for that is a new `wp13/<race>_*.lua` that the
 -- compositions of that race call. Nothing outside Dur Brannoc reads this file.
 --
--- WHAT EVERY PIECE HERE OBEYS, because the KAT asserts it of the finished
--- composition and a piece of dressing is where it is easiest to break:
+-- WHAT EVERY PIECE HERE OBEYS, because the composition KAT asserted it of
+-- the finished composition (retired with the library KAT in Round 22; no
+-- check replaces it) and a piece of dressing is where it is easiest to break:
 --
 --   * NOTHING FLOATS. Every cell either sits on the ground course or on a cell
---     this piece itself wrote under it. The composition KAT walks the cells and
---     refuses a detached one or an island.
+--     this piece itself wrote under it. The composition KAT walked the cells
+--     and refused a detached one or an island.
 --   * A TORCH STANDS ON AN OPAQUE FULL NODE, never on a slab, a stair or a
 --     fence. The pieces here that carry light put it on masonry they laid.
 --   * A BOTTOM SLAB CARRIES NOTHING. Where a piece wants a step it writes a
@@ -35,8 +36,10 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
+-- `context`: the build's optional loader context (`templates.lua`), for the
+-- dressing it makes.
+local function loader(directory, context)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
 
 	local M = {}
 
@@ -75,8 +78,8 @@ local function loader(directory)
 
 	-- A MINE MOUTH: a rock face with an arched opening in it, three wide and
 	-- three high, the arch springing on the outer columns. The opening is left
-	-- as authored AIR so the KAT's own "no cell floats" walk sees the lintel
-	-- carried by the jambs either side of it.
+	-- as authored AIR so the composition KAT's "no cell floats" walk saw the
+	-- lintel carried by the jambs either side of it.
 	--
 	-- The wall runs along x at the given z and the opening is cut in its
 	-- middle, so a socket standing one node on the near side and facing the
@@ -87,7 +90,7 @@ local function loader(directory)
 		local rock = pick(palette, "castle_wall", "foundation")
 		-- THE ARCH AND THE LINTEL ARE RUBBLE MASONRY AND NOT THE BANDED
 		-- COURSE, and the reason is a KAT rule rather than a taste: the
-		-- composition KAT counts every PAVED cell that stands over air, and in
+		-- composition KAT counted every PAVED cell that stands over air, and in
 		-- the dwarf palette `plaza_edge`, `plaza`, `foundation` and `signature`
 		-- are all the same two paving nodes. An arch over a three-wide opening
 		-- is a cell over air by construction, so it is built out of a node that
@@ -262,14 +265,6 @@ local function loader(directory)
 			end
 		end
 		buf:put(x, 3, z, coal)
-	end
-
-	-- A STAIR FLIGHT between two terraces of one yard: `steps` treads of
-	-- signature stair with a masonry cheek either side, so a lane that arrives
-	-- above a court has a way down that is built rather than implied.
-	function M.stair_flight(buf, palette, x, z, steps, axis, face)
-		dressing.outer_stair(buf, palette, x, z, steps or 3, axis or "z",
-			face or 0)
 	end
 
 	return M

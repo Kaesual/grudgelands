@@ -1,4 +1,5 @@
--- Construction-only retained-table allocator for the disabled WP40 R5 path.
+-- Construction-only retained-table allocator of the WP40 R5 planner and
+-- adapter and the R6 planner and settlement transaction (`r6.lua`).
 
 local MAX_SAFE = 9007199254740991
 local MAX_MAP_KEYS = 512

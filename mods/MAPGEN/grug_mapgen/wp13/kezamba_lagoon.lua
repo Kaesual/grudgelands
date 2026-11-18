@@ -32,17 +32,6 @@
 local function loader()
 	local M = {}
 
-	-- The core's own half-extent (`precinct_ring.PAD`), the mask's window, and
-	-- the fitted reference and lake surface the old static plan gave on the
-	-- fixture seeds (historical: the reference is fitted per seed now and the
-	-- surface is two nodes below it).
-	M.REACH = 57
-	M.ENVELOPE = 80
-	M.REFERENCE_Y = 66
-	M.WATER_SURFACE_Y = 65
-	M.LAGOON_COLUMNS = 5947
-	M.RAVINE_COLUMNS = 0
-
 	-- Inclusive x runs per z. A wedge and a band are a few hundred bytes this
 	-- way and nine thousand as a bitmap.
 	local LAGOON = {

@@ -4,8 +4,9 @@
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
 -- contract.md section 2.1 -- the civic core, 115 x 115 since Round 70
 -- (`precinct_ring.lua`), anchor-relative exactly like a start, inside bounds of
--- x/z [-57, 57] and y [-2, 40] -- plus the run specifications the overlay turns
--- into the four avenues, the ring street and the four gate thresholds.
+-- x/z [-57, 57] and y [-2, 40]. The city's streets outside the core are roads
+-- of the road layout since Round 22 (docs/design/settlements.md, "Streets are
+-- roads").
 --
 -- Contract section 2.4, the troll row, quoted in full because everything below
 -- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
@@ -55,12 +56,15 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
+local function loader(directory, context)
+	-- One loader context (`templates.lua`) for everything this build loads.
+	context = context or {}
 	local parts = dofile(directory .. "/parts.lua")
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local layout = dofile(directory .. "/layout.lua")(directory)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
+	local layout = dofile(directory .. "/layout.lua")(directory, context)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
-	local templates = dofile(directory .. "/templates.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory, context)
+	local composition = dofile(directory .. "/composition.lua")(parts, layout, templates)
 	local CAPITAL = templates.capital("kezamba")
 	local mask = dofile(directory .. "/kezamba_lagoon.lua")()
 
@@ -69,8 +73,6 @@ local function loader(directory)
 	local RADIUS = precinct_ring.PAD
 	local SCHEMA = "grug_wp13_kezamba_core_v1"
 	local WATCH = "kezamba_watch"
-
-	M.mask = mask
 
 	-- The travel plaza (WP17), the waystone at its pad's centre.
 	local PLAZA = {x1 = -44, z1 = -30, x2 = -32, z2 = -18}
@@ -201,9 +203,9 @@ local function loader(directory)
 	function M.core()
 		local timber = CAPITAL.palettes.town
 		local buf = parts.buffer()
-		local doorways, rooms, sockets = {}, {}, {}
-		local placed, inside_by_id, plot_order = {}, {}, {}
-		local claimed, stamped = {}, {}
+		local c = composition.new(buf, "kezamba")
+		local doorways, rooms, sockets = c.doorways, c.rooms, c.sockets
+		local stamped = c.stamped
 
 		local DECK = timber.node("path")              -- junglewood boardwalk
 		local PAVE = timber.maybe("castle_paving") or timber.node("plaza")
@@ -211,15 +213,7 @@ local function loader(directory)
 		local PIER = timber.maybe("signature") or timber.node("foundation")
 		local RAIL = timber.node("railing")
 
-		local function outdoors(x, z)
-			for _, plot in ipairs(plot_order) do
-				if x >= plot.x and x <= plot.x + plot.w - 1 and
-						z >= plot.z and z <= plot.z + plot.d - 1 then
-					return false
-				end
-			end
-			return true
-		end
+		local outdoors = composition.outdoors(c)
 
 		local GROUND = {}
 		for _, role in ipairs({"ground", "ground_patch", "ground_bare"}) do
@@ -237,11 +231,6 @@ local function loader(directory)
 		local over_water = {}
 		local function claim_water(x, y, z)
 			over_water[x .. ":" .. y .. ":" .. z] = true
-		end
-
-		local function refuse(name, x, z, reason)
-			error("wp13 kezamba: prop " .. name .. " at " .. x .. "," ..
-				z .. " was not placed: " .. reason, 0)
 		end
 
 		-- 1. THE PAD. Litter over mud on every column the masks leave, and
@@ -381,16 +370,28 @@ local function loader(directory)
 		end
 
 		-- 4. THE PLOTS.
-		for _, plot in ipairs(PLOTS) do
-			local part = CAPITAL.part(plot.template, plot.id, plot.handle, plot.roof)
-			local turns = plot.turns % 4
+		-- EVERY PLOT STANDS ON THE PAD, unless it is one of the two that
+		-- deliberately stand over the lake and say so. A part laid over the
+		-- cenote lays its ground course on the water; a part laid over the
+		-- ravine lays it in the air. Neither is a thing to discover in a
+		-- render.
+		--
+		-- A WATER PLOT stands over the lake on its own piers, and two things
+		-- still have to hold of it. Its `land_rows` -- the band its flight
+		-- occupies, at the -x end after `turns = 1` -- must be dry ground, or
+		-- the stair climbs out of the water; and no cell of it may touch the
+		-- ravine, because a stilt stands in water and not over a gorge.
+		--
+		-- And no plot may leave the core's own envelope. That is not paranoia:
+		-- several templates carry authored cells at NEGATIVE local coordinates
+		-- -- the houses' aprons and eaves reach x -1 and z -1 of their own
+		-- frame -- so a part's real extent is wider than the `w` and `d` it
+		-- declares, and under a quarter turn the overhang moves to another
+		-- side. The first layout of this composition put 408 cells outside the
+		-- core for exactly that reason.
+		local function on_the_pad(plot, part, turns, box)
 			local rw = (turns % 2 == 1) and part.d or part.w
 			local rd = (turns % 2 == 1) and part.w or part.d
-			-- EVERY PLOT STANDS ON THE PAD, unless it is one of the two that
-			-- deliberately stand over the lake and say so. A part laid over the
-			-- cenote lays its ground course on the water; a part laid over the
-			-- ravine lays it in the air. Neither is a thing to discover in a
-			-- render.
 			if not plot.water then
 				local ok, bx, bz = mask.pad_area(plot.x, plot.z,
 					plot.x + rw - 1, plot.z + rd - 1)
@@ -400,12 +401,6 @@ local function loader(directory)
 						bz, 0)
 				end
 			else
-				-- A WATER PLOT stands over the lake on its own piers, and two
-				-- things still have to hold of it. Its `land_rows` -- the band
-				-- its flight occupies, at the -x end after `turns = 1` -- must
-				-- be dry ground, or the stair climbs out of the water; and no
-				-- cell of it may touch the ravine, because a stilt stands in
-				-- water and not over a gorge.
 				local rows = plot.land_rows or 0
 				for z = plot.z, plot.z + rd - 1 do
 					for x = plot.x, plot.x + rw - 1 do
@@ -424,91 +419,36 @@ local function loader(directory)
 					end
 				end
 			end
-			-- Two plots may not share a cell. `parts.stamp` writes; it does not
-			-- ask, so a plot laid over another cuts a silent hole in the first.
-			--
-			-- And no plot may leave the core's own envelope. That is not
-			-- paranoia: several templates carry authored cells at NEGATIVE
-			-- local coordinates -- the houses' aprons and eaves reach x -1 and
-			-- z -1 of their own frame -- so a part's real extent is wider than
-			-- the `w` and `d` it declares, and under a quarter turn the overhang
-			-- moves to another side. The first layout of this composition put
-			-- 408 cells outside the core for exactly that reason.
+			if box.min_x < -RADIUS or box.max_x > RADIUS or box.min_z < -RADIUS or
+					box.max_z > RADIUS or box.min_y < -2 or box.max_y > 40 then
+				error("wp13 kezamba: the plot " .. plot.id ..
+					" leaves the core envelope (" .. box.min_x .. "," .. box.min_y ..
+					"," .. box.min_z .. " to " .. box.max_x .. "," .. box.max_y .. "," ..
+					box.max_z .. ")", 0)
+			end
+		end
+		-- A water plot's cells and its piers are deliberately over the lake.
+		local function over_the_lake(plot, part, turns)
+			if not plot.water then return end
 			local source, count = part.buffer:cells()
 			for index = 1, count do
 				local cell = source[index]
 				local rx, rz = parts.rotate_footprint(cell.x, cell.z,
 					part.w, part.d, turns)
-				local wx, wz = plot.x + rx, plot.z + rz
-				if wx < -RADIUS or wx > RADIUS or wz < -RADIUS or
-						wz > RADIUS or cell.y < -2 or cell.y > 40 then
-					error("wp13 kezamba: the plot " .. plot.id ..
-						" leaves the core envelope at " .. wx .. "," ..
-						cell.y .. "," .. wz, 0)
-				end
-				local key = wx .. ":" .. cell.y .. ":" .. wz
-				local owner = claimed[key]
-				if owner ~= nil then
-					error("wp13 kezamba: the plot " .. plot.id ..
-						" writes " .. cell.name .. " into " .. owner ..
-						" at " .. key, 0)
-				end
-				claimed[key] = plot.id
+				claim_water(plot.x + rx, cell.y, plot.z + rz)
 			end
-			local points = parts.stamp(buf, part, plot.x, 0, plot.z, turns)
-			if plot.water then
-				local source2, count2 = part.buffer:cells()
-				for index = 1, count2 do
-					local cell = source2[index]
-					local rx, rz = parts.rotate_footprint(cell.x, cell.z,
-						part.w, part.d, turns)
-					claim_water(plot.x + rx, cell.y, plot.z + rz)
-				end
-				for _, leg in ipairs(plot.legs or {}) do
-					for y = -2, 0 do
-						buf:put(plot.x + leg[1], y, plot.z + leg[2], PIER)
-						claim_water(plot.x + leg[1], y, plot.z + leg[2])
-					end
+			for _, leg in ipairs(plot.legs or {}) do
+				for y = -2, 0 do
+					buf:put(plot.x + leg[1], y, plot.z + leg[2], PIER)
+					claim_water(plot.x + leg[1], y, plot.z + leg[2])
 				end
 			end
-			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak}
-			plot_order[#plot_order + 1] = placed[plot.id]
-			for _, door in ipairs(points.doors or {}) do
-				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
-			end
-			local spot = (points.inside or {})[1]
-			if spot then
-				inside_by_id[plot.id] = {x = spot.x, y = spot.y, z = spot.z}
-			end
-			for index = 1, #(points.room_corner or {}), 2 do
-				local a = points.room_corner[index]
-				local b = points.room_corner[index + 1]
-				rooms[#rooms + 1] = {
-					min = {x = math.min(a.x, b.x), y = a.y,
-						z = math.min(a.z, b.z)},
-					max = {x = math.max(a.x, b.x), y = a.y,
-						z = math.max(a.z, b.z)},
-					top = a.top, closed = a.closed, id = plot.id,
-				}
-			end
-			-- The building's own sockets; a socket point without a role is the
-			-- position of one of the composition's own sockets.
-			templates.collect_sockets(stamped, points, plot.id)
-			for _, entry in ipairs(points.sockets or {}) do
-				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
-				if not drop then
-					sockets[#sockets + 1] = {id = entry.id, role = entry.role,
-						x = entry.x, y = entry.y, z = entry.z,
-						face = entry.face,
-						group = entry.group, order = entry.order,
-						kind = entry.kind, activity = entry.activity,
-						spawn = entry.spawn,
-						tags = entry.tags}
-				end
-			end
+		end
+		-- Two plots may not share a cell (`composition.place`).
+		for _, plot in ipairs(PLOTS) do
+			local part = CAPITAL.part(plot.template, plot.id, plot.handle, plot.roof)
+			composition.place(c, plot, part, {activity = "copy", check = on_the_pad,
+				stamped = over_the_lake})
 		end
 
 		templates.all_used(stamped, "kezamba")
@@ -567,19 +507,10 @@ local function loader(directory)
 			{id = "vendor_race", kind = "race", x = -25, z = -12},
 			{id = "vendor_general", kind = "general", x = -25, z = -6},
 		}
-		local function paved_prop(name, x1, z1, x2, z2, build)
-			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
-				refuse(name, x1, z1, "the space is taken")
-			end
+		local paved_prop = composition.paved_prop(c, function(x1, z1, x2, z2)
 			local ok, bx, bz = mask.pad_area(x1, z1, x2, z2)
-			if not ok then
-				refuse(name, x1, z1, "the ground at " .. bx .. "," .. bz ..
-					" is lake or gorge")
-			end
-			if build() == false then
-				refuse(name, x1, z1, "the prop could not be completed")
-			end
-		end
+			if not ok then return "the ground at " .. bx .. "," .. bz .. " is lake or gorge" end
+		end)
 		-- A prop that CARRIES A SOCKET must land, because a socket in front of
 		-- a stall that was skipped is a trader standing in a field: those go
 		-- through `paved_prop`, which refuses loudly. A prop that is only
@@ -753,19 +684,15 @@ local function loader(directory)
 		dressing.waystone(buf, pad_x, pad_z)
 
 		-- 11. The sockets the composition owns.
-		local function socket(id, role, x, y, z, face, extra)
-			local entry = {id = id, role = role, x = x, y = y, z = z,
-				face = face % 4}
-			for key, value in pairs(extra or {}) do entry[key] = value end
-			sockets[#sockets + 1] = entry
-		end
+		local socket = composition.socket(c)
 		for _, booth in ipairs(VENDORS) do
 			socket(booth.id, "vendor", booth.x + 1, 1, booth.z - 1, 0,
 				{kind = booth.kind})
 		end
 		socket("travel_waypoint", "waypoint", pad_x, 1, pad_z, 0)
-		-- Public service a few nodes outside the {'highcourt': "king's hall", 'dur_brannoc': "king's hall", 'nhal_veyr': 'mausoleum', 'gor_drazhak': 'warlord hall', 'lethariel': "king's hall", 'kezamba': "king's hall"} door, beside its
-		-- approach and facing away from it, in plain view (the user, 2026-11-10).
+		-- Public service a few nodes outside the king's hall door, beside its
+		-- approach and facing away from it, in plain view (the user,
+		-- 2026-11-10).
 		socket("expedition_registrar", "idle", 24, 1, -15, 0, {tags = {"work"}})
 		for _, corner in ipairs(CORNERS) do
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
@@ -863,79 +790,25 @@ local function loader(directory)
 		layout.green(buf, timber, RADIUS, sockets, doorways)
 		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
 		dressing.thin_cover(buf)
-		local source, count = buf:cells()
-		local cells = {}
-		for index = 1, count do
-			local cell = source[index]
-			local masked = mask.lagoon(cell.x, cell.z) or
-				mask.ravine(cell.x, cell.z)
-			if not masked or
-					over_water[cell.x .. ":" .. cell.y .. ":" .. cell.z] then
-				cells[#cells + 1] = cell
-			end
-		end
-		parts.sort_cells_zyx(cells)
-		local light_names = {[timber.node("light_post")] = true,
-			[timber.node("light_wall")] = true,
-			[timber.node("light_indoor")] = true}
-		local lights = {}
-		local names, palette_list = {}, {}
-		local minp = {x = cells[1].x, y = cells[1].y, z = cells[1].z}
-		local maxp = {x = cells[1].x, y = cells[1].y, z = cells[1].z}
-		for index = 1, #cells do
-			local cell = cells[index]
-			if light_names[cell.name] then
-				lights[#lights + 1] = {x = cell.x, y = cell.y, z = cell.z}
-			end
-			if not names[cell.name] then
-				names[cell.name] = true
-				palette_list[#palette_list + 1] = cell.name
-			end
-			if cell.x < minp.x then minp.x = cell.x end
-			if cell.y < minp.y then minp.y = cell.y end
-			if cell.z < minp.z then minp.z = cell.z end
-			if cell.x > maxp.x then maxp.x = cell.x end
-			if cell.y > maxp.y then maxp.y = cell.y end
-			if cell.z > maxp.z then maxp.z = cell.z end
-		end
-		table.sort(palette_list, parts.less_bytes)
+		local cells, bounds, palette_list, lights = composition.finish(buf, timber,
+			{keep = function(cell)
+				local masked = mask.lagoon(cell.x, cell.z) or mask.ravine(cell.x, cell.z)
+				return not masked or over_water[cell.x .. ":" .. cell.y .. ":" .. cell.z]
+			end})
 
-		for _, entry in ipairs(sockets) do
-			local dx, dz = parts.facedir_step(entry.face)
-			entry.dir = {x = dx, z = dz}
-		end
+		composition.face_dirs(sockets)
 
-		local destinations = {}
-		for _, id in ipairs(DESTINATION_ORDER) do
-			local spot = inside_by_id[id]
-			if not spot then
-				error("wp13 kezamba: destination " .. id .. " is missing", 0)
-			end
-			destinations[#destinations + 1] =
-				{id = id, x = spot.x, y = spot.y, z = spot.z}
-		end
+		local destinations = composition.destinations(c, DESTINATION_ORDER)
 
 		local function box(id, margin, lift)
-			local plot = placed[id]
-			return {
-				min = {x = plot.x - margin, y = -1, z = plot.z - margin},
-				max = {x = plot.x + plot.w - 1 + margin,
-					y = plot.peak + lift, z = plot.z + plot.d - 1 + margin},
-			}
+			return composition.box(c, id, margin, lift)
 		end
-		local function door_of(id)
-			for _, door in ipairs(doorways) do
-				if door.id == id then
-					return {x = door.x, y = door.y, z = door.z}
-				end
-			end
-			error("wp13 kezamba: no door for " .. id, 0)
-		end
+		local function door_of(id) return composition.door_of(c, id) end
 
 		return {
 			schema = SCHEMA,
 			cells = cells,
-			bounds = {min = minp, max = maxp},
+			bounds = bounds,
 			palette = palette_list,
 			landmarks = {
 				arrival = {x = 0, y = 1, z = 0},

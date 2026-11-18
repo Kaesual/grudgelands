@@ -8,7 +8,7 @@ Every template of ``mods/MAPGEN/grug_mapgen/building_templates/templates``
 once, in a 3D grid grouped by town (or race), labelled, with its "used N×
 in …" list from the layouts and rosters; a click opens one template alone
 (orbit, walk, noclip, a layer cut, its points). Roles are resolved through
-the game's palettes (``wp13/palette.lua`` and ``troll_palette.lua``, read by
+the game's palettes (``wp13/palette.lua``, and the tools' ``troll_palette.lua``, read by
 ``palettes.lua`` under LuaJIT) for the race the page selects, or as each
 template is placed; orientation as format doc §3.2 says; panes settled with
 the port of ``parts.resolve_panes`` (``templates.py``, tested by

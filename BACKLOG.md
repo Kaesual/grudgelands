@@ -116,9 +116,8 @@ Not in Round 37; details in the
   y ≡ 15..50 mod 80 (kapoks still lost there, Round 47); accepted by the R6 contract, the
   fix is size L ([terrain code](docs/audit-2026-10/code/01-mapgen-terrain.md)).
 - **P6 beyond MGT-02** (mapgen performance and memory): MGS-01/W13-01 emerge memory (about
-  7–10 % of the emerge high-water mark; a concern, or wait for WP48?), W13-02 the
-  composition rebuild on every boot, MGT-04/MGT-05 surface-only passes, MGS-03 the
-  per-chunk palette rebuild.
+  7–10 % of the emerge high-water mark; a concern, or wait for WP48?), MGS-03's collar
+  palette declared in two places.
 - **P8 structure and legacy:** the wp13/wp40 merge (W13-05; is a directory rename worth the
   churn?), mobs_redo as an owned fork (X-06, MOB-08; may it be declared one?), the
   `mod.conf` coupling (X-07), the tooltip writers (ITM-04) and the other duplications.
@@ -157,9 +156,16 @@ Not in Round 37; details in the
 - **CORE-05, minimap client textures never freed:** Round 37 cut the growth (an hour's walk
   61.2 → 26.4 MB, three hours 185.0 → 79.9 MB) but did not bound it
   ([Round 37](docs/planning/round37-plan.md), [core audit](docs/audit-2026-10/code/06-core-hud-ambience.md)).
-- **World generation speed** (audit 2026-11 lane 5: M1-01, M2-01, M2-02, M3-02..M3-07,
-  M4-01..M4-03, W1-01..W1-05 and the mapgen dead code), byte-identical output: the next
-  round ([Round 81 §7](docs/planning/round81-plan.md#7-orchestration-notes)).
+- **World generation, small speed leftovers** (byte-identical): M3-04 (b) the adapter's own
+  buffers (about 1 ms a chunk), M1-09 (b) the heightmap fetched twice a chunk, M2-01's
+  regional river lists (−8 %, changes an unread return), M2-02's road `extra` as plain values
+  (changes the sampler's return), M2-03's zone-scale cache, W1-09's per-chunk allocations in
+  `plot_approach` and `city_edge`, M5-07's `hotexit` for the whole main state
+  ([M1](docs/audit-2026-11/findings/M1.md), [M2](docs/audit-2026-11/findings/M2.md), [M3](docs/audit-2026-11/findings/M3.md), [M5](docs/audit-2026-11/findings/M5.md), [W1](docs/audit-2026-11/findings/W1.md), [Round 82](docs/planning/round82-plan.md#carry-overs)).
+- **A per-environment wp13 loader context** (the user, 2026-11-18: backlog): 338 → 283
+  template parses and 440 → about 200 tree generations, about 0.2 s CPU per environment;
+  needs `world_assembly.lua`, `r7_runtime.lua`, the start wrappers and five POI blueprints
+  ([Round 82](docs/planning/round82-plan.md#carry-overs)).
 - **The minimap's party names** still build `grug_parties.view` every 5 s per party player;
   switch to `grug_parties.member_names` (about 15 map fixtures need a stub line) ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **Invitation switches in the Social roster rows** are read per build (P5-05's rest,
@@ -246,6 +252,13 @@ Not planned yet.
   ([Round 28](docs/planning/round28-questing-leveling-plan.md#carry-overs)).
 - **City variety** and the broader **ore, gem and coal distribution** revision: see the
   [player experience follow-up](#atmosphere-world-variety-and-resource-distribution).
+- **M3-01, with the next map reset:** the surface-skin opening reads the VoxelManip shell, so
+  a border column's result depends on emerge order; hygiene with no player-visible gain
+  ([M3](docs/audit-2026-11/findings/M3.md), Round 82 ruling 2, [Round 82](docs/planning/round82-plan.md#carry-overs)).
+- **M4-07, the −0 protection miss:** a protection query at x or z in (−0.5, 0) misses the
+  column at 0 (its string key reads "-0"); only float positions at the 36 functional anchor
+  columns on x = 0 or z = 0, digging and placing are unaffected; a numeric key fixes it and
+  changes protection there (the user, 2026-11-18: backlog; [M4](docs/audit-2026-11/findings/M4.md), [Round 82](docs/planning/round82-plan.md#carry-overs)).
 
 ## Mobs and NPCs
 
@@ -440,8 +453,23 @@ Every new sound goes through a listening page ([sound.md](docs/design/sound.md) 
   [Round 70](docs/planning/round70-plan.md#carry-overs)).
 - **Smaller hygiene** (the `grug_gear` global in `talent_graph_ui.lua`, stale docstrings
   and comments): [Round 78](docs/planning/round78-plan.md#carry-overs).
-- **The capital plot engine's duplication** (audit 2026-11 W2-01..W2-05), an optional
-  refactor ([audit](docs/audit-2026-11/README.md), [Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **The start towns on `wp13/composition.lua`** (W2-04's rest, with the towns' W2-03 prop
+  guards); the capital plot engine no longer checks a district's building-row count against
+  its lots (the old Kezamba guard) ([W2](docs/audit-2026-11/findings/W2.md), [Round 82](docs/planning/round82-plan.md#carry-overs)).
+- **Mapgen duplicates:** M3-09 (the writer's copy of the planner's surface rule; needs a load
+  path into `r6_settlement.lua`), M2-05 (`chaikin`, `resample`, the heap twice), M2-08
+  (renewal's hardcoded trunk names) and the helper copies M2-04, M3-16, M4-15, M5-09
+  ([M2](docs/audit-2026-11/findings/M2.md), [M3](docs/audit-2026-11/findings/M3.md), [M4](docs/audit-2026-11/findings/M4.md), [M5](docs/audit-2026-11/findings/M5.md), [Round 82](docs/planning/round82-plan.md#carry-overs)).
+- **Mapgen dead code left by Round 82:** the always-nil `surface_cave_run_at` and `run_at`
+  (readers in `vegetation_density.lua`, `swamp_pools.lua`, `r7_runtime.lua` and fixtures);
+  R7's `replay_fixture` branches (`r7_settlement.lua`, `r7_p9g.lua`,
+  `r7_anchor_activation.lua`) and `r6.lua`'s slot-4 comment; M4-14;
+  M4-16's rest; M4-17's empty `city_decor` catalogue rows; the `grug_nodes/init.lua:311`
+  comment naming `grug_core.territory_at` ([M4](docs/audit-2026-11/findings/M4.md), [Round 82](docs/planning/round82-plan.md#carry-overs)).
+- **Mapgen tools after Round 82:** three tool hooks drop the loader context
+  (`freeze_build.lua`, `r70_design/export.lua`, `r36_w/portable_test.lua`; sharing only);
+  `tools/r36_w/baseline.tsv` is stale for the six capital cores; `tools/mgprof/stages.patch`
+  and `tools/wp40/profile/instrument-settlement-stages.patch` are stale ([Round 82](docs/planning/round82-plan.md#carry-overs)).
 - **The mob species boilerplate** (audit 2026-11 MOB3-05), an optional refactor
   ([audit](docs/audit-2026-11/README.md), [Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **The skills bound-item re-walk** at mods-loaded holds only while grug_skills runs after
@@ -519,9 +547,10 @@ their replacements. No round is assigned yet.
 - **Fruit picking in towns:** a right-click pick is protected exactly like a dig, so town
   orchards cannot be picked. Recommended: keep; the alternative is a fruit-only exception in
   `grug_gathering/pick.lua` ([0.53.1](docs/planning/round53-fix-plan.md#carry-overs)).
-- **The grug_mapgen warm load** (perf review #22): storing `prepared_handover()` in the
-  world-layout cache would cut about 4.6 → 1.2 s of a warm start; size M, risk medium (the
-  manifest SHA must stay covered) ([Round 30](docs/planning/round30-plan.md#carry-overs)).
+- **The capital drifts** kept as per-capital options: aligning the plot airspace (W2-05)
+  changes 13 plots (all to `top`) or 4 (all to `peak + 2`), planting Kezamba's four gardens (W2-02) 4 plots (each a map reset);
+  dropping the garden flags or copying the socket fields everywhere (W2-06) changes no
+  blueprint ([W2](docs/audit-2026-11/findings/W2.md), [Round 82](docs/planning/round82-plan.md#carry-overs)).
 - **A music tab** (a personal playlist; the user leans towards "not now"): about 450 lines;
   open where it plays ([Round 35](docs/planning/round35-plan.md#carry-overs)).
 - **Start zones:** the cave mobs below them (no recipe roles) still call each other; the
@@ -576,8 +605,6 @@ since 2026-11-16), CMB-10 and MGS-08 (Round 81 rulings 2 and 3,
   and leaves (2 s): intended? (The brewing stand takes no fuel since Round 45.)
 - **Fishing rod:** all other gear breaks and is repaired; the rod breaks and disappears:
   intended?
-- **MGT-14:** will the WP40 evidence and capture modes run again, or may they go from
-  `r6_settlement.lua`, `r6.lua` and `r7_runtime.lua`?
 - **W13-04:** should the Round 14, 20 and 31 POIs use the race palette (a visible change)?
 - **W13-09:** delete the dead pre-planner generators (`wall_tower`, `stilt_platform`,
   `water_channel`, `fish_landing` …) or keep them as a parts shelf?
@@ -606,7 +633,7 @@ since 2026-11-16), CMB-10 and MGS-08 (Round 81 rulings 2 and 3,
 
 The residual notes of each round live in its plan, in a section "Carry-overs" after
 "Completion": `docs/planning/round<NN>-plan.md#carry-overs` for Rounds 29–37, 40–49, 51–62,
-65–74, 76 and 78–81 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
+65–74, 76 and 78–82 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
 the plans with longer names for
 [24](docs/planning/round24-mining-underground-mobs-plan.md#carry-overs),
 [25](docs/planning/round25-housing-plan.md#carry-overs),

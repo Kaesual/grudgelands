@@ -12,12 +12,13 @@
 -- boot (`layout_cache.lua`, plan D71); nil in main on a world's first start,
 -- which builds them (plan D37, D60).
 --
--- `prepared_handover` (emerge only): main's preparations of every LAZY
--- blueprint that has cells, keyed by manifest prefix (`module.
--- prepared_handover`), so emerge does not build and hash every capital plot
--- a second time at load. Each one's cells are rebuilt on the first mapchunk
--- that touches it and checked there against main's identity and landmarks
--- (`r7_settlement.lua` config); nil in main.
+-- `prepared_handover`: main's preparations of every LAZY blueprint that has
+-- cells, keyed by manifest prefix (`module.prepared_handover`), so emerge
+-- does not build and hash every capital plot a second time at load. Each
+-- one's cells are rebuilt on the first mapchunk that touches it and checked
+-- there against main's identity and landmarks (`r7_settlement.lua` config).
+-- Main passes the one its world-folder layout cache kept (Round 82, audit
+-- M4-03) or nil on a world's first start.
 return function(core_api, wp40_directory, schematic_directory, projection, catalog,
 		water_layout_text, road_layout_text, capital_layout_text, prepared_handover,
 		placement_layout_text)
@@ -206,13 +207,15 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- union of every blueprint's palette: one opcode-37 content channel serves
 	-- them all, so a cell's content ref is an index into this union.
 	--
-	-- `prepare` is where main BUILDS every blueprint once and hashes it. A lazy
+	-- `prepare` is where main BUILDS every blueprint once and hashes it (on a
+	-- world's first start; a layout-cache hit passes the handover). A lazy
 	-- settlement's cells are released again straight away (contract section
 	-- 2.2.4): what has to exist at load is the identity the manifest publishes
 	-- and the palette the channel is closed over, and neither of them is a
-	-- 100,000-cell buffer. Emerge builds only the starts and the city edge
-	-- overlays here; every other blueprint's preparation comes from main's
-	-- handover and is checked when its cells are first rebuilt.
+	-- 100,000-cell buffer. With a handover (emerge, a cache hit) only the
+	-- starts and the city edge overlays are built here; every other
+	-- blueprint's preparation comes from the handover, and emerge checks it
+	-- when its cells are first rebuilt.
 	local blueprint_options = {full_seed = construction_seed,
 		raw_sha256 = raw_sha256}
 
@@ -299,8 +302,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- Byte order, never Lua's locale-dependent `<`: `r7_content.lua` accepts
 	-- this union only if it is sorted the way IT compares names.
 	table.sort(settlement_palette, r7_settlement_module.less_bytes)
-	-- Emerge: main's handover must hold exactly this roster's lazy cell
-	-- blueprints, one record each, so none of them was prepared here.
+	-- A handover must hold exactly this roster's lazy cell blueprints, one
+	-- record each, so none of them was prepared here.
 	if prepared_handover ~= nil then
 		local expected = {}
 		for index = 1, #settlements do
@@ -341,17 +344,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			sha256_hex(roads.cache.text) .. ":" .. sha256_hex(capital_layout_text) .. ":" ..
 			sha256_hex(world.placement_text))
 	end
-	local function build(native_identities, expected_manifest_sha256, evidence_mode,
-			authority_only)
-		if evidence_mode ~= nil and evidence_mode ~= true and
-				evidence_mode ~= "horizontal" then
-			fail("evidence mode differs")
-		end
+	local function build(native_identities, expected_manifest_sha256, authority_only)
 		if authority_only ~= nil and authority_only ~= true then
 			fail("authority mode differs")
-		end
-		if authority_only and evidence_mode ~= nil then
-			fail("authority/evidence modes overlap")
 		end
 		local full_seed = validate_live_scalars()
 		-- The blueprints were built against `construction_seed`, and a
@@ -414,8 +409,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				end)()))
 		end
 		local consumer_payload = consumer_payload_factory(source, sha256_hex)
-		local constructor, session, writer, zones_session, settlement_fixture,
-			r6_identity, anchor_roster
+		local session, writer, zones_session, r6_identity, anchor_roster
 		if authority_only then
 			zones_session, r6_identity = r6_module.new_authority(full_seed, 1,
 				r6_manifest, content_set.production, mapgen_context, projection,
@@ -429,13 +423,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			anchor_roster = r7_anchor_roster_factory(source, zones_session,
 				r6_identity.planner_source, raw_sha256)
 		else
-			if evidence_mode == "horizontal" then constructor = r6_module.new_evidence
-			elseif evidence_mode == true then constructor = r6_module.new_capture
-			-- Offline evidence keeps the exhaustive constructors. The live callback
-			-- builds only the query/writer state needed to generate actual mapblocks.
-			else constructor = r6_module.new_runtime end
-			session, writer, zones_session, settlement_fixture, r6_identity =
-				constructor(full_seed, 1,
+			local _
+			session, writer, zones_session, _, r6_identity =
+				r6_module.new_runtime(full_seed, 1,
 				r6_manifest, content_set.production, mapgen_context, projection,
 				template_source, successor)
 			if type(session) ~= "table" or type(writer) ~= "table" or
@@ -560,25 +550,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		local writer_bounds = dofile(wp40_directory .. "/preparation_source.lua")(
 			r6_identity.planner_source, r6_identity.template_records,
 			settlements, public_zones_session, anchor_roster, "emerge", sha256_hex)
-		local direct_session, direct_fixture
-		if evidence_mode == true then
-			local ignored_writer, ignored_zones
-			direct_session, ignored_writer, ignored_zones, direct_fixture =
-				constructor(full_seed, 1,
-				r6_manifest, content_set.production, mapgen_context, projection,
-				template_source)
-		elseif evidence_mode == "horizontal" then
-			direct_fixture = r6_identity.direct_evidence_fixture
-		end
 		return {schema = "grug_wp40_r7_runtime_v1", full_seed = full_seed,
 			manifest = manifest, session = session, writer = writer,
 			template_seconds = r6_identity.template_seconds,
 			zones_session = public_zones_session, content = content_set,
 			anchor_roster = anchor_roster,
 			consumer_payload = consumer_payload,
-			mapgen_context = mapgen_context, writer_bounds = writer_bounds,
-			settlement_fixture = settlement_fixture,
-			direct_session = direct_session, direct_fixture = direct_fixture}
+			mapgen_context = mapgen_context, writer_bounds = writer_bounds}
 	end
 
 	-- The authored WP13 NPC sockets of every settlement, in roster order, with
@@ -649,11 +627,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	function module.build(...)
 		return build(...)
 	end
-	-- Main only: the plain-data preparations of every lazy cell blueprint,
-	-- keyed by manifest prefix, for the ipc_set payload (emerge passes them
-	-- back in as `prepared_handover`; `r7_settlement.handover`).
+	-- The plain-data preparations of every lazy cell blueprint, keyed by
+	-- manifest prefix, for the ipc_set payload and the layout cache (emerge
+	-- and a cache hit pass them back in as `prepared_handover`;
+	-- `r7_settlement.handover`). Only where they were built here.
 	function module.prepared_handover()
-		if prepared_handover ~= nil then fail("emerge hands nothing over") end
+		if prepared_handover ~= nil then fail("a handed-over preparation is not handed on") end
 		local out = {}
 		for index = 1, #settlements do
 			r7_settlement_module.handover(settlements[index].prepared, out)
@@ -726,7 +705,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		return waypost_rows(planner_source)
 	end
 	function module.build_authority(native_identities, expected_manifest_sha256)
-		return build(native_identities, expected_manifest_sha256, nil, true)
+		return build(native_identities, expected_manifest_sha256, true)
 	end
 
 	return module

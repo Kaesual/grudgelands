@@ -20,25 +20,16 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plots = dofile(directory .. "/nhal_veyr_plot.lua")(directory)
-
+-- `plots` is the capital's plot module (`nhal_veyr_plot.lua`), loaded once by
+-- `nhal_veyr_districts.lua` for all four districts.
+local function loader(directory, plots)
 	local M = {}
 
 	local WATCH = "nhal_veyr_market_watch"
 
-	-- The shopfront every profession house carries, in one place so four of
-	-- them are the same shopfront: a four-node trestle counter on the street
-	-- row of the plot's own ring, clear of the two lamps at the corners and of
-	-- the doorstep path down the middle. The vendor stands OUTSIDE it on the
-	-- plot's outermost row and looks at it, which is what a trader at a counter
-	-- is and also what makes the socket's `dir` name the feature (section 8.1).
-	local function shop_counter(buf, palette, area)
-		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
-	end
-	local function shop_vendor(id, kind, area)
-		return plots.vendor(id, kind, area.x1 - 4, area.z0, 0)
-	end
+	-- The shopfront every profession house carries (`capital_plot.lua`).
+	local shop_counter = plots.shop_counter
+	local shop_vendor = plots.shop_vendor
 
 	-- The roster, in the order the plots take the quadrant's nine lots.
 	--
@@ -171,8 +162,8 @@ local function loader(directory)
 
 	-- THE DISTRICT'S OWN FILL: four dressings on the district's four fill
 	-- plots, in the order they take them. The reaches are 11, 11, 8 and 5 and
-	-- `fill_reaches` below owns those numbers, so a roster says WHAT a
-	-- dressing is and never how big its lot is.
+	-- the plot engine's `FILL_REACHES` owns those numbers, so a roster says
+	-- WHAT a dressing is and never how big its lot is.
 	--
 	-- EVERY DRESSING IS LAID OUT THE SAME WAY, and the reason is the sockets.
 	-- The three rows nearest the street (`z0` to `z0 + 2`) are the FORECOURT:
@@ -343,7 +334,6 @@ local function loader(directory)
 		patrol_group = WATCH,
 		plots = PLOTS,
 		fill = FILL,
-		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

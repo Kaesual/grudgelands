@@ -1,4 +1,5 @@
--- Disabled WP40 R6 refinement planner. R7 owns callback activation.
+-- The WP40 R6 refinement planner: the surface rows and decoration candidates
+-- of every generated chunk (r6.lua builds it for r7_runtime.lua).
 
 local function planner_factory()
 	local MAX_SAFE = 9007199254740991
@@ -73,13 +74,9 @@ local function planner_factory()
 		return result
 	end
 
-	local function new(dependencies, construction_mode)
-		if construction_mode ~= nil and construction_mode ~= true and
-				construction_mode ~= "runtime" then
-			fail("fail_source", "private construction mode differs")
-		end
-		local evidence_only = construction_mode == true
-		local runtime_mode = construction_mode == "runtime"
+	-- `runtime_mode`: production's smaller candidate scratch (`new` keeps the
+	-- full bound for the tools that build cells over synthetic sources).
+	local function new(dependencies, runtime_mode)
 		exact_fields(dependencies, {
 			full_seed_string = true, planner_source = true, r5_planner = true,
 			horizontal = true, content = true, hash = true,
@@ -101,8 +98,6 @@ local function planner_factory()
 				planner_source.schema ~= "grug_wp40_r5_planner_source_v1" or
 				type(planner_source.column_values_at) ~= "function" or
 				type(planner_source.river_water_in) ~= "function" or
-				type(planner_source.surface_cave_run_at) ~= "function" or
-				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.protected_only_floor_at) ~= "function" or
 				type(r5_planner) ~= "table" or type(r5_planner.plan_slice) ~= "function" or
@@ -139,7 +134,7 @@ local function planner_factory()
 		end
 
 		local surfaces = content.surfaces()
-		local select_surface = content.new_surface_selector(full_seed, planner_source)
+		local select_surface = content.surface_selector(full_seed, planner_source)
 		-- The swamp's pools (Round 47 lane SW, swamp_pools.lua): no
 		-- decoration roots in a pool column (the swamp pass writes its water).
 		local pools = content.swamp_pools(full_seed, planner_source)
@@ -256,14 +251,13 @@ local function planner_factory()
 			local zone = source.zones[index]
 			if zone.primary_relief_id == "mountain" then mountain_zone[zone.id] = true end
 		end
-		local candidate_capacity = (evidence_only or runtime_mode) and 16384 or
-			MAX_CANDIDATES
+		local candidate_capacity = runtime_mode and 16384 or MAX_CANDIDATES
 		local column_values = retained_array("r6_planner_column_values",
-			evidence_only and 1 or MAX_COLUMNS * COLUMN_STRIDE, false)
+			MAX_COLUMNS * COLUMN_STRIDE, false)
 		local candidate_cell_values = retained_array("r6_planner_candidate_cells",
-			evidence_only and 1 or MAX_CELLS * CELL_STRIDE, false)
+			MAX_CELLS * CELL_STRIDE, false)
 		local candidate_values = retained_array("r6_planner_candidates",
-			evidence_only and 1 or MAX_CANDIDATES * CANDIDATE_STRIDE, false)
+			MAX_CANDIDATES * CANDIDATE_STRIDE, false)
 		local scratch = {
 			x = retained_array("r6_planner_scratch_x", 256, false),
 			z = retained_array("r6_planner_scratch_z", 256, false),
@@ -325,10 +319,11 @@ local function planner_factory()
 			peak_column_value_cells = 0, peak_candidate_value_cells = 0,
 		}
 
-		local function column_tuple(x, z)
-			local water_class, zone_numeric, zone_id, biome, race, terrain_y,
-				water_y, river_id, _, functional_kind, _,
-				functional_feature_id = planner_source.column_values_at(x, z)
+		-- A column's surface kind (1 dry, 2 beach, 3 under water) and row from
+		-- its tuple values, the part of the column the plan's column values
+		-- need; `column_tuple` adds the decoration host answers of a cell.
+		local function column_surface(x, z, water_class, zone_numeric, zone_id, biome,
+				terrain_y, water_y)
 			if not WATER_CLASS_ID[water_class] or
 					((zone_numeric == nil) ~= (zone_id == nil)) or
 					((biome == nil) ~= (zone_id == nil)) or
@@ -336,9 +331,17 @@ local function planner_factory()
 				fail("fail_source", "R6 column vocabulary differs")
 			end
 			local wet = water_y ~= nil and water_y > terrain_y
+			return wet and 3 or (biome == "grug_beach" and 2 or 1),
+				select_surface(biome, x, z, water_y, terrain_y, zone_id), wet
+		end
+
+		local function column_tuple(x, z)
+			local water_class, zone_numeric, zone_id, biome, race, terrain_y,
+				water_y, river_id, _, functional_kind, _,
+				functional_feature_id = planner_source.column_values_at(x, z)
+			local surface_kind, surface, wet = column_surface(x, z, water_class,
+				zone_numeric, zone_id, biome, terrain_y, water_y)
 			local excluded = horizontal.static_exclusion_values_at(x, z) ~= nil
-			local surface_kind = wet and 3 or (biome == "grug_beach" and 2 or 1)
-			local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
 			local support_name = surface and (surface_kind == 1 and surface.top or
 				(surface_kind == 2 and surface.shore or surface.bed)) or false
 			-- These are the P2-P4 surface winners exposed as exact R5 planner-source
@@ -397,10 +400,6 @@ local function planner_factory()
 				cover_support = false
 			end
 			if river_id ~= nil then p7_support, cover_support = false, false end
-			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
-			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
-				p7_support, cover_support = false, false
-			end
 			if pools and biome == "grug_swamp" and pools.at(x, z) then
 				p7_support, cover_support = false, false
 			end
@@ -732,8 +731,10 @@ local function planner_factory()
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					column_count = column_count + 1
-					local water_class, zone_numeric, _, biome, race, terrain_y, water_y,
-						surface_kind, surface = column_tuple(x, z)
+					local water_class, zone_numeric, zone_id, biome, race, terrain_y,
+						water_y = planner_source.column_values_at(x, z)
+					local surface_kind, surface = column_surface(x, z, water_class,
+						zone_numeric, zone_id, biome, terrain_y, water_y)
 					local base = (column_count - 1) * COLUMN_STRIDE
 					column_values[base + 1] = WATER_CLASS_ID[water_class]
 					column_values[base + 2] = zone_numeric or 0
@@ -799,7 +800,6 @@ local function planner_factory()
 		local planner = {}
 		function planner.plan_slice(self, minp, maxp)
 			if not rawequal(self, planner) then fail("fail_source", "planner receiver differs") end
-			if evidence_only then fail("fail_status", "evidence fixture has no plan writer") end
 			local min_x, min_y, min_z = position(minp, "minp")
 			local max_x, max_y, max_z = position(maxp, "maxp")
 			local x_count, y_count, z_count = max_x - min_x + 1,
@@ -879,9 +879,8 @@ local function planner_factory()
 		return planner, fixture
 	end
 
-	return {new = function(dependencies) return new(dependencies, nil) end,
-		new_evidence = function(dependencies) return new(dependencies, true) end,
-		new_runtime = function(dependencies) return new(dependencies, "runtime") end}
+	return {new = function(dependencies) return new(dependencies, false) end,
+		new_runtime = function(dependencies) return new(dependencies, true) end}
 end
 
 return planner_factory()

@@ -21,24 +21,16 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plots = dofile(directory .. "/dur_brannoc_plot.lua")(directory)
-
+-- `plots` is the capital's plot module (`dur_brannoc_plot.lua`), loaded once by
+-- `dur_brannoc_districts.lua` for all four districts.
+local function loader(directory, plots)
 	local M = {}
 
 	local WATCH = "dur_brannoc_garrison_watch"
 
-	-- The shopfront of every profession house of this capital, spelled the same
-	-- way in all four rosters: a four-node trestle counter on the front row of
-	-- the plot's own ring, clear of the two corner lamps and of the doorstep
-	-- path down the middle, with the trader OUTSIDE it on the outermost row
-	-- looking at it.
-	local function shop_counter(buf, palette, area)
-		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
-	end
-	local function shop_vendor(id, kind, area)
-		return plots.vendor(id, kind, area.x1 - 4, area.z0, 0)
-	end
+	-- The shopfront every profession house carries (`capital_plot.lua`).
+	local shop_counter = plots.shop_counter
+	local shop_vendor = plots.shop_vendor
 
 	local PLOTS = {
 		-- 1. The barracks: the generator publishes its guard post, its muster
@@ -235,7 +227,6 @@ local function loader(directory)
 		patrol_group = WATCH,
 		plots = PLOTS,
 		fill = FILL,
-		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

@@ -1,6 +1,5 @@
--- Pure, disabled WP40 R5 VoxelManip adapter.
-
-local FIXTURE_MAX_SAFE = 9007199254740991
+-- Pure WP40 R5 VoxelManip adapter: applies a planned chunk to the R6
+-- settlement transaction's shadow VoxelManip (`r6_settlement.lua`).
 
 local function replacement_outcome_core(policy_id, class_id, family_id,
 		liquid_kind, ordinary_family_id, river_family_id)
@@ -30,32 +29,6 @@ local function replacement_outcome_core(policy_id, class_id, family_id,
 		return 1
 	end
 	return 2
-end
-
-local function replacement_outcome_fixture(...)
-	if select("#", ...) ~= 6 then
-		error("fail_fixture: replacement fixture arity differs", 0)
-	end
-	local policy_id, class_id, family_id, liquid_kind,
-		ordinary_family_id, river_family_id = ...
-	if type(policy_id) ~= "number" or policy_id % 1 ~= 0 or
-			policy_id < 1 or policy_id > 7 or
-			type(class_id) ~= "number" or class_id % 1 ~= 0 or
-			class_id < 1 or class_id > 11 or
-			type(family_id) ~= "number" or family_id % 1 ~= 0 or
-			family_id < 0 or family_id > FIXTURE_MAX_SAFE or
-			type(liquid_kind) ~= "number" or liquid_kind % 1 ~= 0 or
-			liquid_kind < 0 or liquid_kind > 2 or
-			type(ordinary_family_id) ~= "number" or
-			ordinary_family_id % 1 ~= 0 or ordinary_family_id < 1 or
-			ordinary_family_id > FIXTURE_MAX_SAFE or
-			type(river_family_id) ~= "number" or river_family_id % 1 ~= 0 or
-			river_family_id < 1 or river_family_id > FIXTURE_MAX_SAFE or
-			(liquid_kind == 0) ~= (family_id == 0) then
-		error("fail_fixture: replacement fixture scalar domain differs", 0)
-	end
-	return replacement_outcome_core(policy_id, class_id, family_id, liquid_kind,
-		ordinary_family_id, river_family_id)
 end
 
 -- Memoized per feature id: the writer asks this for every voxel of an
@@ -1163,20 +1136,6 @@ local function adapter_factory(allocator_factory)
 			for index = 1, K.SCRATCH_CAPACITY do scratch[index] = 0 end
 
 			local planned_columns = 0
-			for column = 1, column_count do
-				if plan.column_start[column] < plan.column_start[column + 1] then
-					planned_columns = planned_columns + 1
-					for run = plan.column_start[column],
-							plan.column_start[column + 1] - 1 do
-						local base = (run - 1) * K.RUN_STRIDE
-						for y = plan.run_values[base + K.R_Y_MIN],
-								plan.run_values[base + K.R_Y_MAX] do
-							cache_target(plan.run_values[base + K.R_ROLE], y,
-								plan.run_values[base + K.R_AUX], minp.y)
-						end
-					end
-				end
-			end
 			local emerged_min, emerged_max = vm_call0(vm_get_emerged_area,
 				K.M_VM_GET_EMERGED, vm)
 			metric_add(K.M_EMERGED_EXTERNAL, 2)
@@ -1285,6 +1244,7 @@ local function adapter_factory(allocator_factory)
 					local column = column_index(x, z)
 					local first = plan.column_start[column]
 					local after = plan.column_start[column + 1]
+					if first < after then planned_columns = planned_columns + 1 end
 					for run = first, after - 1 do
 						local run_base = (run - 1) * RUN_STRIDE
 						for y = plan.run_values[run_base + R_Y_MIN],
@@ -1490,4 +1450,4 @@ local function adapter_factory(allocator_factory)
 	return {new = new}
 end
 
-return adapter_factory, replacement_outcome_fixture, preserved_native_cave
+return adapter_factory

@@ -203,9 +203,11 @@ end
 -- is not a third answer to a question asked elsewhere: it is the same two
 -- sources `param2_kind` already uses -- the `stairs:` prefix, whose mod
 -- registers stairs and slabs and nothing else, and the grug_decor shapes
--- below -- and `library_kat` section 8 proves it equal to the registry's own
--- `group:stair` / `group:slab` for every name a start emits, in both
--- directions. These shapes are facedir-bearing too, so they are folded into
+-- below. The WP13 library KAT (retired in Round 22) proved it equal to the
+-- registry's own `group:stair` / `group:slab` for every name a start
+-- emitted; nothing proves it today (`tools/building_templates/check.py`
+-- applies this table, it does not check it). These shapes are
+-- facedir-bearing too, so they are folded into
 -- `PARAM2_KIND` from here rather than written down twice.
 --
 -- `grug_decor/shapes.lua` is a vendored byte-for-byte copy of the four shape
@@ -226,9 +228,8 @@ local SHAPED = {
 	-- here is a `grug_decor.register_shapes` product
 	-- (mods/ITEMS/grug_decor/shapes.lua), which is the vendored byte-for-byte
 	-- copy of the four `stairs` registrations, so each carries the same
-	-- `group:stair` / `group:slab` and the same facedir; `library_kat`
-	-- section 12 proves that against the registry for every name the capital
-	-- parts emit, in both directions.
+	-- `group:stair` / `group:slab` and the same facedir (the retired library
+	-- KAT proved that against the registry; nothing does today).
 	["grug_decor:castle_stonewall_stair"] = true,
 	["grug_decor:castle_stonewall_stair_inner"] = true,
 	["grug_decor:castle_stonewall_stair_outer"] = true,
@@ -247,14 +248,15 @@ local SHAPED = {
 	-- corners cannot be bound to the roof roles at all -- `Buffer:put` refuses
 	-- the unlisted name with "has no paramtype2" the first time a template
 	-- stamps a corner. Basalt was listed with only the straight stair and the slab,
-	-- which is why `wp13/troll_palette.lua`'s BASALT handle left the king's
+	-- which is why the BASALT handle (now
+	-- `tools/building_templates/troll_palette.lua`) left the king's
 	-- hall of a basalt capital under a junglewood roof. `grug_decor` has
 	-- registered all four shapes of basalt since the darkage import
 	-- (`mods/ITEMS/grug_decor/darkage.lua`'s `shaped` list runs every name
 	-- through `register_shapes`, which registers stair, inner, outer and
 	-- slab), so this adds no node -- it lets the library write two that were
-	-- already there. `library_kat` sections 8 and 12 prove the whole table
-	-- against the real registry in both directions.
+	-- already there. The retired library KAT proved the whole table against
+	-- the real registry; nothing does today.
 	["grug_decor:darkage_basalt_stair_inner"] = true,
 	["grug_decor:darkage_basalt_stair_outer"] = true,
 	["grug_decor:darkage_basalt_slab"] = true,
@@ -498,8 +500,8 @@ end
 --
 -- Written down, the rule is: a plant seeds itself in ground the MAPGEN
 -- generates, never in ground a settlement authored. Every name below is in
--- `grug_materials.NATURAL_GROUND_NODES` and `library_kat` reads that roster
--- out of the source and proves it. `grug_farming:soil` is deliberately
+-- `grug_materials.NATURAL_GROUND_NODES` (the retired library KAT read that
+-- roster out of the source and proved it; nothing does today). `grug_farming:soil` is deliberately
 -- absent, and so is deliberately outside that roster: a ploughed furrow is
 -- kept weed-free, which is also what a field is supposed to look like.
 -- `grug_nodes:mud` is absent for the older reason that the substring never
@@ -634,6 +636,23 @@ end
 local Buffer = {}
 Buffer.__index = Buffer
 
+-- A cell's key in `cell`, `grown_wood` and `grown_leaves`: its position
+-- packed into one exact integer (the packing `sort_cells_zyx` sorts by), so
+-- the hundreds of thousands of writes and reads of a construction build no
+-- string. A position is integral and inside +-32767 (a pad is a few hundred
+-- nodes, y is part-local); anything else has no key (nil). Signed zero
+-- packs like zero: -0 and 0 are one cell.
+local KEY_BIAS, KEY_SPAN = 32768, 65536
+local function cell_key(x, y, z)
+	if x % 1 ~= 0 or y % 1 ~= 0 or z % 1 ~= 0 or x <= -KEY_BIAS or
+			x >= KEY_BIAS or y <= -KEY_BIAS or y >= KEY_BIAS or
+			z <= -KEY_BIAS or z >= KEY_BIAS then
+		return nil
+	end
+	return ((z + KEY_BIAS) * KEY_SPAN + (y + KEY_BIAS)) * KEY_SPAN + (x + KEY_BIAS)
+end
+M.cell_key = cell_key
+
 function M.buffer()
 	return setmetatable({count = 0, order = {}, cell = {}}, Buffer)
 end
@@ -655,10 +674,10 @@ function Buffer:put(x, y, z, name, param2)
 	-- a settlement uses exactly two of the six facedir axes and may flip only
 	-- a shaped node. A flipped barrel or a flipped bed is a param2 no
 	-- placement could have produced, so both halves are refused here.
-	-- `library_kat` section 8e asks the REGISTRY the same question --
-	-- `group:stair` or `group:slab` -- of every cell a start emits, and
-	-- section 8 proves `M.shaped` equal to that answer in both directions;
-	-- this is the construction-time half, written without a registry.
+	-- The retired library KAT asked the REGISTRY the same question --
+	-- `group:stair` or `group:slab` -- of every cell a start emitted; this
+	-- is the construction-time half, written without a registry, and today
+	-- the only one.
 	if M.param2_kind(name) == M.FACEDIR then
 		local axis = param2 - (param2 % 4)
 		if axis ~= 0 and not (TREE_PIECES[name] and param2 < 24) then
@@ -672,7 +691,8 @@ function Buffer:put(x, y, z, name, param2)
 			end
 		end
 	end
-	local key = x .. ":" .. y .. ":" .. z
+	local key = cell_key(x, y, z)
+	if not key then error("wp13 parts: cell position differs", 0) end
 	local cell = self.cell[key]
 	-- A later write onto a town tree's wood (Round 47: a prop, a wall, a
 	-- bed laid after the tree) cuts that tree; `cells()` takes it out whole.
@@ -692,7 +712,8 @@ function Buffer:put(x, y, z, name, param2)
 end
 
 function Buffer:at(x, y, z)
-	return self.cell[x .. ":" .. y .. ":" .. z]
+	local key = cell_key(x, y, z)
+	return key and self.cell[key]
 end
 
 function Buffer:fill(x1, y1, z1, x2, y2, z2, name, param2)
@@ -881,33 +902,6 @@ end
 -- primitive parts
 -- ---------------------------------------------------------------------------
 
--- A wooden door exactly as `doors.register`'s on_place writes it: the leaf at
--- the foot with facedir `face` pointing the way the placer looked (that is,
--- inward), and the invisible `doors:hidden` collision node above it. A right
--- hinged twin uses the `_b` mesh and turns its hidden node by three quarters;
--- `doors.door_toggle` repairs the missing `state` meta for lvm placed doors.
-function M.door(buf, palette, x, y, z, face, right_hinge)
-	local suffix = "_a"
-	local top = face % 4
-	if right_hinge then
-		suffix = "_b"
-		top = (face + 3) % 4
-	end
-	buf:put(x, y, z, palette.variant("door", suffix), face % 4)
-	buf:put(x, y + 1, z, palette.node("door_hidden"), top)
-end
-
--- Two leaves of one doorway. The right hinged leaf sits where the engine
--- looks for a neighbouring door: pos minus ref[dir + 1] of doors' on_place.
-local DOUBLE_REF = {[0] = {-1, 0}, [1] = {0, 1}, [2] = {1, 0}, [3] = {0, -1}}
-
-function M.double_door(buf, palette, x, y, z, face)
-	local ref = DOUBLE_REF[face % 4]
-	M.door(buf, palette, x, y, z, face, false)
-	M.door(buf, palette, x - ref[1], y, z - ref[2], face, true)
-	return x - ref[1], z - ref[2]
-end
-
 -- A pane in a wall running along `axis`. This is the provisional value: a
 -- window in a straight wall is a flat pane spanning that axis, which is what
 -- update_pane settles on for two opposite connections. `resolve_panes` below
@@ -941,10 +935,10 @@ end
 -- which is true of `xpanes:pane_flat` and also of anything else that mod
 -- ever registers, pane or not.
 --
--- The set is therefore written out, and `library_kat` asserts that it agrees
--- with `group:pane` for every name any palette binds and every name any
--- start emits. A pane added to a palette without being added here fails
--- there, which is the only place that can tell.
+-- The set is therefore written out. The retired library KAT asserted that it
+-- agreed with `group:pane` for every name a palette bound and a start
+-- emitted; nothing checks it today, so a pane added to a palette must be
+-- added here by hand.
 local PANE_NAMES = {
 	["xpanes:bar"] = true, ["xpanes:bar_flat"] = true,
 	["xpanes:pane"] = true, ["xpanes:pane_flat"] = true,
@@ -1090,22 +1084,6 @@ function M.floor_torch(buf, palette, x, y, z)
 			" stands on " .. (cell and cell.name or "air"), 0)
 	end
 	buf:put(x, y, z, palette.node("light_post"), M.wallmounted_support(0, -1, 0))
-end
-
--- A bed exactly as beds' on_place writes it: the foot node carries the
--- facedir, the head node sits one step along facedir_to_dir and repeats it.
-function M.bed(buf, palette, x, y, z, face, fancy)
-	local role = fancy and "bed_fancy" or "bed"
-	local foot = palette.variant(role, "_bottom")
-	if foot == nil then
-		-- An optional fancy bed the race does not carry falls back to the
-		-- plain one, which every race must bind.
-		role = "bed"
-		foot = palette.variant(role, "_bottom")
-	end
-	local dx, dz = M.facedir_step(face)
-	buf:put(x, y, z, foot, face % 4)
-	buf:put(x + dx, y, z + dz, palette.variant(role, "_top"), face % 4)
 end
 
 -- A stair whose raised half points at `face`.

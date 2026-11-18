@@ -49,16 +49,19 @@ M.CAPITALS = {
 
 -- The plan-independent kit of a capital: the core blueprint and the plot
 -- roster {id, district, role, kind ("plot" or "fill"), schema, build}, in the
--- districts' fixed order.
-function M.kit(key)
+-- districts' fixed order. The core and the districts share one loader
+-- context (`wp13/templates.lua`, `context` or a new one): the capital's
+-- roster and templates are parsed once and its town tree pools grown once.
+function M.kit(key, context)
 	local cfg = M.CAPITALS[key]
 	if not cfg then error("WP13 capital source: unknown capital " .. tostring(key), 0) end
 	local path = library.path()
-	local composition = library.composition(key)
+	context = context or {}
+	local composition = library.composition(key, context)
 	if type(composition) ~= "table" or type(composition.core) ~= "function" then
 		error("WP13 capital source: the " .. key .. " composition seam differs", 0)
 	end
-	local districts = dofile(path .. "/" .. key .. "_districts.lua")(path)
+	local districts = dofile(path .. "/" .. key .. "_districts.lua")(path, context)
 	local plots = {}
 	for _, plot in ipairs(districts.plots()) do
 		plots[#plots + 1] = {id = plot.id, district = plot.district, role = plot.role,

@@ -1,0 +1,265 @@
+# Round 82 engine region (tools/r82_gen/pick_region.lua), seed 12345: minp x y z, patch label
+# coast: x -2512..-2273 z -2272..-2033, ground -11..168, 34 chunks; of 57600 columns land 26449, river 0, road 0, settlement 0, forest 0
+-2512 -112 -2272 coast
+-2512 -32 -2272 coast
+-2512 48 -2272 coast
+-2432 -112 -2272 coast
+-2432 -32 -2272 coast
+-2432 48 -2272 coast
+-2352 -112 -2272 coast
+-2352 -32 -2272 coast
+-2352 48 -2272 coast
+-2352 128 -2272 coast
+-2512 -112 -2192 coast
+-2512 -32 -2192 coast
+-2512 48 -2192 coast
+-2432 -112 -2192 coast
+-2432 -32 -2192 coast
+-2432 48 -2192 coast
+-2432 128 -2192 coast
+-2352 -112 -2192 coast
+-2352 -32 -2192 coast
+-2352 48 -2192 coast
+-2352 128 -2192 coast
+-2512 -112 -2112 coast
+-2512 -32 -2112 coast
+-2512 48 -2112 coast
+-2432 -112 -2112 coast
+-2432 -32 -2112 coast
+-2432 48 -2112 coast
+-2432 128 -2112 coast
+-2432 208 -2112 coast
+-2352 -112 -2112 coast
+-2352 -32 -2112 coast
+-2352 48 -2112 coast
+-2352 128 -2112 coast
+-2352 208 -2112 coast
+# mountain: x -2032..-1793 z -752..-513, ground 144..532, 76 chunks; of 57600 columns land 57600, river 0, road 0, settlement 983, forest 0
+-2032 -112 -752 mountain
+-2032 -32 -752 mountain
+-2032 48 -752 mountain
+-2032 128 -752 mountain
+-2032 208 -752 mountain
+-2032 288 -752 mountain
+-2032 368 -752 mountain
+-2032 448 -752 mountain
+-1952 -112 -752 mountain
+-1952 -32 -752 mountain
+-1952 48 -752 mountain
+-1952 128 -752 mountain
+-1952 208 -752 mountain
+-1952 288 -752 mountain
+-1952 368 -752 mountain
+-1952 448 -752 mountain
+-1952 528 -752 mountain
+-1872 -112 -752 mountain
+-1872 -32 -752 mountain
+-1872 48 -752 mountain
+-1872 128 -752 mountain
+-1872 208 -752 mountain
+-1872 288 -752 mountain
+-1872 368 -752 mountain
+-1872 448 -752 mountain
+-2032 -112 -672 mountain
+-2032 -32 -672 mountain
+-2032 48 -672 mountain
+-2032 128 -672 mountain
+-2032 208 -672 mountain
+-2032 288 -672 mountain
+-2032 368 -672 mountain
+-2032 448 -672 mountain
+-1952 -112 -672 mountain
+-1952 -32 -672 mountain
+-1952 48 -672 mountain
+-1952 128 -672 mountain
+-1952 208 -672 mountain
+-1952 288 -672 mountain
+-1952 368 -672 mountain
+-1952 448 -672 mountain
+-1952 528 -672 mountain
+-1952 608 -672 mountain
+-1872 -112 -672 mountain
+-1872 -32 -672 mountain
+-1872 48 -672 mountain
+-1872 128 -672 mountain
+-1872 208 -672 mountain
+-1872 288 -672 mountain
+-1872 368 -672 mountain
+-1872 448 -672 mountain
+-1872 528 -672 mountain
+-1872 608 -672 mountain
+-2032 -112 -592 mountain
+-2032 -32 -592 mountain
+-2032 48 -592 mountain
+-2032 128 -592 mountain
+-2032 208 -592 mountain
+-2032 288 -592 mountain
+-1952 -112 -592 mountain
+-1952 -32 -592 mountain
+-1952 48 -592 mountain
+-1952 128 -592 mountain
+-1952 208 -592 mountain
+-1952 288 -592 mountain
+-1952 368 -592 mountain
+-1952 448 -592 mountain
+-1872 -112 -592 mountain
+-1872 -32 -592 mountain
+-1872 48 -592 mountain
+-1872 128 -592 mountain
+-1872 208 -592 mountain
+-1872 288 -592 mountain
+-1872 368 -592 mountain
+-1872 448 -592 mountain
+-1872 528 -592 mountain
+# river 1: x 48..287 z -1232..-993, ground 39..71, 36 chunks; of 57600 columns land 50616, river 6984, road 1296, settlement 0, forest 16058
+48 -112 -1232 river 1
+48 -32 -1232 river 1
+48 48 -1232 river 1
+48 128 -1232 river 1
+128 -112 -1232 river 1
+128 -32 -1232 river 1
+128 48 -1232 river 1
+128 128 -1232 river 1
+208 -112 -1232 river 1
+208 -32 -1232 river 1
+208 48 -1232 river 1
+208 128 -1232 river 1
+48 -112 -1152 river 1
+48 -32 -1152 river 1
+48 48 -1152 river 1
+48 128 -1152 river 1
+128 -112 -1152 river 1
+128 -32 -1152 river 1
+128 48 -1152 river 1
+128 128 -1152 river 1
+208 -112 -1152 river 1
+208 -32 -1152 river 1
+208 48 -1152 river 1
+208 128 -1152 river 1
+48 -112 -1072 river 1
+48 -32 -1072 river 1
+48 48 -1072 river 1
+48 128 -1072 river 1
+128 -112 -1072 river 1
+128 -32 -1072 river 1
+128 48 -1072 river 1
+128 128 -1072 river 1
+208 -112 -1072 river 1
+208 -32 -1072 river 1
+208 48 -1072 river 1
+208 128 -1072 river 1
+# road: x -112..127 z -112..127, ground 68..267, 45 chunks; of 57600 columns land 57600, river 0, road 4075, settlement 37, forest 6934
+-112 -112 -112 road
+-112 -32 -112 road
+-112 48 -112 road
+-112 128 -112 road
+-112 208 -112 road
+-32 -112 -112 road
+-32 -32 -112 road
+-32 48 -112 road
+-32 128 -112 road
+-32 208 -112 road
+48 -112 -112 road
+48 -32 -112 road
+48 48 -112 road
+48 128 -112 road
+48 208 -112 road
+-112 -112 -32 road
+-112 -32 -32 road
+-112 48 -32 road
+-112 128 -32 road
+-32 -112 -32 road
+-32 -32 -32 road
+-32 48 -32 road
+-32 128 -32 road
+-32 208 -32 road
+48 -112 -32 road
+48 -32 -32 road
+48 48 -32 road
+48 128 -32 road
+48 208 -32 road
+48 288 -32 road
+-112 -112 48 road
+-112 -32 48 road
+-112 48 48 road
+-112 128 48 road
+-32 -112 48 road
+-32 -32 48 road
+-32 48 48 road
+-32 128 48 road
+-32 208 48 road
+48 -112 48 road
+48 -32 48 road
+48 48 48 road
+48 128 48 road
+48 208 48 road
+48 288 48 road
+# village copperfell_village: x -2272..-2033 z -2192..-1953, ground 41..144, 40 chunks; of 57600 columns land 57600, river 0, road 981, settlement 1636, forest 0
+-2272 -112 -2192 village copperfell_village
+-2272 -32 -2192 village copperfell_village
+-2272 48 -2192 village copperfell_village
+-2272 128 -2192 village copperfell_village
+-2192 -112 -2192 village copperfell_village
+-2192 -32 -2192 village copperfell_village
+-2192 48 -2192 village copperfell_village
+-2192 128 -2192 village copperfell_village
+-2112 -112 -2192 village copperfell_village
+-2112 -32 -2192 village copperfell_village
+-2112 48 -2192 village copperfell_village
+-2112 128 -2192 village copperfell_village
+-2272 -112 -2112 village copperfell_village
+-2272 -32 -2112 village copperfell_village
+-2272 48 -2112 village copperfell_village
+-2272 128 -2112 village copperfell_village
+-2272 208 -2112 village copperfell_village
+-2192 -112 -2112 village copperfell_village
+-2192 -32 -2112 village copperfell_village
+-2192 48 -2112 village copperfell_village
+-2192 128 -2112 village copperfell_village
+-2112 -112 -2112 village copperfell_village
+-2112 -32 -2112 village copperfell_village
+-2112 48 -2112 village copperfell_village
+-2112 128 -2112 village copperfell_village
+-2272 -112 -2032 village copperfell_village
+-2272 -32 -2032 village copperfell_village
+-2272 48 -2032 village copperfell_village
+-2272 128 -2032 village copperfell_village
+-2272 208 -2032 village copperfell_village
+-2192 -112 -2032 village copperfell_village
+-2192 -32 -2032 village copperfell_village
+-2192 48 -2032 village copperfell_village
+-2192 128 -2032 village copperfell_village
+-2192 208 -2032 village copperfell_village
+-2112 -112 -2032 village copperfell_village
+-2112 -32 -2032 village copperfell_village
+-2112 48 -2032 village copperfell_village
+-2112 128 -2032 village copperfell_village
+-2112 208 -2032 village copperfell_village
+# start edge hearthpine: x -1632..-1393 z -2672..-2433, ground -4..45, 27 chunks; of 57600 columns land 52406, river 0, road 0, settlement 0, forest 0
+-1632 -112 -2672 start edge hearthpine
+-1632 -32 -2672 start edge hearthpine
+-1632 48 -2672 start edge hearthpine
+-1552 -112 -2672 start edge hearthpine
+-1552 -32 -2672 start edge hearthpine
+-1552 48 -2672 start edge hearthpine
+-1472 -112 -2672 start edge hearthpine
+-1472 -32 -2672 start edge hearthpine
+-1472 48 -2672 start edge hearthpine
+-1632 -112 -2592 start edge hearthpine
+-1632 -32 -2592 start edge hearthpine
+-1632 48 -2592 start edge hearthpine
+-1552 -112 -2592 start edge hearthpine
+-1552 -32 -2592 start edge hearthpine
+-1552 48 -2592 start edge hearthpine
+-1472 -112 -2592 start edge hearthpine
+-1472 -32 -2592 start edge hearthpine
+-1472 48 -2592 start edge hearthpine
+-1632 -112 -2512 start edge hearthpine
+-1632 -32 -2512 start edge hearthpine
+-1632 48 -2512 start edge hearthpine
+-1552 -112 -2512 start edge hearthpine
+-1552 -32 -2512 start edge hearthpine
+-1552 48 -2512 start edge hearthpine
+-1472 -112 -2512 start edge hearthpine
+-1472 -32 -2512 start edge hearthpine
+-1472 48 -2512 start edge hearthpine

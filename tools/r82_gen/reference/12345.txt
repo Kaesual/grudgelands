@@ -1,0 +1,40 @@
+# tools/r82_gen digest v1 (tools/seed_fleet/seed.lua)
+seed 12345
+roster ebe39866aa5871a8a1242f220d810b54eb7ad9dfa11276f30b76847031cfb2d7
+trees 349eb4193f3d936f14bd171aa57d56bac993f09f0e7ed398701f018ef35d48c1
+layout water cc4954fd29c6d424709a48bb391c3a210b4c9c16345a4ec36b3c76d217a5e601
+layout roads 2e55a6ef392d8391b30284f3117e5bbaec4b6baa6890ba99ac56ab45b16492b6
+layout capitals 3517c14604be939a16ee55f4bc9ee0ea0a8a65396727567aee74cc7be27908c0
+layout placement eb6934f0ec68c24f27087f6cb731d7a0460a245451a91ffc1e59ed312245170f
+layout handover 949b866a5fb736b1a82e953a2b0e28eed0bc6d18d43f010ce9a9be75ee13372a
+layout sockets f12d31b3c55b001bfec7db8d9b2be2f7a2dd6a8f7f65c3893f7166289be8b38b
+layout blueprints e613ee2cd6359b8717ae9b2c5068e6d3acb944fc87bde145411afc1ccec9795d
+info manifest 7e00f1458fc69fa878867b4a7974d4ca8518ede940715000b39cee400f2c5af3
+chunk -4192,-32,-3792 nodes=30512e7835c79bd7 light=3bcbe045123f2b38 meta=0 corner
+info cover -4192,-32,-3792 seconds=0.76 land=0 river=0 road=0 settlement=0 forest=0 ground=5274 decorations=0 settlement_written=0 p9g_accepted=0 modified_voxels=0
+chunk -2432,-32,-2192 nodes=575a03021e22b2c6 light=7e9b64339d51f5c0 meta=0 coast
+info cover -2432,-32,-2192 seconds=0.29 land=2961 river=0 road=0 settlement=0 forest=0 ground=5616 decorations=86 settlement_written=0 p9g_accepted=1 modified_voxels=33546
+chunk 2528,-32,-432 nodes=14b4e3a615506e8a light=5159ea3c3329ee8b meta=0 river mouth 20
+info cover 2528,-32,-432 seconds=0.16 land=0 river=0 road=0 settlement=0 forest=6066 ground=6400 decorations=0 settlement_written=0 p9g_accepted=0 modified_voxels=25321
+chunk -32,48,1648 nodes=53ef717171c64316 light=ae689d2d52a5de0c meta=0 capital edge gor_drazhak
+info cover -32,48,1648 seconds=0.35 land=6400 river=0 road=0 settlement=0 forest=0 ground=6400 decorations=1267 settlement_written=3319 p9g_accepted=0 modified_voxels=40580
+chunk -2432,48,48 nodes=6bdaed07355df486 light=04b672a516fa6b41 meta=0 collar pvp_camp_gravesalt_escarpment_throng_high
+info cover -2432,48,48 seconds=0.34 land=6400 river=0 road=0 settlement=585 forest=0 ground=5483 decorations=1112 settlement_written=0 p9g_accepted=6 modified_voxels=37193
+chunk 1728,48,-2112 nodes=1d2c82c8695f4c6d light=8a4eead1e1121d81 meta=3:8cae5560a331bf75 a waypost
+info cover 1728,48,-2112 seconds=0.38 land=6400 river=0 road=1129 settlement=93 forest=6400 ground=6400 decorations=500 settlement_written=0 p9g_accepted=7 modified_voxels=55828
+chunk -1712,-32,1568 nodes=02fed44118e72f98 light=0ade213e29d0b976 meta=0 road
+info cover -1712,-32,1568 seconds=0.48 land=6400 river=0 road=626 settlement=39 forest=0 ground=4994 decorations=82 settlement_written=2610 p9g_accepted=0 modified_voxels=24428
+chunk 688,-32,1808 nodes=5da511253fb3e0ff light=7795fbf5c27b2ef4 meta=0 river middle 2
+info cover 688,-32,1808 seconds=0.48 land=4068 river=2332 road=0 settlement=0 forest=971 ground=6400 decorations=658 settlement_written=0 p9g_accepted=4 modified_voxels=56020
+chunk 768,48,-1472 nodes=6f4416fb7e025328 light=64c46c55e7af0550 meta=0 forest grug_elf_forest
+info cover 768,48,-1472 seconds=0.75 land=6400 river=0 road=0 settlement=0 forest=6400 ground=5033 decorations=408 settlement_written=0 p9g_accepted=0 modified_voxels=70563
+chunk -1952,448,-672 nodes=1f53cc2675b9ac7c light=eeda20a0cbb6c774 meta=0 mountain
+info cover -1952,448,-672 seconds=0.25 land=6400 river=0 road=0 settlement=0 forest=0 ground=3081 decorations=11 settlement_written=0 p9g_accepted=0 modified_voxels=19323
+chunk -1952,368,-672 nodes=7f0c149e1d2a4e48 light=ae1ea2deff3196a3 meta=0 under the mountain
+info cover -1952,368,-672 seconds=0.14 land=6400 river=0 road=0 settlement=0 forest=0 ground=2086 decorations=12 settlement_written=0 p9g_accepted=0 modified_voxels=17317
+chunk -352,48,-2112 nodes=6ac1df803dd634be light=002cdc9c667615ff meta=0 village goldmead_village
+info cover -352,48,-2112 seconds=0.38 land=6400 river=0 road=221 settlement=2425 forest=0 ground=6400 decorations=1577 settlement_written=5184 p9g_accepted=16 modified_voxels=33058
+chunk -32,48,1488 nodes=29829d9f2422f91b light=8e6f6212660e9335 meta=0 capital core gor_drazhak
+info cover -32,48,1488 seconds=0.65 land=6400 river=0 road=71 settlement=6400 forest=0 ground=6400 decorations=0 settlement_written=87392 p9g_accepted=0 modified_voxels=40069
+chunk -1712,-112,1568 nodes=081c14de3e797a7e light=e9ab8cf9262409b6 meta=0 under the ground at the road
+info cover -1712,-112,1568 seconds=0.13 land=6400 river=0 road=626 settlement=39 forest=0 ground=0 decorations=0 settlement_written=0 p9g_accepted=0 modified_voxels=57

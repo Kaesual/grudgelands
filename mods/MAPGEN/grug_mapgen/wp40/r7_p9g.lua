@@ -239,7 +239,6 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				cell_x = 0, cell_z = 0, rank = 0}
 		end
 		local bound_plan, bound_generation, bound_vertical_active = false, 0, false
-		local evidence_generation = 1000000000
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
 			peak_candidates = 0, peak_eligible_per_cell = 0, accepted = 0,
 			cache_hits = 0, cache_misses = 0, cache_evictions = 0}
@@ -310,8 +309,11 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				LEVEL_BRACKET[level]
 		end
 
-		local function geographic_reason(context, catalog_index, x, surface_y, z)
-			local water_class, _, zone_id, biome = context.column_values_at(x, z)
+		-- `geographic_values` takes the column's water class, zone and biome
+		-- (the scan reads them once per column for all twelve rows);
+		-- `geographic_reason` reads them itself.
+		local function geographic_values(context, catalog_index, x, surface_y, z,
+				water_class, zone_id, biome)
 			if not zone_sets[catalog_index][zone_id] then return "wrong_zone" end
 			local candidates = host_sets[catalog_index][biome]
 			if water_class ~= "land" or not candidates then return "wrong_biome" end
@@ -331,14 +333,23 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			end
 			return "wrong_support"
 		end
+		local function geographic_reason(context, catalog_index, x, surface_y, z)
+			local water_class, _, zone_id, biome = context.column_values_at(x, z)
+			return geographic_values(context, catalog_index, x, surface_y, z,
+				water_class, zone_id, biome)
+		end
 
-		local function settlement_decision(context, catalog_index, x, y, z)
-			local value = {original_cid = -1, original_param2 = -1,
-				prior_cid = -1, prior_param2 = -1, prior_occupancy = -3,
-				prior_opcode = -1, prior_feature = -1, prior_interface = -1,
-				prior_aux = -1, support_mode = "not_checked", support_cid = -1,
-				support_param2 = -1, support_occupancy = -3, support_opcode = -1,
-				support_feature = -1, support_interface = -1, support_aux = -1}
+		-- The evidence of one decision, filled into `value` (a new table for
+		-- the ledger and the probe; production, which keeps no evidence, passes
+		-- one scratch table).
+		local decision_scratch = {}
+		local function settlement_decision(context, catalog_index, x, y, z, value)
+			value.original_cid, value.original_param2 = -1, -1
+			value.prior_cid, value.prior_param2, value.prior_occupancy = -1, -1, -3
+			value.prior_opcode, value.prior_feature, value.prior_interface = -1, -1, -1
+			value.prior_aux, value.support_mode, value.support_cid = -1, "not_checked", -1
+			value.support_param2, value.support_occupancy, value.support_opcode = -1, -3, -1
+			value.support_feature, value.support_interface, value.support_aux = -1, -1, -1
 			if not context.inside_owner(x, y, z) then return "clipped_owner", value end
 			value.original_cid, value.original_param2 = context.original_at(x, y, z)
 			-- Capture the complete pre-P9G tuple before applying the ordered
@@ -407,6 +418,17 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			return nil, value
 		end
 
+		local SETTLE_CONTEXT_FIELDS = {schema = true, plan = true, generation = true,
+			call_mode = true, min_x = true, min_y = true, min_z = true,
+			max_x = true, max_y = true, max_z = true, inside_owner = true,
+			original_at = true, settled_at = true, production_content = true,
+			analytic_p7_ref = true, analytic_p7_tuple = true, exclusion_at = true,
+			column_values_at = true, write_p9g = true}
+		-- One pass of the column query per scanned column (the scan's twelve
+		-- rows all read the same four values): surface y, water class, zone and
+		-- biome, indexed from the scan's first cell corner.
+		local scan_surface, scan_water, scan_zone, scan_biome = {}, {}, {}, {}
+
 		local tail = {}
 		function tail.plan_slice(self, minp, maxp, plan, generation)
 			if not rawequal(self, tail) then fail("plan receiver differs") end
@@ -440,37 +462,9 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			metrics.plan_calls = metrics.plan_calls + 1
 		end
 
-		-- Private production-evidence binding. It lets the R6 analytic settlement
-		-- fixture run the identical successor core once for a complete x/z owner,
-		-- without fabricating a VM plan or exposing a public session method.
-		function tail.plan_evidence_owner(self, min_x, max_x, min_z, max_z)
-			if not rawequal(self, tail) then fail("evidence-plan receiver differs") end
-			integer(min_x, "evidence min x", -30912, 30927)
-			integer(max_x, "evidence max x", -30912, 30927)
-			integer(min_z, "evidence min z", -30912, 30927)
-			integer(max_z, "evidence max z", -30912, 30927)
-			if max_x - min_x ~= 79 or max_z - min_z ~= 79 then
-				fail("evidence owner bounds differ")
-			end
-			evidence_generation = evidence_generation + 1
-			local plan = {schema = "grug_wp40_r7_evidence_plan_v1",
-				generation = evidence_generation, min_x = min_x, max_x = max_x,
-				min_y = -30912, max_y = 30927, min_z = min_z, max_z = max_z}
-			bound_plan, bound_generation, bound_vertical_active =
-				plan, evidence_generation, true
-			metrics.plan_calls = metrics.plan_calls + 1
-			return plan, evidence_generation
-		end
-
 		function tail.settle(self, context)
 			if not rawequal(self, tail) then fail("settle receiver differs") end
-			exact_fields(context, {schema = true, plan = true, generation = true,
-				call_mode = true, min_x = true, min_y = true, min_z = true,
-				max_x = true, max_y = true, max_z = true, inside_owner = true,
-				original_at = true, settled_at = true, production_content = true,
-				analytic_p7_ref = true, analytic_p7_tuple = true, exclusion_at = true,
-				column_values_at = true, write_p9g = true},
-				"successor context")
+			exact_fields(context, SETTLE_CONTEXT_FIELDS, "successor context")
 			if context.schema ~= "grug_wp40_r7_successor_context_v1" or
 				not rawequal(context.plan, bound_plan) or
 				context.generation ~= bound_generation or
@@ -486,8 +480,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				ledger.manifest_sha256 = manifest.sha256
 				for index = 1, #REASONS do ledger.rejections[REASONS[index]] = 0 end
 			end
-			local population_by_key = {}
-			local function population(catalog_index, x, z)
+			local population_by_key = emit_ledger and {} or nil
+			local population = emit_ledger and function(catalog_index, x, z)
 				local source_id, zone_id, biome, faction, bracket =
 					population_values(context, catalog_index, x, z)
 				local key = source_id .. "\0" .. zone_id .. "\0" .. biome .. "\0" ..
@@ -502,7 +496,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 					ledger.populations[#ledger.populations + 1] = value
 				end
 				return value
-			end
+			end or nil
 			if not bound_vertical_active then
 				if context.call_mode == "replay_fixture" then
 					metrics.replay_calls = metrics.replay_calls + 1
@@ -541,7 +535,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 						if candidate_count > MAX_CANDIDATES then
 							fail("candidate bound exceeded")
 						end
-						local reason = settlement_decision(context, catalog_index, x, y, z)
+						local reason = settlement_decision(context, catalog_index, x, y, z,
+							decision_scratch)
 						if reason then
 							if not REASON_SET[reason] then fail("unknown rejection reason") end
 						else
@@ -550,6 +545,22 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 							context.write_p9g(x, y, z, cid, param2, catalog_index,
 								catalog_index)
 							ledger.accepted = ledger.accepted + 1
+						end
+					end
+				end
+			end
+			local scan_origin_x, scan_origin_z = first_cell_x * 16, first_cell_z * 16
+			local scan_width = (last_cell_x - first_cell_x + 1) * 16
+			if not cached then
+				for z = scan_origin_z, last_cell_z * 16 + 15 do
+					for x = scan_origin_x, last_cell_x * 16 + 15 do
+						if x >= WORLD_MIN_X and x <= WORLD_MAX_X and
+								z >= WORLD_MIN_Z and z <= WORLD_MAX_Z then
+							local index = (z - scan_origin_z) * scan_width + x - scan_origin_x + 1
+							local water_class, _, zone_id, biome, _, surface_y =
+								context.column_values_at(x, z)
+							scan_surface[index], scan_water[index] = surface_y, water_class
+							scan_zone[index], scan_biome[index] = zone_id, biome
 						end
 					end
 				end
@@ -563,10 +574,12 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 							for x = cell_x * 16, cell_x * 16 + 15 do
 								if x >= WORLD_MIN_X and x <= WORLD_MAX_X and
 										z >= WORLD_MIN_Z and z <= WORLD_MAX_Z then
-									local _, _, _, _, _, surface_y =
-										context.column_values_at(x, z)
-									if surface_y >= 1 and not geographic_reason(context,
-											catalog_index, x, surface_y, z) then
+									local index = (z - scan_origin_z) * scan_width + x -
+										scan_origin_x + 1
+									local surface_y = scan_surface[index]
+									if surface_y >= 1 and not geographic_values(context,
+											catalog_index, x, surface_y, z, scan_water[index],
+											scan_zone[index], scan_biome[index]) then
 										eligible = eligible + 1
 										if context.inside_owner(x, surface_y + 1, z) then
 											routed_eligible = routed_eligible + 1
@@ -634,7 +647,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 									population_row.budget = population_row.budget + 1
 								end
 								local reason, decision = settlement_decision(context,
-									catalog_index, candidate.x, candidate.y, candidate.z)
+									catalog_index, candidate.x, candidate.y, candidate.z,
+									emit_ledger and {} or decision_scratch)
 								if reason then
 									if not REASON_SET[reason] then fail("unknown rejection reason") end
 									if emit_ledger then
@@ -763,7 +777,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			integer(y, "P9G probe y", -31000, 31000)
 			integer(z, "P9G probe z", -30912, 30927)
 			bind_water(context)
-			local reason, evidence = settlement_decision(context, catalog_index, x, y, z)
+			local reason, evidence = settlement_decision(context, catalog_index, x, y, z, {})
 			return reason or "accepted", evidence
 		end
 		return tail

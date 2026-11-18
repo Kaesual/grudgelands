@@ -98,14 +98,15 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.81.0** fixes what a code audit found: ability cooldowns and mana survive a relog,
-a level-up no longer delays your next swing, bucket water stays off roads and out of
-villages and camps, the Expedition texts point to the Registrar at the great hall, and the
-server does less work per step with many players online. Since 0.79.0 you can link your
-characters to an account on the realm's website (grudgelands.com/play); the account's
-rewards, such as the **Cheer** emote and the Supporter and donor cloaks, reach every linked
-character. Accounts are optional ([rules](docs/design/accounts.md),
-[contract](docs/technical/web-accounts.md)). Compatible: existing worlds play on.
+**0.82.0** makes world generation faster: new land is ready sooner and a server restart
+is quicker, while the world comes out exactly as before. 0.81.0 fixed what a code audit
+found (cooldowns and mana survive a relog, bucket water stays off roads and out of
+villages). Since 0.79.0 you can link your characters to an account on the realm's website
+(grudgelands.com/play); the account's rewards, such as the **Cheer** emote and the
+Supporter and donor cloaks, reach every linked character. Accounts are optional
+([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)). Compatible:
+existing worlds play on; a world made in full preparation mode needs a map reset (see the
+changelog).
 
 Read the [changelog](CHANGELOG.md) for every earlier version and the upgrade
 requirements of each.

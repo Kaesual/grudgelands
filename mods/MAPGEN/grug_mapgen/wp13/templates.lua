@@ -16,9 +16,20 @@
 --
 -- Every list keeps its file order; nothing deterministic walks `pairs`.
 --
+-- THE LOADER CONTEXT (Round 82 lane LOADER): `loader(directory, context)`
+-- takes an optional plain table one build (a capital kit, a composition)
+-- hands every loader it makes. With it, a template or roster file is
+-- parsed once per build, whichever loader instance asks first
+-- (`context.parsed`, by path), and the tree planter shares the context too
+-- (`dressing.lua`). A parsed file is a pure function of its text, and
+-- nothing writes into one: `part` and `capital` only read it (a part's
+-- points are copies; its meta values, such as `extent`, are read by the
+-- builders), so the build order cannot change what it answers. Without a
+-- context every loader parses its own, as before.
+--
 -- Plain Lua 5.1, no engine calls, no globals (it reads files with `io.open`).
 
-local function loader(directory)
+local function loader(directory, context)
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
 
@@ -43,7 +54,7 @@ local function loader(directory)
 	-- The tree generator, loaded when the first planted template is built.
 	local dressing
 	local function dressing_module()
-		dressing = dressing or dofile(directory .. "/dressing.lua")(directory)
+		dressing = dressing or dofile(directory .. "/dressing.lua")(directory, context)
 		return dressing
 	end
 
@@ -55,6 +66,26 @@ local function loader(directory)
 		return text
 	end
 	M.read = read
+
+	-- A template or roster file through the context's parsed files (none:
+	-- parsed here).
+	local parsed
+	if context then
+		context.parsed = context.parsed or {}
+		parsed = context.parsed
+	end
+	local function parsed_file(path, parse)
+		local value = parsed and parsed[path]
+		if value == nil then
+			value = parse(read(path))
+			if parsed then parsed[path] = value end
+		end
+		return value
+	end
+	local function template_file(name)
+		local file = M.ROOT .. "/templates/" .. name .. ".tpl"
+		return parsed_file(file, function(text) return M.parse_template(text, file, name) end)
+	end
 
 	-- The file's lines with their numbers; a file is `\n`-terminated text.
 	local function lines_of(text, path)
@@ -688,6 +719,20 @@ local function loader(directory)
 	function M.part(t, id, race, palette_of)
 		local buf = parts.buffer()
 		local late = {}
+		-- A legend key resolves once per placement: the race and the
+		-- palettes are fixed here, so its node and param2 are too (false:
+		-- write nothing). A key's first cell is the one it first resolved
+		-- on, so an error still names the same entry.
+		local names, param2s = {}, {}
+		local function cell_of(key)
+			local name = names[key]
+			if name == nil then
+				local param2
+				name, param2 = resolve(t, key, palette_of, race)
+				names[key], param2s[key] = name or false, param2
+			end
+			return name, param2s[key]
+		end
 		for layer_index, layer in ipairs(t.grid) do
 			local y = t.y0 + layer_index - 1
 			for row_index, row in ipairs(layer) do
@@ -698,7 +743,7 @@ local function loader(directory)
 						if entry and entry.late then
 							late[#late + 1] = {t.x0 + column - 1, y, z, key}
 						else
-							local name, param2 = resolve(t, key, palette_of, race)
+							local name, param2 = cell_of(key)
 							if name then buf:put(t.x0 + column - 1, y, z, name, param2) end
 						end
 					end
@@ -717,7 +762,7 @@ local function loader(directory)
 			end
 		end
 		for _, cell in ipairs(late) do
-			local name, param2 = resolve(t, cell[4], palette_of, race)
+			local name, param2 = cell_of(cell[4])
 			if name then buf:put(cell[1], cell[2], cell[3], name, param2) end
 		end
 		local points = {}
@@ -762,8 +807,7 @@ local function loader(directory)
 		for _, place in ipairs(layout.places) do
 			local t = town.templates[place.template]
 			if not t then
-				local file = M.ROOT .. "/templates/" .. place.template .. ".tpl"
-				t = M.parse_template(read(file), file, place.template)
+				t = template_file(place.template)
 				town.templates[place.template] = t
 			end
 			local race = place.main and layout.palettes[place.main].race or layout.race
@@ -804,7 +848,7 @@ local function loader(directory)
 	-- from the code; `capital.used` counts the placements per use line.
 	function M.capital(id)
 		local path = M.ROOT .. "/layouts/" .. id .. ".roster"
-		local roster = M.parse_layout(read(path), path, true)
+		local roster = parsed_file(path, function(text) return M.parse_layout(text, path, true) end)
 		if roster.town ~= id then
 			error(path .. ":1: the roster is for " .. roster.town .. ", not " .. id, 0)
 		end
@@ -820,8 +864,7 @@ local function loader(directory)
 		for _, use in ipairs(roster.uses) do
 			local t = capital.templates[use.template]
 			if not t then
-				local file = M.ROOT .. "/templates/" .. use.template .. ".tpl"
-				t = M.parse_template(read(file), file, use.template)
+				t = template_file(use.template)
 				capital.templates[use.template] = t
 			end
 			local race = use.main and roster.palettes[use.main].race or roster.race

@@ -220,8 +220,6 @@ local CARD = {
 	{name = "north", dx = 0, dz = -1, ang = -pi / 2},
 }
 M.CARD = CARD
--- quadrant q lies between avenue q and avenue q % 4 + 1 (SE, SW, NW, NE)
-M.QUADRANT_NAMES = {"south-east", "south-west", "north-west", "north-east"}
 
 local function wrap(a)
 	while a > pi do a = a - 2 * pi end
@@ -481,7 +479,10 @@ end
 --   planner derives its city parameters, M.city_roads); I.network_roads =
 --   the network's roads (streets and connectors meet them level, D49)
 -------------------------------------------------------------------------------
-local function plan_once(seed, I, opt)
+-- `sampled` (a retry of `M.plan`): the first try's sample grid and masks,
+-- which no option a retry changes reaches (TARGET_AREA is first read in
+-- step 4). Returns the plan and the grid and masks for such a retry.
+local function plan_once(seed, I, opt, sampled)
 	local P = {}
 	for k, v in pairs(M.DEFAULTS) do P[k] = v end
 	for k, v in pairs(opt or {}) do P[k] = v end
@@ -508,25 +509,29 @@ local function plan_once(seed, I, opt)
 	-- inside FINE_R (the largest outline + wall + plot margin) every 2 nodes;
 	-- beyond it (the connector band toward the square's corners) every 4
 	-- nodes, the odd samples copied from the nearest even one
-	local TT, WW, WET = {}, {}, {}
-	local FR2 = P.FINE_R * P.FINE_R
-	local nsamp = 0
-	for pass = 1, 2 do
-		for iz = 0, NG - 1 do
-			for ix = 0, NG - 1 do
-				local k = iz * NG + ix
-				local lx, lz = -EXT + ix * G, -EXT + iz * G
-				local coarse = lx * lx + lz * lz > FR2
-				local even = ix % 2 == 0 and iz % 2 == 0
-				if pass == 1 and (not coarse or even) then
-					local t, wy, land = I.sample(AX + lx, AZ + lz)
-					nsamp = nsamp + 1
-					TT[k] = t
-					WW[k] = wy or false
-					WET[k] = (not land) or (wy ~= nil and wy ~= false and wy > t)
-				elseif pass == 2 and coarse and not even then
-					local k2 = (iz - iz % 2) * NG + (ix - ix % 2)
-					TT[k], WW[k], WET[k] = TT[k2], WW[k2], WET[k2]
+	local TT, WW, WET, nsamp
+	if sampled then
+		TT, WW, WET, nsamp = sampled.TT, sampled.WW, sampled.WET, sampled.nsamp
+	else
+		TT, WW, WET, nsamp = {}, {}, {}, 0
+		local FR2 = P.FINE_R * P.FINE_R
+		for pass = 1, 2 do
+			for iz = 0, NG - 1 do
+				for ix = 0, NG - 1 do
+					local k = iz * NG + ix
+					local lx, lz = -EXT + ix * G, -EXT + iz * G
+					local coarse = lx * lx + lz * lz > FR2
+					local even = ix % 2 == 0 and iz % 2 == 0
+					if pass == 1 and (not coarse or even) then
+						local t, wy, land = I.sample(AX + lx, AZ + lz)
+						nsamp = nsamp + 1
+						TT[k] = t
+						WW[k] = wy or false
+						WET[k] = (not land) or (wy ~= nil and wy ~= false and wy > t)
+					elseif pass == 2 and coarse and not even then
+						local k2 = (iz - iz % 2) * NG + (ix - ix % 2)
+						TT[k], WW[k], WET[k] = TT[k2], WW[k2], WET[k2]
+					end
 				end
 			end
 		end
@@ -545,69 +550,74 @@ local function plan_once(seed, I, opt)
 	-- 2. masks: distance to water (chamfer, nodes), relief, buildable
 	---------------------------------------------------------------------------
 	local T1 = os.clock()
-	local DW = {}
-	for k = 0, NG * NG - 1 do DW[k] = WET[k] and 0 or INF end
-	local S2 = sqrt(2) * G
-	for iz = 0, NG - 1 do
-		for ix = 0, NG - 1 do
-			local k = iz * NG + ix
-			local d = DW[k]
-			if ix > 0 then d = min(d, DW[k - 1] + G) end
-			if iz > 0 then
-				d = min(d, DW[k - NG] + G)
-				if ix > 0 then d = min(d, DW[k - NG - 1] + S2) end
-				if ix < NG - 1 then d = min(d, DW[k - NG + 1] + S2) end
-			end
-			DW[k] = d
-		end
-	end
-	for iz = NG - 1, 0, -1 do
-		for ix = NG - 1, 0, -1 do
-			local k = iz * NG + ix
-			local d = DW[k]
-			if ix < NG - 1 then d = min(d, DW[k + 1] + G) end
-			if iz < NG - 1 then
-				d = min(d, DW[k + NG] + G)
-				if ix < NG - 1 then d = min(d, DW[k + NG + 1] + S2) end
-				if ix > 0 then d = min(d, DW[k + NG - 1] + S2) end
-			end
-			DW[k] = d
-		end
-	end
-	-- relief: max - min over a 5x5 sample window (10 nodes), separable
-	local RMX, RMN = {}, {}
-	for iz = 0, NG - 1 do
-		for ix = 0, NG - 1 do
-			local a, b = INF, -INF
-			for dx = -2, 2 do
-				local jx = ix + dx
-				if jx >= 0 and jx < NG then
-					local t = TT[iz * NG + jx]
-					if t < a then a = t end
-					if t > b then b = t end
-				end
-			end
-			RMN[iz * NG + ix], RMX[iz * NG + ix] = a, b
-		end
-	end
-	local ROUGH, BUILD = {}, {}
 	local CK = P.CORE_KEEP
-	for iz = 0, NG - 1 do
-		for ix = 0, NG - 1 do
-			local a, b = INF, -INF
-			for dz = -2, 2 do
-				local jz = iz + dz
-				if jz >= 0 and jz < NG then
-					local k = jz * NG + ix
-					if RMN[k] < a then a = RMN[k] end
-					if RMX[k] > b then b = RMX[k] end
+	local DW, ROUGH, BUILD
+	if sampled then
+		DW, ROUGH, BUILD = sampled.DW, sampled.ROUGH, sampled.BUILD
+	else
+		DW = {}
+		for k = 0, NG * NG - 1 do DW[k] = WET[k] and 0 or INF end
+		local S2 = sqrt(2) * G
+		for iz = 0, NG - 1 do
+			for ix = 0, NG - 1 do
+				local k = iz * NG + ix
+				local d = DW[k]
+				if ix > 0 then d = min(d, DW[k - 1] + G) end
+				if iz > 0 then
+					d = min(d, DW[k - NG] + G)
+					if ix > 0 then d = min(d, DW[k - NG - 1] + S2) end
+					if ix < NG - 1 then d = min(d, DW[k - NG + 1] + S2) end
 				end
+				DW[k] = d
 			end
-			local k = iz * NG + ix
-			ROUGH[k] = b - a
-			local lx, lz = -EXT + ix * G, -EXT + iz * G
-			BUILD[k] = not WET[k] and DW[k] >= P.BANK and ROUGH[k] <= P.ROUGH and
-				max(abs(lx), abs(lz)) > CK
+		end
+		for iz = NG - 1, 0, -1 do
+			for ix = NG - 1, 0, -1 do
+				local k = iz * NG + ix
+				local d = DW[k]
+				if ix < NG - 1 then d = min(d, DW[k + 1] + G) end
+				if iz < NG - 1 then
+					d = min(d, DW[k + NG] + G)
+					if ix < NG - 1 then d = min(d, DW[k + NG + 1] + S2) end
+					if ix > 0 then d = min(d, DW[k + NG - 1] + S2) end
+				end
+				DW[k] = d
+			end
+		end
+		-- relief: max - min over a 5x5 sample window (10 nodes), separable
+		local RMX, RMN = {}, {}
+		for iz = 0, NG - 1 do
+			for ix = 0, NG - 1 do
+				local a, b = INF, -INF
+				for dx = -2, 2 do
+					local jx = ix + dx
+					if jx >= 0 and jx < NG then
+						local t = TT[iz * NG + jx]
+						if t < a then a = t end
+						if t > b then b = t end
+					end
+				end
+				RMN[iz * NG + ix], RMX[iz * NG + ix] = a, b
+			end
+		end
+		ROUGH, BUILD = {}, {}
+		for iz = 0, NG - 1 do
+			for ix = 0, NG - 1 do
+				local a, b = INF, -INF
+				for dz = -2, 2 do
+					local jz = iz + dz
+					if jz >= 0 and jz < NG then
+						local k = jz * NG + ix
+						if RMN[k] < a then a = RMN[k] end
+						if RMX[k] > b then b = RMX[k] end
+					end
+				end
+				local k = iz * NG + ix
+				ROUGH[k] = b - a
+				local lx, lz = -EXT + ix * G, -EXT + iz * G
+				BUILD[k] = not WET[k] and DW[k] >= P.BANK and ROUGH[k] <= P.ROUGH and
+					max(abs(lx), abs(lz)) > CK
+			end
 		end
 	end
 	st.t.masks = os.clock() - T1
@@ -2004,7 +2014,6 @@ local function plan_once(seed, I, opt)
 	end
 	-- gatehouse boxes
 	for _, g in ipairs(gates) do
-		g.box = {}
 		for dd = -P.GATE_DEPTH, P.GATE_DEPTH do
 			for ww = -P.GATE_WIDTH, P.GATE_WIDTH do
 				local lx = floor(g.x + g.dx * dd - g.dz * ww + 0.5)
@@ -2186,7 +2195,6 @@ local function plan_once(seed, I, opt)
 			end
 			table.sort(stops)
 			if #stops == 0 then stops[1] = 1 end
-			local add = {}
 			for k = 1, #stops do
 				local i, j = stops[k], stops[k % #stops + 1]
 				local len = along(i, j)
@@ -2211,7 +2219,7 @@ local function plan_once(seed, I, opt)
 							end
 						end
 					end
-					if ok then add[#add + 1] = best; turrets[#turrets + 1] = {x = pts[best][1],
+					if ok then turrets[#turrets + 1] = {x = pts[best][1],
 						z = pts[best][2], i = best, kind = "turret"} end
 				end
 			end
@@ -2792,7 +2800,6 @@ local function plan_once(seed, I, opt)
 			end, o2, guide, P.CONNECTOR_BUDGET)
 			local road
 			if path then
-				local _, info = nil, nil
 				local last = path[#path]
 				if tset[last] then
 					local ctrl = ctrl_from(path, {{e.x, e.z}, lead}, {})
@@ -2824,7 +2831,8 @@ local function plan_once(seed, I, opt)
 		gates = gates, ends = ends, streets = streets, avenues = avenues, rings = rings,
 		connectors = connectors, layout = layout, plots = placed, left_out = left_out,
 		relaxed = relaxed, wall = wall, canal = canal, squares = squares, stats = st, r_at = r_at, inside = inside,
-		grid = {TT = TT, WET = WET, BUILD = BUILD, DW = DW, NG = NG, G = G, EXT = EXT}}
+		grid = {TT = TT, WET = WET, BUILD = BUILD, DW = DW, NG = NG, G = G, EXT = EXT}},
+		{TT = TT, WW = WW, WET = WET, nsamp = nsamp, DW = DW, ROUGH = ROUGH, BUILD = BUILD}
 end
 
 -- Round 26 (ruling 3, a size that fits the content): a plan that leaves a
@@ -2839,7 +2847,7 @@ function M.plan(seed, I, opt)
 		end
 		return n
 	end
-	local best = plan_once(seed, I, opt)
+	local best, sampled = plan_once(seed, I, opt)
 	local best_n = named_left(best)
 	local area = (opt and opt.TARGET_AREA) or M.DEFAULTS.TARGET_AREA
 	local grow = (opt and opt.GROW) or M.DEFAULTS.GROW
@@ -2850,7 +2858,7 @@ function M.plan(seed, I, opt)
 		local o = {}
 		for key, v in pairs(opt or {}) do o[key] = v end
 		o.TARGET_AREA = area * (1 + k * grow)
-		local plan = plan_once(seed, I, o)
+		local plan = plan_once(seed, I, o, sampled)
 		t = t + plan.stats.t.total
 		local n = named_left(plan)
 		if n < best_n then best, best_n = plan, n end

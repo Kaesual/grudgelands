@@ -958,6 +958,12 @@ local function contains(list, value)
 	return false
 end
 
+-- Every declared role, required or optional, as a set: built once here,
+-- after the facade roles above joined `M.required`, for the checks below.
+local DECLARED = {}
+for _, role in ipairs(M.required) do DECLARED[role] = true end
+for _, role in ipairs(M.optional) do DECLARED[role] = true end
+
 -- Build a validated palette handle.
 --
 -- `node(role)` returns the node name a role is bound to, and refuses an
@@ -970,10 +976,10 @@ end
 --
 -- Three roles -- `door`, `bed` and `bed_fancy` -- are not node names but
 -- family bases, and `node` refuses them outright. Their members come from
--- `variant(role, suffix)`, whose suffix must be one the family declares, so
--- `parts.door` and `parts.bed` are the only way to emit them and a typo
--- cannot reach the cell list. `names(role)` is the whole family, for callers
--- that need to recognise the emitted names again.
+-- `variant(role, suffix)` (the building templates' only way to emit them,
+-- `templates.resolve`), whose suffix must be one the family declares, so a
+-- typo cannot reach the cell list. `names(role)` is the whole family, for
+-- callers that need to recognise the emitted names again.
 --
 -- `overrides` rebinds individual roles on top of the race, so a composition
 -- can give one building a roof of another material without a second race or
@@ -991,8 +997,7 @@ function M.new(race, overrides)
 		source = {}
 		for role, name in pairs(base) do source[role] = name end
 		for role, name in pairs(overrides) do
-			if not contains(M.required, role) and
-					not contains(M.optional, role) then
+			if not DECLARED[role] then
 				error("wp13 palette: override role " .. tostring(role) ..
 					" is not declared", 0)
 			end
@@ -1015,7 +1020,7 @@ function M.new(race, overrides)
 		bound[role] = name
 	end
 	for role in pairs(source) do
-		if not contains(M.required, role) and not contains(M.optional, role) then
+		if not DECLARED[role] then
 			error("wp13 palette: role " .. tostring(role) .. " is not declared", 0)
 		end
 	end
@@ -1036,7 +1041,7 @@ function M.new(race, overrides)
 			error("wp13 palette: role " .. role ..
 				" is a family base; use variant()", 0)
 		end
-		if not contains(M.required, role) and not contains(M.optional, role) then
+		if not DECLARED[role] then
 			error("wp13 palette: role " .. tostring(role) .. " is not declared", 0)
 		end
 		return bound[role]

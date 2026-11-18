@@ -33,12 +33,13 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	local native_token = native.apply_and_validate_main(wp40, projection)
 
 	-- THE WORLD-FOLDER LAYOUT CACHE (plan D71, world_zones.md §13.4). The
-	-- water, road and capital layout texts are built on a world's first start
-	-- and stored in the world folder; a later boot whose key matches hands
-	-- them to the runtime exactly as emerge gets them from the payload, so
-	-- main skips the three builds. Any other key, or a damaged file, builds
-	-- afresh and replaces the file. Main only; emerge still takes the texts
-	-- from the payload.
+	-- water, road and capital layout texts and the prepared handover are
+	-- built on a world's first start and stored in the world folder; a later
+	-- boot whose key matches hands them to the runtime exactly as emerge gets
+	-- them from the payload, so main skips the layout builds and prepares no
+	-- lazy blueprint again (Round 82, audit M4-03). Any other key, or a
+	-- damaged file, builds afresh and replaces the file. Main only; emerge
+	-- still takes the texts and the handover from the payload.
 	local now = type(core_api.get_us_time) == "function" and function()
 		return core_api.get_us_time() / 1000000 end or os.clock
 	local layout_cache, cache_key, cached, cache_reason, cache_damaged
@@ -95,8 +96,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		local started = now()
 		local constructed = dofile(wp40 .. "/r7_runtime.lua")(core_api, wp40,
 			default_path .. "/schematics", projection, catalog,
-			texts and texts.water, texts and texts.road, texts and texts.capital, nil,
-			texts and texts.placement)
+			texts and texts.water, texts and texts.road, texts and texts.capital,
+			texts and texts.prepared, texts and texts.placement)
 		local seconds = now() - started
 		return constructed, constructed.build_authority(native.identities()), seconds
 	end
@@ -129,8 +130,9 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		fail("settlement socket roster differs")
 	end
 	-- Main's preparations of every lazy blueprint (identity, palette, cell
-	-- bounds, landmarks): the payload hands them to emerge below.
-	local prepared_blueprints = runtime.prepared_handover()
+	-- bounds, landmarks): the payload hands them to emerge below. On a cache
+	-- hit they are the stored ones the runtime was constructed from.
+	local prepared_blueprints = cached and cached.prepared or runtime.prepared_handover()
 	-- The camps under construction, for the box rewrite (camp_rewrite.lua).
 	local camp_sites = dofile(wp40 .. "/r69_camp_sites.lua")(wp40,
 		function(bytes) return core_api.sha256(bytes, true) end, socket_rows,
@@ -287,9 +289,12 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		end
 		if #placement_stats.wet > 0 and type(core_owner.severe) == "table" and
 				type(core_owner.severe.report) == "function" then
-			core_owner.severe.report("mapgen", "a POI found no dry ground in its zone",
+			local line = core_owner.severe.report("mapgen", "a POI found no dry ground in its zone",
 				"placement.lua wet resort: " .. table.concat(placement_stats.wet, ", "),
 				"placement_wet")
+			-- kept with the diagnostics, so a cache hit logs it again (the chat
+			-- message stays the first start's)
+			if type(line) == "string" then diagnostics[#diagnostics + 1] = {"error", line} end
 		end
 	end
 
@@ -462,7 +467,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		if layout_cache then
 			local ok, result, count = pcall(layout_cache.store, world_dir, cache_key,
 				{placement = payload.placement_layout, water = payload.water_layout,
-					road = payload.road_layout, capital = payload.capital_layout},
+					road = payload.road_layout, capital = payload.capital_layout,
+					prepared = prepared_blueprints},
 				{logs = diagnostics, spots = road_spots, seconds = {
 					construction = construction_seconds, water = built_seconds.water,
 					roads = built_seconds.roads, capitals = built_seconds.capitals,

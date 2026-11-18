@@ -383,46 +383,47 @@ M.roster = {
 		-- five-wide gate road crossing stays five wide.
 		reserve_anchor_root = true,
 	},
-	-- Round 14 starter-story POIs. Appended so every shipped settlement keeps
-	-- its roster position. The home villages, corresponding first outposts and
-	-- inner bandit camps are the exact stable anchors named by the story catalog.
-	{
-		key="copperfell_village",label="Copperfell Village",race="dwarf",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_013",numeric_id=13,blueprint_file="r7_copperfell_village_blueprint.lua",blueprint_schema="grug_r14_copperfell_village_v1",identity_schema="grug_r14_copperfell_village_identity_v1",config_schema="grug_r14_copperfell_village_config_v1",ledger_schema="grug_r14_copperfell_village_ledger_v1",metrics_schema="grug_r14_copperfell_village_metrics_v1",delta_schema="grug_r14_copperfell_village_delta_v1"},
-	{
-		key="goldmead_village",label="Goldmead Village",race="human",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_015",numeric_id=15,blueprint_file="r7_goldmead_village_blueprint.lua",blueprint_schema="grug_r14_goldmead_village_v1",identity_schema="grug_r14_goldmead_village_identity_v1",config_schema="grug_r14_goldmead_village_config_v1",ledger_schema="grug_r14_goldmead_village_ledger_v1",metrics_schema="grug_r14_goldmead_village_metrics_v1",delta_schema="grug_r14_goldmead_village_delta_v1"},
-	{
-		key="starbough_village",label="Starbough Village",race="elf",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_017",numeric_id=17,blueprint_file="r7_starbough_village_blueprint.lua",blueprint_schema="grug_r14_starbough_village_v1",identity_schema="grug_r14_starbough_village_identity_v1",config_schema="grug_r14_starbough_village_config_v1",ledger_schema="grug_r14_starbough_village_ledger_v1",metrics_schema="grug_r14_starbough_village_metrics_v1",delta_schema="grug_r14_starbough_village_delta_v1"},
-	{
-		key="mournfen_village",label="Mournfen Village",race="undead",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_019",numeric_id=19,blueprint_file="r7_mournfen_village_blueprint.lua",blueprint_schema="grug_r14_mournfen_village_v1",identity_schema="grug_r14_mournfen_village_identity_v1",config_schema="grug_r14_mournfen_village_config_v1",ledger_schema="grug_r14_mournfen_village_ledger_v1",metrics_schema="grug_r14_mournfen_village_metrics_v1",delta_schema="grug_r14_mournfen_village_delta_v1"},
-	{
-		key="redtusk_village",label="Redtusk Village",race="orc",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_021",numeric_id=21,blueprint_file="r7_redtusk_village_blueprint.lua",blueprint_schema="grug_r14_redtusk_village_v1",identity_schema="grug_r14_redtusk_village_identity_v1",config_schema="grug_r14_redtusk_village_config_v1",ledger_schema="grug_r14_redtusk_village_ledger_v1",metrics_schema="grug_r14_redtusk_village_metrics_v1",delta_schema="grug_r14_redtusk_village_delta_v1"},
-	{
-		key="raincall_village",label="Raincall Village",race="troll",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_023",numeric_id=23,blueprint_file="r7_raincall_village_blueprint.lua",blueprint_schema="grug_r14_raincall_village_v1",identity_schema="grug_r14_raincall_village_identity_v1",config_schema="grug_r14_raincall_village_config_v1",ledger_schema="grug_r14_raincall_village_ledger_v1",metrics_schema="grug_r14_raincall_village_metrics_v1",delta_schema="grug_r14_raincall_village_delta_v1"},
-	{
-		key="copperfell_outpost",label="Copperfell Outpost",race="dwarf",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_025",numeric_id=25,blueprint_file="r7_copperfell_outpost_blueprint.lua",blueprint_schema="grug_r14_copperfell_outpost_v1",identity_schema="grug_r14_copperfell_outpost_identity_v1",config_schema="grug_r14_copperfell_outpost_config_v1",ledger_schema="grug_r14_copperfell_outpost_ledger_v1",metrics_schema="grug_r14_copperfell_outpost_metrics_v1",delta_schema="grug_r14_copperfell_outpost_delta_v1",reserve_anchor_root=true},
-	{
-		key="goldmead_outpost",label="Goldmead Outpost",race="human",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_029",numeric_id=29,blueprint_file="r7_goldmead_outpost_blueprint.lua",blueprint_schema="grug_r14_goldmead_outpost_v1",identity_schema="grug_r14_goldmead_outpost_identity_v1",config_schema="grug_r14_goldmead_outpost_config_v1",ledger_schema="grug_r14_goldmead_outpost_ledger_v1",metrics_schema="grug_r14_goldmead_outpost_metrics_v1",delta_schema="grug_r14_goldmead_outpost_delta_v1",reserve_anchor_root=true},
-	{
-		key="starbough_outpost",label="Starbough Outpost",race="elf",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_033",numeric_id=33,blueprint_file="r7_starbough_outpost_blueprint.lua",blueprint_schema="grug_r14_starbough_outpost_v1",identity_schema="grug_r14_starbough_outpost_identity_v1",config_schema="grug_r14_starbough_outpost_config_v1",ledger_schema="grug_r14_starbough_outpost_ledger_v1",metrics_schema="grug_r14_starbough_outpost_metrics_v1",delta_schema="grug_r14_starbough_outpost_delta_v1",reserve_anchor_root=true},
-	{
-		key="mournfen_outpost",label="Mournfen Outpost",race="undead",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_037",numeric_id=37,blueprint_file="r7_mournfen_outpost_blueprint.lua",blueprint_schema="grug_r14_mournfen_outpost_v1",identity_schema="grug_r14_mournfen_outpost_identity_v1",config_schema="grug_r14_mournfen_outpost_config_v1",ledger_schema="grug_r14_mournfen_outpost_ledger_v1",metrics_schema="grug_r14_mournfen_outpost_metrics_v1",delta_schema="grug_r14_mournfen_outpost_delta_v1",reserve_anchor_root=true},
-	{
-		key="redtusk_outpost",label="Redtusk Outpost",race="orc",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_041",numeric_id=41,blueprint_file="r7_redtusk_outpost_blueprint.lua",blueprint_schema="grug_r14_redtusk_outpost_v1",identity_schema="grug_r14_redtusk_outpost_identity_v1",config_schema="grug_r14_redtusk_outpost_config_v1",ledger_schema="grug_r14_redtusk_outpost_ledger_v1",metrics_schema="grug_r14_redtusk_outpost_metrics_v1",delta_schema="grug_r14_redtusk_outpost_delta_v1",reserve_anchor_root=true},
-	{
-		key="raincall_outpost",label="Raincall Outpost",race="troll",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_045",numeric_id=45,blueprint_file="r7_raincall_outpost_blueprint.lua",blueprint_schema="grug_r14_raincall_outpost_v1",identity_schema="grug_r14_raincall_outpost_identity_v1",config_schema="grug_r14_raincall_outpost_config_v1",ledger_schema="grug_r14_raincall_outpost_ledger_v1",metrics_schema="grug_r14_raincall_outpost_metrics_v1",delta_schema="grug_r14_raincall_outpost_delta_v1",reserve_anchor_root=true},
-	{
-		key="copperfell_bandit_camp",label="Copperfell Bandit Camp",race="dwarf",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_049",numeric_id=49,blueprint_file="r7_copperfell_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_copperfell_bandit_camp_v1",identity_schema="grug_r14_copperfell_bandit_camp_identity_v1",config_schema="grug_r14_copperfell_bandit_camp_config_v1",ledger_schema="grug_r14_copperfell_bandit_camp_ledger_v1",metrics_schema="grug_r14_copperfell_bandit_camp_metrics_v1",delta_schema="grug_r14_copperfell_bandit_camp_delta_v1",reserve_anchor_root=true},
-	{
-		key="goldmead_bandit_camp",label="Goldmead Bandit Camp",race="human",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_051",numeric_id=51,blueprint_file="r7_goldmead_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_goldmead_bandit_camp_v1",identity_schema="grug_r14_goldmead_bandit_camp_identity_v1",config_schema="grug_r14_goldmead_bandit_camp_config_v1",ledger_schema="grug_r14_goldmead_bandit_camp_ledger_v1",metrics_schema="grug_r14_goldmead_bandit_camp_metrics_v1",delta_schema="grug_r14_goldmead_bandit_camp_delta_v1",reserve_anchor_root=true},
-	{
-		key="starbough_bandit_camp",label="Starbough Bandit Camp",race="elf",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_053",numeric_id=53,blueprint_file="r7_starbough_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_starbough_bandit_camp_v1",identity_schema="grug_r14_starbough_bandit_camp_identity_v1",config_schema="grug_r14_starbough_bandit_camp_config_v1",ledger_schema="grug_r14_starbough_bandit_camp_ledger_v1",metrics_schema="grug_r14_starbough_bandit_camp_metrics_v1",delta_schema="grug_r14_starbough_bandit_camp_delta_v1",reserve_anchor_root=true},
-	{
-		key="mournfen_bandit_camp",label="Mournfen Bandit Camp",race="undead",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_055",numeric_id=55,blueprint_file="r7_mournfen_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_mournfen_bandit_camp_v1",identity_schema="grug_r14_mournfen_bandit_camp_identity_v1",config_schema="grug_r14_mournfen_bandit_camp_config_v1",ledger_schema="grug_r14_mournfen_bandit_camp_ledger_v1",metrics_schema="grug_r14_mournfen_bandit_camp_metrics_v1",delta_schema="grug_r14_mournfen_bandit_camp_delta_v1",reserve_anchor_root=true},
-	{
-		key="redtusk_bandit_camp",label="Redtusk Bandit Camp",race="orc",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_057",numeric_id=57,blueprint_file="r7_redtusk_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_redtusk_bandit_camp_v1",identity_schema="grug_r14_redtusk_bandit_camp_identity_v1",config_schema="grug_r14_redtusk_bandit_camp_config_v1",ledger_schema="grug_r14_redtusk_bandit_camp_ledger_v1",metrics_schema="grug_r14_redtusk_bandit_camp_metrics_v1",delta_schema="grug_r14_redtusk_bandit_camp_delta_v1",reserve_anchor_root=true},
-	{
-		key="raincall_bandit_camp",label="Raincall Bandit Camp",race="troll",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_059",numeric_id=59,blueprint_file="r7_raincall_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_raincall_bandit_camp_v1",identity_schema="grug_r14_raincall_bandit_camp_identity_v1",config_schema="grug_r14_raincall_bandit_camp_config_v1",ledger_schema="grug_r14_raincall_bandit_camp_ledger_v1",metrics_schema="grug_r14_raincall_bandit_camp_metrics_v1",delta_schema="grug_r14_raincall_bandit_camp_delta_v1",reserve_anchor_root=true},
 }
+
+-- Round 14 starter-story POIs. Appended so every shipped settlement keeps
+-- its roster position. The home villages, corresponding first outposts and
+-- inner bandit camps are the exact stable anchors named by the story catalog.
+-- One builder (`r14_poi_blueprint.lua`) for all eighteen; `art.kind` names
+-- the composition and every schema string derives from the key.
+-- key, label, race, slot, bounds, zone, anchor number
+local ROUND14 = {
+	{"copperfell_village", "Copperfell Village", "dwarf", "village_1", "poi", "elandor_copperfell_foothills", 13},
+	{"goldmead_village", "Goldmead Village", "human", "village_1", "poi", "elandor_goldmead_vale", 15},
+	{"starbough_village", "Starbough Village", "elf", "village_1", "poi", "elandor_starbough_vale", 17},
+	{"mournfen_village", "Mournfen Village", "undead", "village_1", "poi", "kragmar_mournfen", 19},
+	{"redtusk_village", "Redtusk Village", "orc", "village_1", "poi", "kragmar_redtusk_savanna", 21},
+	{"raincall_village", "Raincall Village", "troll", "village_1", "poi", "kragmar_raincall_basin", 23},
+	{"copperfell_outpost", "Copperfell Outpost", "dwarf", "outpost_1", "poi_outpost", "elandor_copperfell_foothills", 25},
+	{"goldmead_outpost", "Goldmead Outpost", "human", "outpost_1", "poi_outpost", "elandor_goldmead_vale", 29},
+	{"starbough_outpost", "Starbough Outpost", "elf", "outpost_1", "poi_outpost", "elandor_starbough_vale", 33},
+	{"mournfen_outpost", "Mournfen Outpost", "undead", "outpost_1", "poi_outpost", "kragmar_mournfen", 37},
+	{"redtusk_outpost", "Redtusk Outpost", "orc", "outpost_1", "poi_outpost", "kragmar_redtusk_savanna", 41},
+	{"raincall_outpost", "Raincall Outpost", "troll", "outpost_1", "poi_outpost", "kragmar_raincall_basin", 45},
+	{"copperfell_bandit_camp", "Copperfell Bandit Camp", "dwarf", "bandit_1", "poi", "elandor_copperfell_foothills", 49},
+	{"goldmead_bandit_camp", "Goldmead Bandit Camp", "human", "bandit_1", "poi", "elandor_goldmead_vale", 51},
+	{"starbough_bandit_camp", "Starbough Bandit Camp", "elf", "bandit_1", "poi", "elandor_starbough_vale", 53},
+	{"mournfen_bandit_camp", "Mournfen Bandit Camp", "undead", "bandit_1", "poi", "kragmar_mournfen", 55},
+	{"redtusk_bandit_camp", "Redtusk Bandit Camp", "orc", "bandit_1", "poi", "kragmar_redtusk_savanna", 57},
+	{"raincall_bandit_camp", "Raincall Bandit Camp", "troll", "bandit_1", "poi", "kragmar_raincall_basin", 59},
+}
+local ROUND14_KIND = {village_1 = "village", outpost_1 = "outpost", bandit_1 = "camp"}
+for _, row in ipairs(ROUND14) do
+	local key, slot = row[1], row[4]
+	local stem = "grug_r14_" .. key
+	M.roster[#M.roster + 1] = {key = key, label = row[2], race = row[3], slot = slot,
+		bounds = row[5], lazy = true, zone_id = row[6],
+		anchor_id = ("anchor_%03d"):format(row[7]), numeric_id = row[7],
+		blueprint_file = "r14_poi_blueprint.lua", art = {kind = ROUND14_KIND[slot]},
+		blueprint_schema = stem .. "_v1", identity_schema = stem .. "_identity_v1",
+		config_schema = stem .. "_config_v1", ledger_schema = stem .. "_ledger_v1",
+		metrics_schema = stem .. "_metrics_v1", delta_schema = stem .. "_delta_v1",
+		reserve_anchor_root = slot ~= "village_1" or nil}
+end
 
 -- The remaining authored roster uses the same projection/manifest authority.
 -- All profiles bind existing anchors; the catalog introduces no world positions.
@@ -556,13 +557,10 @@ local NUMBER_FIELDS = {numeric_id = true, x = true, z = true}
 -- the zones session.
 local OPTIONAL_FIELDS = {x = true, z = true}
 
--- Packed cell key. The duplicate-cell check used to build one string per
--- cell; a 100,000-cell capital core would allocate 100,000 of them per
--- construction for nothing but a set membership test (contract section
--- 2.2.5: "buffers use packed integer keys, not string keys, for anything
--- above the start size" -- and the start size pays the same price, so this is
--- unconditional). Every blueprint bound is validated inside +-1023 first, so
--- the packed value stays below 2^33 and is exact in a double.
+-- Packed cell key (contract section 2.2.5: "buffers use packed integer keys,
+-- not string keys, for anything above the start size"). Every blueprint
+-- bound is validated inside +-1023 first, so the packed value stays below
+-- 2^33 and is exact in a double.
 local PACK_BIAS, PACK_SPAN = 1024, 2048
 local function packed_key(x, y, z)
 	return ((x + PACK_BIAS) * PACK_SPAN + (y + PACK_BIAS)) * PACK_SPAN +
@@ -624,7 +622,18 @@ local function prepare_cells(fail, descriptor, blueprint)
 			minimum.y < bounds.min.y or maximum.y > bounds.max.y then
 		fail(descriptor.id .. ": blueprint bounds escape the authorized volume")
 	end
-	local cells, seen, actual_min, actual_max = {}, {}, {}, {}
+	-- The few cells the checks below read (the spawn support and clearance,
+	-- the reference column's ground course), kept while the cells pass; the
+	-- strict z/y/x order check already proves every cell unique.
+	local wanted, found = {}, {}
+	if descriptor.kind == "anchor" then
+		for y = 0, 3 do wanted[packed_key(0, y, 0)] = true end
+	elseif descriptor.kind == "reference" and type(blueprint.reference) == "table" and
+			type(blueprint.reference.x) == "number" and
+			type(blueprint.reference.z) == "number" then
+		wanted[packed_key(blueprint.reference.x, 0, blueprint.reference.z)] = true
+	end
+	local cells, actual_min, actual_max = {}, {}, {}
 	-- The previous cell and the running bounds as plain locals: this loop runs
 	-- once per cell of every blueprint (hundreds of thousands per
 	-- construction, in both environments), so it allocates nothing per cell
@@ -654,10 +663,10 @@ local function prepare_cells(fail, descriptor, blueprint)
 				(y < prior_y or (y == prior_y and x <= prior_x)))) then
 			fail(descriptor.id .. ": cells are not canonical z/y/x unique")
 		end
-		local key = packed_key(x, y, z)
-		if seen[key] then fail(descriptor.id .. ": duplicate cell") end
-		seen[key], prior_x, prior_y, prior_z = true, x, y, z
+		prior_x, prior_y, prior_z = x, y, z
 		cells[index] = {x = x, y = y, z = z, param2 = param2, name = cell.name}
+		local key = packed_key(x, y, z)
+		if wanted[key] then found[key] = cells[index] end
 		if min_x == nil or x < min_x then min_x = x end
 		if max_x == nil or x > max_x then max_x = x end
 		if min_y == nil or y < min_y then min_y = y end
@@ -674,13 +683,8 @@ local function prepare_cells(fail, descriptor, blueprint)
 			fail(descriptor.id .. ": declared bounds differ on " .. axis)
 		end
 	end
-	local by_key = {}
-	for index = 1, #cells do
-		local cell = cells[index]
-		by_key[packed_key(cell.x, cell.y, cell.z)] = cell
-	end
 	local function cell_at(x, y, z)
-		return by_key[packed_key(x, y, z)]
+		return found[packed_key(x, y, z)]
 	end
 	-- An anchor-relative blueprint lands its local y = 0 on the fitted anchor
 	-- and its local y = 1 is where an entity stands. The anchor writer of
@@ -1547,6 +1551,23 @@ function M.config(prepared, content, raw_sha256)
 		end
 
 		local bound_plan, bound_generation = false, 0
+		-- whether the bound plan touches any blueprint's box (`bind_plan`)
+		local any_active = false
+		-- The approach materials of this settlement's race (a pure function of
+		-- the race and the refs above), resolved on the first collar work.
+		local fit_refs
+		local function approach_refs()
+			if not fit_refs then
+				local fit_palette = approach_palettes.new(profile.race)
+				local ground_ref = refs[fit_palette.node("ground")]
+				fit_refs = {ground = ground_ref, air = refs.air,
+					fill = refs[fit_palette.node("subsoil")] or ground_ref,
+					path = refs[fit_palette.maybe("castle_paving") or fit_palette.node("plaza")],
+					step = refs[fit_palette.maybe("castle_wall_stair") or
+						fit_palette.node("roof_stair")]}
+			end
+			return fit_refs
+		end
 		local tail = {key = profile.key}
 
 		function tail.bind_plan(self, minp, maxp, plan, generation)
@@ -1554,6 +1575,7 @@ function M.config(prepared, content, raw_sha256)
 					type(maxp) ~= "table" or type(plan) ~= "table" then
 				fail("plan binding differs")
 			end
+			any_active = false
 			for index = 1, #states do
 				local state = states[index]
 				if state.descriptor.kind == "overlay" then
@@ -1569,6 +1591,7 @@ function M.config(prepared, content, raw_sha256)
 				end
 				if state.active then
 					state.idle = 0
+					any_active = true
 				else
 					state.idle = state.idle + 1
 					if state.idle > M.IDLE_RELEASE then release(state) end
@@ -1587,6 +1610,31 @@ function M.config(prepared, content, raw_sha256)
 				fail("settlement plan binding differs")
 			end
 			local written = 0
+			local fittings = prepare_approaches()
+			-- the collars lie strictly inside the reserved square
+			-- (`M.CAPITAL_OVERLAY.square`, anchor-relative), the civic core
+			-- excepted
+			local square = M.CAPITAL_OVERLAY.square
+			local sq_min_x, sq_max_x = square.min_x, square.max_x
+			local sq_min_z, sq_max_z = square.min_z, square.max_z
+			local in_square = context.max_x > anchor.x + sq_min_x and
+				context.min_x < anchor.x + sq_max_x and
+				context.max_z > anchor.z + sq_min_z and
+				context.min_z < anchor.z + sq_max_z
+			-- Nothing to write: no blueprint box touches the plan and no collar
+			-- can reach the owner (the far side of every settlement, every
+			-- chunk transaction). The passes below would write nothing and
+			-- record no write span.
+			if not any_active and not (in_square and #fittings.plots > 0) then
+				if context.call_mode == "replay_fixture" then
+					metrics.replay_calls = metrics.replay_calls + 1
+				else
+					metrics.settle_calls = metrics.settle_calls + 1
+				end
+				return {schema = profile.ledger_schema,
+					blueprint_sha256 = config.identity.sha256, written = 0,
+					approach_findings = approach_findings}
+			end
 			local reserved_x, reserved_y, reserved_z
 			if profile.reserve_anchor_root then
 				reserved_x, reserved_y, reserved_z = anchor.x, anchor.y + 1, anchor.z
@@ -1604,24 +1652,8 @@ function M.config(prepared, content, raw_sha256)
 				if low == nil or y < low then low = y end
 				if high == nil or y > high then high = y end
 			end
-			-- the collars lie strictly inside the reserved square
-			-- (`M.CAPITAL_OVERLAY.square`, anchor-relative), the civic core
-			-- excepted
-			local square = M.CAPITAL_OVERLAY.square
-			local sq_min_x, sq_max_x = square.min_x, square.max_x
-			local sq_min_z, sq_max_z = square.min_z, square.max_z
-			local collar_work = edge_work and
-				context.max_x > anchor.x + sq_min_x and
-				context.min_x < anchor.x + sq_max_x and
-				context.max_z > anchor.z + sq_min_z and
-				context.min_z < anchor.z + sq_max_z
+			local collar_work = edge_work and in_square
 			local recorded = false
-			local fittings = prepare_approaches()
-			local fit_palette = approach_palettes.new(profile.race)
-			local ground_ref, air_ref = refs[fit_palette.node("ground")], refs.air
-			local fill_ref = refs[fit_palette.node("subsoil")] or ground_ref
-			local path_ref = refs[fit_palette.maybe("castle_paving") or fit_palette.node("plaza")]
-			local step_ref = refs[fit_palette.maybe("castle_wall_stair") or fit_palette.node("roof_stair")]
 			local function fit_write(x, y, z, ref, face)
 				if not ref then fail("plot approach material is outside settlement palette") end
 				reach(y)
@@ -1633,6 +1665,9 @@ function M.config(prepared, content, raw_sha256)
 			end
 			if collar_work and #fittings.plots > 0 then
 				recorded = true
+				local fit = approach_refs()
+				local ground_ref, air_ref, fill_ref = fit.ground, fit.air, fit.fill
+				local path_ref, step_ref = fit.path, fit.step
 				for z = context.min_z, context.max_z do
 					for x = context.min_x, context.max_x do
 						local lx, lz = x - anchor.x, z - anchor.z

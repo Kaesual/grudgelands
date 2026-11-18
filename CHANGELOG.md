@@ -13,6 +13,53 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.82.0 — faster world generation (2026-11-18)
+
+Compatible: no map reset, no new world, nothing for the host to do (one
+exception for worlds in full preparation mode, below).
+
+- **New land is ready sooner:** the game does less work for every piece of
+  the world it generates, and the world comes out exactly as before. On 20
+  test worlds, 14 sample chunks each (every node and light value in them)
+  and the worlds' layouts, buildings and waystones were compared with
+  0.81.0, and a test region in the real engine as well. On that region (258
+  chunks: a coast, a mountain, a river, a road, a village and the land just
+  outside a start town) a new world was ready after about 64 s instead of
+  about 78 s, and the preparation at its first start took about 20 s instead
+  of about 24 s (one measurement each; the chunk generation itself is only
+  a few seconds faster there, within the spread of two runs of the old
+  version). Inside that, the chunk writer plans and writes
+  about 15 % faster, settlements ask about a third as many questions about
+  the ground they are built on (1.6 → 0.6 million on a test seed), and the
+  road and river lookups per column take about 20–40 % less time.
+- **A quicker restart:** the world's prepared settlements are now kept in
+  the world's layout cache too, so a server restart no longer builds them
+  again; in the test harness a restart's construction takes about half the
+  time (10.8 → 5.7 s).
+- **Less memory:** each capital reads its building templates and grows its
+  trees once instead of several times; this round's last step alone cut the
+  memory kept after building every capital and start town once from about
+  105 MB to about 60 MB (test harness).
+- **Server admins:**
+  - The first start after the update rebuilds the world's cached layouts
+    once (`grug_world_layouts.txt` in the world folder, now format 3, the
+    same content and about 1 MB larger because it holds the settlements).
+  - A world created with `grug_prepare_full_world = true` refuses to start
+    after this update until its map is reset (`grug_reset_world`): its
+    preparation fingerprint covers files this version changed in
+    `grug_mapgen/wp40` (the chunk writer `r5.lua` and `r6.lua`; the
+    settlement and capital preparation `r7_runtime.lua`,
+    `capital_planner.lua`, `schemas.lua` and `r7_capital_blueprint.lua`;
+    the terrain, zone, water and road lookups `source/simple_map.lua`,
+    `simple_map.lua`, `zone_field.lua`, `zones.lua`, `height.lua`,
+    `terrain_field.lua`, `deterministic.lua`, `index128.lua`,
+    `water_layout.lua` and `road_layout.lua`). Worlds in the default
+    start-town preparation mode, which the hosting platform uses, are not
+    affected.
+- Internal: the six capitals' copied plot builders are one shared plot
+  engine now, with a short configuration per capital (about 3,200 lines
+  fewer, no visible change), and dead world-generation code is removed.
+
 ## 0.81.0 — fixes from the code audit (2026-11-17)
 
 Compatible: no map reset, no new world, nothing for the host to do.

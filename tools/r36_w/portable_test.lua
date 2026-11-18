@@ -83,7 +83,7 @@ local options = {raw_sha256 = sha, full_seed = "42"}
 local built = {}
 for _, profile in ipairs(settlement.roster) do
 	local file = profile.blueprint_file
-	if file == "r20_poi_blueprint.lua" or (file:match("^r7_.*_blueprint%.lua$") and
+	if file == "r20_poi_blueprint.lua" or (file == "r14_poi_blueprint.lua" and
 			profile.slot ~= "capital" and profile.slot ~= "start") then
 		local bp = dofile(wp40 .. "/" .. file)(options, profile)
 		if type(bp) == "function" then bp = bp(options) end
@@ -98,7 +98,7 @@ check(built.r20_anchor_016 and built.r20_anchor_089 and built.goldmead_village, 
 -- took Goldmead's granary corner).
 for _, profile in ipairs(settlement.roster) do
 	local file = profile.blueprint_file
-	if file:match("^r7_.*_blueprint%.lua$") and profile.slot ~= "capital" and profile.slot ~= "start" then
+	if file == "r14_poi_blueprint.lua" and profile.slot ~= "capital" and profile.slot ~= "start" then
 		local bp = built[profile.key].bp
 		local by = {}
 		for _, c in ipairs(bp.cells) do by[c.x .. "," .. c.y .. "," .. c.z] = c.name end
@@ -304,7 +304,7 @@ do
 	for _, profile in ipairs(settlement.roster) do
 		local file = profile.blueprint_file
 		if (file == "r20_poi_blueprint.lua" and profile.art.kind ~= "dragon") or
-				(file:match("^r7_.*_blueprint%.lua$") and profile.slot ~= "capital" and
+				(file == "r14_poi_blueprint.lua" and profile.slot ~= "capital" and
 					profile.slot ~= "start") then
 			add(profile.key, function()
 				local bp = dofile(wp40 .. "/" .. file)(options, profile)

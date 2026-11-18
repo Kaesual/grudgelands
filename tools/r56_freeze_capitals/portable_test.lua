@@ -188,8 +188,8 @@ local saved_dofile = dofile
 _G.dofile = function(path)
 	local chunk = saved_dofile(path)
 	if path:match("/templates%.lua$") then
-		return function(directory)
-			local loader = chunk(directory)
+		return function(directory, ...)
+			local loader = chunk(directory, ...)
 			local capital = loader.capital
 			loader.capital = function(id)
 				local one = capital(id)

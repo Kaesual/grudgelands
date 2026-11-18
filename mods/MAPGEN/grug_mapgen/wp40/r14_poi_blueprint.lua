@@ -71,7 +71,24 @@ local CAMP_PLACES = {
 	troll = {id = "held_supplies", x = 11, z = -11},
 }
 
-return function(spec)
+-- Byte order, never Lua's locale-dependent `<` (the order the settlement
+-- loader checks a palette in).
+local function less_bytes(left, right)
+	for index = 1, math.min(#left, #right) do
+		local a, b = string.byte(left, index), string.byte(right, index)
+		if a ~= b then return a < b end
+	end
+	return #left < #right
+end
+
+-- The roster calls this with (options, profile): the profile's race, its
+-- schema and its `art.kind` (village, outpost or camp) name the composition.
+-- The authoring tools pass one spec {schema, race, kind[, decor]} instead.
+return function(spec, profile)
+	if profile ~= nil then
+		spec = {schema = profile.blueprint_schema, race = profile.race,
+			kind = profile.art.kind}
+	end
 	local palettes = {
 		dwarf={ground="default:dirt_with_coniferous_litter",foundation="default:stonebrick",wall="default:pine_wood",post="default:pine_tree",roof="stairs:slab_pine_wood",accent="default:copperblock"},
 		human={ground="default:dirt_with_grass",foundation="default:cobble",wall="grug_decor:cottages_loam",post="default:tree",roof="grug_decor:darkage_slate_tile_slab",accent="default:brick"},
@@ -425,7 +442,7 @@ return function(spec)
 	end)
 	local palette={}
 	for name in pairs(names) do palette[#palette+1]=name end
-	table.sort(palette)
+	table.sort(palette,less_bytes)
 	return {schema=spec.schema,palette=palette,cells=cells,
 		bounds={min={x=low,y=0,z=low},max={x=high,y=8,z=high}},
 		clear_to=8,landmarks={structures=structures,sockets=sockets,arrival={x=0,y=1,z=0}}}

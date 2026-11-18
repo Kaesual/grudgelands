@@ -15,9 +15,9 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plots = dofile(directory .. "/gor_drazhak_plot.lua")(directory)
-
+-- `plots` is the capital's plot module (`gor_drazhak_plot.lua`), loaded once by
+-- `gor_drazhak_districts.lua` for all four districts.
+local function loader(directory, plots)
 	local M = {}
 
 	local WATCH = "gor_drazhak_bone_watch"
@@ -354,7 +354,6 @@ local function loader(directory)
 		patrol_group = WATCH,
 		plots = PLOTS,
 		fill = FILL,
-		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

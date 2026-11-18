@@ -114,9 +114,6 @@ return function(deps)
 		-- from gravewood's wood, whose leaves drop no sapling).
 		swamp_tree = "no swamp sapling",
 	}
-	-- Simple decorations that are not vegetation. (The bone pile was one
-	-- until Round 51: lane LK's land kit places it, see below.)
-	local NOT_VEGETATION = {}
 	-- A land kit structure (Round 51 lane LK, `kitgen:` rows): no plant, so
 	-- no renewal; of its blocks only the kit's own props (no default block a
 	-- player builds with) count as natural, so they never guard a sapling
@@ -217,13 +214,11 @@ return function(deps)
 		local class, entry
 		if row.kind == "simple" then
 			natural[row.asset_or_node] = true
-			if not NOT_VEGETATION[row.asset_or_node] then
-				class = cover
-				cover_names[row.asset_or_node] = true
-				entry = {id = row.id, node = row.asset_or_node,
-					param2 = row.rule:find("param2_4", 1, true) and 4 or 0,
-					rule = site_rule(row), stacked = stacked(row)}
-			end
+			class = cover
+			cover_names[row.asset_or_node] = true
+			entry = {id = row.id, node = row.asset_or_node,
+				param2 = row.rule:find("param2_4", 1, true) and 4 or 0,
+				rule = site_rule(row), stacked = stacked(row)}
 		elseif kit_row(row) then
 			-- not renewed
 		elseif WOODY[row.id] then
@@ -627,15 +622,16 @@ return function(deps)
 		local below_floor, below_floor_p9g = false, false
 		if not cave then
 			overlay = deps.overlay_exclusion_at(x, z)
-			territory_id = select(2, deps.static_exclusion_values_at(x, z, "vegetation"))
+			local vegetation_reason
+			vegetation_reason, territory_id = deps.static_exclusion_values_at(x, z,
+				"vegetation")
 			if territory_id ~= nil and protected_only_floor_at then
 				local floor = protected_only_floor_at(x, z)
 				below_floor = floor ~= nil and y < floor
 				floor = protected_only_floor_at(x, z, true)
 				below_floor_p9g = floor ~= nil and y < floor
 			end
-			vegetation_excluded = overlay == "road_corridor" or
-				deps.static_exclusion_values_at(x, z, "vegetation") ~= nil
+			vegetation_excluded = overlay == "road_corridor" or vegetation_reason ~= nil
 			cover_excluded = overlay == "road_corridor" or (vegetation_excluded and
 				deps.static_exclusion_values_at(x, z, "cover") ~= nil)
 		end

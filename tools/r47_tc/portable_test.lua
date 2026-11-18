@@ -682,8 +682,12 @@ do
 			for _, id in ipairs(cut_ids) do
 				for _, w in ipairs(buf.grown_trees[id].writes) do
 					if w.wood and buf.grown_wood[w.key] == id then
-						local x, y, z = w.key:match("^(%-?%d+):(%-?%d+):(%-?%d+)$")
-						buf:put(tonumber(x), tonumber(y), tonumber(z), "default:cobble")
+						-- the packed cell key (Round 82, `parts.cell_key`)
+						local x = w.key % 65536 - 32768
+						local yz = math.floor(w.key / 65536)
+						local y, z = yz % 65536 - 32768, math.floor(yz / 65536) - 32768
+						assert(parts.cell_key(x, y, z) == w.key, "cell key unpacks")
+						buf:put(x, y, z, "default:cobble")
 						break
 					end
 				end

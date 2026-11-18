@@ -27,7 +27,8 @@ podiums stay algorithmic (ruling 20). The name keeps these files apart from wp40
   except inside a grid row. Blank lines are ignored outside grids.
 - Every file starts with a magic line: `grudgelands-building-template 1`, `grudgelands-town-layout 1` or
   `grudgelands-town-roster 1` (§4). A reader refuses another magic or version.
-- The game reads the files once at load (the loader in grug_mapgen). A malformed file stops the server at load with
+- The game reads the files at load (the loader in grug_mapgen), each file once per settlement build (a capital's core
+  and districts share one parse). A malformed file stops the server at load with
   the file name, the line number and the reason, never mid-generation. Readers keep the file order everywhere
   (no `pairs` order).
 
@@ -273,7 +274,7 @@ The loader turns a template into a **part** exactly like a generator's result, `
 as fields), so `parts.stamp` stays the only rotation and its `footprint` comes out as before. The groups every
 generator part carried (`doors`, `lights`, `inside`, `room_corner`) are always present in the result, empty when
 the template has no such point. Town code that
-measures a part (`ground_area` and `clear_to` in the capital plot builders read the part's own non-air cells) must
+measures a part (`ground_area` and `clear_to` in the capital plot engine `capital_plot.lua` read the part's own non-air cells) must
 measure what it measured before: such a measurement is computed from the part as the generator built it and stored
 in `meta` (for example `meta extent=[x0,z0,x1,z1]`), in the part frame, and the town code reads it from there and
 rotates it as it rotates cells.
@@ -306,8 +307,8 @@ A multi-cell object takes several cells, is placed only where all of them are fr
 
 | Object | Cells |
 |---|---|
-| Door | the leaf (a member of the `door` family, variant `_a` or `_b`) at y, `door_hidden` at y + 1 with facedir = the leaf's for `_a` and (leaf + 3) % 4 for `_b` (`parts.door`); gates are not doors |
-| Bed | `_bottom` at the cell, `_top` one step along its facedir with the same facedir (`parts.bed`), for `bed` and `bed_fancy` |
+| Door | the leaf (a member of the `door` family, variant `_a` or `_b`) at y, `door_hidden` at y + 1 with facedir = the leaf's for `_a` and (leaf + 3) % 4 for `_b` (what `doors`' on_place writes); gates are not doors |
+| Bed | `_bottom` at the cell, `_top` one step along its facedir with the same facedir (what `beds`' on_place writes), for `bed` and `bed_fancy` |
 
 Only doors and beds reserve cells. Other nodes whose box reaches into a neighbouring cell (lane EDITOR's list
 from `nodes.json`: the castle pillars' crossbraces, the open window shutter, the wagon wheel on the road, corals and
@@ -319,7 +320,7 @@ it. A pillar stack (`pillar` `_bottom`, `_middle`, `_top`) is three single cells
 
 One validator, `tools/building_templates/check.py`, used by the gate and by the editor before it saves (the
 editor imports it). It exits non-zero on any error and prints warnings. Its inputs are the template and layout
-files, the palettes (`wp13/palette.lua`, `troll_palette.lua`, read through LuaJIT or a dump the tool writes and
+files, the palettes (`wp13/palette.lua`, `tools/building_templates/troll_palette.lua`, read through LuaJIT or a dump the tool writes and
 checks), the node registry (`nodes.json`), the editor palette and the known-defects list.
 
 ### 6.1 Always hard (structure)

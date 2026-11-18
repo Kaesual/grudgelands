@@ -1,0 +1,26 @@
+# Round 82 reference seed set (tools/r82_gen/compare.sh): one unsigned decimal
+# seed per line. The first 20 seeds of tools/seed_fleet/seeds.txt: its eight
+# rule seeds (the production realm's seed with its two named crash chunks,
+# the usual test seed 12345, the river and junction seeds) and twelve random
+# seeds alternately below and above 2^53. Each runs the seed fleet's sample
+# plus the dense digest chunks (seed.lua digest mode).
+17713522922938657774
+5575844014311305038
+6410640627505506314
+9512886083845910081
+4282870288782723
+2996858566870034
+12345
+3684797457838814663
+6866842473207
+75731352233772710
+52857145422941
+378823812252024157
+131326668077996
+536848449312304584
+144317006856832
+546685758698740298
+149812936261531
+809064843090012821
+219471344270569
+1044486602088043433

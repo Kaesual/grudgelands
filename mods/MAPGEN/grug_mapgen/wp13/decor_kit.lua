@@ -22,9 +22,11 @@
 -- ore cart) are for the views. Pure Lua 5.1, no engine calls,
 -- no globals.
 
-local function loader(directory)
+-- `context`: the build's optional loader context (`templates.lua`), for the
+-- dressing it makes.
+local function loader(directory, context)
 	local parts = dofile(directory .. "/parts.lua")
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
 	local palettes = dofile(directory .. "/palette.lua")
 
 	local M = {}
@@ -221,9 +223,7 @@ local function loader(directory)
 		cx, cz = at(1, 0)
 		parts.table_cell(buf, p, cx, 1, cz)
 		cx, cz = at(-1, 0)
-		buf:put(cx, 1, cz, p.node("tree_log"))
-		buf:put(cx, 2, cz, p.node("tree_log"))
-		buf:put(cx, 3, cz, p.node("roof_slab"))
+		dressing.wood_pile(buf, p, cx, cz, 1)
 		cx, cz = at(2, 0)
 		buf:put(cx, 1, cz, p.node("storage"))
 	end
@@ -233,9 +233,7 @@ local function loader(directory)
 		local at = frame(x, z, face)
 		for u = 0, (len or 3) - 1 do
 			local cx, cz = at(u, 0)
-			brush.buf:put(cx, 1, cz, brush.palette.node("tree_log"))
-			brush.buf:put(cx, 2, cz, brush.palette.node("tree_log"))
-			brush.buf:put(cx, 3, cz, brush.palette.node("roof_slab"))
+			dressing.wood_pile(brush.buf, brush.palette, cx, cz, 1)
 		end
 	end
 
@@ -920,9 +918,7 @@ local function loader(directory)
 						if (seed % 2 == 0) and free_solid(ax, az, ox, oz, 3) and
 								free_solid(bx, bz, ox, oz, 3) then
 							for _, q in ipairs({{ax, az}, {bx, bz}}) do
-								buf:put(q[1], gy + 1, q[2], p.node("tree_log"))
-								buf:put(q[1], gy + 2, q[2], p.node("tree_log"))
-								buf:put(q[1], gy + 3, q[2], p.node("roof_slab"))
+								dressing.wood_pile(buf, p, q[1], q[2], 1, nil, gy)
 								take(q[1], q[2])
 							end
 							placed = true
@@ -978,20 +974,6 @@ local function loader(directory)
 			count = count + M.dress_house(brush, house, opts)
 		end
 		return count
-	end
-
-	-- Room boxes from a stamped part's `room_corner` points (pairs of
-	-- opposite corners), as the plot builders publish them.
-	function M.rooms_from_corners(corners)
-		local rooms = {}
-		for index = 1, #(corners or {}), 2 do
-			local a, b = corners[index], corners[index + 1]
-			rooms[#rooms + 1] = {
-				min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
-				max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
-				closed = a.closed}
-		end
-		return rooms
 	end
 
 	-- The open ground of a WP13 palette: what a prop may stand on. A WP13

@@ -170,8 +170,6 @@ local function validate_session(session)
 			type(session.compatibility.mob_level_at) ~= "function" or
 			type(session.compatibility.guard_level_at) ~= "function" or
 			type(session.compatibility.open_sea_at) ~= "function" or
-			type(session.compatibility.territory_at) ~= "function" or
-			type(session.compatibility.zone_at) ~= "function" or
 			type(session.compatibility.world_protected_for_faction) ~= "function" then
 		fail("session compatibility payload differs")
 	end
@@ -463,14 +461,6 @@ end
 
 function grug_core.open_sea_at(pos)
 	return installed().compatibility.open_sea_at(pos)
-end
-
-function grug_core.territory_at(pos)
-	return installed().compatibility.territory_at(pos)
-end
-
-function grug_core.zone_at(pos)
-	return installed().compatibility.zone_at(pos)
 end
 
 -- A node coordinate as the zone session rounds it (half away from zero).

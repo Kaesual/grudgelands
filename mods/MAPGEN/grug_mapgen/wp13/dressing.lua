@@ -5,9 +5,13 @@
 -- course. Light producing props append to the caller's light list so the
 -- blueprint can publish every light cell as a landmark.
 --
+-- `loader(directory, context)`: `context` is the optional loader context of
+-- one build (`templates.lua`); the tree generator and the town pools below
+-- are then the build's, shared by every dressing instance it makes.
+--
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
+local function loader(directory, context)
 	local parts = dofile(directory .. "/parts.lua")
 
 	local M = {}
@@ -33,14 +37,16 @@ local function loader(directory)
 		end
 	end
 
-	-- Stacked timber: two courses of logs under a sawn plank cap.
-	function M.wood_pile(buf, palette, x, z, len, axis)
+	-- Stacked timber: two courses of logs under a sawn plank cap, on the
+	-- ground course `base` (0 when not given).
+	function M.wood_pile(buf, palette, x, z, len, axis, base)
+		base = base or 0
 		for step = 0, len - 1 do
 			local cx = axis == "z" and x or x + step
 			local cz = axis == "z" and z + step or z
-			buf:put(cx, 1, cz, palette.node("tree_log"))
-			buf:put(cx, 2, cz, palette.node("tree_log"))
-			buf:put(cx, 3, cz, palette.node("roof_slab"))
+			buf:put(cx, base + 1, cz, palette.node("tree_log"))
+			buf:put(cx, base + 2, cz, palette.node("tree_log"))
+			buf:put(cx, base + 3, cz, palette.node("roof_slab"))
 		end
 	end
 
@@ -306,9 +312,13 @@ local function loader(directory)
 	local tree_module
 	local function tree_templates()
 		if not tree_module then
-			local wp40 = directory .. "/../wp40"
-			tree_module = dofile(wp40 .. "/tree_templates.lua")(
-				dofile(wp40 .. "/treegen.lua"))
+			tree_module = context and context.tree_templates
+			if not tree_module then
+				local wp40 = directory .. "/../wp40"
+				tree_module = dofile(wp40 .. "/tree_templates.lua")(
+					dofile(wp40 .. "/treegen.lua"))
+				if context then context.tree_templates = tree_module end
+			end
 		end
 		return tree_module
 	end
@@ -319,20 +329,26 @@ local function loader(directory)
 			attempt * 83492791 + SPECIES_SALT[species] * 15485863) % 2147483646 - 1
 	end
 
-	-- The species' town pool: {cells (no roots), runs, area}, and the pool
-	-- indices from the smallest footprint up.
-	local pools = {}
-	local function pool_of(species)
-		local pool = pools[species]
-		if pool then return pool end
+	M.tree_templates = tree_templates
+
+	-- A pool of TREE_POOL generated trees of one species, the k-th grown
+	-- from `seed_of(k)`: its entries {cells (no roots), runs, area, leaves
+	-- (how many of its cells are leaves), seed = k}, and the pool indices
+	-- from the smallest footprint up. The town trees below and the
+	-- capitals' city trees (`city_green.lua`) take theirs with their own
+	-- seeds; nothing writes into a pool.
+	function M.tree_pool(species, seed_of)
 		local trees = tree_templates()
-		pool = {entries = {}, smallest = {}}
+		local pool = {entries = {}, smallest = {}}
 		for k = 1, TREE_POOL do
-			local cells, tree = trees.tree(species, tree_seed(species, 0, 0, k))
-			local body, by_key = {}, {}
+			local cells, tree = trees.tree(species, seed_of(k))
+			local body, by_key, leaves = {}, {}, 0
 			for _, cell in ipairs(cells) do
 				if cell.root then by_key[cell.x .. "," .. cell.y .. "," .. cell.z] = cell
-				else body[#body + 1] = cell end
+				else
+					body[#body + 1] = cell
+					if cell.flag == trees.LEAF then leaves = leaves + 1 end
+				end
 			end
 			local runs = {}
 			for _, run in ipairs(tree.root_runs) do
@@ -344,7 +360,7 @@ local function loader(directory)
 				runs[#runs + 1] = list
 			end
 			pool.entries[k] = {cells = body, runs = runs,
-				area = tree.width * tree.depth, seed = k}
+				area = tree.width * tree.depth, leaves = leaves, seed = k}
 			pool.smallest[k] = k
 		end
 		table.sort(pool.smallest, function(a, b)
@@ -352,27 +368,45 @@ local function loader(directory)
 			if ea.area ~= eb.area then return ea.area < eb.area end
 			return a < b
 		end)
-		pools[species] = pool
 		return pool
 	end
 
+	-- The species' town pool, built once per species (per build with a
+	-- context: a pool is a pure function of its species, see above).
+	local pools = {}
+	if context then
+		context.tree_pools = context.tree_pools or {}
+		pools = context.tree_pools
+	end
+	local function pool_of(species)
+		local pool = pools[species]
+		if not pool then
+			pool = M.tree_pool(species, function(k) return tree_seed(species, 0, 0, k) end)
+			pools[species] = pool
+		end
+		return pool
+	end
+
+	-- A tree cell's offset turned by quarter turns.
 	local function turn(x, z, turns)
 		for _ = 1, turns do x, z = z, -x end
 		return x, z
 	end
+	M.tree_turn = turn
 
-	function M.grown(buf, palette, species, x, z, top)
+	-- The names a generated tree of `species` writes in the palette's wood:
+	-- the species row whose trunk is the palette's `log` gives the shaped
+	-- pieces, `leaves` the leaves, and a fruit of another wood than the
+	-- palette's grows as a leaf.
+	function M.tree_names(species, log, leaves)
 		local trees = tree_templates()
-		top = top or TREE_TOP
-		local log, leaves = palette.node("tree_log"), palette.node("tree_leaves")
-		-- the palette's wood: the species row whose trunk the palette logs are
 		local wood
 		for _, row in ipairs(trees.SPECIES) do
 			if row.trunk == log then wood = row break end
 		end
 		if not wood then error("wp13 dressing: no tree wood for " .. log, 0) end
 		local own = trees.BY_KEY[species]
-		local function name_of(name)
+		return function(name)
 			if name == own.trunk then return log
 			elseif name == own.quarter then return wood.quarter
 			elseif name == own.base then return wood.base
@@ -383,6 +417,13 @@ local function loader(directory)
 			end
 			return name
 		end
+	end
+
+	function M.grown(buf, palette, species, x, z, top)
+		local trees = tree_templates()
+		top = top or TREE_TOP
+		local name_of = M.tree_names(species, palette.node("tree_log"),
+			palette.node("tree_leaves"))
 		buf.grown_leaves = buf.grown_leaves or {}
 		buf.grown_stems = buf.grown_stems or {}
 		local grown_leaves = buf.grown_leaves
@@ -396,10 +437,14 @@ local function loader(directory)
 			local cell = buf:at(bx, by, bz)
 			return cell ~= nil and parts.wild_soil(cell.name)
 		end
-		-- One candidate: the cells to write, the leaves left out and the
-		-- leaves, or nil when its wood does not fit.
-		local function try(entry, turns, sx, sz)
-			local writes, skipped, leaf_count = {}, 0, 0
+		-- One candidate: the cells to write and the leaves left out, or nil
+		-- when its wood does not fit or the rule below can no longer pick it:
+		-- more than half its leaves left out, or (with `best_skipped`, the
+		-- best fitting candidate so far) at least as many left out as that
+		-- one and more than a quarter. `skipped` only grows, so such a
+		-- candidate neither replaces the best nor is taken at once.
+		local function try(entry, turns, sx, sz, best_skipped)
+			local writes, skipped, leaves = {}, 0, entry.leaves
 			for _, cell in ipairs(entry.cells) do
 				local cx, cz = turn(cell.x, cell.z, turns)
 				local bx, by, bz = sx + cx, cell.y + 1, sz + cz
@@ -407,16 +452,19 @@ local function loader(directory)
 				local at = buf:at(bx, by, bz)
 				local built = at ~= nil and at.name ~= "air"
 				if cell.flag == trees.LEAF then
-					leaf_count = leaf_count + 1
 					if ground == nil or ground.name == "air" or by > top or built then
 						skipped = skipped + 1
+						if skipped * 2 > leaves or (best_skipped and
+								skipped >= best_skipped and skipped * 4 > leaves) then
+							return nil
+						end
 					else
 						writes[#writes + 1] = {bx, by, bz, cell, turns}
 					end
 				else
 					if ground == nil or ground.name == "air" or by > top or
 							(cell.y == 0 and not parts.wild_soil(ground.name)) or
-							(built and not grown_leaves[bx .. ":" .. by .. ":" .. bz]) then
+							(built and not grown_leaves[parts.cell_key(bx, by, bz)]) then
 						return nil
 					end
 					writes[#writes + 1] = {bx, by, bz, cell, turns}
@@ -444,7 +492,7 @@ local function loader(directory)
 					end
 				end
 			end
-			return writes, skipped, leaf_count
+			return writes, skipped
 		end
 		local pool = pool_of(species)
 		local hash = tree_seed(species, x, z, 0) + 1
@@ -463,9 +511,11 @@ local function loader(directory)
 		end
 		local best, best_skipped
 		for _, candidate in ipairs(candidates) do
-			local writes, skipped, leaf_count = try(pool.entries[candidate[1]],
-				candidate[2], x + candidate[3], z + candidate[4])
+			local entry = pool.entries[candidate[1]]
+			local writes, skipped = try(entry, candidate[2], x + candidate[3],
+				z + candidate[4], best_skipped)
 			if writes then
+				local leaf_count = entry.leaves
 				if skipped * 4 <= leaf_count then best = writes break end
 				if skipped * 2 <= leaf_count and (not best or skipped < best_skipped) then
 					best, best_skipped = writes, skipped
@@ -495,7 +545,7 @@ local function loader(directory)
 			local bx, by, bz, cell, turns = write[1], write[2], write[3], write[4], write[5]
 			local name = name_of(cell.name)
 			local param2 = parts.rotate_param2(cell.param2, parts.param2_kind(name), turns)
-			local key = bx .. ":" .. by .. ":" .. bz
+			local key = parts.cell_key(bx, by, bz)
 			local old = buf:at(bx, by, bz)
 			tree.writes[#tree.writes + 1] = {key = key, name = name,
 				prev_name = old and old.name, prev_param2 = old and old.param2,
@@ -933,20 +983,6 @@ local function loader(directory)
 		return filled
 	end
 
-	-- A cobweb in a corner nobody sweeps. `grug_decor:xdecor_cobweb` is a
-	-- free plantlike with no `attached_node` group and no paramtype2, so it
-	-- needs neither support nor an orientation -- unlike the ivy below.
-	-- Returns false and writes nothing when the cell is taken or the palette
-	-- carries no cobweb.
-	function M.cobweb(buf, palette, x, y, z)
-		local name = palette.maybe("cobweb")
-		if name == nil then return false end
-		local here = buf:at(x, y, z)
-		if here ~= nil and here.name ~= "air" then return false end
-		buf:put(x, y, z, name)
-		return true
-	end
-
 	-- Ivy climbing the inner face of a standing wall. It is a wallmounted
 	-- `signlike`, so `parts.wall_prop` places it and refuses any face that is
 	-- not an opaque full node.
@@ -1112,25 +1148,6 @@ local function loader(directory)
 					end
 				end
 			end
-		end
-	end
-
-	-- A free-standing flight up to a deck. (x, z) is the deck's own edge
-	-- cell and (ax, az) the direction of ascent, so the highest tread lands
-	-- immediately before the deck and the lowest on the pad.
-	function M.stair_up(buf, palette, x, z, top, axis, sign)
-		local ax = (axis == "x") and sign or 0
-		local az = (axis == "z") and sign or 0
-		local tread = palette.node("roof_stair")
-		local face = parts.step_facedir(ax, az)
-		for run = 1, top - 1 do
-			local back = top - run
-			local cx, cz = x - ax * back, z - az * back
-			buf:clear(cx, run, cz, cx, run + 3, cz)
-			for y = 1, run - 1 do
-				buf:put(cx, y, cz, palette.node("post"))
-			end
-			parts.stair(buf, cx, run, cz, tread, face)
 		end
 	end
 

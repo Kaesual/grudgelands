@@ -95,7 +95,15 @@ local function levels(tier)
 	return out
 end
 
-local function by_id(l, r) return l.id < r.id end
+-- byte order, never Lua's locale-dependent `<`
+local function by_id(l, r)
+	local a, b = l.id, r.id
+	for index = 1, math.min(#a, #b) do
+		local x, y = string.byte(a, index), string.byte(b, index)
+		if x ~= y then return x < y end
+	end
+	return #a < #b
+end
 
 function M.camps(layout, seams)
 	local positions = positions_of(layout)

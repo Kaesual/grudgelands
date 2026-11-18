@@ -490,8 +490,9 @@ return function(zone_field, terrain_field)
 
 			-- Static claim exclusions (world_zones.md §7.4-7.5): anchor blend
 			-- envelopes, active hard cores, bay water, and the dragon island/channel
-			-- coast. Road (Phase 4) and river/lake (Phase 5) exclusions are not
-			-- built yet.
+			-- coast. The road and inland-water exclusions are the height
+			-- session's (`road_exclusion_at`, `inland_exclusion_at`), joined in
+			-- by the planner source's `overlay_exclusion_at` (zones.lua).
 			local exclusion_source_by_id = {}
 			for _, collection in ipairs({source.anchors, source.bays, source.islands,
 					source.channels, source.hard_protection}) do
@@ -534,9 +535,6 @@ return function(zone_field, terrain_field)
 				local city = shapes[anchor_id]
 				if not city then fail("capital protection missing: " .. tostring(anchor_id)) end
 				return city.member
-			end
-			local function capital_city_member(anchor_id, x, z)
-				return capital_city_function(anchor_id)(x, z)
 			end
 			local profile_by_id = {}
 			for _, row in ipairs(source.anchor_profiles) do profile_by_id[row.id] = row end
@@ -793,23 +791,6 @@ return function(zone_field, terrain_field)
 				return classification_values_at(x, z)
 			end
 
-			function session.classification_at(x, z)
-				local water_class, macro_region, zone_numeric_id, bay_id, channel_id =
-					classification_values_at(x, z)
-				return {water_class = water_class, macro_region = macro_region,
-					zone_numeric_id = zone_numeric_id, bay_id = bay_id,
-					channel_id = channel_id}
-			end
-
-			function session.id_at(x, z)
-				local _, _, zone = classification_values_at(x, z)
-				return zone and zones[zone].id or nil
-			end
-
-			function session.land_at(x, z)
-				return (classification_values_at(x, z)) == "land"
-			end
-
 			function session.water_class_at(x, z)
 				return (classification_values_at(x, z))
 			end
@@ -818,16 +799,6 @@ return function(zone_field, terrain_field)
 			-- is bay water for gameplay, else nil.
 			function session.bay_shore_at(x, z)
 				return bay_shore_at(x, z)
-			end
-
-			function session.macro_region_at(x, z)
-				local _, macro_region = classification_values_at(x, z)
-				return macro_region
-			end
-
-			-- Approximate signed distance to the coast in nodes (+ = land).
-			function session.coast_signed_at(x, z)
-				return field.coast_signed(x, z)
 			end
 
 			-- Round 51 T2. The true coast distance in nodes (0 on land): the
@@ -841,23 +812,10 @@ return function(zone_field, terrain_field)
 			function session.coast_grid()
 				return world.coast
 			end
-			-- The belt's outer edge at (x, z): its distance off the coast.
-			function session.belt_edge_at(x, z)
-				return belt_edge(x, z)
-			end
 			-- A dragon channel's floor: weight, floor y and channel id, or nil
 			-- (see channel_floor_at above).
 			function session.channel_floor_at(x, z)
 				return channel_floor_at(x, z)
-			end
-
-			-- Owning zone, second-nearest zone and the warped-space distance to
-			-- their border (nodes), for region blending. Land only.
-			function session.zone_detail_at(x, z)
-				local zone, _, _, border, second = sample(x, z)
-				if zone == 0 then return nil end
-				return zones[zone].id, second ~= 0 and zones[second] and zones[second].id or nil,
-					border
 			end
 
 			-- Palette zone and biome-patch lookup point of a land column: the
@@ -874,27 +832,13 @@ return function(zone_field, terrain_field)
 				return zone, qx, qz
 			end
 
-			-- True within `radius` nodes of land (on the field's coast distance).
-			function session.expanded_land_at(x, z, radius)
-				return field.coast_signed(x, z) > -radius
-			end
-
-			function session.warp_at(x, z)
-				local warped_x, warped_z = field.warp_at(x, z)
-				return {x = warped_x, z = warped_z}
-			end
-
-			-- Query bounds of the horizontal world (the pre-Round-22 height stack
-			-- reads them from here).
-			function session.warp_proof()
-				return {min_x = QUERY_BOUNDS.min_x, max_x = QUERY_BOUNDS.max_x,
-					min_z = QUERY_BOUNDS.min_z, max_z = QUERY_BOUNDS.max_z}
-			end
-
 			-- Surface level of the owning zone (D20), without the start band.
 			function session.zone_level_at(x, z, owner)
 				return zone_level_at(x, z, owner)
 			end
+			-- A level range's three sub-ranges (`band_ranges` above); the start
+			-- zones' gradient (zones.lua) cuts its ranges the same way.
+			session.band_ranges = band_ranges
 
 			-- Power-diagram owner of any column, also over water (Round 24: the
 			-- spawn-side start-zone gradient of zones.lua walks it toward the
@@ -913,11 +857,6 @@ return function(zone_field, terrain_field)
 				local result = {}
 				for i = 1, #list do result[i] = list[i] end
 				return result
-			end
-
-			function session.zone_field_check()
-				local check = field.check
-				return {scale = check.scale, tries = #check.tries, seconds = check.seconds}
 			end
 
 			-- `purpose`: nil is the territory rule (every exclusion answers);
@@ -942,11 +881,6 @@ return function(zone_field, terrain_field)
 				return lowest_exclusion_value_at(x, z, value_by_id)
 			end
 
-			-- True on a capital's protected city (plan D76): the zone authority's
-			-- hard row for that capital asks this.
-			function session.capital_protected_at(anchor_id, x, z)
-				return capital_city_member(anchor_id, x, z)
-			end
 			-- The member function itself (x, z -> bool), for callers that ask
 			-- it in a hot path.
 			function session.capital_protection_member(anchor_id)
@@ -970,7 +904,8 @@ return function(zone_field, terrain_field)
 				return member
 			end
 
-			function session.selected_anchor_2d(zone_id, slot_id)
+			-- The placed anchor in a zone's slot (it must be the only one there).
+			local function selected_anchor_2d(zone_id, slot_id)
 				local match
 				for index = 1, #source.anchors do
 					local row = source.anchors[index]
@@ -993,12 +928,7 @@ return function(zone_field, terrain_field)
 			function session.selected_anchor_by_id(anchor_id)
 				local row = anchor_by_id[anchor_id]
 				if not row then return nil end
-				return session.selected_anchor_2d(zones[row.zone_numeric_id].id, row.slot_id)
-			end
-
-			-- Retired with the Round 22 hydrology cut: no lake-edge variation.
-			function session.hydrology_edge_at()
-				return 0, 0
+				return selected_anchor_2d(zones[row.zone_numeric_id].id, row.slot_id)
 			end
 
 			-- Empties the field-sample memo (Round 31 C: a boot's whole-world

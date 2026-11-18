@@ -15,16 +15,15 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
-	local plots = dofile(directory .. "/nhal_veyr_plot.lua")(directory)
-
+-- `plots` is the capital's plot module (`nhal_veyr_plot.lua`), loaded once by
+-- `nhal_veyr_districts.lua` for all four districts.
+local function loader(directory, plots)
 	local M = {}
 
 	local WATCH = "nhal_veyr_vigil_watch"
 
-	local function shop_counter(buf, palette, area)
-		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
-	end
+	-- The shopfront every profession house carries (`capital_plot.lua`).
+	local shop_counter = plots.shop_counter
 
 	local PLOTS = {
 		-- 1. The ossuary: the bone house of the district, a granary in dungeon
@@ -268,7 +267,6 @@ local function loader(directory)
 		patrol_group = WATCH,
 		plots = PLOTS,
 		fill = FILL,
-		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

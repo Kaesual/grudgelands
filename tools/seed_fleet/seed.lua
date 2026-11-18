@@ -26,13 +26,31 @@
 -- Every recipe quest place is placed on the seed (Round 60, quest_places
 -- below).
 --
+-- Digest mode (Round 82, tools/r82_gen; opt-in, the printed line stays the
+-- same): with a third argument the seed also writes a digest file there, one
+-- line per item in a fixed order -- the roster, the tree roll-up, the world
+-- layouts (water, roads, capitals, placement), every settlement's prepared
+-- handover, its sockets and its blueprint identities (the manifest's
+-- `*_blueprint_sha256`), the manifest digest (marked "info": an identity of
+-- the contracts, not world output), then per chunk of the sample its written
+-- nodes and param2, its light (runtime.lua `record_light`) and the waypost
+-- texts main writes into it (the only metadata the generation writes,
+-- init.lua). A fourth argument "dense" adds the digest chunks (a road, a
+-- river's middle, a forest, the highest mountain and the chunk under it, a
+-- village, a capital core and the fill floor y -112..-33 under the road or
+-- the river), chosen by the seed like the sample.
+--
+--   luajit tools/seed_fleet/seed.lua REPO SEED [DIGEST_FILE [dense]]
+--
 -- Prints one line, "OK <seed> <seconds> <roster sha256> chunks=<n>
 -- chunk_seconds=<s> trees=<the generated tree templates' roll-up, 16 hex>
 -- places=<recipe quest places checked> place_seconds=<s> wayposts=<stacks>" or
 -- "FAIL <seed> <seconds> <error>" and then raises (a non-zero exit). A failure
 -- in the per-chunk path names the chunk.
-local repo, seed = arg[1], arg[2]
-assert(repo and seed and seed:match("^%d+$"), "usage: seed.lua REPO SEED")
+local repo, seed, digest_file = arg[1], arg[2], arg[3]
+local dense = arg[4] == "dense"
+assert(repo and seed and seed:match("^%d+$") and (arg[4] == nil or (digest_file and dense)),
+	"usage: seed.lua REPO SEED [DIGEST_FILE [dense]]")
 local t0 = os.clock()
 -- A tributary's last stretch (its snap onto the parent) stays short: on main
 -- before Round 34 F3 the longest over 150 seeds was about 110 nodes; moving
@@ -270,7 +288,186 @@ local function named_chunks()
 	return result
 end
 
+-- Digest mode's extra chunks: {label, x, z, dy, y} columns (dy: chunks
+-- below the ground chunk; y: a fixed chunk origin instead), chosen by later
+-- bytes of the same seed digest. A kind the seed lacks is left out.
+local function dense_columns()
+	local bytes = {R.sha("seed_fleet_chunks:" .. seed):byte(9, 16)}
+	local function pick(index, count) return bytes[index] % count + 1 end
+	local columns = {}
+	local roads = {}
+	for _, line in ipairs(R.main.road_polylines()) do
+		if line.kind == "road" and #line.points > 2 then roads[#roads + 1] = line end
+	end
+	if #roads > 0 then
+		local line = roads[pick(1, #roads)]
+		local point = line.points[math.floor((#line.points + 1) / 2)]
+		columns[#columns + 1] = {"road", point.x, point.z, 0}
+	end
+	if #rivers > 0 then
+		local r = rivers[pick(2, #rivers)]
+		local middle = math.floor((#r.x + 1) / 2)
+		columns[#columns + 1] = {"river middle " .. r.id, r.x[middle], r.z[middle], 0}
+	end
+	-- a forest column and the highest ground, on a 128-node grid
+	local source = R.planner_source
+	local forests, top_x, top_z, top_y = {}, nil, nil, -math.huge
+	for x = WORLD.min_x, X_LIMIT, 128 do
+		for z = WORLD.min_z, Z_LIMIT, 128 do
+			local water_class, _, _, biome, _, terrain_y = source.column_values_at(x, z)
+			if water_class == "land" then
+				if type(biome) == "string" and (biome:find("forest", 1, true) or
+						biome:find("jungle", 1, true)) then
+					forests[#forests + 1] = {x, z, biome}
+				end
+				if terrain_y > top_y then top_x, top_z, top_y = x, z, terrain_y end
+			end
+		end
+	end
+	if #forests > 0 then
+		local f = forests[pick(3, #forests)]
+		columns[#columns + 1] = {"forest " .. f[3], f[1], f[2], 0}
+	end
+	if top_x then
+		columns[#columns + 1] = {"mountain", top_x, top_z, 0}
+		columns[#columns + 1] = {"under the mountain", top_x, top_z, 1}
+	end
+	local villages, capitals = {}, {}
+	for _, row in ipairs(R.main.settlement_sockets(R.built)) do
+		if row.slot:find("^village") then villages[#villages + 1] = row end
+		if row.slot == "capital" then capitals[#capitals + 1] = row end
+	end
+	if #villages > 0 then
+		local v = villages[pick(4, #villages)]
+		columns[#columns + 1] = {"village " .. v.key, v.anchor.x, v.anchor.z, 0}
+	end
+	local c = capitals[pick(5, #capitals)]
+	columns[#columns + 1] = {"capital core " .. c.key, c.anchor.x, c.anchor.z, 0}
+	-- the fill floor (the chunk at y -112: R5's fill runs, the strata and
+	-- the fill ores of rows -37..-33) under the road or the river middle
+	local under = columns[pick(6, 2)]
+	if under and (under[1] == "road" or under[1]:find("^river middle")) then
+		columns[#columns + 1] = {"under the ground at the " .. under[1], under[2], under[3], 0, -112}
+	end
+	return columns
+end
+
+-- A canonical text of plain data (sorted keys, numbers exact), for hashing.
+local function canonical(value, out)
+	local kind = type(value)
+	if kind == "table" then
+		local keys = {}
+		for key in pairs(value) do keys[#keys + 1] = key end
+		table.sort(keys, function(a, b)
+			if type(a) ~= type(b) then return type(a) < type(b) end
+			return a < b
+		end)
+		out[#out + 1] = "{"
+		for _, key in ipairs(keys) do
+			canonical(key, out)
+			out[#out + 1] = "="
+			canonical(value[key], out)
+			out[#out + 1] = ";"
+		end
+		out[#out + 1] = "}"
+	elseif kind == "number" then
+		out[#out + 1] = ("%.17g"):format(value)
+	elseif kind == "string" then
+		out[#out + 1] = ("%q"):format(value)
+	elseif kind == "boolean" then
+		out[#out + 1] = tostring(value)
+	else
+		error("digest: cannot hash a " .. kind, 0)
+	end
+	return out
+end
+local function hex_sha(bytes)
+	return (R.sha(bytes):gsub(".", function(c) return ("%02x"):format(c:byte()) end))
+end
+local digest_lines = {}
+local function layout_digests()
+	local main = R.main
+	local function add(kind, text) digest_lines[#digest_lines + 1] = kind .. " " .. hex_sha(text) end
+	add("layout water", main.water_layout_text())
+	add("layout roads", main.road_layout_text())
+	add("layout capitals", main.capital_layout_text())
+	add("layout placement", main.placement_layout_text())
+	add("layout handover", table.concat(canonical(main.prepared_handover(), {})))
+	add("layout sockets", table.concat(canonical(main.settlement_sockets(R.built), {})))
+	local values, keys = R.built.manifest.values, {}
+	for key in pairs(values) do
+		if key:find("_blueprint_sha256$") then keys[#keys + 1] = key end
+	end
+	table.sort(keys)
+	local parts = {}
+	for _, key in ipairs(keys) do parts[#parts + 1] = key .. "=" .. values[key] end
+	add("layout blueprints", table.concat(parts, "\n"))
+	digest_lines[#digest_lines + 1] = "info manifest " .. R.built.manifest.sha256
+end
+-- The texts main writes into a finished chunk (init.lua): the wayposts.
+local WAYPOSTS = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/wayposts.lua")
+local waypost_rows
+local function chunk_meta(minp, vm)
+	local data = vm.written.data or vm.native.data
+	local node = R.fake.get_content_id(WAYPOSTS.NODE)
+	local texts = {}
+	WAYPOSTS.write_texts(waypost_rows or {}, minp,
+		{x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}, function(pos)
+			return data[(pos.z - minp.z + 16) * 12544 + (pos.y - minp.y + 16) * 112 +
+				(pos.x - minp.x + 16) + 1] == node
+		end, function(pos, text)
+			texts[#texts + 1] = ("%d,%d,%d %s"):format(pos.x, pos.y, pos.z, text)
+		end)
+	if #texts == 0 then return "0" end
+	return #texts .. ":" .. hex_sha(table.concat(texts, "\n")):sub(1, 16)
+end
+
+-- What a chunk reaches (an "info" line, not compared: the counters are the
+-- writer's own and may change with it): its columns that are land, river,
+-- road, settlement ground (functional), forest, and whose ground lies in the
+-- chunk; the owner's decoration candidates; what the settlements and the
+-- P9G pass wrote or accepted, and the voxels the writer changed.
+local function counters()
+	local m = R.built.session.metrics()
+	local written = 0
+	for _, row in pairs(m.settlements or {}) do written = written + (row.written or 0) end
+	return {written = written, p9g = m.p9g and m.p9g.accepted or 0,
+		voxels = m.settlement and m.settlement.modified_voxels or 0}
+end
+local function coverage(minp, before, result)
+	local source = R.planner_source
+	local n = {land = 0, river = 0, road = 0, settlement = 0, forest = 0, ground = 0}
+	for z = minp.z, minp.z + 79 do
+		for x = minp.x, minp.x + 79 do
+			local water_class, _, _, biome, _, terrain_y, _, river_id, _, functional =
+				source.column_values_at(x, z)
+			if water_class == "land" then n.land = n.land + 1 end
+			if river_id ~= nil then n.river = n.river + 1 end
+			if source.road_column_at(x, z) ~= nil then n.road = n.road + 1 end
+			if functional ~= nil then n.settlement = n.settlement + 1 end
+			if type(biome) == "string" and (biome:find("forest", 1, true) or
+					biome:find("jungle", 1, true)) then
+				n.forest = n.forest + 1
+			end
+			if terrain_y >= minp.y and terrain_y <= minp.y + 79 then n.ground = n.ground + 1 end
+		end
+	end
+	local after = counters()
+	local _, decorations = result.candidates:gsub(",", ",")
+	return ("info cover %d,%d,%d seconds=%.2f land=%d river=%d road=%d settlement=%d " ..
+		"forest=%d ground=%d decorations=%d settlement_written=%d p9g_accepted=%d " ..
+		"modified_voxels=%d"):format(minp.x, minp.y, minp.z,
+		result.plan_seconds + result.write_seconds, n.land, n.river, n.road, n.settlement,
+		n.forest, n.ground,
+		result.candidates == "" and 0 or (decorations + 1) / 7, after.written - before.written,
+		after.p9g - before.p9g, after.voxels - before.voxels)
+end
+
 local ok, err = pcall(build)
+if ok and digest_file then
+	R.record_light = true
+	ok, err = pcall(layout_digests)
+end
 local roster = ok and R.built.anchor_roster.sha256
 local places, place_seconds = 0, 0
 if ok then
@@ -339,35 +536,64 @@ if ok then
 		ok, rows = pcall(wayposts)
 		if ok then
 			posts = #rows
+			waypost_rows = rows
 			columns[#columns + 1] = {"a waypost", rows[1].x, rows[1].z}
 		else
 			err = rows
 		end
 	end
+	if ok and dense then
+		local extra
+		ok, extra = pcall(dense_columns)
+		if ok then
+			for _, column in ipairs(extra) do columns[#columns + 1] = column end
+		else
+			err = extra
+		end
+	end
+	local function run_chunk(minp, label)
+		local result
+		local before = digest_file and counters()
+		ok, result = pcall(R.chunk, minp)
+		if not ok then
+			err = ("chunk %d,%d,%d (%s): %s"):format(minp.x, minp.y, minp.z, label,
+				tostring(result))
+			return
+		end
+		chunks = chunks + 1
+		if digest_file then
+			digest_lines[#digest_lines + 1] = ("chunk %d,%d,%d nodes=%s light=%s meta=%s %s")
+				:format(minp.x, minp.y, minp.z, result.data_hash, result.light_hash:sub(1, 16),
+				chunk_meta(minp, result.vm), label)
+			digest_lines[#digest_lines + 1] = coverage(minp, before, result)
+		end
+	end
 	for _, column in ipairs(ok and columns or {}) do
 		local label, x, z = column[1], column[2], column[3]
-		local minp = {x = R.origin(x), y = R.origin(math.max(R.ground_at(x, z), 1)),
+		local minp = {x = R.origin(x),
+			y = column[5] or R.origin(math.max(R.ground_at(x, z), 1)) - 80 * (column[4] or 0),
 			z = R.origin(z)}
-		ok, err = pcall(R.chunk, minp)
-		if not ok then
-			err = ("chunk %d,%d,%d (%s): %s"):format(minp.x, minp.y, minp.z, label, tostring(err))
-			break
-		end
-		chunks = chunks + 1
+		run_chunk(minp, label)
+		if not ok then break end
 	end
 	for _, named in ipairs(ok and named_chunks() or {}) do
-		local minp = named[2]
-		ok, err = pcall(R.chunk, minp)
-		if not ok then
-			err = ("chunk %d,%d,%d (%s): %s"):format(minp.x, minp.y, minp.z, named[1],
-				tostring(err))
-			break
-		end
-		chunks = chunks + 1
+		run_chunk(named[2], named[1])
+		if not ok then break end
 	end
 	chunk_seconds = os.clock() - started
 end
 local seconds = ("%.1f"):format(os.clock() - t0)
+if digest_file then
+	local file = assert(io.open(digest_file, "w"))
+	file:write("# tools/r82_gen digest v1 (tools/seed_fleet/seed.lua)\n", "seed " .. seed .. "\n")
+	if ok then
+		file:write("roster " .. roster .. "\n", "trees " .. trees .. "\n",
+			table.concat(digest_lines, "\n"), "\n")
+	else
+		file:write("FAIL " .. (tostring(err):gsub("[\t\n]", " ")) .. "\n")
+	end
+	file:close()
+end
 if ok then
 	print("OK", seed, seconds, roster, "chunks=" .. chunks,
 		("chunk_seconds=%.1f"):format(chunk_seconds), "trees=" .. trees:sub(1, 16),

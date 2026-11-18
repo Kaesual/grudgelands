@@ -77,7 +77,6 @@ return function(P)
 		local vs = 1 - sqrt(1 - y)
 		return (1 - v) * us + v * vs
 	end
-	M.trough_g, M.trough_inv = trough_g, trough_inv
 
 	-- Binary min-heap of (value, key).
 	local function heap_new() return {v = {}, k = {}, n = 0} end
@@ -2019,7 +2018,7 @@ return function(P)
 		-- nearest segment is always in its list wherever any trough reaches
 		-- it (no bucket-edge seams).
 		local SAX, SAZ, SVX, SVZ, SL2 = {}, {}, {}, {}, {}
-		local SW0, SW1, SLV, SLW, SRIV, SIDX, SWET = {}, {}, {}, {}, {}, {}, {}
+		local SW0, SW1, SLV, SLW, SRIV, SWET = {}, {}, {}, {}, {}, {}
 		local SR0, SR1, SD0, SD1, SV0, SV1, SL0, SL1 = {}, {}, {}, {}, {}, {}, {}, {}
 		local ns = 0
 		local BUCKET = P.BUCKET
@@ -2070,7 +2069,7 @@ return function(P)
 					SLV[ns] = min(r.level[i], r.level[i + 1])
 					SLW[ns] = SLV[ns]
 					if not SWET[ns] and spring_level then SLW[ns] = spring_level end
-					SRIV[ns], SIDX[ns] = r.id, i
+					SRIV[ns] = r.id
 					local x0, x1 = min(r.x[i], r.x[i + 1]), max(r.x[i], r.x[i + 1])
 					local z0, z1 = min(r.z[i], r.z[i + 1]), max(r.z[i], r.z[i + 1])
 					for bz = floor((z0 - REACH) / BUCKET), floor((z1 + REACH) / BUCKET) do
@@ -2113,7 +2112,7 @@ return function(P)
 		local function river_at(x, z)
 			local list = buckets[bkey(floor(x / BUCKET), floor(z / BUCKET))]
 			if not list then return nil end
-			local dmin, best, dwet = math.huge, nil, math.huge
+			local d2min, best, dwet2 = math.huge, nil, math.huge
 			local cnt = #list
 			for j = 1, cnt do
 				local s = list[j]
@@ -2121,17 +2120,34 @@ return function(P)
 				local t = (ox * SVX[s] + oz * SVZ[s]) / SL2[s]
 				if t < 0 then t = 0 elseif t > 1 then t = 1 end
 				local ex, ez = ox - t * SVX[s], oz - t * SVZ[s]
-				local d = sqrt(ex * ex + ez * ez)
-				ds[j], ws[j] = d, t
-				if d < dmin then dmin, best = d, j end
-				if SWET[s] and d < dwet then dwet = d end
+				local d2 = ex * ex + ez * ez
+				ds[j], ws[j] = d2, t
+				if d2 < d2min then d2min, best = d2, j end
+				if SWET[s] and d2 < dwet2 then dwet2 = d2 end
 			end
+			-- sqrt is monotone, so the smallest distance and the nearest wet
+			-- one are the roots of the smallest squares
+			local dmin = sqrt(d2min)
 			if dmin > REACH then return nil end
+			local dwet = sqrt(dwet2)
+			-- the nearest segment is the first whose rounded distance is the
+			-- minimum: an earlier square can round to the same root only
+			-- within a few ulps of the smallest
+			for j = 1, best - 1 do
+				if ds[j] <= d2min * (1 + 1e-12) and sqrt(ds[j]) == dmin then
+					best = j
+					break
+				end
+			end
 			local sw, sW, sL, sR, sD, sV, sWL = 0, 0, 0, 0, 0, 0, 0
 			local rv, sws, sLs = SRIV[list[best]], 0, 0
 			local lim = dmin + 4 * K
+			-- the root is taken only near the blend range (the 1e-9 margin
+			-- is far above its rounding); the test itself is on the root
+			local lim2 = lim * lim * (1 + 1e-9)
 			for j = 1, cnt do
 				local d = ds[j]
+				if d <= lim2 then d = sqrt(d) else d = lim end
 				if d < lim then
 					local s = list[j]
 					local wt = exp(-(d - dmin) / K)
@@ -2329,8 +2345,7 @@ return function(P)
 		end
 		api.river_at, api.lake_at = river_at, lake_at
 		api.rivers, api.lakes = layout.rivers, lakes
-		api.segments = ns
-		api.seg_river, api.seg_index = SRIV, SIDX
+		api.seg_river = SRIV
 		return api
 	end
 

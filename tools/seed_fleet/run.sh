@@ -13,6 +13,9 @@
 #   RESULTS=<file> also writes every seed's result line there (OK seed seconds
 #   roster_sha256 chunks chunk_seconds trees), e.g. to compare rosters with a
 #   baseline run.
+#   SEEDS=<file> reads the seeds from that file instead of seeds.txt (Round
+#   82). DIGEST=<dir> writes every seed's digest file to <dir>/<seed>.txt
+#   (seed.lua's digest mode, tools/r82_gen); DENSE=1 adds its digest chunks.
 # Prints one line per failed seed and a summary; the log of every seed is in
 # the printed directory (kept on a failure). Exits 1 on any failure.
 set -uo pipefail
@@ -32,7 +35,13 @@ command -v chrt >/dev/null && idle+=(chrt --idle 0)
 command -v ionice >/dev/null && idle+=(ionice -c3)
 
 out="$(mktemp -d /tmp/grug_seed_fleet.XXXXXX)"
-grep -v '^#' tools/seed_fleet/seeds.txt | grep . | head -n "$count" >"$out/seeds"
+grep -v '^#' "${SEEDS:-tools/seed_fleet/seeds.txt}" | grep . | head -n "$count" >"$out/seeds"
+digest=()
+if [[ -n "${DIGEST:-}" ]]; then
+	mkdir -p "$DIGEST"
+	digest=("$(cd "$DIGEST" && pwd -P)")
+	[[ "${DENSE:-0}" == 1 ]] && digest+=(dense)
+fi
 if [[ "$extra" -gt 0 ]]; then
 	python3 -c 'import random, sys
 r = random.SystemRandom()
@@ -44,8 +53,14 @@ total=$(wc -l <"$out/seeds")
 echo "seed fleet: $size, $total seeds, $jobs parallel, logs in $out"
 started=$SECONDS
 export repo out
-xargs -a "$out/seeds" -P "$jobs" -I{} "${idle[@]}" sh -c \
-	'luajit "$repo/tools/seed_fleet/seed.lua" "$repo" "$1" >"$out/$1.log" 2>&1' _ {}
+if [[ ${#digest[@]} -gt 0 ]]; then
+	xargs -a "$out/seeds" -P "$jobs" -I{} "${idle[@]}" sh -c \
+		'luajit "$repo/tools/seed_fleet/seed.lua" "$repo" "$1" "$2/$1.txt" $3 >"$out/$1.log" 2>&1' \
+		_ {} "${digest[@]}"
+else
+	xargs -a "$out/seeds" -P "$jobs" -I{} "${idle[@]}" sh -c \
+		'luajit "$repo/tools/seed_fleet/seed.lua" "$repo" "$1" >"$out/$1.log" 2>&1' _ {}
+fi
 failed=0
 while read -r seed; do
 	line="$(grep -E '^(OK|FAIL)' "$out/$seed.log" | tail -n 1)"

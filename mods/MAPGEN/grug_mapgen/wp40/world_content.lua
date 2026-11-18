@@ -59,6 +59,10 @@ return function(catalog, content, habitat, seabed_factory)
   function tail.settle(ctx)
    assert(ctx.plan==bound and ctx.generation==generation,"world content plan binding differs")
    local counts={};for i=1,#catalog.names do counts[i]=0 end
+   -- the seabed's and the river bed's beds, once per transaction
+   local _,sand=ctx.production_content("default:sand")
+   local _,gravel=ctx.production_content("default:gravel")
+   local _,stone=ctx.production_content("default:stone")
    local function write(index,x,y,z,param2)
     local ref=index+12
     local cid=content.resolve_p9g(ref,param2)
@@ -85,13 +89,14 @@ return function(catalog, content, habitat, seabed_factory)
       surface_excluded=nil
      end
      if water=="land" and not surface_excluded then
-      local level=deps.zones_session.surface_mob_level_at(x,z)
       local y=ground+1
       if y>=ctx.min_y and y<=ctx.max_y then
        local cid,_,occupancy,opcode=ctx.settled_at(x,y,z)
        if cid==air and occupancy==0 and opcode==0 then
         local below,below_p2,_,below_op=support(ctx,x,ground,z)
         if below_p2==0 and below_op>=1 and below_op<=4 then
+         -- (asked only where a plant row is tested: a zone classification)
+         local level=deps.zones_session.surface_mob_level_at(x,z)
          for i,row in ipairs(catalog.plants) do
           local allowed=hosts[i][biome] or hosts[i].any
           if row.mode=="surface" and (not bank or row.shore~="none") and
@@ -125,9 +130,6 @@ return function(catalog, content, habitat, seabed_factory)
       local kind,variant=seabed.at(x,z,depth)
       if kind then
       local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
-      local _,sand=ctx.production_content("default:sand")
-      local _,gravel=ctx.production_content("default:gravel")
-      local _,stone=ctx.production_content("default:stone")
       if (bed==sand or bed==gravel or bed==stone) and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
        local index,height
        if kind=="patch" then
@@ -172,7 +174,6 @@ return function(catalog, content, habitat, seabed_factory)
        contract.ordinary_water_family_id
       if kind=="weed" and ctx.inside_owner(x,ground,z) then
        local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
-       local _,sand=ctx.production_content("default:sand")
        if bed==sand and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
         local clear=true
         for y=ground+1,ground+value do

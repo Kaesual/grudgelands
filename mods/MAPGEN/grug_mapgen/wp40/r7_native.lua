@@ -894,21 +894,30 @@ local function validate_token(token, environment)
 	return validated_tokens[token]
 end
 
+-- The token of an environment whose native population is validated: the
+-- noise readback checked against it.
+local function readback_token(environment, definitions, decorations, native_bytes)
+	local noise_bytes = read_and_validate_noise()
+	return new_token(environment, noise_bytes, native_bytes,
+		{definitions = definitions, decorations = decorations})
+end
+
 local function validate_runtime_readback(environment, wp40, projection)
 	if environment ~= "main" and environment ~= "emerge" then
 		fail("unknown validation environment")
 	end
 	local definitions, decorations, native_bytes =
 		validated_native(derivation_inputs(wp40, projection))
-	local noise_bytes = read_and_validate_noise()
-	return new_token(environment, noise_bytes, native_bytes,
-		{definitions = definitions, decorations = decorations})
+	return readback_token(environment, definitions, decorations, native_bytes)
 end
 
 -- `wp40`: the mapgen's wp40 directory; `projection`: the WP43 projection
 -- (wp43_handoff.project), the inputs of the derived rows.
 function module.apply_and_validate_main(wp40, projection)
-	validated_native(derivation_inputs(wp40, projection))
+	-- validated before any setter runs, and reused for the readback below
+	-- (a pure function of the mapgen files and the projection)
+	local definitions, decorations, native_bytes =
+		validated_native(derivation_inputs(wp40, projection))
 	if type(core) ~= "table" or
 			type(core.set_mapgen_setting_noiseparams) ~= "function" or
 			type(core.set_mapgen_setting) ~= "function" then
@@ -939,22 +948,11 @@ function module.apply_and_validate_main(wp40, projection)
 	-- with it the flags of the world's creation, which would override
 	-- minetest.conf. Engine canonical form; r7_runtime.lua checks the readback.
 	core.set_mapgen_setting("mgv7_spflags", MGV7_SPFLAGS, true)
-	return validate_runtime_readback("main", wp40, projection)
-end
-
--- Pure runtime validation for a main environment whose setters were already
--- applied. This performs no setting mutation, registration or publication.
-function module.validate_main_readback(wp40, projection)
-	return validate_runtime_readback("main", wp40, projection)
+	return readback_token("main", definitions, decorations, native_bytes)
 end
 
 function module.validate_emerge(wp40, projection)
 	return validate_runtime_readback("emerge", wp40, projection)
-end
-
--- Shared pure dispatcher for loaders that keep environment identity explicit.
-function module.validate_runtime_readback(environment, wp40, projection)
-	return validate_runtime_readback(environment, wp40, projection)
 end
 
 -- The validated native population (fixtures and tools): the ore rows in

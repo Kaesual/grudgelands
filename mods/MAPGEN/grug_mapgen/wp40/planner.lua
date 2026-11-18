@@ -1,34 +1,27 @@
--- Pure, disabled WP40 R5 typed column/Y-run planner.
+-- Pure WP40 R5 typed column/Y-run planner: the terrain runs of every
+-- generated chunk (r5.lua builds it, r6_planner.lua asks it per slice).
 
-local FIXTURE_MAX_SAFE = 9007199254740991
-local FIXTURE_OWNER_MIN = -30912
-local FIXTURE_OWNER_MAX = 30927
-local FIXTURE_MAX_CANDIDATES = 16
-local FIXTURE_MAX_RESOLVED = 31
-local FIXTURE_RUN_STRIDE = 9
+local CORE_MAX_RESOLVED = 31
+local CORE_RUN_STRIDE = 9
+-- The priority, role and policy of each opcode the column source publishes
+-- (foundation 14-16, hydrology seals 17-18, water 19 and 25, path 20-22,
+-- terrain 26-28).
 local OP_PRIORITY = {
-	[5]=3,[6]=3,[7]=3,[8]=3,[9]=3,[10]=3,[11]=3,[13]=3,
 	[14]=2,[15]=2,[16]=2,[17]=3,[18]=3,[19]=6,[20]=4,[21]=4,
-	[22]=4,[23]=6,[25]=6,[26]=5,[27]=5,[28]=5,[29]=3,[30]=3,
-	[31]=3,[32]=3,
+	[22]=4,[25]=6,[26]=5,[27]=5,[28]=5,
 }
 local OP_ROLE = {
-	[5]=1,[6]=2,[7]=3,[8]=13,[9]=4,[10]=5,[11]=1,[13]=6,
 	[14]=1,[15]=7,[16]=8,[17]=9,[18]=9,[19]=10,[20]=1,[21]=11,
-	[22]=12,[23]=1,[25]=13,[26]=1,[27]=14,[28]=14,[29]=15,
-	[30]=1,[31]=16,[32]=16,
+	[22]=12,[25]=13,[26]=1,[27]=14,[28]=14,
 }
 local OP_POLICY = {
-	[5]=4,[6]=6,[7]=5,[8]=7,[9]=3,[10]=6,[11]=4,[13]=6,
 	[14]=1,[15]=3,[16]=6,[17]=5,[18]=5,[19]=7,[20]=1,[21]=3,
-	[22]=6,[23]=4,[25]=7,[26]=1,[27]=3,[28]=6,[29]=6,[30]=4,
-	[31]=5,[32]=5,
+	[22]=6,[25]=7,[26]=1,[27]=3,[28]=6,
 }
-local OP_POLICY_ALT = {[5]=1}
 
 local function core_semantic_equal(left_base, right_base, left_values,
 		right_values)
-	for offset = 3, FIXTURE_RUN_STRIDE do
+	for offset = 3, CORE_RUN_STRIDE do
 		if left_values[left_base + offset] ~= right_values[right_base + offset] then
 			return false
 		end
@@ -37,11 +30,11 @@ local function core_semantic_equal(left_base, right_base, left_values,
 end
 
 local function resolve_candidates_core(candidate_values, candidate_count,
-		permutation, endpoints, output_values, output_first, output_count,
-		invalid_code, fail_core)
+		endpoints, output_values, output_first, output_count, invalid_code,
+		fail_core)
 	local endpoint_count = candidate_count * 2
 	for candidate_index = 1, candidate_count do
-		local base = (candidate_index - 1) * FIXTURE_RUN_STRIDE
+		local base = (candidate_index - 1) * CORE_RUN_STRIDE
 		endpoints[candidate_index * 2 - 1] = candidate_values[base + 1]
 		endpoints[candidate_index * 2] = candidate_values[base + 2] + 1
 	end
@@ -68,10 +61,8 @@ local function resolve_candidates_core(candidate_values, candidate_count,
 		local winner_priority
 		local priority_2_base, priority_3_base, priority_4_base
 		local priority_5_base, priority_6_base
-		for order_index = 1, candidate_count do
-			local candidate_index = permutation and permutation[order_index] or
-				order_index
-			local base = (candidate_index - 1) * FIXTURE_RUN_STRIDE
+		for candidate_index = 1, candidate_count do
+			local base = (candidate_index - 1) * CORE_RUN_STRIDE
 			if candidate_values[base + 1] <= y_min and
 					candidate_values[base + 2] >= y_max then
 				local priority = candidate_values[base + 3]
@@ -107,7 +98,7 @@ local function resolve_candidates_core(candidate_values, candidate_count,
 		end
 		if winner_base ~= nil then
 			if output_count >= output_first then
-				local previous_base = (output_count - 1) * FIXTURE_RUN_STRIDE
+				local previous_base = (output_count - 1) * CORE_RUN_STRIDE
 				if output_values[previous_base + 2] + 1 == y_min and
 						core_semantic_equal(previous_base, winner_base,
 							output_values, candidate_values) then
@@ -117,13 +108,13 @@ local function resolve_candidates_core(candidate_values, candidate_count,
 			end
 			if winner_base ~= nil then
 				output_count = output_count + 1
-				if output_count - output_first + 1 > FIXTURE_MAX_RESOLVED then
+				if output_count - output_first + 1 > CORE_MAX_RESOLVED then
 					fail_core("fail_bound", "resolved-run bound exceeded")
 				end
-				local output_base = (output_count - 1) * FIXTURE_RUN_STRIDE
+				local output_base = (output_count - 1) * CORE_RUN_STRIDE
 				output_values[output_base + 1] = y_min
 				output_values[output_base + 2] = y_max
-				for offset = 3, FIXTURE_RUN_STRIDE do
+				for offset = 3, CORE_RUN_STRIDE do
 					output_values[output_base + offset] =
 						candidate_values[winner_base + offset]
 				end
@@ -131,79 +122,6 @@ local function resolve_candidates_core(candidate_values, candidate_count,
 		end
 	end
 	return output_count, output_count - output_first + 1
-end
-
-local function fixture_fail(code, message)
-	error(code .. ": " .. message, 0)
-end
-
-local function fixture_integer(value, label, minimum, maximum)
-	if type(value) ~= "number" or value ~= value or value == math.huge or
-			value == -math.huge or value % 1 ~= 0 or value < minimum or
-			value > maximum then
-		fixture_fail("fail_fixture", label .. " is not a bounded integer")
-	end
-	return value
-end
-
-local function fixture_dense(values, expected, label)
-	if type(values) ~= "table" or getmetatable(values) ~= nil then
-		fixture_fail("fail_fixture", label .. " is not a plain array")
-	end
-	local count = 0
-	for key in pairs(values) do
-		if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > expected then
-			fixture_fail("fail_fixture", label .. " has an out-of-range key")
-		end
-		count = count + 1
-	end
-	if count ~= expected then fixture_fail("fail_fixture", label .. " count differs") end
-	for index = 1, expected do
-		if rawget(values, index) == nil then
-			fixture_fail("fail_fixture", label .. " has a hole")
-		end
-	end
-end
-
-local function resolve_candidates_fixture(candidate_values, candidate_count,
-		permutation)
-	candidate_count = fixture_integer(candidate_count, "candidate count", 0,
-		FIXTURE_MAX_CANDIDATES)
-	fixture_dense(candidate_values, candidate_count * FIXTURE_RUN_STRIDE,
-		"candidate values")
-	fixture_dense(permutation, candidate_count, "candidate permutation")
-	local seen = {}
-	for candidate_index = 1, candidate_count do
-		local base = (candidate_index - 1) * FIXTURE_RUN_STRIDE
-		fixture_integer(candidate_values[base + 1], "candidate y_min",
-			FIXTURE_OWNER_MIN, FIXTURE_OWNER_MAX)
-		fixture_integer(candidate_values[base + 2], "candidate y_max",
-			candidate_values[base + 1], FIXTURE_OWNER_MAX)
-		fixture_integer(candidate_values[base + 3], "candidate priority", 2, 6)
-		local opcode = fixture_integer(candidate_values[base + 4],
-			"candidate opcode", 1, 32)
-		local role = fixture_integer(candidate_values[base + 5],
-			"candidate role", 1, 16)
-		local policy = fixture_integer(candidate_values[base + 6],
-			"candidate policy", 1, 7)
-		if OP_PRIORITY[opcode] ~= candidate_values[base + 3] or
-				OP_ROLE[opcode] ~= role or
-				(OP_POLICY[opcode] ~= policy and OP_POLICY_ALT[opcode] ~= policy) then
-			fixture_fail("fail_fixture", "candidate opcode tuple differs")
-		end
-		fixture_integer(candidate_values[base + 7], "candidate feature", 0, 512)
-		fixture_integer(candidate_values[base + 8], "candidate interface", 0, 512)
-		fixture_integer(candidate_values[base + 9], "candidate aux", 0, 0)
-		local ordinal = fixture_integer(permutation[candidate_index],
-			"candidate permutation ordinal", 1, candidate_count)
-		if seen[ordinal] then fixture_fail("fail_fixture", "permutation repeats") end
-		seen[ordinal] = true
-	end
-	local endpoints = {}
-	local output = {}
-	local output_count = resolve_candidates_core(candidate_values, candidate_count,
-		permutation, endpoints, output, 1, 0, "fail_fixture", fixture_fail)
-	return output, output_count
 end
 
 local function planner_factory(allocator_factory)
@@ -248,64 +166,6 @@ local function planner_factory(allocator_factory)
 	local M_REUSE_CALLS = 9
 	local M_METRICS_RESULTS = 10
 
-	-- Strict unsigned-ASCII ordinals from the complete closed vocabularies.
-	local OP_BIOME_BED = 1
-	local OP_BIOME_FILLER = 2
-	local OP_BIOME_SHORE = 3
-	local OP_BIOME_TOP = 4
-	local OP_BRIDGE_CLEAR = 5
-	local OP_BRIDGE_DECK = 6
-	local OP_BRIDGE_SUPPORT = 7
-	local OP_CAUSEWAY_CULVERT = 8
-	local OP_CAUSEWAY_FILL = 9
-	local OP_CAUSEWAY_SURFACE = 10
-	local OP_CONTACT_FALL_CLEAR = 11
-	local OP_DECORATION = 12
-	local OP_FORD_BED = 13
-	local OP_FOUNDATION_CLEAR = 14
-	local OP_FOUNDATION_FILL = 15
-	local OP_FOUNDATION_SURFACE = 16
-	local OP_HYDROLOGY_BANK_SEAL = 17
-	local OP_HYDROLOGY_BED_SEAL = 18
-	local OP_ORDINARY_WATER = 19
-	local OP_PATH_CLEAR = 20
-	local OP_PATH_FILL = 21
-	local OP_PATH_SURFACE = 22
-	local OP_RECEIVER_OPEN = 23
-	local OP_RESOURCE_EXACT_HOST = 24
-	local OP_RIVER_WATER = 25
-	local OP_TERRAIN_CLEAR = 26
-	local OP_TERRAIN_FILL = 27
-	local OP_TERRAIN_SURFACE = 28
-	local OP_TUNNEL_FLOOR = 29
-	local OP_TUNNEL_LUMEN = 30
-	local OP_TUNNEL_ROOF = 31
-	local OP_TUNNEL_WALL = 32
-
-	local ROLE_AIR = 1
-	local ROLE_BRIDGE_DECK = 2
-	local ROLE_BRIDGE_SUPPORT = 3
-	local ROLE_CAUSEWAY_CORE = 4
-	local ROLE_CAUSEWAY_SURFACE = 5
-	local ROLE_FORD_SURFACE = 6
-	local ROLE_FOUNDATION_CORE = 7
-	local ROLE_FOUNDATION_SURFACE = 8
-	local ROLE_HYDROLOGY_SEAL = 9
-	local ROLE_ORDINARY_WATER_SOURCE = 10
-	local ROLE_PATH_CORE = 11
-	local ROLE_PATH_SURFACE = 12
-	local ROLE_RIVER_WATER_SOURCE = 13
-	local ROLE_STRATUM_AT_Y = 14
-	local ROLE_TUNNEL_FLOOR = 15
-	local ROLE_TUNNEL_WALL = 16
-
-	local POLICY_CUT_NATURAL = 1
-	local POLICY_DEEP_EXACT_HOST = 2
-	local POLICY_FILL_VOID = 3
-	local POLICY_OPEN_ENGINEERED = 4
-	local POLICY_SEAL_VOID = 5
-	local POLICY_SURFACE_EXACT = 6
-	local POLICY_WRITE_WATER = 7
 	local AUX_NONE = 0
 
 	local ALLOCATOR_FIELDS = {
@@ -331,7 +191,6 @@ local function planner_factory(allocator_factory)
 		start_ground_names = true,
 		primary_relief_at = true,
 		land_zone_at = true,
-		landmark_excluded_at = true,
 		static_exclusion_values_at = true,
 		overlay_exclusion_at = true,
 		road_column_at = true,
@@ -457,8 +316,6 @@ local function planner_factory(allocator_factory)
 		if planner_source.schema ~= SOURCE_SCHEMA or
 				type(planner_source.column_values_at) ~= "function" or
 				type(planner_source.river_water_in) ~= "function" or
-				type(planner_source.surface_cave_run_at) ~= "function" or
-				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.primary_relief_at) ~= "function" or
 				type(planner_source.static_exclusion_values_at) ~= "function" or
@@ -469,7 +326,6 @@ local function planner_factory(allocator_factory)
 		end
 		local column_values_at = planner_source.column_values_at
 		local river_water_in = planner_source.river_water_in
-		local surface_cave_run_at = planner_source.surface_cave_run_at
 
 		exact_raw_fields(validated_manifest, MANIFEST_FIELDS, "manifest",
 			"fail_manifest")
@@ -615,7 +471,7 @@ local function planner_factory(allocator_factory)
 				"fail_bound")
 			if y_min > y_max then return end
 			if OP_PRIORITY[opcode] ~= priority or OP_ROLE[opcode] ~= role or
-					(OP_POLICY[opcode] ~= policy and OP_POLICY_ALT[opcode] ~= policy) then
+					OP_POLICY[opcode] ~= policy then
 				fail("fail_source", "candidate opcode tuple differs")
 			end
 			if y_min < AUTHORED_FLOOR then
@@ -755,9 +611,11 @@ local function planner_factory(allocator_factory)
 		end
 
 		-- Bed y and surface y of a wet sealed (river or lake) column; nil for
-		-- every other column. The bed of such a column is its terrain.
+		-- every other column. The bed of such a column is its terrain. Read
+		-- for the neighbours of a column near water, unvalidated: each column
+		-- is validated when its own slice plans it (`tuple_at`).
 		local function wet_river_at(x, z)
-			local _, _, _, _, _, terrain_y, water_y, river_id = tuple_at(x, z)
+			local _, _, _, _, _, terrain_y, water_y, river_id = column_values_at(x, z)
 			if river_id ~= nil and terrain_y < water_y then
 				return terrain_y, water_y
 			end
@@ -893,28 +751,10 @@ local function planner_factory(allocator_factory)
 				end
 			end
 
-			local cave_low, cave_high = surface_cave_run_at(x, z)
-			if cave_low ~= nil then
-				safe_integer(cave_low, "surface cave low", AUTHORED_FLOOR, OWNER_MAX,
-					"fail_source")
-				safe_integer(cave_high, "surface cave high", cave_low, OWNER_MAX,
-					"fail_source")
-				add_candidate(AUTHORED_FLOOR, math.min(terrain_y - 1, cave_low - 1), 5,
-					OP_TERRAIN_FILL, ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
-				add_candidate(math.max(AUTHORED_FLOOR, cave_high + 1), terrain_y - 1, 5,
-					OP_TERRAIN_FILL, ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
-				if terrain_y < cave_low or terrain_y > cave_high then
-					add_candidate(terrain_y, terrain_y, 5, OP_TERRAIN_SURFACE,
-						ROLE_STRATUM_AT_Y, POLICY_SURFACE_EXACT, nil, nil)
-				end
-				add_candidate(cave_low, cave_high, 5, OP_TERRAIN_CLEAR, ROLE_AIR,
-					POLICY_CUT_NATURAL, nil, nil)
-			else
-				add_candidate(AUTHORED_FLOOR, terrain_y - 1, 5, OP_TERRAIN_FILL,
-					ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
-				add_candidate(terrain_y, terrain_y, 5, OP_TERRAIN_SURFACE,
-					ROLE_STRATUM_AT_Y, POLICY_SURFACE_EXACT, nil, nil)
-			end
+			add_candidate(AUTHORED_FLOOR, terrain_y - 1, 5, OP_TERRAIN_FILL,
+				ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
+			add_candidate(terrain_y, terrain_y, 5, OP_TERRAIN_SURFACE,
+				ROLE_STRATUM_AT_Y, POLICY_SURFACE_EXACT, nil, nil)
 			add_candidate(surface_cap + 1, OWNER_MAX, 5, OP_TERRAIN_CLEAR,
 				ROLE_AIR, POLICY_CUT_NATURAL, nil, nil)
 
@@ -929,7 +769,7 @@ local function planner_factory(allocator_factory)
 			end
 			local resolved
 			build_run_count, resolved = resolve_candidates_core(candidate_values,
-				candidate_count, nil, endpoints, run_values, build_column_first,
+				candidate_count, endpoints, run_values, build_column_first,
 				build_run_count, "fail_source", fail)
 			if build_run_count > MAX_RESOLVED or resolved > MAX_RESOLVED_PER_COLUMN then
 				fail("fail_bound", "resolved-run bound exceeded")
@@ -1051,4 +891,4 @@ local function planner_factory(allocator_factory)
 	return module
 end
 
-return planner_factory, resolve_candidates_fixture
+return planner_factory

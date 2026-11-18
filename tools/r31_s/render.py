@@ -181,9 +181,15 @@ def main():
                        "sockets": sockets}
         sys.stderr.write("%s: %dx%d, %d sockets\n" % (name, footprint[0], footprint[1],
                                                       len(sockets)))
-    # The bandit-camp reference at the camps' scale.
-    ref = rb.load_cells_from_lua(os.path.join(
-        REPO, "mods/MAPGEN/grug_mapgen/wp40/r7_goldmead_bandit_camp_blueprint.lua"))
+    # The bandit-camp reference at the camps' scale (Goldmead's camp from the
+    # one Round 14 builder, through a two-line source for the dumper).
+    ref_src = os.path.join(opts.out, "bandit_goldmead.lua")
+    with open(ref_src, "w", encoding="utf-8") as fh:
+        fh.write('return dofile("%s")({schema = "grug_r14_goldmead_bandit_camp_v1", '
+                 'race = "human", kind = "camp"})\n' % os.path.join(
+                     REPO, "mods/MAPGEN/grug_mapgen/wp40/r14_poi_blueprint.lua"))
+    ref = rb.load_cells_from_lua(ref_src)
+    os.remove(ref_src)
     iso(ref, bank, os.path.join(opts.out, "bandit_goldmead_iso.png"), 16, "sw")
     with open(os.path.join(opts.out, "index.json"), "w", encoding="utf-8") as fh:
         json.dump(index, fh, indent=1, sort_keys=True)

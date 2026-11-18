@@ -15,11 +15,13 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
+local function loader(directory, context)
+	-- One loader context (`templates.lua`) for everything this build loads.
+	context = context or {}
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local layout = dofile(directory .. "/layout.lua")(directory)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
+	local layout = dofile(directory .. "/layout.lua")(directory, context)
 
 	local RADIUS = 63
 	local SCHEMA = "grug_wp13_dawnmere_blueprint_v1"
@@ -51,7 +53,7 @@ local function loader(directory)
 	-- what the hamlet used to add to its buildings afterwards: the belfry on
 	-- the meeting hall's ridge, the cart wheels on the barn and the inn, the
 	-- crates stacked in the barn and the hall, and each house's small touches.
-	local templates = dofile(directory .. "/templates.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory, context)
 	local TOWN = templates.town("dawnmere")
 
 	-- Destination order is part of the consumer contract and never changes.

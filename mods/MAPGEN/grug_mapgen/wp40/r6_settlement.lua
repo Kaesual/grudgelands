@@ -3,7 +3,6 @@
 local function settlement_factory()
 	local MAX_SAFE = 9007199254740991
 	local MAX_VOLUME = 112 * 112 * 112
-	local MAX_RUNS = 512000
 	local RUN_STRIDE = 9
 	local COLUMN_STRIDE = 12
 	local CELL_STRIDE = 4
@@ -25,8 +24,6 @@ local function settlement_factory()
 	-- before Round 51 T3's seagrass): its writes and the anchor and settlement
 	-- windows after it.
 	local P9G_COUNT = 39
-	local R8_CAVE_COMPONENT_RADIUS = 12
-	local R8_CAVE_COMPONENT_MINIMUM = 24
 
 	local function fail(code, message)
 		error(code .. ": " .. message, 0)
@@ -62,8 +59,8 @@ local function settlement_factory()
 		return run, terrain_y
 	end
 
-	-- Pure immutable-input decision shared by production and the portable 3x3
-	-- fixture. Exclusions are supplied by the existing claim/fitting authorities.
+	-- The opening decision of one column. Exclusions are supplied by the
+	-- existing claim/fitting authorities.
 	local function r9_surface_skin_open(context, x, z)
 		local water_class = context.column_at(x, z)
 		local run, terrain_y = r9_native_air_run(context, x, z)
@@ -138,12 +135,18 @@ local function settlement_factory()
 			return (value * 48271) % 16777213
 		end
 		local result = {}
-		function result.material_at(zone_id, biome, filler_depth, x, z, depth)
+		-- The depths where a column's secondary band, gravel band and pocket
+		-- start (column hashes only).
+		function result.column_starts(filler_depth, x, z)
 			local first_depth = filler_depth + 1
-			if depth < first_depth or depth > 40 then return nil end
-			local secondary_start = math.max(first_depth, 8 + draw(x, z, 19349663) % 4)
-			local gravel_start = math.max(first_depth, 18 + draw(x, z, 83492791) % 4)
-			local pocket_start = math.max(first_depth, 29 + draw(x, z, 297121507) % 5)
+			return math.max(first_depth, 8 + draw(x, z, 19349663) % 4),
+				math.max(first_depth, 18 + draw(x, z, 83492791) % 4),
+				math.max(first_depth, 29 + draw(x, z, 297121507) % 5)
+		end
+		-- The stratum at `depth` of a column with those starts, or nil.
+		function result.material_from(zone_id, biome, filler_depth, secondary_start,
+				gravel_start, pocket_start, depth)
+			if depth < filler_depth + 1 or depth > 40 then return nil end
 			if depth >= secondary_start and depth <= secondary_start + 2 then
 				return secondary_by_biome[biome] or "default:desert_stone"
 			end
@@ -156,6 +159,12 @@ local function settlement_factory()
 			end
 			return nil
 		end
+		function result.material_at(zone_id, biome, filler_depth, x, z, depth)
+			local secondary_start, gravel_start, pocket_start =
+				result.column_starts(filler_depth, x, z)
+			return result.material_from(zone_id, biome, filler_depth, secondary_start,
+				gravel_start, pocket_start, depth)
+		end
 		function result.secondary_for(biome)
 			return secondary_by_biome[biome] or "default:desert_stone"
 		end
@@ -167,88 +176,98 @@ local function settlement_factory()
 	-- only provenance accepted here.  In particular, gravel is never inferred to
 	-- be filler from its CID because native gravel ore has the identical CID.
 	local function r8_apply_strata(context)
-		local written, clipped = 0, 0
+		local written = 0
 		-- Optional output for the layer pass: per owner column -1 when the
 		-- bands' column exclusions reject it, else filler_depth * 2 + steep.
 		local info = context.column_info
 		local x_count = context.max_x - context.min_x + 1
+		-- Bands and strata lie in a column's top 40 nodes below its terrain;
+		-- a column whose top 40 miss the owner's rows (above the floor) is
+		-- skipped before any query (the layer pass reads its column info for
+		-- those rows only).
+		local low_y = math.max(context.min_y, context.floor_y)
 		for z = context.min_z, context.max_z do
 			for x = context.min_x, context.max_x do
 				if info then info[(z - context.min_z) * x_count + (x - context.min_x) + 1] = -1 end
 				local water_class, _, zone_id, biome, _, terrain_y, water_y, _, _,
 					functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
 						context.column_values_at(x, z)
-				-- Ruling 30 addendum (optional `protected_only_floor_at`): a
-				-- column whose claim exclusion is protection only takes its
-				-- bands (and the layer pass its nests) below that floor.
-				local cap
-				local admitted = context.static_exclusion_values_at(x, z) == nil
-				if not admitted and context.protected_only_floor_at then
-					cap = context.protected_only_floor_at(x, z)
-					admitted = cap > -math.huge
-				end
-				if context.column_cap then
-					context.column_cap[(z - context.min_z) * x_count +
-						(x - context.min_x) + 1] = cap or false
-				end
-				if water_class == "land" and zone_id and biome and water_y == nil and
-						functional_kind == nil and transition_kind == nil and not hard and
-						admitted then
-					local surface = context.select_surface(biome, x, z, water_y, terrain_y,
-						zone_id)
-					local filler_depth = surface and surface.filler_depth or 4
-					if info then
-						info[(z - context.min_z) * x_count + (x - context.min_x) + 1] =
-							filler_depth * 2 + (surface and surface.steep and 1 or 0)
+				if terrain_y - 1 >= low_y and terrain_y - 40 <= context.max_y then
+					-- Ruling 30 addendum (optional `protected_only_floor_at`): a
+					-- column whose claim exclusion is protection only takes its
+					-- bands (and the layer pass its nests) below that floor.
+					local cap
+					local admitted = context.static_exclusion_values_at(x, z) == nil
+					if not admitted and context.protected_only_floor_at then
+						cap = context.protected_only_floor_at(x, z)
+						admitted = cap > -math.huge
 					end
-					-- Round 51 T4: a banded badlands row (r6_content.lua
-					-- `bands`) lays its clay bands by height down the face below
-					-- its top, over the column's stone and its own filler (never
-					-- a resource ore, a cave or water; a native gravel blob under
-					-- a gravel filler matches the filler and may take a band),
-					-- and takes the strata below.
-					local bands, band_last = surface and surface.bands, 0
-					if bands then
-						band_last = surface.band_depth - 1
-						local filler_cid = context.content_cids[surface.filler_ref]
-						for depth = 1, band_last do
-							local y = terrain_y - depth
-							if y >= context.floor_y and y >= context.min_y and
-									y <= context.max_y and (cap == nil or y < cap) then
-								local index = context.index_at(x, y, z)
-								if context.final_data[index] == filler_cid or
-										context.original_data[index] == context.stone_cid or
-										context.fill_stone_at(index, x, y, z) then
-									context.write(x, y, z, bands[y % 7 + 1])
-									written = written + 1
+					if context.column_cap then
+						context.column_cap[(z - context.min_z) * x_count +
+							(x - context.min_x) + 1] = cap or false
+					end
+					if water_class == "land" and zone_id and biome and water_y == nil and
+							functional_kind == nil and transition_kind == nil and not hard and
+							admitted then
+						local surface = context.select_surface(biome, x, z, water_y, terrain_y,
+							zone_id)
+						local filler_depth = surface and surface.filler_depth or 4
+						if info then
+							info[(z - context.min_z) * x_count + (x - context.min_x) + 1] =
+								filler_depth * 2 + (surface and surface.steep and 1 or 0)
+						end
+						-- Round 51 T4: a banded badlands row (r6_content.lua
+						-- `bands`) lays its clay bands by height down the face below
+						-- its top, over the column's stone and its own filler (never
+						-- a resource ore, a cave or water; a native gravel blob under
+						-- a gravel filler matches the filler and may take a band),
+						-- and takes the strata below.
+						local bands, band_last = surface and surface.bands, 0
+						if bands then
+							band_last = surface.band_depth - 1
+							local filler_cid = context.content_cids[surface.filler_ref]
+							for depth = 1, band_last do
+								local y = terrain_y - depth
+								if y >= context.floor_y and y >= context.min_y and
+										y <= context.max_y and (cap == nil or y < cap) then
+									local index = context.index_at(x, y, z)
+									if context.final_data[index] == filler_cid or
+											context.original_data[index] == context.stone_cid or
+											context.fill_stone_at(index, x, y, z) then
+										context.write(x, y, z, bands[y % 7 + 1])
+										written = written + 1
+									end
 								end
 							end
 						end
-					end
-					-- Steep columns (rock faces and lips) show their side: no
-					-- bands along a cliff face (Round 22 Phase 6).
-					local first = surface and surface.steep and 41 or
-						math.max(filler_depth, band_last) + 1
-					for depth = first, 40 do
-						local y = terrain_y - depth
-						if y < context.floor_y then
-							clipped = clipped + 1
-						elseif y >= context.min_y and y <= context.max_y and
-								(cap == nil or y < cap) then
-							local target = context.strata.material_at(zone_id, biome,
-								filler_depth, x, z, depth)
-							if target then
-								local index = context.index_at(x, y, z)
-								-- Round 24 ruling 11: the terrain fill takes the same
-								-- bands as native stone.
-								if context.original_data[index] == context.stone_cid or
-										context.fill_stone_at(index, x, y, z) then
-									local ref = context.content_ref(target)
-									if not ref then
-										fail("fail_content_manifest", "R8 stratum target is absent")
+						-- Steep columns (rock faces and lips) show their side: no
+						-- bands along a cliff face (Round 22 Phase 6).
+						local first = surface and surface.steep and 41 or
+							math.max(filler_depth, band_last) + 1
+						local secondary_start, gravel_start, pocket_start
+						if first <= 40 then
+							secondary_start, gravel_start, pocket_start =
+								context.strata.column_starts(filler_depth, x, z)
+						end
+						for depth = first, 40 do
+							local y = terrain_y - depth
+							if y >= context.floor_y and y >= context.min_y and y <= context.max_y and
+									(cap == nil or y < cap) then
+								local target = context.strata.material_from(zone_id, biome,
+									filler_depth, secondary_start, gravel_start, pocket_start, depth)
+								if target then
+									local index = context.index_at(x, y, z)
+									-- Round 24 ruling 11: the terrain fill takes the same
+									-- bands as native stone.
+									if context.original_data[index] == context.stone_cid or
+											context.fill_stone_at(index, x, y, z) then
+										local ref = context.content_ref(target)
+										if not ref then
+											fail("fail_content_manifest", "R8 stratum target is absent")
+										end
+										context.write(x, y, z, ref)
+										written = written + 1
 									end
-									context.write(x, y, z, ref)
-									written = written + 1
 								end
 							end
 						end
@@ -256,7 +275,7 @@ local function settlement_factory()
 				end
 			end
 		end
-		return written, clipped
+		return written
 	end
 
 	-- Round 24 (rulings 9-13): the terrain fill.  R5 closes the gap between
@@ -637,233 +656,6 @@ local function settlement_factory()
 		return written
 	end
 
-	local function r8_cave_round(numerator, denominator)
-		if numerator < 0 then
-			return -math.floor((-numerator * 2 + denominator) / (denominator * 2))
-		end
-		return math.floor((numerator * 2 + denominator) / (denominator * 2))
-	end
-
-	local function r8_cave_proof_box_inside(min_x, min_y, min_z,
-			max_x, max_y, max_z, target_x, target_y, target_z)
-		local complete = target_x - R8_CAVE_COMPONENT_RADIUS >= min_x and
-			target_x + R8_CAVE_COMPONENT_RADIUS <= max_x and
-			target_y - R8_CAVE_COMPONENT_RADIUS >= min_y and
-			target_y + R8_CAVE_COMPONENT_RADIUS <= max_y and
-			target_z - R8_CAVE_COMPONENT_RADIUS >= min_z and
-			target_z + R8_CAVE_COMPONENT_RADIUS <= max_z
-		return complete
-	end
-
-	-- Reconstruct one complete lumen from immutable native input.  Acceptance
-	-- requires at least 24 native-air voxels outside that lumen in the target's
-	-- complete radius-12 component.  Targets whose complete proof box is not in
-	-- the immutable owner input are rejected instead of treating an owner edge as
-	-- evidence of continuation.  The same flood scans the baseline surface
-	-- derived from immutable CIDs and rejects any component voxel above it, so a
-	-- terrain opening or sky bridge can never authorize a carve.
-	local function r8_plan_cave(context, cave)
-		local min_x, min_y, min_z = context.min_x, context.min_y, context.min_z
-		local max_x, max_y, max_z = context.max_x, context.max_y, context.max_z
-		if not cave or cave.mouth_x < min_x or cave.mouth_x > max_x or
-				cave.mouth_z < min_z or cave.mouth_z > max_z or
-				cave.mouth_y < min_y or cave.mouth_y > max_y or cave.minimum_y < min_y then
-			return nil, "outside_owner"
-		end
-		local search_x = cave.kind == "hillside" and
-			cave.mouth_x + cave.direction_x * (cave.length - 1) or cave.mouth_x
-		local search_z = cave.kind == "hillside" and
-			cave.mouth_z + cave.direction_z * (cave.length - 1) or cave.mouth_z
-		local eligible_columns, eligible_heights = {}, {}
-		local function coordinate_key(x, y, z)
-			if z == nil then return tostring(x) .. "/" .. tostring(y) end
-			return tostring(x) .. "/" .. tostring(y) .. "/" .. tostring(z)
-		end
-		local function eligible_column(x, z)
-			local key = coordinate_key(x, z)
-			if eligible_columns[key] ~= nil then return eligible_columns[key] end
-			local water_class, _, zone_id, _, _, terrain_y, water_y, river_id, _,
-				functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
-					context.column_values_at(x, z)
-			local eligible = water_class == "land" and zone_id == cave.zone_id and
-				water_y == nil and river_id == nil and functional_kind == nil and
-				transition_kind == nil and not hard and
-				context.static_exclusion_values_at(x, z) == nil
-			eligible_columns[key], eligible_heights[key] = eligible, terrain_y
-			return eligible
-		end
-
-		local targets = {}
-		local search_radius = cave.search_radius or cave.radius
-		for radius_squared = 0, search_radius * search_radius do
-			if #targets >= 64 then break end
-			for dz = -search_radius, search_radius do
-				if #targets >= 64 then break end
-				for dx = -search_radius, search_radius do
-					if dx * dx + dz * dz == radius_squared then
-						local x, z = search_x + dx, search_z + dz
-						if x >= min_x and x <= max_x and z >= min_z and z <= max_z and
-								eligible_column(x, z) then
-							local search_surface = select(6, context.column_values_at(x, z))
-							local native_roof = 0
-							for depth = 1, cave.maximum_depth do
-								local y = math.min(cave.mouth_y, search_surface) - depth
-								if y >= min_y then
-									local index = context.index_at(x, y, z)
-									local class_id = context.classify(context.original_data[index],
-										context.original_param2[index])
-									if class_id == CLASS_AIR and native_roof >= 3 then
-										targets[#targets + 1] = {x, y, z}
-										break
-									elseif class_id == CLASS_NATURAL_HOST or
-											class_id == CLASS_NATURAL_SURFACE or
-											class_id == CLASS_WP43_STRATUM then
-										native_roof = native_roof + 1
-									elseif class_id ~= CLASS_AIR then
-										native_roof = 0
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-
-		for target_index = 1, #targets do
-			local target_x, target_y, target_z = unpack(targets[target_index])
-			local voxels, lumen, valid = {}, {}, true
-			local function offer_voxel(x, y, z)
-				local key = coordinate_key(x, y, z)
-				if lumen[key] then return end
-				lumen[key] = true
-				if x < min_x or x > max_x or y < min_y or y > max_y or
-						z < min_z or z > max_z or not eligible_column(x, z) then
-					valid = false return
-				end
-				local column_key = coordinate_key(x, z)
-				local mouth_dx, mouth_dz = x - cave.mouth_x, z - cave.mouth_z
-				if y > eligible_heights[column_key] and not
-						(mouth_dx * mouth_dx + mouth_dz * mouth_dz <= 4 and
-							y <= cave.mouth_y + 1) then
-					valid = false return
-				end
-				local index = context.index_at(x, y, z)
-				local class_id = context.classify(context.original_data[index],
-					context.original_param2[index])
-				if class_id ~= CLASS_AIR and class_id ~= CLASS_NATURAL_HOST and
-						class_id ~= CLASS_NATURAL_SURFACE and
-						class_id ~= CLASS_NATURAL_VEGETATION and
-						class_id ~= CLASS_WP43_STRATUM then
-					valid = false return
-				end
-				voxels[#voxels + 1] = {x, y, z}
-			end
-			if cave.kind == "sinkhole" then
-				local steps = cave.mouth_y + 1 - target_y
-				for step = 0, steps do
-					local y = cave.mouth_y + 1 - step
-					local center_x = cave.mouth_x + r8_cave_round(
-						(target_x - cave.mouth_x) * step, steps)
-					local center_z = cave.mouth_z + r8_cave_round(
-						(target_z - cave.mouth_z) * step, steps)
-					local radius = step <= 2 and 2 or 1
-					for dx = -radius, radius do for dz = -radius, radius do
-						if dx * dx + dz * dz <= radius * radius then
-							offer_voxel(center_x + dx, y, center_z + dz)
-						end
-					end end
-				end
-			else
-				for step = 0, cave.length - 1 do
-					local center_x = cave.mouth_x + r8_cave_round(
-						(target_x - cave.mouth_x) * step, cave.length - 1)
-					local center_y = cave.mouth_y + 1 + r8_cave_round(
-						(target_y - cave.mouth_y - 1) * step, cave.length - 1)
-					local center_z = cave.mouth_z + r8_cave_round(
-						(target_z - cave.mouth_z) * step, cave.length - 1)
-					for side = -cave.radius, cave.radius do
-						local absolute_side = math.abs(side)
-						local half = absolute_side == 0 and cave.radius or
-							(absolute_side < cave.radius and cave.radius - 1 or 0)
-						for dy = -half, half do
-							offer_voxel(center_x - cave.direction_z * side,
-								center_y + dy, center_z + cave.direction_x * side)
-						end
-					end
-				end
-			end
-
-			local proof_box_inside = r8_cave_proof_box_inside(min_x, min_y, min_z,
-				max_x, max_y, max_z, target_x, target_y, target_z)
-			if valid and proof_box_inside then
-				local proof_min_x = target_x - R8_CAVE_COMPONENT_RADIUS
-				local proof_max_x = target_x + R8_CAVE_COMPONENT_RADIUS
-				local proof_min_y = target_y - R8_CAVE_COMPONENT_RADIUS
-				local proof_max_y = target_y + R8_CAVE_COMPONENT_RADIUS
-				local proof_min_z = target_z - R8_CAVE_COMPONENT_RADIUS
-				local proof_max_z = target_z + R8_CAVE_COMPONENT_RADIUS
-				local surface_cache = {}
-				local function native_surface_at(x, z)
-					local key = coordinate_key(x, z)
-					local cached = surface_cache[key]
-					if cached ~= nil then return cached ~= false and cached or nil end
-					for y = max_y, min_y, -1 do
-						local index = context.index_at(x, y, z)
-						local class_id = context.classify(context.original_data[index],
-							context.original_param2[index])
-						if class_id ~= CLASS_AIR and class_id ~= CLASS_LIQUID and
-								class_id ~= CLASS_IGNORE then
-							surface_cache[key] = y
-							return y
-						end
-					end
-					surface_cache[key] = false
-					return nil
-				end
-				local target_key = coordinate_key(target_x, target_y, target_z)
-				local queue, visited, head = {{target_x, target_y, target_z}},
-					{[target_key] = true}, 1
-				local outside_count, touches_sky, continues = 0, false, false
-				while queue[head] do
-					local row = queue[head]
-					head = head + 1
-					local surface_y = native_surface_at(row[1], row[3])
-					if surface_y == nil or row[2] > surface_y then touches_sky = true end
-					if row[1] == proof_min_x or row[1] == proof_max_x or
-							row[2] == proof_min_y or row[2] == proof_max_y or
-							row[3] == proof_min_z or row[3] == proof_max_z then
-						continues = true
-					end
-					if not lumen[coordinate_key(row[1], row[2], row[3])] then
-						outside_count = outside_count + 1
-					end
-					for direction = 1, 6 do
-						local x, y, z = row[1] + FACE_X[direction],
-							row[2] + FACE_Y[direction], row[3] + FACE_Z[direction]
-						local key = coordinate_key(x, y, z)
-						if not visited[key] and x >= proof_min_x and x <= proof_max_x and
-								y >= proof_min_y and y <= proof_max_y and
-								z >= proof_min_z and z <= proof_max_z then
-							local index = context.index_at(x, y, z)
-							if context.classify(context.original_data[index],
-									context.original_param2[index]) == CLASS_AIR then
-								visited[key] = true
-								queue[#queue + 1] = {x, y, z}
-							end
-						end
-					end
-				end
-				if continues and not touches_sky and
-						outside_count >= R8_CAVE_COMPONENT_MINIMUM then
-					return voxels, "connected", {target_x, target_y, target_z,
-						outside_count, #queue}
-				end
-			end
-		end
-		return nil, #targets == 0 and "no_native_air" or "no_continuing_component"
-	end
-
 	local function exact_fields(value, allowed, label, code)
 		if type(value) ~= "table" or getmetatable(value) ~= nil then
 			fail(code or "fail_settlement", label .. " is not a plain table")
@@ -910,7 +702,7 @@ local function settlement_factory()
 	local function copy_map(value, active)
 		if type(value) ~= "table" then return value end
 		active = active or {}
-		if active[value] then fail("fail_ledger", "ledger graph contains a cycle") end
+		if active[value] then fail("fail_settlement", "metrics graph contains a cycle") end
 		active[value] = true
 		local result = {}
 		for key, child in pairs(value) do result[copy_map(key, active)] = copy_map(child, active) end
@@ -918,194 +710,12 @@ local function settlement_factory()
 		return result
 	end
 
-	local function canonical_less(left, right)
-		local count = math.min(#left, #right)
-		for index = 1, count do
-			local a, b = string.byte(left, index), string.byte(right, index)
-			if a ~= b then return a < b end
-		end
-		return #left < #right
-	end
-
-	local function canonical_scalar(value)
-		if type(value) == "string" then
-			-- This is a binary graph encoding, not a line format.  R6 ledger
-			-- maps deliberately use NUL-delimited composite keys; the decimal
-			-- byte length makes every string unambiguous without a byte blacklist.
-			return "s" .. tostring(#value) .. ":" .. value
-		elseif type(value) == "number" then
-			integer(value, "capture scalar", -MAX_SAFE, MAX_SAFE, "fail_ledger")
-			return "n" .. string.format("%.0f", value) .. ";"
-		elseif type(value) == "boolean" then
-			return value and "b1;" or "b0;"
-		end
-		fail("fail_ledger", "capture scalar type differs")
-	end
-
-	local function canonical_graph(value, active)
-		if type(value) ~= "table" then return canonical_scalar(value) end
-		if getmetatable(value) ~= nil then
-			fail("fail_ledger", "capture graph has a metatable")
-		end
-		active = active or {}
-		if active[value] then fail("fail_ledger", "capture graph contains a cycle") end
-		active[value] = true
-		local count, key_count, is_array = #value, 0, true
-		for key in pairs(value) do
-			key_count = key_count + 1
-			if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > count then
-				is_array = false
-			end
-		end
-		if key_count ~= count then is_array = false end
-		local output = {}
-		if is_array then
-			output[1] = "a" .. tostring(count) .. "["
-			for index = 1, count do
-				output[#output + 1] = canonical_graph(value[index], active)
-			end
-			output[#output + 1] = "]"
-		else
-			local entries = {}
-			for key, child in pairs(value) do
-				entries[#entries + 1] = canonical_graph(key, active) ..
-					canonical_graph(child, active)
-			end
-			table.sort(entries, canonical_less)
-			output[1] = "m" .. tostring(#entries) .. "{"
-			for index = 1, #entries do output[#output + 1] = entries[index] end
-			output[#output + 1] = "}"
-		end
-		active[value] = nil
-		return table.concat(output)
-	end
-
-	local function private_sha256(hash, bytes)
-		return hash.hex(hash.sha256_bytes(bytes))
-	end
-
-	local function capture_private_buffers(hash, bounds, index_at, buffers,
-			run_values, run_count, run_checksum_a, run_checksum_b, ledger)
-		local tuple_values, tuple_parts, tuple_rows = {}, {
-			"schema\tgrug_wp40_r7_private_tuple_tsv_v1\n",
-			"bounds\t" .. bounds.min_x .. "\t" .. bounds.min_y .. "\t" ..
-				bounds.min_z .. "\t" .. bounds.max_x .. "\t" .. bounds.max_y ..
-				"\t" .. bounds.max_z .. "\n",
-			"order\tz_outer_x_middle_y_inner\n",
-			"fields\tdata\tparam2\toccupancy\topcode\tfeature\tinterface\taux\n",
-		}, {}
-		local tuple_count = 0
-		for z = bounds.min_z, bounds.max_z do
-			for x = bounds.min_x, bounds.max_x do
-				for y = bounds.min_y, bounds.max_y do
-					local index = index_at(x, y, z)
-					local data, param2, occupied, opcode = buffers.data[index],
-						buffers.param2[index], buffers.occupancy[index], buffers.opcode[index]
-					local feature, interface, aux = buffers.feature[index],
-						buffers.interface[index], buffers.aux[index]
-					integer(data, "private tuple data", -MAX_SAFE, MAX_SAFE, "fail_ledger")
-					integer(param2, "private tuple param2", -MAX_SAFE, MAX_SAFE, "fail_ledger")
-					integer(occupied, "private tuple occupancy", -MAX_SAFE, MAX_SAFE,
-						"fail_ledger")
-					integer(opcode, "private tuple opcode", -MAX_SAFE, MAX_SAFE, "fail_ledger")
-					integer(feature, "private tuple feature", -MAX_SAFE, MAX_SAFE,
-						"fail_ledger")
-					integer(interface, "private tuple interface", -MAX_SAFE, MAX_SAFE,
-						"fail_ledger")
-					integer(aux, "private tuple aux", -MAX_SAFE, MAX_SAFE, "fail_ledger")
-					tuple_count = tuple_count + 1
-					local base = (tuple_count - 1) * 7
-					tuple_values[base + 1], tuple_values[base + 2] = data, param2
-					tuple_values[base + 3], tuple_values[base + 4] = occupied, opcode
-					tuple_values[base + 5], tuple_values[base + 6], tuple_values[base + 7] =
-						feature, interface, aux
-					tuple_rows[#tuple_rows + 1] = string.format(
-						"tuple\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f\n",
-						data, param2, occupied, opcode, feature, interface, aux)
-					if #tuple_rows == 4096 then
-						tuple_parts[#tuple_parts + 1] = table.concat(tuple_rows)
-						tuple_rows = {}
-					end
-				end
-			end
-		end
-		if #tuple_rows > 0 then tuple_parts[#tuple_parts + 1] = table.concat(tuple_rows) end
-		local tuple_bytes = table.concat(tuple_parts)
-		local captured_runs = {}
-		local run_parts = {
-			"schema\tgrug_wp40_r7_private_run_tsv_v1\n",
-			"fields\tymin\tymax\tclass\topcode\tkind\tpolicy\tfeature\tinterface\taux\n",
-		}
-		for run = 1, run_count do
-			local base, fields = (run - 1) * RUN_STRIDE, {}
-			for field = 1, RUN_STRIDE do
-				local value = run_values[base + field]
-				integer(value, "private run", -MAX_SAFE, MAX_SAFE, "fail_ledger")
-				captured_runs[base + field] = value
-				fields[field] = string.format("%.0f", value)
-			end
-			run_parts[#run_parts + 1] = "run\t" .. table.concat(fields, "\t") .. "\n"
-		end
-		local run_bytes = table.concat(run_parts)
-		local captured_ledger = ledger and copy_map(ledger) or false
-		local ledger_bytes = captured_ledger and
-			("schema\tgrug_wp40_r7_private_ledger_graph_v1\nledger\t" ..
-				canonical_graph(captured_ledger) .. "\n") or
-			"schema\tgrug_wp40_r7_private_ledger_graph_v1\nnone\n"
-		return {
-			schema = "grug_wp40_r7_private_buffer_capture_v1",
-			min_x = bounds.min_x, min_y = bounds.min_y, min_z = bounds.min_z,
-			max_x = bounds.max_x, max_y = bounds.max_y, max_z = bounds.max_z,
-			tuple_order = "z_outer_x_middle_y_inner", tuple_stride = 7,
-			tuple_count = tuple_count, tuple_values = tuple_values,
-			tuple_sha256 = private_sha256(hash, tuple_bytes),
-			run_stride = RUN_STRIDE, run_count = run_count, run_values = captured_runs,
-			run_checksum_a = run_checksum_a, run_checksum_b = run_checksum_b,
-			run_sha256 = private_sha256(hash, run_bytes),
-			ledger = captured_ledger,
-			ledger_sha256 = private_sha256(hash, ledger_bytes),
-			metrics = {schema = "grug_wp40_r7_private_buffer_capture_metrics_v1",
-				tuple_count = tuple_count, tuple_scalar_count = #tuple_values,
-				tuple_encoded_bytes = #tuple_bytes, run_count = run_count,
-				run_scalar_count = #captured_runs, run_encoded_bytes = #run_bytes,
-				run_checksum_a = run_checksum_a, run_checksum_b = run_checksum_b,
-				ledger_encoded_bytes = #ledger_bytes},
-		}
-	end
-
-	local function equal_graph(left, right, active)
-		if type(left) ~= type(right) then return false end
-		if type(left) ~= "table" then return left == right end
-		active = active or {}
-		if active[left] == right then return true end
-		active[left] = right
-		for key, value in pairs(left) do
-			if not equal_graph(value, right[key], active) then return false end
-		end
-		for key in pairs(right) do if left[key] == nil then return false end end
-		return true
-	end
-
-	local function new(dependencies, evidence_only, capture_enabled, runtime_mode)
-		if evidence_only ~= nil and evidence_only ~= true then
-			fail("fail_settlement", "evidence-only construction flag differs")
-		end
-		if capture_enabled ~= nil and capture_enabled ~= true then
-			fail("fail_settlement", "capture construction flag differs")
-		end
-		if runtime_mode ~= nil and runtime_mode ~= true then
-			fail("fail_settlement", "runtime construction flag differs")
-		end
-		if (evidence_only and capture_enabled) or
-				(runtime_mode and (evidence_only or capture_enabled)) then
-			fail("fail_settlement", "evidence construction modes overlap")
-		end
+	local function new(dependencies)
 		exact_fields(dependencies, {
 			full_seed_string = true, r5_adapter = true, content = true,
 			templates = true, hash = true, horizontal = true, planner_source = true,
 			construction_identity = true, source = true,
 			counting_allocator = true, successor_tail = "optional",
-			planner_stable_refs = "optional",
 		}, "settlement dependencies", "fail_settlement")
 		local full_seed = dependencies.full_seed_string
 		local r5_adapter = dependencies.r5_adapter
@@ -1124,16 +734,8 @@ local function settlement_factory()
 		local WORLD_MIN_Z, WORLD_MAX_Z = world_bounds.min_z, world_bounds.max_z
 		local r8_strata = new_r8_strata(full_seed, source)
 		local r24_layers = new_r24_fill_layers(full_seed)
-		local core_api = rawget(_G, "core")
-		local r8_cave_writer_disabled = true
-		if core_api and core_api.settings and
-				type(core_api.settings.get_bool) == "function" then
-			r8_cave_writer_disabled = core_api.settings:get_bool(
-				"grug_mapgen_r8_cave_writer_disabled", true)
-		end
 		local allocator = dependencies.counting_allocator
 		local successor_tail = dependencies.successor_tail
-		local planner_stable_refs = dependencies.planner_stable_refs
 		if type(full_seed) ~= "string" or full_seed == "" or
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
@@ -1141,12 +743,8 @@ local function settlement_factory()
 				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or
 				type(planner_source.column_values_at) ~= "function" or
-				type(planner_source.surface_cave_run_at) ~= "function" or
-				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
-				type(planner_source.surface_cave_cell_at) ~= "function" or
 				type(planner_source.coast_material_at) ~= "function" or
 				type(planner_source.river_water_in) ~= "function" or
-				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(planner_source.overlay_exclusion_at) ~= "function" or
 				type(planner_source.protected_floor_at) ~= "function" or
 				type(planner_source.protected_only_floor_at) ~= "function" or
@@ -1185,7 +783,7 @@ local function settlement_factory()
 			fail("fail_content_manifest", "prospective water targets differ")
 		end
 		local surfaces = content.surfaces()
-		local select_surface = content.new_surface_selector(full_seed, planner_source)
+		local select_surface = content.surface_selector(full_seed, planner_source)
 		local resources = content.resources()
 		local decorations = content.decorations()
 		-- Shrub templates (Round 23 Phase 2, world_zones.md §7.6) place like the
@@ -1236,20 +834,6 @@ local function settlement_factory()
 		local surface_by_id = {}
 		for index = 1, #surfaces do surface_by_id[surfaces[index].id] = surfaces[index] end
 		local tier_by_y = projection.tiers
-		local evidence_stable_ref = {}
-		if planner_stable_refs ~= nil then
-			if type(planner_stable_refs) ~= "table" or #planner_stable_refs < 1 then
-				fail("fail_settlement", "planner stable refs differ")
-			end
-			for index = 1, #planner_stable_refs do
-				local id = planner_stable_refs[index]
-				if type(id) ~= "string" or id == "" or evidence_stable_ref[id] or
-						(index > 1 and not hash.less_bytes(planner_stable_refs[index - 1], id)) then
-					fail("fail_settlement", "planner stable refs differ")
-				end
-				evidence_stable_ref[id] = index
-			end
-		end
 		-- Exclusion reasons by kind: routes, water and coast are
 		-- `route_or_water`, every other kind (anchor envelopes, active cores)
 		-- `fixed_or_protected`. The static rows take their kind from their
@@ -1323,24 +907,23 @@ local function settlement_factory()
 			if not id then fail("fail_settlement", "overlay exclusion kind differs") end
 			return "route_or_water", id
 		end
-		local retained_volume = evidence_only and 1 or MAX_VOLUME
 		local original_data = retained_array("r6_settlement_original_data",
-			retained_volume, 0)
+			MAX_VOLUME, 0)
 		local original_param2 = retained_array("r6_settlement_original_param2",
-			retained_volume, 0)
-		local final_data = retained_array("r6_settlement_final_data", retained_volume, 0)
+			MAX_VOLUME, 0)
+		local final_data = retained_array("r6_settlement_final_data", MAX_VOLUME, 0)
 		local final_param2 = retained_array("r6_settlement_final_param2",
-			retained_volume, 0)
+			MAX_VOLUME, 0)
 		local original_light = retained_array("r6_settlement_original_light",
-			retained_volume, 0)
-		local occupancy = retained_array("r6_settlement_occupancy", retained_volume, 0)
+			MAX_VOLUME, 0)
+		local occupancy = retained_array("r6_settlement_occupancy", MAX_VOLUME, 0)
 		local intent_opcode = retained_array("r6_settlement_intent_opcode",
-			retained_volume, 0)
+			MAX_VOLUME, 0)
 		local intent_feature = retained_array("r6_settlement_intent_feature",
-			retained_volume, 0)
+			MAX_VOLUME, 0)
 		local intent_interface = retained_array("r6_settlement_intent_interface",
-			retained_volume, 0)
-		local intent_aux = retained_array("r6_settlement_intent_aux", retained_volume, 0)
+			MAX_VOLUME, 0)
+		local intent_aux = retained_array("r6_settlement_intent_aux", MAX_VOLUME, 0)
 		local light_zero, light_full = {day = 0, night = 0}, {day = 15, night = 0}
 		local call_min, call_max = {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}
 		local transaction_state = {
@@ -1351,57 +934,36 @@ local function settlement_factory()
 			written_vm = false, written_light = false,
 			call_min = call_min, call_max = call_max,
 			successor_tail = successor_tail,
-			runtime_mode = runtime_mode == true,
 			-- Per owner column (ruling 30 addendum, memoised per call; false
 			-- until asked): the protected-only floor of the territory rule.
 			protected_only_floor_column = retained_array(
 				"r6_settlement_protected_only_floor_column", 6400, false),
 			surface_skin_column = retained_array(
 				"r6_settlement_surface_skin_column", 6400, 0),
-			successor_refs = {p9g_min = 0, p9g_max = 0, anchor_min = 0,
-				anchor_max = 0, settlement_min = 0, settlement_max = 0},
+			-- The commit scan's answers per content id pair and per content
+			-- id (below); content ids are fixed for the server's lifetime.
+			scan_pairs = {}, scan_liquid = {},
 		}
-		if capture_enabled then
-			transaction_state.private_capture = {armed = false, value = false}
-		end
-		local run_values = retained_array("r6_settlement_run_values",
-			(evidence_only or runtime_mode) and 1 or MAX_RUNS * RUN_STRIDE, 0)
 		local stable_state = {
 			resource = retained_array("r6_settlement_stable_resource", #resources, 0),
 			decoration = retained_array("r6_settlement_stable_decoration", #decorations, 0),
 			bound = false,
 		}
 		local metrics_state = {
-			apply_calls = 0, peak_successor_runs = 0,
-			modified_voxels = 0, content_dirty_columns = 0,
-			param2_dirty_columns = 0, light_dirty_columns = 0,
-			liquid_dirty_columns = 0, replay_count = 0,
+			apply_calls = 0, modified_voxels = 0, content_dirty_columns = 0,
+			param2_dirty_columns = 0,
 			-- Per template row: owner-rooted candidates, those clipped by the
 			-- owner (mapchunk border), those accepted, and the generated trees'
 			-- root runs tried and written (Round 47 lane TC, measured by
 			-- tools/r47_tc/forest.lua).
 			templates = {},
 		}
-		local last_ledger, last_run_count, last_sun_runs = false, 0, 0
 
-		local function classify(cid, param2, code)
-			if runtime_mode then
-				return contract.classify_runtime(cid, param2)
-			end
-			local ok, class_id, family_id, liquid_kind, liquid_level, floodable,
-				paramtype_light, light_propagates, sunlight_propagates, light_source =
-				pcall(contract.classify, cid, param2)
-			if not ok or type(class_id) ~= "number" or class_id < 1 or class_id > 11 or
-				type(family_id) ~= "number" or type(liquid_kind) ~= "number" or
-				type(liquid_level) ~= "number" or type(floodable) ~= "boolean" or
-				type(paramtype_light) ~= "boolean" or
-				type(light_propagates) ~= "boolean" or
-				type(sunlight_propagates) ~= "boolean" or
-				type(light_source) ~= "number" then
-				fail(code or "fail_settlement", "content classification differs")
-			end
-			return class_id, family_id, liquid_kind, liquid_level, floodable,
-				paramtype_light, light_propagates, sunlight_propagates, light_source
+		-- The engine-trusted classification (r7_content.lua): every content
+		-- id the writer meets comes from the VoxelManip or its own resolvers.
+		local classify = contract.classify_runtime
+		if type(classify) ~= "function" then
+			fail("fail_settlement", "runtime classification is absent")
 		end
 
 		-- Chunk-edge light (Round 22 D64/D65): the transaction relights, from
@@ -1455,8 +1017,7 @@ local function settlement_factory()
 			local key = cid * 256 + param2
 			local value = halo.sun_cache[key]
 			if value == nil then
-				local _, _, _, _, _, _, _, sunlight, source = classify(cid, param2,
-					"fail_lighting_context")
+				local _, _, _, _, _, _, _, sunlight, source = classify(cid, param2)
 				value = not sunlight and 0 or source > 0 and 2 or 1
 				halo.sun_cache[key] = value
 			end
@@ -1717,8 +1278,6 @@ local function settlement_factory()
 			local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
 					y > terrain_y or y < -37 then return nil end
-			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
-			if cave_low ~= nil and cave_low <= y and y <= cave_high then return nil end
 			-- Anchors 1..12: the six starts and, since WP13 round 3, the six
 			-- CAPITALS. A capital fitting grades its whole 704-node blend square
 			-- and everything inside it was `default:stone` before, which is why
@@ -1746,82 +1305,6 @@ local function settlement_factory()
 			return content.content_ref(name)
 		end
 
-		local function r5_target_cid(role, y)
-			local ok, cid, target_kind, param2_mode, param2_value =
-				pcall(contract.r5.resolve, role, y, 0)
-			if not ok or type(cid) ~= "number" or cid % 1 ~= 0 or cid < 0 or
-					type(target_kind) ~= "number" or target_kind < 0 or target_kind > 2 or
-					(param2_mode ~= 0 and param2_mode ~= 1) or
-					(param2_mode == 0 and param2_value ~= nil) or
-					(param2_mode == 1 and (type(param2_value) ~= "number" or
-						param2_value % 1 ~= 0 or param2_value < 0 or param2_value > 255)) then
-				fail("fail_content_manifest", "analytic R5 target differs")
-			end
-			return cid
-		end
-
-		-- Exact single-voxel replay of the frozen R5 P2-P6 winner over its
-		-- deterministic P5/P6 base. This is the horizontal evidence authority for
-		-- decoration predecessors and shares production resolvers/source scalars.
-		local function analytic_r5_material_cid(x, y, z)
-			local _, _, _, _, _, terrain_y, water_y, river_id, _,
-				functional_kind, _, _, _, _, _, _, _, _, _,
-				hard_foundation = planner_source.column_values_at(x, z)
-			local surface_cap = water_y and math.max(terrain_y, water_y) or
-				terrain_y
-			local winner_priority, winner_role, winner_policy
-			local function offer(priority, role, policy)
-				if winner_priority == nil or priority < winner_priority then
-					winner_priority, winner_role, winner_policy = priority, role, policy
-				end
-			end
-			local function within(low, high)
-				return low ~= nil and high ~= nil and low <= high and y >= low and y <= high
-			end
-
-			if hard_foundation and functional_kind == "anchor_platform" then
-				if within(-37, terrain_y - 1) then offer(2, 7, 3)
-				elseif y == terrain_y then offer(2, 8, 6)
-				elseif within(terrain_y + 1, terrain_y + 4) then offer(2, 1, 1) end
-			elseif functional_kind == "anchor_platform" or
-					functional_kind == "land_grade" then
-				if within(-37, terrain_y - 1) then offer(4, 11, 3)
-				elseif y == terrain_y then offer(4, 12, 6)
-				elseif within(terrain_y + 1, terrain_y + 4) then offer(4, 1, 1) end
-			end
-
-			if y <= terrain_y then
-				local seal_min, seal_max = analytic_hydrology_seal(x, z)
-				if within(seal_min, seal_max) then offer(3, 9, 5) end
-			end
-			if water_y ~= nil and terrain_y < water_y and
-					within(terrain_y + 1, water_y) then
-				offer(6, river_liquid(river_id) and 13 or 10, 7)
-			end
-			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
-			if within(cave_low, cave_high) then offer(5, 1, 1)
-			elseif within(-37, terrain_y - 1) or y == terrain_y then offer(5, 14, 6)
-			elseif y > surface_cap then offer(5, 1, 1) end
-			if not winner_role then winner_priority, winner_role, winner_policy = 5, 1, 1 end
-
-			local target_cid = r5_target_cid(winner_role, y)
-			if winner_priority >= 5 then return target_cid, winner_priority end
-			local base_role
-			if y <= terrain_y then base_role = 14
-			elseif water_y ~= nil and y <= water_y then
-				base_role = river_liquid(river_id) and 13 or 10
-			else base_role = 1 end
-			local old_cid = r5_target_cid(base_role, y)
-			if old_cid == target_cid then return old_cid, winner_priority end
-			local old_class = classify(old_cid, 0, "fail_old_class")
-			local writes = winner_policy == 6 or winner_policy == 7 or
-				((winner_policy == 1 or winner_policy == 4) and old_class ~= CLASS_AIR) or
-				((winner_policy == 3 or winner_policy == 5) and
-					(old_class == CLASS_AIR or old_class == CLASS_LIQUID or
-						old_class == CLASS_NATURAL_VEGETATION))
-			return writes and target_cid or old_cid, winner_priority
-		end
-
 		local function analytic_p7_support_ref(x, y, z)
 			local _, _, _, _, _, terrain_y = planner_source.column_values_at(x, z)
 			if y ~= terrain_y then return nil end
@@ -1835,382 +1318,6 @@ local function settlement_factory()
 			return nil
 		end
 
-		local function owner_minimum(value)
-			return -30912 + math.floor((value + 30912) / 80) * 80
-		end
-
-		local function occupied_key(x, y, z)
-			return tostring(x) .. "/" .. tostring(y) .. "/" .. tostring(z)
-		end
-
-		local function run_class_policy(opcode)
-			local class_id = opcode == 37 and 13 or (opcode == 36 and 12 or (opcode == 35 and 10 or
-				(opcode == 24 and 8 or ((opcode == 12 or opcode == 34) and 9 or 7))))
-			local policy = opcode == 37 and 13 or (opcode == 36 and 12 or (opcode == 35 and 11 or
-				(opcode == 2 and 10 or
-					(opcode == 34 and 9 or ((opcode == 12 or opcode == 33) and 8 or
-						(opcode == 24 and 2 or 6))))))
-			return class_id, policy
-		end
-
-		local function evidence_run_rows(rows)
-			local result, index = {}, 1
-			while index <= #rows do
-				local first = rows[index]
-				if first[7] == 0 then
-					index = index + 1
-				else
-					local finish = index
-					while finish + 1 <= #rows do
-						local next_row = rows[finish + 1]
-						if next_row[1] ~= first[1] or next_row[3] ~= first[3] or
-								next_row[2] ~= rows[finish][2] + 1 or
-								next_row[7] ~= first[7] or next_row[8] ~= first[8] or
-								next_row[9] ~= first[9] or next_row[10] ~= first[10] then
-							break
-						end
-						finish = finish + 1
-					end
-					local class_id, policy = run_class_policy(first[7])
-					result[#result + 1] = {first[1], first[3], first[2],
-						rows[finish][2], class_id, first[7], 17, policy,
-						first[8], first[9], first[10]}
-					index = finish + 1
-				end
-			end
-			return result
-		end
-
-		local function primary_reason(flags, ordered)
-			for index = 1, #ordered do
-				if flags[ordered[index]] then return ordered[index] end
-			end
-			return nil
-		end
-		local helpers
-
-		-- Production-owned canonical horizontal evidence fixture.  It shares the
-		-- exact catalog, exclusion, hash, template and accepted-P7 authorities of
-		-- the writer, while replacing the native VM with Section 11.2's closed
-		-- stratum/surface/air population.  Only aggregate ledgers escape.
-		-- Evidence-only analytic mirror of the writer (not used in production);
-		-- it lacks the Round 22 Phase 6 ground-body rule for force-placed cells.
-		local function scan_horizontal_owner(owner_x, owner_z, decoration_candidates)
-			integer(owner_x, "evidence owner x", -30912, 30927, "fail_ledger")
-			integer(owner_z, "evidence owner z", -30912, 30927, "fail_ledger")
-			local result = {decorations = {}, rejections = {}}
-			local occupied, occupied_positions, written = {}, {}, {}
-			local evidence_air_cid, air_kind, air_param2 =
-				contract.r5.resolve(1, 0, 0)
-			if air_kind ~= 0 or air_param2 ~= 0 or
-					evidence_air_cid == contract.ignore_cid then
-				fail("fail_content_manifest", "evidence air authority differs")
-			end
-			if successor_tail and next(evidence_stable_ref) == nil then
-				fail("fail_ledger", "successor evidence stable refs are absent")
-			end
-			local function evidence_write(x, y, z, content_ref, param2, opcode,
-					feature, interface, occupancy_value)
-				local cid = contract.content_cids[content_ref]
-				local key = occupied_key(x, y, z)
-				occupied_positions[key] = {x, y, z}
-				written[key] = {x, y, z, cid, param2,
-					occupancy_value, opcode, feature, interface,
-					(content_ref - 1) * 256 + param2}
-			end
-			local function evidence_rows(base_tuple)
-				local rows = {}
-				for key, position in pairs(occupied_positions) do
-					local row = written[key]
-					if row then
-						rows[#rows + 1] = copy_map(row)
-					else
-						local _, cid, _, opcode, aux = base_tuple(position[1],
-							position[2], position[3])
-						rows[#rows + 1] = {position[1], position[2], position[3],
-							cid, 0, occupied[key], opcode, 0, 0, aux}
-					end
-				end
-				table.sort(rows, function(left, right)
-					if left[3] ~= right[3] then return left[3] < right[3] end
-					if left[1] ~= right[1] then return left[1] < right[1] end
-					return left[2] < right[2]
-				end)
-				return rows
-			end
-			local function inside(x, y, z, oy)
-				return x >= owner_x and x <= owner_x + 79 and y >= oy and
-					y <= oy + 79 and z >= owner_z and z <= owner_z + 79 and
-					x >= WORLD_MIN_X and x <= WORLD_MAX_X and z >= WORLD_MIN_Z and
-					z <= WORLD_MAX_Z and y >= -31000 and y <= 31000
-			end
-			local function reject(subsystem, id, reason)
-				local key = subsystem .. "\0" .. id .. "\0" .. reason
-				result.rejections[key] = (result.rejections[key] or 0) + 1
-			end
-			local function prospective(x, y, z)
-				local _, _, zone_id, biome, _, terrain_y, water_y =
-					planner_source.column_values_at(x, z)
-				local surface = select_surface(biome, x, z, water_y, terrain_y, zone_id)
-				if not surface then return CLASS_UNKNOWN, 0, false, 0, 0 end
-				local p7_ref = analytic_p7_material_ref(x, y, z)
-				if p7_ref then
-					local cid = contract.content_cids[p7_ref]
-					local wet = water_y ~= nil and water_y > terrain_y
-					local opcode = y < terrain_y and 2 or (wet and 1 or
-						(biome == "grug_beach" and 3 or 4))
-					return classify(cid, 0, "fail_old_class"), cid, true, opcode,
-						(p7_ref - 1) * 256
-				end
-				local wet = water_y ~= nil and water_y > terrain_y
-				local cid, r5_priority = analytic_r5_material_cid(x, y, z)
-				if y > terrain_y then
-					if surface.dust_ref ~= 0 and not wet and y == terrain_y + 1 and
-							r5_priority == 5 and cid == r5_target_cid(1, y) and
-							analytic_p7_material_ref(x, terrain_y, z) ~= nil then
-						return CLASS_NATURAL_VEGETATION,
-							contract.content_cids[surface.dust_ref], false, 33,
-							(surface.dust_ref - 1) * 256
-					end
-				end
-				return classify(cid, 0, "fail_old_class"), cid, false, 0, 0
-			end
-
-			for class = 1, 4 do
-				for candidate_index = 1, #decoration_candidates do
-					local candidate = decoration_candidates[candidate_index]
-					local row = decorations[candidate.catalog]
-					if row.settlement_class == class then
-						local cells, min_fx, max_fx, min_fy, max_fy, min_fz, max_fz =
-							{}, 0, 0, 0, 0, 0, 0
-						local feature_ref = evidence_stable_ref[row.id]
-						if not feature_ref then
-							fail("fail_ledger", "decoration stable ref differs")
-						end
-						local interface_ref = 0
-						if row.generated_tree then
-							-- The offline evidence path predates the generated trees
-							-- (Round 47) and has no caller left; it refuses them
-							-- rather than pretend a schematic.
-							fail("fail_ledger", "generated trees have no evidence path")
-						elseif row.kind == "template" then
-							interface_ref = feature_ref
-							local rotation = helpers.rotation_at(row.id, candidate.x,
-								candidate.y, candidate.z)
-							local template = helpers.template_rotation(row.id, rotation)
-							min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = template.min_x,
-								template.max_x, template.min_y, template.max_y,
-								template.min_z, template.max_z
-							local slice_destination_y = {}
-							local destination_y = template.min_y
-							for y = 1, template.size_y do
-								if templates.probability_include(full_seed, row.id,
-										candidate.x, candidate.y, candidate.z, rotation,
-										"slice", 0, y - 1, 0,
-										template.y_slice_probabilities[y]) then
-									slice_destination_y[y] = destination_y
-									destination_y = destination_y + 1
-								end
-							end
-							for z = 1, template.size_z do
-								for y = 1, template.size_y do
-									local placed_y = slice_destination_y[y]
-									for x = 1, template.size_x do
-										local source_index = (z - 1) * template.size_x *
-											template.size_y + (y - 1) * template.size_x + x
-										local node = template.cells[source_index]
-										cells[#cells + 1] = {x = template.min_x + x - 1,
-											y = placed_y or template.min_y,
-											z = template.min_z + z - 1,
-											include = placed_y ~= nil and node.name ~= "air" and
-												templates.probability_include(full_seed, row.id,
-													candidate.x, candidate.y, candidate.z, rotation,
-													"node", x - 1, y - 1, z - 1, node.probability),
-											content_ref = node.content_ref, param2 = node.param2,
-											force_place = node.force_place}
-									end
-								end
-							end
-						else
-							local height = 1
-							if row.settlement_class == 3 then
-								height = helpers.simple_height_at(row.id, candidate.x,
-									candidate.y, candidate.z)
-							end
-							max_fy = height - 1
-							for y = 0, height - 1 do
-								cells[#cells + 1] = {x = 0, y = y, z = 0, include = true,
-									content_ref = row.content_ref,
-									param2 = row.rule == "param2_4" and 4 or 0,
-									force_place = false}
-							end
-						end
-						local oy = owner_minimum(candidate.y)
-						local flags = {}
-						if not inside(candidate.x + min_fx, candidate.y + min_fy,
-								candidate.z + min_fz, oy) or
-								not inside(candidate.x + max_fx, candidate.y + max_fy,
-									candidate.z + max_fz, oy) then flags.clipped_owner = true end
-						local support_ref = decoration_support_ref(row, candidate.x,
-							candidate.y - 1, candidate.z)
-						if not support_ref then
-							flags.wrong_host = true
-						end
-						if not flags.clipped_owner then
-							for z = candidate.z + min_fz, candidate.z + max_fz do
-								for y = candidate.y + min_fy, candidate.y + max_fy do
-									for x = candidate.x + min_fx, candidate.x + max_fx do
-										local excluded = exclusion_reason(x, z, row.plant_purpose)
-										if excluded then flags[excluded] = true end
-										local occupant = occupied[occupied_key(x, y, z)]
-										if occupant == 1 then flags.occupied_collision = true
-										elseif occupant == -1 then flags.decoration_collision = true end
-									end
-								end
-							end
-							for part = 1, #cells do
-								local cell = cells[part]
-								if cell.include then
-									local old_class, old_cid, exact_p7 = prospective(
-										candidate.x + cell.x,
-										candidate.y + cell.y, candidate.z + cell.z)
-									local target = contract.content_cids[cell.content_ref]
-									if old_cid ~= target and old_class ~= CLASS_AIR and
-											old_class ~= CLASS_NATURAL_VEGETATION then
-										if cell.force_place then
-											if not exact_p7 then flags.forbidden_old_class = true end
-										elseif row.partial_leaves then
-											cell.include = false
-										else
-											flags.insufficient_clearance = true
-										end
-									end
-								end
-							end
-						end
-						local reason = primary_reason(flags, {"clipped_owner",
-							"content_ignore", "fixed_or_protected", "route_or_water",
-							"wrong_host", "insufficient_clearance", "occupied_collision",
-							"resource_collision", "decoration_collision",
-							"forbidden_old_class"})
-						local aggregate = result.decorations[row.id]
-						if not aggregate then
-							aggregate = {accepted = 0, emitted = 0, reserved = 0}
-							result.decorations[row.id] = aggregate
-						end
-						if reason then reject("decoration", row.id, reason)
-						else
-							aggregate.accepted = aggregate.accepted + 1
-							for z = candidate.z + min_fz, candidate.z + max_fz do
-								for y = candidate.y + min_fy, candidate.y + max_fy do
-									for x = candidate.x + min_fx, candidate.x + max_fx do
-										local key = occupied_key(x, y, z)
-										occupied[key] = -1
-										occupied_positions[key] = {x, y, z}
-										aggregate.reserved = aggregate.reserved + 1
-									end
-								end
-							end
-							for part = 1, #cells do
-								if cells[part].include then
-									aggregate.emitted = aggregate.emitted + 1
-									local cell = cells[part]
-									evidence_write(candidate.x + cell.x,
-										candidate.y + cell.y, candidate.z + cell.z,
-										cell.content_ref, cell.param2, 12, feature_ref,
-										interface_ref, -1)
-								end
-							end
-						end
-					end
-				end
-			end
-			result.direct_rows = evidence_rows(prospective)
-			result.direct_runs = evidence_run_rows(result.direct_rows)
-			if successor_tail then
-				if type(successor_tail.plan_evidence_owner) ~= "function" then
-					fail("fail_ledger", "successor evidence planner is absent")
-				end
-				local plan, generation = successor_tail:plan_evidence_owner(owner_x,
-					owner_x + 79, owner_z, owner_z + 79)
-				local context = {schema = "grug_wp40_r7_successor_context_v1",
-					plan = plan, generation = generation, call_mode = "evidence_fixture",
-					min_x = owner_x, min_y = -30912, min_z = owner_z,
-					max_x = owner_x + 79, max_y = 30927, max_z = owner_z + 79}
-				local function evidence_inside(x, y, z)
-					local surface_y = select(6, planner_source.column_values_at(x, z))
-					return inside(x, y, z, owner_minimum(surface_y + 1))
-				end
-				function context.inside_owner(x, y, z) return evidence_inside(x, y, z) end
-				function context.original_at(x, y, z)
-					return evidence_air_cid, 0
-				end
-				function context.settled_at(x, y, z)
-					local key = occupied_key(x, y, z)
-					local row = written[key]
-					if row then
-						return row[4], row[5], row[6], row[7], row[8], row[9], row[10]
-					end
-					local _, cid, _, opcode, aux = prospective(x, y, z)
-					return cid, 0, occupied[key] or 0, opcode, 0, 0, aux
-				end
-				function context.production_content(name)
-					local ref = content.content_ref(name)
-					return ref, ref and contract.content_cids[ref] or nil
-				end
-				function context.analytic_p7_ref(x, y, z)
-					return analytic_p7_material_ref(x, y, z)
-				end
-				function context.analytic_p7_tuple(x, y, z)
-					local ref = analytic_p7_material_ref(x, y, z)
-					if not ref then return -1, -1, -3, -1, -1, -1, -1 end
-					local _, _, _, biome, _, terrain_y, water_y =
-						planner_source.column_values_at(x, z)
-					local opcode = y < terrain_y and 2 or
-						((water_y ~= nil and water_y > terrain_y) and 1 or
-							(biome == "grug_beach" and 3 or 4))
-					return contract.content_cids[ref], 0, 0, opcode, 0, 0,
-						(ref - 1) * 256
-				end
-				function context.exclusion_at(x, z) return exclusion_reason(x, z) end
-				function context.column_values_at(x, z)
-					return planner_source.column_values_at(x, z)
-				end
-				function context.write_p9g(x, y, z, cid, param2, local_ref, feature)
-					local key = occupied_key(x, y, z)
-					occupied[key] = -2
-					occupied_positions[key] = {x, y, z}
-					written[key] = {x, y, z, cid, param2, -2, 35, feature, 0,
-						(#contract.content_names + local_ref - 1) * 256 + param2}
-				end
-				function context.write_anchor(x, y, z, cid, param2, local_ref, feature)
-					local key = occupied_key(x, y, z)
-					occupied[key] = -2
-					occupied_positions[key] = {x, y, z}
-					written[key] = {x, y, z, cid, param2, -2, 36, feature, 0,
-						(#contract.content_names + P9G_COUNT + local_ref - 1) * 256 + param2}
-				end
-				function context.write_hearthpine(x, y, z, cid, param2, local_ref, feature)
-					local key = occupied_key(x, y, z)
-					occupied[key] = -2
-					occupied_positions[key] = {x, y, z}
-					written[key] = {x, y, z, cid, param2, -2, 37, feature, 0,
-						(#contract.content_names + P9G_COUNT + 2 + local_ref - 1) * 256 + param2}
-				end
-				local successor_result = successor_tail:settle(context)
-				if type(successor_result) ~= "table" or
-						successor_result.schema ~= "grug_wp40_r7_successor_ledger_v1" then
-					fail("fail_ledger", "R7 successor ledger differs")
-				end
-				result.p9g, result.anchors = successor_result.p9g, successor_result.anchors
-				result.world_content = successor_result.world_content
-				result.hearthpine = successor_result.hearthpine
-				result.final_rows = evidence_rows(prospective)
-				result.final_runs = evidence_run_rows(result.final_rows)
-			end
-			return result
-		end
-
 		local function run_at(plan, column, y)
 			local r5 = plan.r5_plan
 			for run = r5.column_start[column], r5.column_start[column + 1] - 1 do
@@ -2220,12 +1327,8 @@ local function settlement_factory()
 			end
 			return nil
 		end
-		local function metric_rejection(ledger, subsystem, catalog_id, reason)
-			if not ledger then return end
-			local key = subsystem .. "\0" .. catalog_id .. "\0" .. reason
-			ledger.rejections[key] = (ledger.rejections[key] or 0) + 1
-		end
-		helpers = {equal_graph = equal_graph,
+		-- (one table: the transaction closure is at Lua 5.1's upvalue limit)
+		local helpers = {
 			-- natural rock classes a force-placed decoration root may take
 			ground_body_class = function(class_id)
 				return class_id == CLASS_NATURAL_HOST or class_id == CLASS_NATURAL_SURFACE or
@@ -2236,30 +1339,23 @@ local function settlement_factory()
 				local rbase = run_at(plan, column, y)
 				return rbase and plan.r5_plan.run_values[rbase + 4]
 			end,
-			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
-			static_exclusion_reason = static_exclusion_reason,
+			exclusion_reason = exclusion_reason,
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			decoration_support_ref = decoration_support_ref,
-			run_class_policy = run_class_policy,
-			capture_private_buffers = capture_private_buffers,
-			r8_strata = r8_strata, r8_surfaces = surfaces,
+			r8_strata = r8_strata,
 			r8_select_surface = select_surface, r8_horizontal = horizontal,
 			-- the swamp's pools (Round 47 lane SW, swamp_pools.lua), or nil
 			swamp_pools = content.swamp_pools(full_seed, planner_source),
-			r8_apply_strata = r8_apply_strata, r8_plan_cave = r8_plan_cave,
+			r8_apply_strata = r8_apply_strata,
 			r24_layers = r24_layers, r24_apply_fill_layers = r24_apply_fill_layers,
 			r24_fill_stone = r24_fill_stone,
-			r8_cave_writer_disabled = r8_cave_writer_disabled,
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
 			root_ground_cids = root_ground_cids, kit_ground_cids = kit_ground_cids,
 			template_metrics = metrics_state.templates,
 			tree_spacing = TREE_SPACING,
-			r8_hash = hash,
-			template_rotation = runtime_mode and (templates.rotation_runtime or
-				templates.rotation) or
-				templates.rotation}
+			template_rotation = templates.rotation_runtime or templates.rotation}
 		-- The P9 draws of a decoration root, each its row's stream of the
 		-- placement hash (r6_hash.lua): a template's quarter turn (0..3) and a
 		-- simple class-3 decoration's height (2..4).
@@ -2277,17 +1373,9 @@ local function settlement_factory()
 		end
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
-			if call_mode ~= "fixture" and call_mode ~= "production" and
-					call_mode ~= "replay_fixture" then
-				fail("fail_status", "R6 is disabled")
+			if call_mode ~= "production" then
+				fail("fail_status", "settlement call mode differs")
 			end
-			if call_mode == "fixture" or call_mode == "production" then
-				last_ledger, last_run_count = false, 0
-			end
-			local successor_refs = transaction_state.successor_refs
-			successor_refs.p9g_min, successor_refs.p9g_max = 0, 0
-			successor_refs.anchor_min, successor_refs.anchor_max = 0, 0
-			successor_refs.settlement_min, successor_refs.settlement_max = 0, 0
 			if type(plan) ~= "table" or
 					plan.schema ~= "grug_wp40_r6_refinement_plan_v1" or
 					not plan.valid or plan.generation ~= plan_generation or
@@ -2366,14 +1454,34 @@ local function settlement_factory()
 			-- emerged volume with an integer content ID (u16) and param2 (u8)
 			-- (`l_vmanip.cpp` get_data / get_param2_data), and the halo check
 			-- above fixes the volume.
-			for index = 1, volume do
-				final_data[index], final_param2[index] =
-					original_data[index], original_param2[index]
-				occupancy[index], intent_opcode[index], intent_feature[index],
-					intent_interface[index], intent_aux[index] = 0, 0, 0, 0, 0
+			-- The five side arrays are written inside the owner only
+			-- (`write_intent` refuses anything else; the decoration box and the
+			-- successor writers test the owner), so their shell stays 0 and the
+			-- owner box alone is reset; the whole volume again when the emerged
+			-- box changes its shape (a smaller slice moves the owner's indices).
+			local shape = (ex * 256 + ey) * 256 + ez
+			if transaction_state.reset_shape ~= shape then
+				for index = 1, volume do
+					occupancy[index], intent_opcode[index], intent_feature[index],
+						intent_interface[index], intent_aux[index] = 0, 0, 0, 0, 0
+				end
+				transaction_state.reset_shape = shape
+			else
+				for z = min_z, max_z do
+					for y = min_y, max_y do
+						local first = index_at(min_x, y, z)
+						for index = first, first + max_x - min_x do
+							occupancy[index], intent_opcode[index], intent_feature[index],
+								intent_interface[index], intent_aux[index] = 0, 0, 0, 0, 0
+						end
+					end
+				end
 			end
 
-			local light_loaded = false
+			-- The nested R5 transaction works on its own buffers and hands its
+			-- whole result back through the shadow's setters; content it did not
+			-- change is copied over from the engine's below.
+			local data_set, param2_set = false, false
 			local shadow = {}
 			function shadow.get_emerged_area() return emerged_min, emerged_max end
 			function shadow.get_data(_, buffer)
@@ -2386,9 +1494,11 @@ local function settlement_factory()
 			end
 			function shadow.set_data(_, buffer)
 				for index = 1, volume do final_data[index] = buffer[index] end
+				data_set = true
 			end
 			function shadow.set_param2_data(_, buffer)
 				for index = 1, volume do final_param2[index] = buffer[index] end
+				param2_set = true
 			end
 			local function discarded_light_call()
 				fail("fail_vm_contract", "composed R5 attempted an inner light transaction")
@@ -2399,15 +1509,17 @@ local function settlement_factory()
 			shadow.set_light_data = discarded_light_call
 			function shadow.update_liquids() end
 			local r5_result = helpers.r5_adapter:apply(shadow, minp, maxp, plan.r5_plan,
-				plan.r5_generation, call_mode == "production" and
-					"engine_fixture" or "offline_fixture", "outer_transaction")
+				plan.r5_generation, "engine_fixture", "outer_transaction")
 			if type(r5_result) ~= "string" then
 				fail("fail_settlement", "nested R5 result differs")
 			end
+			if not data_set then
+				for index = 1, volume do final_data[index] = original_data[index] end
+			end
+			if not param2_set then
+				for index = 1, volume do final_param2[index] = original_param2[index] end
+			end
 
-			local ledger = not transaction_state.runtime_mode and
-				{rejections = {}, resources = {}, decorations = {},
-					successor_runs = 0} or false
 			local x_count = max_x - min_x + 1
 			local function column_index(x, z)
 				return (z - min_z) * x_count + (x - min_x) + 1
@@ -2571,9 +1683,9 @@ local function settlement_factory()
 						-- column: bed patches of sand, gravel, stone and swamp mud,
 						-- the near-water shore material or the biome top
 						-- (world_zones.md §7.4; Round 22 Phase 5) -- where the
-						-- analytic mirror answers that top too, so the evidence
-						-- and decoration planning agree with the writer (a bay
-						-- platform or a wet anchor grade keeps its seal).
+						-- analytic mirror answers that top too, so the decoration
+						-- planning agrees with the writer (a bay platform or a wet
+						-- anchor grade keeps its seal).
 						if predecessor == 28 or dry_anchor_grade and predecessor == 22 or
 								((predecessor == 17 or predecessor == 18) and
 									helpers.analytic_p7_support_ref(x, terrain_y, z) ~= nil) then
@@ -2711,33 +1823,6 @@ local function settlement_factory()
 				write = function(x, y, z, ref)
 					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
 				end})
-
-			-- R8 connected mouths.  The immutable-input helper reconstructs the
-			-- complete lumen and proves a continuing, non-sky native component
-			-- before this transaction changes a single voxel.
-			if not helpers.r8_cave_writer_disabled then
-				local cell_x, cell_z = planner_source.surface_cave_cell_at(min_x, min_z)
-				local cave = planner_source.surface_cave_candidate_at_cell(cell_x, cell_z)
-				local voxels = helpers.r8_plan_cave({min_x = min_x, min_y = min_y,
-					min_z = min_z,
-					max_x = max_x, max_y = max_y, max_z = max_z,
-					original_data = original_data, original_param2 = original_param2,
-					index_at = index_at, classify = classify,
-					column_values_at = planner_source.column_values_at,
-					static_exclusion_values_at =
-						helpers.r8_horizontal.static_exclusion_values_at}, cave)
-				if voxels then
-					local air_cid = contract.r5.resolve(1, 0, 0)
-					for voxel = 1, #voxels do
-						local row = voxels[voxel]
-						local index = index_at(row[1], row[2], row[3])
-						final_data[index], final_param2[index] = air_cid, 0
-						intent_opcode[index], intent_feature[index],
-							intent_interface[index], intent_aux[index] = 26, 0, 0, 0
-						occupancy[index] = 1
-					end
-					end
-				end
 			end
 			local function inside_owner(x, y, z)
 				return x >= min_x and x <= max_x and y >= min_y and y <= max_y and
@@ -2759,7 +1844,6 @@ local function settlement_factory()
 			-- under towns or deep water (mapgen plan ruling 5 and §4.1); no
 			-- whole-chunk scan, no per-cell budget, no SHA.
 			local r5_plan = plan.r5_plan
-			local fill_placed = ledger and {} or nil
 			fill_ore_chunk(min_x, min_y, min_z)
 			for z = min_z, max_z do
 				for x = min_x, max_x do
@@ -2778,9 +1862,6 @@ local function settlement_factory()
 									local resource = resources[resource_index]
 									write_intent(x, y, z, resource.content_ref, 0, 24,
 										stable_state.resource[resource_index], 0, 4, resource_index + 1)
-									if fill_placed then
-										fill_placed[resource.key] = (fill_placed[resource.key] or 0) + 1
-									end
 								end
 							end
 						end
@@ -2788,7 +1869,6 @@ local function settlement_factory()
 				end
 			end
 			fill_ore_chunk(nil)
-			if ledger then ledger.resources = fill_placed end
 
 			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
 			-- `tree_roots`: the roots of the generated trees accepted in this owner
@@ -2805,115 +1885,127 @@ local function settlement_factory()
 								root_x <= max_x and root_y >= min_y and root_y <= max_y and
 								root_z >= min_z and root_z <= max_z then
 							local row = decorations[catalog]
-							local cells, min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = {}, 0, 0, 0, 0, 0, 0
+							local min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = 0, 0, 0, 0, 0, 0
 							local template_ref = 0
-							local root_runs
+							local rotation, variant, template, height
 							if row.generated_tree then
 								-- A generated tree (Round 47): this world's variant by a
 								-- hash of the root, turned like every template; its
 								-- roots are optional runs (below, after acceptance).
-								local rotation = helpers.rotation_at(row.id, root_x, root_y,
-									root_z)
-								local variant = helpers.r8_templates.variant_index(
+								rotation = helpers.rotation_at(row.id, root_x, root_y, root_z)
+								variant = helpers.r8_templates.variant_index(
 									helpers.r8_full_seed, row.id, root_x, root_y, root_z)
-								local bounds
-								cells, root_runs, bounds = helpers.r8_templates.generated_cells(
-									row.id, variant, rotation)
+								local bounds = helpers.r8_templates.generated_bounds(row.id,
+									variant, rotation)
 								template_ref = stable_state.decoration[catalog]
 								min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = bounds.min_x,
 									bounds.max_x, bounds.min_y, bounds.max_y,
 									bounds.min_z, bounds.max_z
 							elseif row.kind == "template" then
-								local rotation = helpers.rotation_at(row.id, root_x, root_y,
-									root_z)
-								local template = helpers.template_rotation(row.id, rotation)
+								rotation = helpers.rotation_at(row.id, root_x, root_y, root_z)
+								template = helpers.template_rotation(row.id, rotation)
 								template_ref = stable_state.decoration[catalog]
 								min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = template.min_x,
 									template.max_x, template.min_y, template.max_y,
 									template.min_z, template.max_z
-								local slice_destination_y = {}
-								local destination_y = template.min_y
-								for y = 1, template.size_y do
-									if helpers.r8_templates.probability_include(
-											helpers.r8_full_seed, row.id,
-											root_x, root_y, root_z, rotation, "slice",
-											0, y - 1, 0, template.y_slice_probabilities[y]) then
-										slice_destination_y[y] = destination_y
-										destination_y = destination_y + 1
-									end
-								end
-								for z = 1, template.size_z do
-									for y = 1, template.size_y do
-										local placed_y = slice_destination_y[y]
-										for x = 1, template.size_x do
-											local source_index = (z - 1) * template.size_x *
-												template.size_y + (y - 1) * template.size_x + x
-											local node = template.cells[source_index]
-											local included = placed_y ~= nil and node.name ~= "air" and
-											helpers.r8_templates.probability_include(
-												helpers.r8_full_seed, row.id,
-													root_x, root_y, root_z, rotation, "node",
-													x - 1, y - 1, z - 1, node.probability)
-											cells[#cells + 1] = {x = template.min_x + x - 1,
-												y = placed_y or template.min_y,
-												z = template.min_z + z - 1, include = included,
-												content_ref = node.content_ref, param2 = node.param2,
-												force_place = node.force_place}
-										end
-									end
-								end
 							else
-								local height = 1
+								height = 1
 								if row.settlement_class == 3 then
 									height = helpers.simple_height_at(row.id, root_x, root_y,
 										root_z)
 								end
 								max_fy = height - 1
-								for y = 0, height - 1 do
-									cells[#cells + 1] = {x = 0, y = y, z = 0, include = true,
-										content_ref = row.content_ref,
-										param2 = row.rule == "param2_4" and 4 or 0,
-										force_place = false}
+							end
+							-- The cheap rejections come first, from the bounds alone: a
+							-- box the owner clips, a missing host, then an excluded,
+							-- unloaded or (but for a generated tree, which claims only
+							-- its own cells, below) occupied cell of the box. Every
+							-- rejection is final and nothing is kept of a rejected
+							-- candidate, so its cells are built only after these.
+							local clipped = not inside_owner(root_x + min_fx, root_y + min_fy,
+								root_z + min_fz) or not inside_owner(root_x + max_fx,
+								root_y + max_fy, root_z + max_fz)
+							local rejected = clipped
+							if not rejected then
+								local support = inside_owner(root_x, root_y - 1, root_z) and
+									index_at(root_x, root_y - 1, root_z) or nil
+								local support_ref = helpers.decoration_support_ref(row, root_x,
+									root_y - 1, root_z)
+								rejected = not support_ref or (support and
+									(intent_opcode[support] < 1 or intent_opcode[support] > 4 or
+										final_data[support] ~= contract.content_cids[support_ref])) or
+									false
+							end
+							if not rejected then
+								-- A generated tree's leaf (-4) counts against the box of
+								-- every other decoration.
+								local box_claims = not row.generated_tree
+								local resource_last = #resources + 1
+								for z = root_z + min_fz, root_z + max_fz do
+									for x = root_x + min_fx, root_x + max_fx do
+										if helpers.exclusion_reason(x, z, row.plant_purpose) then
+											rejected = true
+											break
+										end
+										for y = root_y + min_fy, root_y + max_fy do
+											local index = index_at(x, y, z)
+											local occupant = occupancy[index]
+											if original_data[index] == contract.ignore_cid or
+													(box_claims and (occupant == 1 or occupant == -1 or
+														occupant == -4 or
+														(occupant >= 2 and occupant <= resource_last))) then
+												rejected = true
+												break
+											end
+										end
+										if rejected then break end
+									end
+									if rejected then break end
 								end
 							end
-							local flags = {}
-							if not inside_owner(root_x + min_fx, root_y + min_fy,
-									root_z + min_fz) or not inside_owner(root_x + max_fx,
-									root_y + max_fy, root_z + max_fz) then
-								flags.clipped_owner = true
-							end
-							local support = inside_owner(root_x, root_y - 1, root_z) and
-								index_at(root_x, root_y - 1, root_z) or nil
-							local support_ref = helpers.decoration_support_ref(row, root_x,
-								root_y - 1, root_z)
-							if not support_ref or (support and (intent_opcode[support] < 1 or
-									intent_opcode[support] > 4 or final_data[support] ~=
-									contract.content_cids[support_ref])) then
-								flags.wrong_host = true
-							end
-							if not flags.clipped_owner then
-								for z = root_z + min_fz, root_z + max_fz do
-									for y = root_y + min_fy, root_y + max_fy do
-										for x = root_x + min_fx, root_x + max_fx do
-											local index = index_at(x, y, z)
-											if original_data[index] == contract.ignore_cid then
-												flags.content_ignore = true
-											end
-											local excluded = helpers.exclusion_reason(x, z,
-												row.plant_purpose)
-											if excluded then flags[excluded] = true end
-											-- A generated tree claims only its own cells
-											-- (below); every other decoration its box, and a
-											-- generated tree's leaf (-4) counts against it.
-											if row.generated_tree then
-												-- per cell, below
-											elseif occupancy[index] == 1 then flags.occupied_collision = true
-											elseif occupancy[index] >= 2 and
-													occupancy[index] <= #resources + 1 then
-												flags.resource_collision = true
-											elseif occupancy[index] == -1 or occupancy[index] == -4 then
-												flags.decoration_collision = true end
+							local cells, root_runs
+							if not rejected then
+								if row.generated_tree then
+									cells, root_runs = helpers.r8_templates.generated_cells(
+										row.id, variant, rotation)
+								elseif template then
+									-- The probability trials of this root (r6_templates.lua).
+									local trial = helpers.r8_templates.probability_trials(
+										helpers.r8_full_seed, row.id, root_x, root_y, root_z)
+									cells = {}
+									local slice_destination_y = {}
+									local destination_y = template.min_y
+									for y = 1, template.size_y do
+										if trial("slice", 0, y - 1, 0,
+												template.y_slice_probabilities[y]) then
+											slice_destination_y[y] = destination_y
+											destination_y = destination_y + 1
 										end
+									end
+									for z = 1, template.size_z do
+										for y = 1, template.size_y do
+											local placed_y = slice_destination_y[y]
+											for x = 1, template.size_x do
+												local source_index = (z - 1) * template.size_x *
+													template.size_y + (y - 1) * template.size_x + x
+												local node = template.cells[source_index]
+												local included = placed_y ~= nil and node.name ~= "air" and
+													trial("node", x - 1, y - 1, z - 1, node.probability)
+												cells[#cells + 1] = {x = template.min_x + x - 1,
+													y = placed_y or template.min_y,
+													z = template.min_z + z - 1, include = included,
+													content_ref = node.content_ref, param2 = node.param2,
+													force_place = node.force_place}
+											end
+										end
+									end
+								else
+									cells = {}
+									for y = 0, height - 1 do
+										cells[#cells + 1] = {x = 0, y = y, z = 0, include = true,
+											content_ref = row.content_ref,
+											param2 = row.rule == "param2_4" and 4 or 0,
+											force_place = false}
 									end
 								end
 							end
@@ -2926,34 +2018,33 @@ local function settlement_factory()
 							-- keeps TREE_SPACING (Chebyshev) from every generated tree
 							-- this owner accepted, the one density parameter of the
 							-- interleaved forest. The whole tree still lies inside the
-							-- owner (clipped_owner above), so a crown never meets one
+							-- owner (not clipped, above), so a crown never meets one
 							-- of another mapchunk and none is cut at a border.
-							if row.generated_tree and not flags.clipped_owner then
+							if row.generated_tree and not rejected then
 								local spacing = row.generated_kit and 0 or helpers.tree_spacing
 								for index = 1, #tree_roots do
 									local other = tree_roots[index]
 									if math.abs(other[1] - root_x) < spacing and
 											math.abs(other[2] - root_z) < spacing then
-										flags.decoration_collision = true
+										rejected = true
 										break
 									end
 								end
-								for part = 1, #cells do
+								for part = 1, rejected and 0 or #cells do
 									local cell_record = cells[part]
 									local occupant = occupancy[index_at(root_x + cell_record.x,
 										root_y + cell_record.y, root_z + cell_record.z)]
 									if occupant ~= 0 and not (occupant == -4 and
 											not cell_record.optional) then
-										if cell_record.optional then
-											cell_record.include = false
-										elseif occupant == 1 then flags.occupied_collision = true
-										elseif occupant == -1 or occupant == -4 then
-											flags.decoration_collision = true
-										else flags.resource_collision = true end
+										if not cell_record.optional then
+											rejected = true
+											break
+										end
+										cell_record.include = false
 									end
 								end
 							end
-							if not flags.clipped_owner then
+							if not rejected then
 								for part = 1, #cells do
 									local cell_record = cells[part]
 									if cell_record.include then
@@ -2979,15 +2070,14 @@ local function settlement_factory()
 												class_id ~= CLASS_NATURAL_VEGETATION and not ground_body and
 												not (cell_record.force_place and opcode >= 1 and
 													opcode <= 4) then
-											if cell_record.force_place then
-												flags.forbidden_old_class = true
-											elseif row.partial_leaves or cell_record.optional then
-												-- a shrub's leaf, or a generated tree's leaf,
-												-- against ground: skip the cell
-												cell_record.include = false
-											else
-												flags.insufficient_clearance = true
+											if cell_record.force_place or not (row.partial_leaves or
+													cell_record.optional) then
+												rejected = true
+												break
 											end
+											-- a shrub's leaf, or a generated tree's leaf,
+											-- against ground: skip the cell
+											cell_record.include = false
 										end
 									end
 								end
@@ -3006,7 +2096,7 @@ local function settlement_factory()
 							-- parent; a required run that cannot stand rejects the
 							-- whole structure. Kept runs are written moved (below).
 							local kit_kept
-							if row.generated_kit and root_runs and not flags.clipped_owner then
+							if row.generated_kit and root_runs and not rejected then
 								local kit_ground = helpers.kit_ground_cids
 								local function offset(x, z)
 									if not (inside_owner(x, root_y - 2, z) and inside_owner(x, root_y + 1, z)) then
@@ -3055,15 +2145,11 @@ local function settlement_factory()
 									if ok then
 										for part = 1, #run do run[part].y = run[part].y + shift end
 									elseif run.required then
-										flags.insufficient_clearance = true
+										rejected = true
+										break
 									end
 								end
 							end
-							local reason = helpers.primary_reason(flags, {"clipped_owner",
-								"content_ignore", "fixed_or_protected", "route_or_water",
-								"wrong_host", "insufficient_clearance", "occupied_collision",
-								"resource_collision", "decoration_collision",
-								"forbidden_old_class"})
 							local template_metrics
 							if row.kind == "template" then
 								template_metrics = helpers.template_metrics[row.id]
@@ -3073,22 +2159,14 @@ local function settlement_factory()
 									helpers.template_metrics[row.id] = template_metrics
 								end
 								template_metrics.candidates = template_metrics.candidates + 1
-								if flags.clipped_owner then
+								if clipped then
 									template_metrics.clipped = template_metrics.clipped + 1
 								end
-								if not reason then
+								if not rejected then
 									template_metrics.accepted = template_metrics.accepted + 1
 								end
 							end
-							local aggregate
-							if ledger then
-								aggregate = ledger.decorations[row.id] or
-									{accepted = 0, emitted = 0, reserved = 0}
-								ledger.decorations[row.id] = aggregate
-							end
-							if reason then metric_rejection(ledger, "decoration", row.id, reason)
-							else
-								if aggregate then aggregate.accepted = aggregate.accepted + 1 end
+							if not rejected then
 								if row.generated_kit then
 									-- a kit structure claims only its cells (written below)
 								elseif row.generated_tree then
@@ -3098,9 +2176,6 @@ local function settlement_factory()
 										for y = root_y + min_fy, root_y + max_fy do
 											for x = root_x + min_fx, root_x + max_fx do
 												occupancy[index_at(x, y, z)] = -1
-												if aggregate then
-													aggregate.reserved = aggregate.reserved + 1
-												end
 											end
 										end
 									end
@@ -3115,9 +2190,6 @@ local function settlement_factory()
 											cell_record.content_ref, cell_record.param2, 12,
 											stable_state.decoration[catalog], template_ref, 8,
 											cell_record.optional and -4 or -1)
-										if aggregate then
-											aggregate.emitted = aggregate.emitted + 1
-										end
 									end
 								end
 								-- THE ROOTS (Round 47 lane TC, handoff §5): a run is
@@ -3157,9 +2229,6 @@ local function settlement_factory()
 													root_y + cell_record.y, root_z + cell_record.z,
 													cell_record.content_ref, cell_record.param2, 12,
 													stable_state.decoration[catalog], template_ref, 8, -1)
-												if aggregate then
-													aggregate.emitted = aggregate.emitted + 1
-												end
 											end
 										end
 									end
@@ -3172,8 +2241,8 @@ local function settlement_factory()
 
 			-- R7's only legal successor hook. It receives a deliberately narrow
 			-- closure surface over these private buffers, runs after the complete R6
-			-- P9 loop and before common run derivation/replay/commit, and cannot call
-			-- a VoxelManip setter. A missing tail preserves the accepted R6 path.
+			-- P9 loop and before the commit, and cannot call a VoxelManip setter.
+			-- A missing tail preserves the accepted R6 path.
 			if transaction_state.successor_tail then
 				local successor_context = {
 					schema = "grug_wp40_r7_successor_context_v1",
@@ -3255,12 +2324,6 @@ local function settlement_factory()
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						35, feature_ref, 0
 					local successor_ref = #contract.content_names + local_ref
-					if successor_refs.p9g_min == 0 or successor_ref < successor_refs.p9g_min then
-						successor_refs.p9g_min = successor_ref
-					end
-					if successor_ref > successor_refs.p9g_max then
-						successor_refs.p9g_max = successor_ref
-					end
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
@@ -3283,13 +2346,6 @@ local function settlement_factory()
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						36, feature_ref, 0
 					local successor_ref = #contract.content_names + 39 + local_ref
-					if successor_refs.anchor_min == 0 or
-							successor_ref < successor_refs.anchor_min then
-						successor_refs.anchor_min = successor_ref
-					end
-					if successor_ref > successor_refs.anchor_max then
-						successor_refs.anchor_max = successor_ref
-					end
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
@@ -3340,13 +2396,6 @@ local function settlement_factory()
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						37, feature_ref, 0
 					local successor_ref = #contract.content_names + 39 + 2 + local_ref
-					if successor_refs.settlement_min == 0 or
-							successor_ref < successor_refs.settlement_min then
-						successor_refs.settlement_min = successor_ref
-					end
-					if successor_ref > successor_refs.settlement_max then
-						successor_refs.settlement_max = successor_ref
-					end
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
@@ -3355,180 +2404,27 @@ local function settlement_factory()
 						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" then
 					fail("fail_ledger", "R7 successor ledger differs")
 				end
-				if ledger then
-					if type(successor_ledger.p9g) ~= "table" or
-							type(successor_ledger.anchors) ~= "table" or
-							type(successor_ledger.hearthpine) ~= "table" then
-						fail("fail_ledger", "R7 successor detail differs")
-					end
-					ledger.p9g, ledger.anchors = successor_ledger.p9g, successor_ledger.anchors
-					ledger.world_content = successor_ledger.world_content
-					ledger.hearthpine = successor_ledger.hearthpine
-				end
 			end
 
-			-- Canonical runs and their checksums are an evidence product. The live
-			-- writer has already materialized the same intent bytes and commits them
-			-- directly; no runtime consumer reads the encoded proof.
-			if not transaction_state.runtime_mode then
-				-- Canonical run derivation.  The second pass compares every scalar
-				-- against the first pass's retained run buffer instead of overwriting it;
-				-- exact run parity also proves the reconstructed data/param2 bytes.
-				local replaying = call_mode == "replay_fixture"
-				local expected_run_count = replaying and last_ledger and
-					last_ledger.successor_runs or nil
-				local run_count = 0
-				local function emit_run(y_min, y_max, opcode, feature, interface, aux)
-					run_count = run_count + 1
-					if run_count > MAX_RUNS then
-						fail("fail_bound", "successor run bound exceeded")
-					end
-					local base = (run_count - 1) * RUN_STRIDE
-					local class_id, policy = helpers.run_class_policy(opcode)
-					if replaying then
-						if run_values[base + 1] ~= y_min or run_values[base + 2] ~= y_max or
-								run_values[base + 3] ~= class_id or
-								run_values[base + 4] ~= opcode or run_values[base + 5] ~= 17 or
-								run_values[base + 6] ~= policy or
-								run_values[base + 7] ~= feature or
-								run_values[base + 8] ~= interface or
-								run_values[base + 9] ~= aux then
-							fail("fail_ledger", "second settlement run bytes differ")
-						end
-					else
-						run_values[base + 1], run_values[base + 2] = y_min, y_max
-						run_values[base + 3], run_values[base + 4] = class_id, opcode
-						run_values[base + 5], run_values[base + 6] = 17, policy
-						run_values[base + 7], run_values[base + 8], run_values[base + 9] =
-							feature, interface, aux
-					end
-				end
-				for z = min_z, max_z do
-					for x = min_x, max_x do
-						local start_y, previous_y, previous_opcode, previous_feature,
-							previous_interface, previous_aux
-						for y = min_y, max_y do
-							local index = index_at(x, y, z)
-							local opcode = intent_opcode[index]
-							local feature, interface, aux = intent_feature[index],
-								intent_interface[index], intent_aux[index]
-							local continues = start_y ~= nil and previous_y == y - 1 and
-								opcode ~= 0 and opcode == previous_opcode and
-								feature == previous_feature and interface == previous_interface and
-								aux == previous_aux
-							if start_y ~= nil and not continues then
-								emit_run(start_y, previous_y, previous_opcode, previous_feature,
-									previous_interface, previous_aux)
-								start_y = nil
-							end
-							if opcode ~= 0 then
-								if start_y == nil then start_y = y end
-								previous_y, previous_opcode = y, opcode
-								previous_feature, previous_interface, previous_aux =
-									feature, interface, aux
-							end
-						end
-						if start_y ~= nil then
-							emit_run(start_y, previous_y, previous_opcode, previous_feature,
-								previous_interface, previous_aux)
-						end
-					end
-				end
-				if replaying and expected_run_count ~= run_count then
-					fail("fail_ledger", "second settlement run count differs")
-				end
-				ledger.successor_runs = run_count
-				local checksum_a, checksum_b = 1, 7
-				for index = 1, run_count * RUN_STRIDE do
-					local value = run_values[index]
-					checksum_a = (checksum_a * 131 + (value + 31012)) % 6700417
-					checksum_b = (checksum_b * 257 + (value + 31012)) % 15485863
-				end
-				ledger.run_checksum_a, ledger.run_checksum_b = checksum_a, checksum_b
-				if not replaying and run_count > metrics_state.peak_successor_runs then
-					metrics_state.peak_successor_runs = run_count
-				end
-				local capture_state = transaction_state.private_capture
-				if capture_state and not replaying then
-					if not capture_state.armed or capture_state.value then
-						fail("fail_ledger", "private capture was not armed exactly once")
-					end
-					capture_state.armed = false
-					capture_state.value = helpers.capture_private_buffers(helpers.r8_hash, {
-						min_x = min_x, min_y = min_y, min_z = min_z,
-						max_x = max_x, max_y = max_y, max_z = max_z,
-					}, index_at, {data = final_data, param2 = final_param2,
-						occupancy = occupancy, opcode = intent_opcode,
-						feature = intent_feature, interface = intent_interface,
-						aux = intent_aux}, run_values, run_count, checksum_a, checksum_b,
-						transaction_state.successor_tail and ledger or false)
-				end
-				last_ledger = ledger
-				last_run_count = run_count
-				if replaying then return "replay_ready" end
-				-- Capture/evidence constructors retain the exact second-pass proof. The
-				-- enclosing runtime gate keeps this replay out of live mapgen.
-				local first_ledger = copy_map(ledger)
-				local replay_vm = {}
-				function replay_vm.get_emerged_area() return emerged_min, emerged_max end
-				function replay_vm.get_data(_, buffer)
-					for index = 1, volume do buffer[index] = original_data[index] end
-					return buffer
-				end
-				function replay_vm.get_param2_data(_, buffer)
-					for index = 1, volume do buffer[index] = original_param2[index] end
-					return buffer
-				end
-				function replay_vm.get_light_data(_, buffer)
-					if not light_loaded then
-						fail("fail_ledger", "second replay requested new immutable light input")
-					end
-					for index = 1, volume do buffer[index] = original_light[index] end
-					return buffer
-				end
-				function replay_vm.set_data()
-					fail("fail_ledger", "replay attempted data setter")
-				end
-				function replay_vm.set_param2_data()
-					fail("fail_ledger", "replay attempted param2 setter")
-				end
-				function replay_vm.set_lighting()
-					fail("fail_ledger", "replay attempted lighting setter")
-				end
-				function replay_vm.calc_lighting()
-					fail("fail_ledger", "replay attempted lighting calculation")
-				end
-				function replay_vm.set_light_data()
-					fail("fail_ledger", "replay attempted light setter")
-				end
-				function replay_vm.update_liquids()
-					fail("fail_ledger", "replay attempted liquid update")
-				end
-				local replay_result = apply_impl(replay_vm, minp, maxp, plan,
-					plan_generation, "replay_fixture")
-				if replay_result ~= "replay_ready" or not last_ledger or
-						not helpers.equal_graph(first_ledger, last_ledger) then
-					fail("fail_ledger", "second read-only settlement replay differs")
-				end
-				metrics_state.replay_count = metrics_state.replay_count + 1
-			end
-
+			-- What the VM needs after the writes: per changed owner voxel, whether
+			-- its light properties or its liquid state changed (or, for a node
+			-- that turned floodable or no longer is, whether it borders liquid or
+			-- the owner's edge). Both answers are functions of the old and the
+			-- new content id alone (the class row of r7_content.lua; a liquid's
+			-- level matters only for a liquid, whose family is never 0), so they
+			-- are kept per id pair, and the scan stops asking once both hold.
 			local content_changed, param2_changed, light_changed, liquid_changed =
 				false, false, false, false
-			last_sun_runs = 0
-			local modified, content_columns, param2_columns, light_columns,
-				liquid_columns = 0, 0, 0, 0, 0
-			local function compatible_liquid(family, kind)
-				return (family == contract.ordinary_water_family_id or
-					family == contract.river_water_family_id) and (kind == 1 or kind == 2)
-			end
+			local modified, content_columns, param2_columns = 0, 0, 0
+			local scan_pairs, scan_liquid = transaction_state.scan_pairs,
+				transaction_state.scan_liquid
 			for z = min_z, max_z do
 				for x = min_x, max_x do
-					local column_content, column_param2, column_light, column_liquid =
-						false, false, false, false
+					local column_content, column_param2 = false, false
 					for y = min_y, max_y do
 						local index = index_at(x, y, z)
-						local changed_content = final_data[index] ~= original_data[index]
+						local old_cid, new_cid = original_data[index], final_data[index]
+						local changed_content = new_cid ~= old_cid
 						local changed_param2 = final_param2[index] ~= original_param2[index]
 						if changed_content or changed_param2 then
 							modified = modified + 1
@@ -3536,47 +2432,67 @@ local function settlement_factory()
 							param2_changed = param2_changed or changed_param2
 							column_content = column_content or changed_content
 							column_param2 = column_param2 or changed_param2
-							local _, old_family, old_liquid, old_level, old_flood,
-								old_light, old_propagates, old_sun, old_source =
-								classify(original_data[index], original_param2[index])
-							local _, new_family, new_liquid, new_level, new_flood,
-								new_light, new_propagates, new_sun, new_source =
-								classify(final_data[index], final_param2[index])
-							local voxel_light = changed_content and
-								(old_light ~= new_light or old_propagates ~= new_propagates or
-									old_sun ~= new_sun or old_source ~= new_source)
-							if voxel_light then
-								light_changed, column_light = true, true
-							end
-							local voxel_liquid = old_family > 0 or new_family > 0 or
-								old_liquid ~= new_liquid or old_family ~= new_family or
-								old_level ~= new_level
-							if not column_liquid and not voxel_liquid and old_flood ~= new_flood then
-								for face = 1, 6 do
-									local nx, ny, nz = x + FACE_X[face], y + FACE_Y[face],
-										z + FACE_Z[face]
-									if nx < min_x or nx > max_x or ny < min_y or ny > max_y or
-											nz < min_z or nz > max_z then
-										voxel_liquid = true
-									else
-										local neighbor = index_at(nx, ny, nz)
-										if final_data[neighbor] == original_data[neighbor] and
-												final_param2[neighbor] == original_param2[neighbor] then
-											local _, family, kind = classify(final_data[neighbor],
-												final_param2[neighbor])
-											if compatible_liquid(family, kind) then voxel_liquid = true end
+							if not (light_changed and liquid_changed) then
+								local by_new = scan_pairs[old_cid]
+								if not by_new then
+									by_new = {}
+									scan_pairs[old_cid] = by_new
+								end
+								-- 1: the light changes, 2: the liquid changes, 4: the
+								-- floodability changes
+								local code = by_new[new_cid]
+								if code == nil then
+									local _, old_family, old_liquid, old_level, old_flood,
+										old_light, old_propagates, old_sun, old_source =
+										classify(old_cid, original_param2[index])
+									local _, new_family, new_liquid, new_level, new_flood,
+										new_light, new_propagates, new_sun, new_source =
+										classify(new_cid, final_param2[index])
+									code = ((changed_content and
+										(old_light ~= new_light or old_propagates ~= new_propagates or
+											old_sun ~= new_sun or old_source ~= new_source)) and 1 or 0) +
+										((old_family > 0 or new_family > 0 or
+											old_liquid ~= new_liquid or old_family ~= new_family or
+											old_level ~= new_level) and 2 or 0) +
+										(old_flood ~= new_flood and 4 or 0)
+									by_new[new_cid] = code
+								end
+								if code % 2 == 1 then light_changed = true end
+								if not liquid_changed then
+									local voxel_liquid = code % 4 >= 2
+									if not voxel_liquid and code >= 4 then
+										for face = 1, 6 do
+											local nx, ny, nz = x + FACE_X[face], y + FACE_Y[face],
+												z + FACE_Z[face]
+											if nx < min_x or nx > max_x or ny < min_y or ny > max_y or
+													nz < min_z or nz > max_z then
+												voxel_liquid = true
+											else
+												local neighbor = index_at(nx, ny, nz)
+												local cid = final_data[neighbor]
+												if cid == original_data[neighbor] and
+														final_param2[neighbor] == original_param2[neighbor] then
+													local liquid = scan_liquid[cid]
+													if liquid == nil then
+														local _, family, kind = classify(cid, final_param2[neighbor])
+														liquid = (family == contract.ordinary_water_family_id or
+															family == contract.river_water_family_id) and
+															(kind == 1 or kind == 2)
+														scan_liquid[cid] = liquid
+													end
+													if liquid then voxel_liquid = true end
+												end
+											end
+											if voxel_liquid then break end
 										end
 									end
-									if voxel_liquid then break end
+									if voxel_liquid then liquid_changed = true end
 								end
 							end
-							if voxel_liquid then liquid_changed, column_liquid = true, true end
 						end
 					end
 					if column_content then content_columns = content_columns + 1 end
 					if column_param2 then param2_columns = param2_columns + 1 end
-					if column_light then light_columns = light_columns + 1 end
-					if column_liquid then liquid_columns = liquid_columns + 1 end
 				end
 			end
 			metrics_state.modified_voxels = metrics_state.modified_voxels + modified
@@ -3584,19 +2500,14 @@ local function settlement_factory()
 				content_columns
 			metrics_state.param2_dirty_columns = metrics_state.param2_dirty_columns +
 				param2_columns
-			metrics_state.light_dirty_columns = metrics_state.light_dirty_columns +
-				light_columns
-			metrics_state.liquid_dirty_columns = metrics_state.liquid_dirty_columns +
-				liquid_columns
 			if not content_changed and not param2_changed then return "noop_equal_content" end
 
 			-- One light read for the relight (halo.relight) before any setter.
-			if light_changed and not light_loaded then
+			if light_changed then
 				local ok, returned = pcall(vm.get_light_data, vm, original_light)
 				if not ok or not rawequal(returned, original_light) then
 					fail("fail_vm_contract", "get_light_data did not reuse buffer")
 				end
-				light_loaded = true
 			end
 
 			transaction_state.written_vm = vm
@@ -3618,7 +2529,7 @@ local function settlement_factory()
 					min_x, min_y, min_z, max_x, max_y, max_z
 				halo.vm = vm
 				transaction_state.written_light = true
-				last_sun_runs = halo.relight(a)
+				halo.relight(a)
 			end
 			if liquid_changed then
 				local ok = pcall(vm.update_liquids, vm)
@@ -3641,7 +2552,6 @@ local function settlement_factory()
 			if not rawequal(self, settlement) then
 				fail("fail_status", "settlement receiver differs")
 			end
-			if evidence_only then fail("fail_status", "evidence fixture has no VM writer") end
 			allocator:enter_hotpath("r6_settlement_apply")
 			local ok, result = xpcall(function()
 				return apply_impl(vm, minp, maxp, plan, generation, call_mode)
@@ -3673,66 +2583,18 @@ local function settlement_factory()
 			result.allocator_sealed = allocation.construction_sealed
 			return result
 		end
-		local fixture = {}
-		function fixture.last_ledger()
-			if not last_ledger then return nil end
-			local result = copy_map(last_ledger)
-			last_ledger = false
-			return result
-		end
-		function fixture.last_sun_runs()
-			return last_sun_runs
-		end
-		function fixture.last_successor_refs()
-			return copy_map(transaction_state.successor_refs)
-		end
-		function fixture.run_values()
-			local result = {}
-			local count = last_run_count
-			for index = 1, count * RUN_STRIDE do result[index] = run_values[index] end
-			return result, count
-		end
-		function fixture.scan_horizontal_owner(owner_x, owner_z, decoration_candidates)
-			return copy_map(scan_horizontal_owner(owner_x, owner_z, decoration_candidates))
-		end
-		local capture_state = transaction_state.private_capture
-		if capture_state then
-			function fixture.arm_private_capture()
-				if capture_state.armed or capture_state.value then
-					fail("fail_ledger", "private capture is already armed or pending")
-				end
-				capture_state.armed = true
-			end
-			function fixture.take_private_capture()
-				if capture_state.armed or not capture_state.value then
-					fail("fail_ledger", "private capture is not ready")
-				end
-				local result = capture_state.value
-				capture_state.value = false
-				return result
-			end
-		end
 		allocator:seal_construction()
-		return settlement, fixture
+		return settlement
 	end
 
-	return {new = function(dependencies) return new(dependencies, nil, nil, nil) end,
-		new_runtime = function(dependencies) return new(dependencies, nil, nil, true) end,
-		new_evidence = function(dependencies) return new(dependencies, true, nil, nil) end,
-		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
+	return {new_runtime = new,
 		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
 		r24_fill_stone = r24_fill_stone,
 		r49_fill_ore_host = r49_fill_ore_host, r49_fill_ores_new = r49_fill_ores_new,
 		r30_cave_limit = r30_cave_limit,
 		r24_fill_layers_new = new_r24_fill_layers,
 		r24_apply_fill_layers = r24_apply_fill_layers,
-		r24_layer_first_depth = R24_LAYER_FIRST_DEPTH,
-		r8_plan_cave = r8_plan_cave,
-		r8_cave_proof_box_inside = r8_cave_proof_box_inside,
-		r9_surface_skin_open = r9_surface_skin_open,
-		r9_surface_skin_owned_range = r9_surface_skin_owned_range,
-		r8_cave_component_radius = R8_CAVE_COMPONENT_RADIUS,
-		r8_cave_component_minimum = R8_CAVE_COMPONENT_MINIMUM}
+		r24_layer_first_depth = R24_LAYER_FIRST_DEPTH}
 end
 
 return settlement_factory()

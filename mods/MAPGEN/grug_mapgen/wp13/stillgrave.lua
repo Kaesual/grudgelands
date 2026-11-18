@@ -26,11 +26,13 @@
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
-local function loader(directory)
+local function loader(directory, context)
+	-- One loader context (`templates.lua`) for everything this build loads.
+	context = context or {}
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local layout = dofile(directory .. "/layout.lua")(directory)
+	local dressing = dofile(directory .. "/dressing.lua")(directory, context)
+	local layout = dofile(directory .. "/layout.lua")(directory, context)
 
 	local RADIUS = 63
 	local SCHEMA = "grug_wp13_stillgrave_blueprint_v1"
@@ -68,7 +70,7 @@ local function loader(directory)
 	-- stair family is deliberately NOT the roof: those are that mod's
 	-- registrations, not `stairs:`, and a roof is not the place to assume two
 	-- mods agree about facedir.
-	local templates = dofile(directory .. "/templates.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory, context)
 	local TOWN = templates.town("stillgrave")
 
 	-- Destination order is part of the consumer contract and never changes.

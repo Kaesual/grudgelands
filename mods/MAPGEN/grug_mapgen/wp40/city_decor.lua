@@ -13,7 +13,12 @@ return function(directory)
 		return #a < #b
 	end
 
+	-- A packed position key (no string per cell); every blueprint bound is
+	-- inside +-1023, so the value is exact in a double.
 	local function key(x, y, z)
+		return ((x + 4096) * 8192 + (y + 4096)) * 8192 + (z + 4096)
+	end
+	local function label(x, y, z)
 		return x .. ":" .. y .. ":" .. z
 	end
 
@@ -23,10 +28,21 @@ return function(directory)
 		local city_rows = catalog[city]
 		local rows = city_rows and city_rows[scope]
 		if not rows then return blueprint end
+		-- Only the cells the placements read: their targets and supports.
+		local wanted = {}
+		for row_index = 1, #rows do
+			local row = rows[row_index]
+			for placement_index = 1, #row.placements do
+				local p = row.placements[placement_index]
+				wanted[key(p.x, p.y, p.z)] = true
+				wanted[key(p.x + p.support_dx, p.y + p.support_dy, p.z + p.support_dz)] = true
+			end
+		end
 		local by_pos = {}
 		for index = 1, #blueprint.cells do
 			local cell = blueprint.cells[index]
-			by_pos[key(cell.x, cell.y, cell.z)] = cell
+			local where = key(cell.x, cell.y, cell.z)
+			if wanted[where] then by_pos[where] = cell end
 		end
 		local placements, target = {}, {}
 		local function differ(message)
@@ -38,15 +54,17 @@ return function(directory)
 			for placement_index = 1, #row.placements do
 				local p = row.placements[placement_index]
 				local where = key(p.x, p.y, p.z)
-				if target[where] then return differ("duplicate target " .. where) end
+				if target[where] then
+					return differ("duplicate target " .. label(p.x, p.y, p.z))
+				end
 				local old = by_pos[where]
 				if not old or old.name ~= p.expect then
-					return differ(row.id .. " target differs at " .. where)
+					return differ(row.id .. " target differs at " .. label(p.x, p.y, p.z))
 				end
 				local support = by_pos[key(p.x + p.support_dx, p.y + p.support_dy,
 					p.z + p.support_dz)]
 				if not support or support.name ~= p.support then
-					return differ(row.id .. " support differs at " .. where)
+					return differ(row.id .. " support differs at " .. label(p.x, p.y, p.z))
 				end
 				target[where] = p
 				placements[#placements + 1] = p

@@ -20,14 +20,6 @@ local function copy_array(values)
 	return result
 end
 
-local function copy_map(values)
-	local result = {}
-	for key, value in pairs(values or {}) do
-		result[key] = value
-	end
-	return result
-end
-
 local function copy_graph(value, seen)
 	if type(value) ~= "table" then
 		return value

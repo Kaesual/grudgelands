@@ -30,48 +30,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 		return #left < #right
 	end
-	local REQUIRED_INPUTS = {
-		"AGENTS.md",
-		"docs/design/biomes_mobs.md",
-		"docs/design/items_crafting.md",
-		"docs/design/world.md",
-		"docs/design/world_zones.md",
-		"docs/research/luanti-lua.md",
-		"docs/research/wp40-simple-map-r6-contract.md",
-		"docs/research/wp40-simple-map-r6-cultural-opportunities.tsv",
-		"docs/research/wp40-simple-map-r6-decisions.md",
-		"docs/research/wp40-simple-map-r6-decoration-draft.tsv",
-		"docs/research/wp40-simple-map-r6-resource-density.tsv",
-		"docs/research/wp40-simple-map-r6-seed-corpus.tsv",
-		"docs/research/wp40-simple-map-r6-surface-content.tsv",
-		"docs/research/wp43_wp40_handoff.md",
-		"mods/BASE/default/schematics/acacia_bush.mts",
-		"mods/BASE/default/schematics/acacia_tree.mts",
-		"mods/BASE/default/schematics/apple_log.mts",
-		"mods/BASE/default/schematics/apple_tree.mts",
-		"mods/BASE/default/schematics/aspen_tree.mts",
-		"mods/BASE/default/schematics/blueberry_bush.mts",
-		"mods/BASE/default/schematics/bush.mts",
-		"mods/BASE/default/schematics/emergent_jungle_tree.mts",
-		"mods/BASE/default/schematics/jungle_tree.mts",
-		"mods/BASE/default/schematics/large_cactus.mts",
-		"mods/BASE/default/schematics/papyrus_on_dirt.mts",
-		"mods/BASE/default/schematics/pine_bush.mts",
-		"mods/BASE/default/schematics/pine_tree.mts",
-		"mods/BASE/default/schematics/small_pine_tree.mts",
-		"mods/BASE/default/schematics/snowy_pine_tree_from_sapling.mts",
-		"mods/ITEMS/grug_materials/registry.lua",
-		"mods/ITEMS/grug_nodes/init.lua",
-		"mods/ITEMS/grug_trees/init.lua",
-		"mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts",
-		"mods/ITEMS/grug_trees/schematics/grug_gravewood_tall.mts",
-		"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
-		"reference_projects/luanti/doc/lua_api.md",
-		"reference_projects/luanti/src/mapgen/mg_schematic.cpp",
-		"reference_projects/luanti/src/mapgen/mg_schematic.h",
-		"reference_projects/luanti/src/mapnode.cpp",
-		"reference_projects/luanti/src/script/lua_api/l_mapgen.cpp",
-	}
 	local SURFACE_EXPECTED = {
 		grug_badlands = {"grug_nodes:mesa_clay", "grug_nodes:mesa_clay", 3,
 			"default:gravel", "-"},
@@ -226,31 +184,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	if type(manifest_values.r5_manifest_values) ~= "table" then
 		fail("fail_manifest", "R5 manifest values missing")
 	end
-	if type(manifest_values.input_sha256) ~= "table" or
-			type(manifest_values.input_bytes) ~= "table" then
-		fail("fail_manifest", "input identity maps missing")
-	end
-	local input_count = 0
-	for index = 1, #REQUIRED_INPUTS do
-		local path = REQUIRED_INPUTS[index]
-		sha256(manifest_values.input_sha256[path], "input digest " .. path)
-		safe_integer(manifest_values.input_bytes[path], "input byte count " .. path,
-			0, MAX_SAFE, "fail_manifest")
-		input_count = input_count + 1
-	end
-	for path in pairs(manifest_values.input_sha256) do
-		local found = false
-		for index = 1, #REQUIRED_INPUTS do
-			if REQUIRED_INPUTS[index] == path then found = true end
-		end
-		if not found then fail("fail_manifest", "unexpected input identity " .. tostring(path)) end
-	end
-	for path in pairs(manifest_values.input_bytes) do
-		if manifest_values.input_sha256[path] == nil then
-			fail("fail_manifest", "input byte count lacks digest " .. tostring(path))
-		end
-	end
-	if input_count ~= #REQUIRED_INPUTS then fail("fail_manifest", "input population differs") end
 
 	local surfaces, surface_by_id = {}, {}
 	if dense(manifest_values.surfaces, "surface catalog", "fail_content_manifest") ~= 16 then
@@ -605,11 +538,9 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			end
 		end
 	end
-	function module.required_inputs() return deep_copy(REQUIRED_INPUTS) end
 	function module.surfaces() return deep_copy(surfaces) end
 	function module.resources() return deep_copy(resources) end
 	function module.decorations() return deep_copy(decorations) end
-	function module.surface(id) return deep_copy(surface_by_id[id]) end
 	-- Fresh-world quality revision: coherent patches refine the base catalog.
 	-- Rows are built once and shared read-only by planner and settlement callers.
 	-- Surface palettes and vegetation support are one current-world contract.
@@ -1191,15 +1122,48 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			return row
 		end
 	end
-	function module.resource(key) return deep_copy(resource_by_key[key]) end
-	function module.decoration(id) return deep_copy(decoration_by_id[id]) end
+	-- The selector the planner and the writer share: one per world and
+	-- planner source, with a direct-mapped memo of each column's row. A row
+	-- is a pure function of the column and the arguments its caller passes
+	-- (the steep memo above already relies on that), so a hit needs the
+	-- same column and the same arguments; rows are shared read-only tables
+	-- either way. A fresh `new_surface_selector` stays for the tools.
+	local shared_selectors = setmetatable({}, {__mode = "k"})
+	function module.surface_selector(full_seed, planner_source)
+		local by_seed = shared_selectors[planner_source]
+		if not by_seed then
+			by_seed = {}
+			shared_selectors[planner_source] = by_seed
+		end
+		local selector = by_seed[full_seed]
+		if selector then return selector end
+		local select = module.new_surface_selector(full_seed, planner_source)
+		local SLOTS = 65536
+		local memo_x, memo_z, memo_id, memo_water = {}, {}, {}, {}
+		local memo_terrain, memo_zone, memo_row = {}, {}, {}
+		selector = function(id, x, z, water_y, terrain_y, zone_id)
+			local slot = (x * 40503 + z) % SLOTS
+			if memo_x[slot] == x and memo_z[slot] == z and memo_id[slot] == (id or false) and
+					memo_water[slot] == (water_y or false) and memo_terrain[slot] == terrain_y and
+					memo_zone[slot] == (zone_id or false) then
+				return memo_row[slot] or nil
+			end
+			local row = select(id, x, z, water_y, terrain_y, zone_id)
+			memo_x[slot], memo_z[slot], memo_id[slot], memo_water[slot] =
+				x, z, id or false, water_y or false
+			memo_terrain[slot], memo_zone[slot], memo_row[slot] =
+				terrain_y, zone_id or false, row or false
+			return row
+		end
+		by_seed[full_seed] = selector
+		return selector
+	end
 	function module.content_ref(name) return content_ref_by_name[name] end
 	function module.param2_kind(content_ref)
 		return param2_kind_by_ref[content_ref]
 	end
 	function module.content_contract() return content_contract end
 	function module.r5_manifest_values() return manifest_values.r5_manifest_values end
-	function module.r2_layout_body_sha256() return manifest_values.r2_layout_body_sha256 end
 	function module.wp43_projection() return deep_copy(wp43_projection) end
 	return module
 end

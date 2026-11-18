@@ -69,7 +69,7 @@ do
 	check(leaf.name:match("^doors:.*_b$") ~= nil and (leaf.param2 or 0) == 2,
 		"K the moot house's right-hinged leaf at (4,5,6), facedir 2 (" .. leaf.name .. ")")
 	check(top.name == "doors:hidden" and (top.param2 or 0) == 1,
-		"K its upper cell is the door's hidden node at facedir 1 (parts.door), not a window (" ..
+		"K its upper cell is the door's hidden node at facedir 1 (the door rule), not a window (" ..
 			top.name .. ")")
 	local bp = T.library.composition("kezamba").core()
 	local porch, spot = sockets_of(bp).moot_house_porch, destination(bp, "moot_house")

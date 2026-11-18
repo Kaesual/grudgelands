@@ -6,7 +6,7 @@ local sha=dofile(root.."/tools/wp40/r6/common.lua").new_sha256()
 local profile
 for _,row in ipairs(settlement.roster) do if row.key=="copperfell_village" then profile=row break end end
 assert(profile and profile.lazy)
-local source=dofile(wp.."/"..profile.blueprint_file)()
+local source=dofile(wp.."/"..profile.blueprint_file)({},profile)
 local prepared=settlement.prepare(profile,source,sha)
 assert(prepared.blueprints[1].cells==nil,"fixture did not prepare lazily")
 local refs={};for i,name in ipairs(prepared.palette) do refs[name]=i end

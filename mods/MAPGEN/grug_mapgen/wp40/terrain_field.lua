@@ -1096,27 +1096,6 @@ return function(data)
 			return WATER + h
 		end
 
-		-- Debug parts for the render harness: y, land, damping weight.
-		function field.parts_at(x, z, land)
-			if land == nil then land = land_at(x, z) end
-			local h, hills_hi, wx, wz, cw = natural(x, z)
-			local sd
-			h, sd = with_coast(x, z, h, land, cw)
-			local m = 1
-			if land then
-				h, m = damp(x, z, h, hills_hi, wx, wz)
-				h = soft_floor(h, sd)
-			end
-			return WATER + h, land, m
-		end
-
-		-- Undamped surface (the capital fit table's "before damping" column).
-		function field.undamped_at(x, z, land)
-			if land == nil then land = land_at(x, z) end
-			local h, _, _, _, cw = natural(x, z)
-			return WATER + with_coast(x, z, h, land, cw), land
-		end
-
 		return field
 	end
 

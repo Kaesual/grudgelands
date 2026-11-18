@@ -80,8 +80,12 @@ def original_palettes(names):
     with tempfile.TemporaryDirectory(prefix='grug-r75-5-source-') as directory:
         wp = Path(directory)/'mods/MAPGEN/grug_mapgen/wp13'
         wp.mkdir(parents=True)
-        for name in ('palette.lua','parts.lua','troll_palette.lua'):
+        for name in ('palette.lua','parts.lua'):
             (wp/name).write_text(source('mods/MAPGEN/grug_mapgen/wp13/'+name))
+        # palettes.lua reads the Kezamba overrides from the tools (Round 82)
+        tools = Path(directory)/'tools/building_templates'
+        tools.mkdir(parents=True)
+        (tools/'troll_palette.lua').write_text(source('mods/MAPGEN/grug_mapgen/wp13/troll_palette.lua'))
         names_file = Path(directory)/'names.txt'
         names_file.write_text('\n'.join(sorted(names))+'\n')
         output = subprocess.check_output(['luajit',str(ROOT/'tools/building_templates/viewer/palettes.lua'),
