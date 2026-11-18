@@ -8,7 +8,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 ## Now
 
 - **Game:** 0.83.0 (`game.conf`), Round 83 (the bridge command `character.delete`: the website
-  erases a character on request, compatible), on the round branch until the squash. Before
+  erases a character on request, compatible), `53d17e9b`, tag `round-83`, not pushed. Before
   it: 0.82.0, Round 82 (world generation speed), `8fd02cb1`, tag `round-82`, pushed.
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the read-only code audit of 2026-11
