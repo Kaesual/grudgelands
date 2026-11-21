@@ -13,7 +13,7 @@ records are [archived](../archive/process/agent-model-policy-2026-08.md).
   none. Every clause here yields to an explicit user instruction.
 - **Defaults:** a Claude session coordinates. **Opus implements and reviews
   wherever possible** (2026-11-16); the coordinator may start an Opus lane or
-  review without asking. **Astra** (GPT-6 Astra through the Codex CLI,
+  review without asking. **Astra** (GPT-6.2 Astra through the Codex CLI,
   [Astra lanes](cross-cli-orchestration.md)) generates art and writes quest
   texts and other creative content inside a frozen frame (principles, limits,
   data schemas, measured facts); its output is a proposal, not a ruling, and

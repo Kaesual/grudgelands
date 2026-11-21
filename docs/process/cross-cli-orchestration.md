@@ -1,7 +1,7 @@
 # Astra lanes through the Codex CLI
 
 Decided 2026-09-17, cut to the one direction in use on 2026-11-16: a Claude
-coordinator runs a GPT-6 Astra lane as a Codex CLI worker. Model choice:
+coordinator runs a GPT-6.2 Astra lane as a Codex CLI worker. Model choice:
 [agent model policy](agent-model-policy.md); round flow, gates and the review
 checklist: [round workflow](round-workflow.md). The Codex-to-Claude direction
 (not used since Round 24) and the Claude CLI review procedure are archived:
@@ -9,7 +9,8 @@ checklist: [round workflow](round-workflow.md). The Codex-to-Claude direction
 [Claude CLI review](../archive/process/claude-cli-review.md).
 
 Verified with `codex-cli` 0.147.0 (2026-09-17), 0.155.1 and 0.159.3
-(2026-10-01); re-check `codex --help` when the version changes.
+(2026-10-01) and 0.171.0 (2026-11-21); re-check `codex --help` when the
+version changes.
 
 ## 1. Invariants
 
@@ -38,11 +39,11 @@ Verified with `codex-cli` 0.147.0 (2026-09-17), 0.155.1 and 0.159.3
 ## 2. Preflight and sandboxes
 
 ```bash
-codex --version                       # >= 0.155: gpt-6-astra refuses older clients
+codex --version                       # >= 0.171: gpt-6.2-astra is refused by 0.160 ("not supported")
 grep -E '^(model|model_reasoning_effort)' ~/.codex/config.toml
 ```
 
-The slug is `gpt-6-astra` (from `~/.codex/models_cache.json`); pass `-m` and
+The slug is `gpt-6.2-astra` (from `~/.codex/models_cache.json`); pass `-m` and
 `-c model_reasoning_effort=xhigh` explicitly anyway. Two sandboxes nest:
 
 - **Claude's command runner** around `codex`: if a launch fails with a
@@ -71,7 +72,7 @@ git_dir="$(git -C "$wt" rev-parse --path-format=absolute --git-dir)"
 roots="[\"$git_common\",\"$git_dir\"]"   # plus the Flatpak root for a booting lane
 codex exec -C "$wt" -s workspace-write \
   -c "sandbox_workspace_write.writable_roots=$roots" \
-  -m gpt-6-astra -c model_reasoning_effort=xhigh \
+  -m gpt-6.2-astra -c model_reasoning_effort=xhigh \
   --json -o "$out/last.md" - \
   < "$out/brief.md" > "$out/events.jsonl" 2> "$out/stderr.log"
 ```

@@ -417,7 +417,7 @@ practised Round 79 briefs:
   round;
 - [templates/engine_run.sh](templates/engine_run.sh): measuring engine runs,
   at most two at once, beside the shared queue;
-- [templates/run_astra.sh](templates/run_astra.sh): starts a GPT-6 Astra
+- [templates/run_astra.sh](templates/run_astra.sh): starts a GPT-6.2 Astra
   lane through Codex CLI (effort `xhigh`, never `ultra`;
   [Astra lanes](cross-cli-orchestration.md)).
 

@@ -2,7 +2,7 @@
 # Template (docs/process/round-workflow.md "Templates"): copy to
 # ~/projects/grudgelands-orchestration/run_astra.sh.
 #
-# Launch GPT-6 Astra (Codex CLI) on one lane worktree.
+# Launch GPT-6.2 Astra (Codex CLI) on one lane worktree.
 # usage: run_astra.sh <round> <lane>
 #   worktree: <repo>/.claude/worktrees/r<round>-<lane>
 #   brief:    ~/projects/grudgelands-orchestration/r<round>/astra-<lane>/brief.md
@@ -19,5 +19,5 @@ W=$M/.claude/worktrees/r$r-$l
 cd "$W" || exit 1
 git_common="$(git -C "$W" rev-parse --path-format=absolute --git-common-dir)"
 git_dir="$(git -C "$W" rev-parse --path-format=absolute --git-dir)"
-codex exec -C "$W" -s workspace-write -c "sandbox_workspace_write.writable_roots=[\"$git_common\",\"$git_dir\"]" -m gpt-6-astra -c model_reasoning_effort=xhigh --json -o "$S/astra-$l/last.md" - < "$S/astra-$l/brief.md" > "$S/astra-$l/events.jsonl" 2> "$S/astra-$l/stderr.log"
+codex exec -C "$W" -s workspace-write -c "sandbox_workspace_write.writable_roots=[\"$git_common\",\"$git_dir\"]" -m gpt-6.2-astra -c model_reasoning_effort=xhigh --json -o "$S/astra-$l/last.md" - < "$S/astra-$l/brief.md" > "$S/astra-$l/events.jsonl" 2> "$S/astra-$l/stderr.log"
 echo "exit=$?"
