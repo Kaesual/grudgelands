@@ -7,10 +7,9 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.84.0 (`game.conf`), Round 84 (player feedback; compatible), on the branch
-  `round84`, not yet squashed onto main. Main holds 0.83.0 (Round 83, `53d17e9b`, tag
-  `round-83`) plus two commits (the Round 84 plan, a process note), not pushed; only the
-  user pushes.
+- **Game:** 0.84.0 (`game.conf`), Round 84 (player feedback; compatible), on main as the
+  squash commit `78b787a6`, tag `round-84`; synced to the user's game, not pushed (only the
+  user pushes: `git push origin main round-84`).
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the read-only code audit of 2026-11
   ([audit](audit-2026-11/README.md)), whose findings Rounds 81 and 82 fixed or left as
@@ -18,8 +17,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 - **Next:** Round 85, the arena at the map's centre with a full map reset including claims
   (the user, 2026-11-21; [Round 84 plan](planning/round84-plan.md#round-85-the-users-rulings-of-2026-11-21));
   the platform's side of Rounds 80, 80.1 and 83 as listed in their Completions.
-- **Other branches:** the Round 84 lane branches and the preparation branches
-  `r84-arenadraft`, `r84-accountmock`, `r84-site` (not merged); `town-viewer` (kept on
+- **Other branches:** `town-viewer` (kept on
   purpose: the three.js town viewer); `study-dwarf-architecture` and
   `study-website-screenshots` (unmerged studies of 2026-11-11).
 - **GUI acceptance is not tracked** (the user, 2026-11-16): an agent proposes a human test
@@ -27,8 +25,9 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Open for the user
 
-- Round 84's open decisions (touch eating, the Pond Terrapin) and whether the preparation
-  branches are merged: [Carry-overs](planning/round84-plan.md#carry-overs).
+- The Claim Stone rework for Round 85 (one map chunk per claim, a shared stone per account
+  and faction): under discussion,
+  [Round 84 plan](planning/round84-plan.md#round-85-the-users-rulings-of-2026-11-21).
 - The end-to-end account test on the rehearsal realm once the platform side is ready
   (Round 79; [contract §9](technical/web-accounts.md#9-testing)).
 
