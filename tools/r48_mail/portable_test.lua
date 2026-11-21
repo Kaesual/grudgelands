@@ -527,8 +527,10 @@ grug_abilities = {is_unlocked = function() return true end}
 grug_mounts = {owns_tier = function() return true end, RIDING_TIERS = {1, 2, 3, 4},
 	owned_tier_ids = function() return {} end}
 grug_housing, grug_skills = {}, {}
-local mail_counts = {}
-grug_map = {minimap = {set_mail_count = function(name, n) mail_counts[name] = n end}}
+local mail_counts, announce_counts = {}, {}
+grug_map = {minimap = {set_mail_count = function(name, n, a)
+	mail_counts[name], announce_counts[name] = n, a
+end}}
 
 local function item(name, def)
 	def.stack_max = def.stack_max or 99
@@ -848,12 +850,36 @@ do
 		"C deleting removes the ticket for everyone")
 	-- Broadcasts: stored once, read per player.
 	local before = grug_mail.unread_count("Alice")
+	local letters_before, announce_before = mail_counts.Alice, announce_counts.Alice
+	local lines_before = #feed_lines
 	local bid = grug_mail.send_broadcast("Server restart", "Tonight at 8.", "Jan")
 	eq(#grug_mail.broadcasts(), 1, "C a broadcast is stored once")
 	eq(grug_mail.unread_count("Alice"), before + 1, "C it counts as unread for every player")
-	eq(mail_counts.Alice, before + 1, "C every online player's icon updates")
+	-- Round 84 default 15 (reversed: one count for letters and
+	-- announcements): each has its own icon.
+	check(mail_counts.Alice == letters_before and announce_counts.Alice == announce_before + 1,
+		"C every online player's announcements icon updates, the letter icon does not")
+	local announced = {}
+	for index = lines_before + 1, #feed_lines do
+		local line = feed_lines[index]
+		check(line.text == "New announcement: Server restart." and line.kind == "notice" and
+			line.key == "announcement:" .. bid, "C the feed line names the announcement")
+		announced[line.name] = (announced[line.name] or 0) + 1
+	end
+	check(announced.Alice == 1 and announced.Brakka == 1 and announced.Gruk == 1 and
+		#feed_lines - lines_before == #core.get_connected_players(),
+		"C one feed line per online player, both factions")
+	lines_before = #feed_lines
+	local late = new_player("Latecomer", "throng")
+	check(#feed_lines == lines_before and announce_counts.Latecomer == 1 and
+		(mail_counts.Latecomer or 0) == 0, "C a later join: the icon, no feed line")
+	late.online = false
+	grug_mail.send_broadcast("Patch notes!", "x", "Jan")
+	check(feed_lines[#feed_lines].text == "New announcement: Patch notes!", "C no doubled full stop")
+	grug_mail.delete_broadcast(grug_mail.broadcasts()[1].id, "Jan")
 	grug_mail.read_broadcast(alice, bid)
 	eq(grug_mail.unread_count("Alice"), before, "C reading marks it for that player")
+	eq(announce_counts.Alice, announce_before, "C ...and its icon counts down")
 	check(grug_mail.unread_count("Gruk") >= 1 and not grug_mail.store.read_set(gruk)[bid],
 		"C another player's read state is untouched")
 	-- Expiry over the stores.

@@ -1892,7 +1892,7 @@ sounds.
 
 | Family | Disposition | Moves | Sub-types or slot | Fish loot |
 |---|---|---|---|---|
-| Tortoise | neutral (bites back) | amphibian, slow (walk 0.5, run 2) | 6 by drop tier: Pond Terrapin (1–10), Sandbar (11–20), Knobshell (20–30), Ridgeshell (31–40), Ironshell (41–50), Stoneback Tortoise (51–60) | the band's fish 1/1, meat 1/2 |
+| Tortoise | neutral (bites back; shoots back from range) | amphibian (walk 0.5, run 3, 3.75 in water) | 6 by drop tier: Pond Terrapin (1–10), Sandbar (11–20), Knobshell (20–30), Ridgeshell (31–40), Ironshell (41–50), Stoneback Tortoise (51–60) | the band's fish 1/1, meat 1/2 |
 | Frog | aggressive | amphibian, hops (run 3.4); bites with its walk frames | 6: Marsh Frog, Bog Toad, Fen Croaker, Mire Bullfrog, Wartback Toad, Blackwater Toad | the band's fish 1/1, meat 1/3 |
 | Stingray | aggressive | pure swimmer (run 3.5) | 5: Sand Ray, Shoal Ray, Barbtail Ray, Thornback Ray, Wyrmwake Ray (no tier 5) | the band's fish 1/1 |
 | Shark | aggressive | pure swimmer | world slots: Bay Shark, fixed L30, normal; Abyssal Shark, fixed L70, elite (1.8 × the Bay Shark, about 2.5 × with the elite ×1.4) | Bay Shark Mire Carp 1/1 ×1–2 and meat; Abyssal Shark Storm Tuna ×3–6 and meat ×3 |
@@ -1909,6 +1909,17 @@ sounds.
   other floating mob — humanoids, land mobs, bosses, mobs hurt by water —
   keeps the old float that lifts it out of the water and back (the user,
   2026-10-19: a mob that water hurts may still jump to survive).
+- **The Tortoise is not to be kited** (Round 84, ruling 3; all six
+  sub-types, the Pond Terrapin of the start lakes too): it still picks no
+  target by itself, but a hit from any distance makes the attacker its
+  target, and above 6 nodes it answers with a ball of mud (normal ranged
+  damage for its level, the shot every 2.5 s or so, a slow of **45 % for
+  3 s** through the one mob-slow slot it shares with webs and hexes) from up
+  to **33 nodes**, just beyond the longest player range (31: bow skills 25,
+  Long View +3, the elf passive +3). Below 4 nodes it bites. It runs **3** on
+  land, so an unslowed player still walks away from it, and **3.75** in
+  water, faster than a swimming player (about 2.7). The shot reuses the bite
+  clip and is silent. Numbers are rough targets, tuned after play.
 - **Pure swimmers** (stingray, sharks, goby) never leave the sea water
   (`grug_mobs/swimmer.lua`, as the Kraken and the Reed Angelfish). A fighting
   swimmer never acquires a player out of its reach — neither in water (feet

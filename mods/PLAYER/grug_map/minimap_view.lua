@@ -336,11 +336,15 @@ end
 -- the band `band` of the box wide (Round 48 HUD2: 75 % of lane HUD's 0.45;
 -- 92 x 23 px at 1080p, 60 x 15 at 720p), the mail icon exactly as high as
 -- the band (the user's ruling of 2026-10-14; 72 x 23 at 1080p, room for
--- "9+" beside the envelope). `row_gap` HUD px separate the band from the
--- mail icon, `gap` the mail icon from the bezel and the row from "Now
--- playing".
-V.SIDE = {band_w = 160, band_h = 40, mail_w = 87, mail_h = 28, band = 0.3375,
-	gap = 4, row_gap = 8}
+-- "9+" beside the envelope). The announcements icon (Round 84 default 15)
+-- ANNOUNCE_W x ANNOUNCE_H, the announcement badge with the count beside
+-- it, is drawn at the mail icon's scale (one pixel higher: the badge's art
+-- is 29 px): under the mail icon while letters are unread, in its place
+-- otherwise (side_stack). `row_gap` HUD px separate the band from the mail
+-- icon, `gap` the mail icon from the bezel, the two icons from each other
+-- and the stack from "Now playing".
+V.SIDE = {band_w = 160, band_h = 40, mail_w = 87, mail_h = 28, announce_w = 87,
+	announce_h = 29, band = 0.3375, gap = 4, row_gap = 8}
 
 -- The height the client draws a `tw` x `th` texture at that minimap.lua's
 -- exact() scales to `w` px wide: the client truncates th x scale x HUD
@@ -363,10 +367,14 @@ end
 -- With the minimap hidden or unavailable (frame nil) it stands right-aligned
 -- in the box's top-right corner, and "Now playing" goes below it
 -- (playing_right, playing_top; Round 48 ruling 2.1). The mail icon's place
--- stays reserved while it is hidden, so nothing jumps when a letter
--- arrives. Returns {mail = {x, y, w, h}, band = {...}} in real screen
--- pixels (w and h as the client draws them), plus playing_right and
--- playing_top when hidden.
+-- in the row stays reserved while it is hidden, so the band never moves.
+-- The announcements icon has two places (Round 84; side_stack picks one):
+-- `announce_top` in the row where the mail icon stands, top-aligned with
+-- it, and `announce` under the mail icon, left-aligned with it. Returns
+-- {mail = {x, y, w, h}, announce = {...}, announce_top = {...}, band =
+-- {...}} in real screen pixels (w and h as the client draws them), plus,
+-- when hidden, playing_right and the tops of "Now playing" below one row
+-- (playing_top) and below both icons (playing_top_two).
 function V.side_layout(box, frame)
 	local S = V.SIDE
 	-- the band's height from its share of the box at the image's aspect,
@@ -390,12 +398,26 @@ function V.side_layout(box, frame)
 		y = top + math.floor((row - mh) / 2)}
 	local band = {w = bw, h = bh, x = math.floor(mail.x - S.row_gap * box.hud - bw + 0.5),
 		y = top + math.floor((row - bh) / 2)}
-	local out = {mail = mail, band = band}
+	local ah = drawn_height(mw, S.announce_w, S.announce_h)
+	local announce = {w = mw, h = ah, x = mail.x, y = math.floor(top + row + S.gap * box.hud + 0.5)}
+	local out = {mail = mail, announce = announce, band = band,
+		announce_top = {w = mw, h = ah, x = mail.x, y = top}}
 	if not frame then
 		out.playing_right = right
-		out.playing_top = math.floor(top + row + S.gap * box.hud + 0.5)
+		out.playing_top = math.floor(top + math.max(row, ah) + S.gap * box.hud + 0.5)
+		out.playing_top_two = math.floor(announce.y + ah + S.gap * box.hud + 0.5)
 	end
 	return out
+end
+
+-- The announcements icon's place for the unread counts in side layout `L`
+-- (Round 84, the user's correction of 2026-11-21): under the mail icon
+-- while letters are unread too, else in the mail icon's place, so no empty
+-- slot stands above it. With the minimap hidden also the top of "Now
+-- playing", below the icons that show (nil with the minimap shown).
+function V.side_stack(L, letters, announcements)
+	local both = (letters or 0) > 0 and (announcements or 0) > 0
+	return both and L.announce or L.announce_top, both and L.playing_top_two or L.playing_top
 end
 
 -- The daytime band's position (sell plan §3.6.2): 0 .. positions - 1 over
@@ -433,6 +455,15 @@ function V.mail_texture(count)
 	if count <= 0 then return "" end
 	if count <= 9 then return ("grug_map_mail_%d.png"):format(count) end
 	return "grug_map_mail_9p.png"
+end
+
+-- The announcements icon for `count` unread announcements (Round 84
+-- default 15), as the mail icon.
+function V.announce_texture(count)
+	count = math.floor(tonumber(count) or 0)
+	if count <= 0 then return "" end
+	if count <= 9 then return ("grug_map_announce_%d.png"):format(count) end
+	return "grug_map_announce_9p.png"
 end
 
 -- A rim arrow for a point at dx/dy (screen, y down) from the centre: on the

@@ -23,7 +23,8 @@
 --    recipe camps (first fill, respawn window, levels, radius; since Round 81
 --    counted only in view: a player within SR.LEADER_RANGE and the centre's
 --    block active, and refills after an absence from the last look), leaders
---    (spot, level, never saved, 24-node clearance, 300 s after a kill), the
+--    (spot, level, never saved, a saved copy removes itself (Round 84
+--    ELITE), 24-node clearance, 300 s after a kill), the
 --    level overlay, the quest seams (get_area, area_roles, zone_area_ids,
 --    leader), describe and direction. The leader's 1.15 size and 1.5x HP are
 --    checked with the real registration in tools/r28_b2/portable_test.lua;
@@ -588,16 +589,21 @@ local function new_object(ent, pos)
 	function obj:get_luaentity() return not self._removed and ent or nil end
 	function obj:set_properties(p) for k, v in pairs(p) do self.props[k] = v end end
 	function obj:get_properties() return self.props end
+	function obj:remove() self._removed = true end
 	return obj
 end
 local spawned = {}
 env.grug_mobs.add_mob = function(pos, def)
 	local ent = {name = def.name, health = 10}
 	ent.object = new_object(ent, pos)
+	-- The activation inside the add runs init.lua's after_activate wrapper,
+	-- whose first statement is the unsaved claim (Round 84 ELITE).
+	env.grug_mobs.unsaved_claim(ent)
 	G.objects[#G.objects + 1] = ent.object
 	spawned[#spawned + 1] = ent
 	return ent
 end
+load_into(env, MOBS .. "/unsaved.lua")
 env.grug_mobs.relevel = function(ent, level) ent._grug_spawn_level = level; ent._grug_level = level end
 -- Registered roles: the recipe's, with their catalogue dispositions.
 local data = json.parse(read(MOBS .. "/data/zones/" .. DAWN .. ".spawns.json"))
@@ -895,10 +901,32 @@ do
 	check(leader.object.props.static_save == false, "leader never saved")
 	SR.leader_tick(G.now + 5, {PL})
 	check(#spawned == 1, "alive: no second leader")
+	-- Round 84 ELITE: the engine's first snapshot of a leader an older
+	-- version left in the map (its add-time staticdata: the authored mark,
+	-- no leader mark) activates from its block; the sub-type is
+	-- `_grug_unsaved` (subtypes.lua), so it removes itself and the spawner
+	-- still sees exactly its own leader.
+	local proto = {_grug_unsaved = true}
+	local function saved_copy()
+		local copy = setmetatable({name = leader.name, health = 10, _grug_authored = true},
+			{__index = proto})
+		copy.object = new_object(copy, {x = spot.x, y = GROUND_Y, z = spot.z})
+		return copy, GM.unsaved_claim(copy)
+	end
+	local copy, kept = saved_copy()
+	check(not kept and copy.object._removed and copy.object.props.static_save == false,
+		"a saved copy beside the live leader removes itself")
+	SR.leader_tick(G.now + 10, {PL})
+	check(#spawned == 1 and leader.object:get_luaentity() == leader, "the leader stays, no second one")
 	leader.health = 0
 	GM.settle_mob_death(leader)
 	leader.object._removed = true
 	check(G.settled == 1, "the death boundary still runs")
+	check(storage_data["leader_next:" .. spot.role] == G.now + 300, "the kill books 300 s")
+	copy, kept = saved_copy()
+	check(not kept and copy.object._removed and G.settled == 1 and
+		storage_data["leader_next:" .. spot.role] == G.now + 300,
+		"a saved copy after the kill removes itself: no death, the timer unchanged")
 	SR.leader_tick(G.now + 100, {PL})
 	check(#spawned == 1, "no respawn before 300 s")
 	SR.leader_tick(G.now + 301, {PL})

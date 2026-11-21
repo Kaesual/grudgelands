@@ -87,7 +87,7 @@ core.register_globalstep(function(dtime)
 				"the " .. faction .. " commander wears his tabard over a composed skin")
 			if commander then commander:remove() end
 		end
-		local boss = core.add_entity(vector.add(spot, {x = -3, y = 0, z = 0}), "grug_mobs:rift_boss")
+		local boss = grug_mobs.add_entity_unsaved(vector.add(spot, {x = -3, y = 0, z = 0}), "grug_mobs:rift_boss")
 		expect(textures(boss):find("grug_mobs_isquarre.png", 1, true) ~= nil, "the rift boss draws Isquarre")
 		if boss then boss:remove() end
 		done()

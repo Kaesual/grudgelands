@@ -560,7 +560,8 @@ Normal tier at level L:
   critters that never attack remain **3.4**. Named exceptions: the Bog Ooze
   remains **2.6** because its roster role is explicitly the one slow tank;
   the shore and pond animals stay slow, the Frog and the Shore Crab at
-  **3.4** and the Tortoise at **2** (`biomes_mobs.md`); the swimmers keep
+  **3.4** and the Tortoise at **3**, **3.75** in water (Round 84, ruling 3;
+  it shoots back instead, `biomes_mobs.md`); the swimmers keep
   their own water speeds (the Stingray 3.5, the sharks 4 and 5). The
   deep-sea Kraken runs **10** inside a deep-ocean column and **5**
   elsewhere (`world.md` §2b). The ordinary 4.6 band keeps
@@ -700,7 +701,8 @@ Normal tier at level L:
   range ([Expedition packs](#expedition-packs)).
 - **Shot range** (Round 56, ruling 3 and D1): a ranged mob shoots within its
   own **shot range**, by default `view_range + 4` (a `dogshoot` family's 16 →
-  20; a definition may set `_grug_shot_range`), so a player can stand inside
+  20; a definition may set `_grug_shot_range`: the Tortoise's **33**, just
+  beyond the longest player range of 31, Round 84), so a player can stand inside
   it without drawing aggro. A ranged mob (`shoot`, `dogshoot` in its ranged
   mode, fliers too) whose target is beyond its
   shot range walks closer the way a ground ranged mob without sight walks
@@ -1038,8 +1040,13 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   An amphibian (tortoise, frog, crocodile, the crabs; Round 51 follow-up)
   swims at one height with its feet half a node under the surface; every
   other floating mob keeps rising out of the water and back about twice a
-  second, which lets a mob that water hurts escape it. Both swim at half
-  their land speed.
+  second, which lets a mob that water hurts escape it. Both swim at their
+  **full land speed** (Round 84, ruling 4: a swimming player, about 2.7
+  nodes/s against 4 on land, could kill a land mob safely while water
+  halved it); a definition may make a mob faster in water
+  (`_grug_water_speed_factor`, the Tortoise 1.25). Lava and every other
+  viscous liquid still slow a mob (lava to 1/8, `mobs/api.lua`
+  `grug_liquid_speed`, which the stuck detector shares).
   Leashes, contact timeouts and arena edges are unchanged. Fliers,
   the water swimmers (Kraken, Reed Angelfish, and since Round 51 the
   Stingray family, the sharks and the Tide Goby) and the dragons and their

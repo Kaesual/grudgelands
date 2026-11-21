@@ -35,7 +35,7 @@ return function(api)
 	local function with_capture(fn)
 		local real = core.show_formspec
 		core.show_formspec = function(name, formname, formspec)
-			if formname == "grug_traders:trade" then captured = formspec return end
+			if formname:find("^grug_traders:trade") then captured = formspec return end
 			return real(name, formname, formspec)
 		end
 		local ok, err = pcall(fn)
@@ -44,7 +44,7 @@ return function(api)
 	end
 	local function submit(player, fields)
 		for _, fn in ipairs(core.registered_on_player_receive_fields) do
-			if fn(player, "grug_traders:trade", fields) then return end
+			if fn(player, grug_traders.trade_formname(player:get_player_name()), fields) then return end
 		end
 	end
 
@@ -69,7 +69,7 @@ return function(api)
 	local function trade_first(player)
 		with_capture(function()
 			grug_traders.open(player, TEST, player:get_pos(), "accord")
-			submit(player, {tradein_1 = "All"})
+			submit(player, {tradeinall_1 = "All"})
 		end)
 		api.log("after All: lifetime " .. grug_guild.lifetime(player))
 	end

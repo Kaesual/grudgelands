@@ -141,7 +141,7 @@ Running lanes go on.
 | A fixture for new logic, `tools/r<NN>_<lane>/portable_test.lua` (repository path as `arg[1]`, non-zero exit on failure) | — | yes | — | — |
 | LuaJIT fixtures (rule below): a lane runs only the strictly needed selection (`tools/run_fixtures.sh <names...>`); the full `tools/run_fixtures.sh` runs once, at the round's end | — | the selection | the fixtures that read a changed document | the full set, once |
 | `python3 tools/r28_design/validate.py --game` | — | when quest, mob or catalogue data changed | — | yes |
-| `tools/r29_e4/income.py --check` | — | when loot, repair, quest copper or a price changed | — | yes |
+| `python3 tools/r29_e4/income.py --check` | — | when loot, repair, quest copper or a price changed | — | yes |
 | The topic checks [checks.md](checks.md) names for what the lane changed | — | when that topic changed | — | — |
 | `python3 tools/building_templates/check.py` (the building templates' hard gate, Round 56 ruling 33; it runs the game's loader and builds every town and capital; the other template checks in [checks.md](checks.md)) | — | when templates, layouts, rosters, palettes or the loader (`wp13/templates.lua`) changed | — | yes |
 | `python3 tools/r451_mc/gen_bat_ride_mesh.py --check` (the ridden bats' mesh against its source; 0.45.1) | — | when the bat models or the tool changed | — | yes |

@@ -14,7 +14,9 @@
 --
 -- Side elements (Round 48 lane HUD): the mail icon with its unread count
 -- (grug_mail calls M.set_mail_count) and the daytime band stand in one row
--- left of the bezel, top-aligned with it (follow-up lane HUD2). With the
+-- left of the bezel, top-aligned with it (follow-up lane HUD2), the
+-- announcements icon with its own count under the mail icon, or in its
+-- place while no letter is unread (Round 84). With the
 -- minimap hidden or unavailable the row stays right-aligned in the top-right
 -- corner of the minimap's box, with "Now playing" below it (ruling 2.1 of
 -- the round plan). They are separate from the minimap's own
@@ -159,9 +161,10 @@ local claim_tiles, CLAIM_RED
 -- rendered them).
 local flight_tiles
 local players = {}
--- Unread letters per online player (M.set_mail_count), kept apart from the
--- minimap state so a count told before this mod's join callback is kept.
-local mail_counts = {}
+-- Unread letters and unread announcements per online player
+-- (M.set_mail_count), kept apart from the minimap state so a count told
+-- before this mod's join callback is kept.
+local mail_counts, announce_counts = {}, {}
 -- Positions read once per server step (`step`), shared by every party
 -- member's minimap: name -> {step, player, x, z, frame}; the heading frame
 -- is read only when a party arrow needs it.
@@ -328,16 +331,18 @@ local function create(player, state)
 	for i = 1, PARTY_SLOTS do state.seen[i] = {} end
 end
 
--- The side elements (Round 48): the mail icon, the daytime band and the
--- "Now playing" box, which stay while the minimap is hidden or unavailable.
+-- The side elements (Round 48): the mail icon, the announcements icon
+-- (Round 84), the daytime band and the "Now playing" box, which stay while
+-- the minimap is hidden or unavailable.
 local function create_side(player, state)
 	local side = {mail = image(player, Z.bezel, true), band = image(player, Z.bezel, true),
-		playing_box = image(player, Z.bezel, true),
+		announce = image(player, Z.bezel, true), playing_box = image(player, Z.bezel, true),
 		playing_icon = image(player, Z.bezel + 1, true)}
 	side.playing_text = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
 		alignment = {x = 1, y = 1}, text = "", number = LOCATION_COLOR,
 		z_index = Z.bezel + 1}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
-	side.all = {side.mail, side.band, side.playing_box, side.playing_icon, side.playing_text}
+	side.all = {side.mail, side.announce, side.band, side.playing_box, side.playing_icon,
+		side.playing_text}
 	state.side, state.side_box, state.side_frame, state.side_layout = side, nil, nil, nil
 	return side
 end
@@ -433,8 +438,9 @@ local function draw_playing(player, state)
 	if frame then
 		g = V.now_playing_box(frame, location_top(frame), track.title, track.artist)
 	else
-		g = V.now_playing_corner(box, placed.playing_right, placed.playing_top,
-			track.title, track.artist)
+		local name = player:get_player_name()
+		local _, top = V.side_stack(placed, mail_counts[name], announce_counts[name])
+		g = V.now_playing_corner(box, placed.playing_right, top, track.title, track.artist)
 	end
 	return show(player, box, side.playing_box,
 			("[fill:%dx%d:%s"):format(g.w, g.h, PLAYING_BOX_COLOR), g.x, g.y,
@@ -445,12 +451,16 @@ local function draw_playing(player, state)
 			LOCATION_COLOR, g.text_x, g.text_y)
 end
 
--- The mail icon for the player's unread count (hidden at 0).
+-- The mail icon and the announcements icon for the player's unread counts
+-- (each hidden at 0; the announcements icon under the mail icon or in its
+-- place, V.side_stack).
 local function draw_mail(player, state)
-	local placed = state.side_layout.mail
-	return show(player, state.box, state.side.mail,
-		V.mail_texture(mail_counts[player:get_player_name()]), placed.x, placed.y,
-		exact(placed.w, V.SIDE.mail_w, state.box))
+	local name, mail = player:get_player_name(), state.side_layout.mail
+	local announce = V.side_stack(state.side_layout, mail_counts[name], announce_counts[name])
+	return show(player, state.box, state.side.mail, V.mail_texture(mail_counts[name]),
+			mail.x, mail.y, exact(mail.w, V.SIDE.mail_w, state.box)) +
+		show(player, state.box, state.side.announce, V.announce_texture(announce_counts[name]),
+			announce.x, announce.y, exact(announce.w, V.SIDE.announce_w, state.box))
 end
 
 -- The daytime band at the world clock's current position.
@@ -464,7 +474,8 @@ end
 
 -- The side elements: placed again when the window or the mode (minimap
 -- shown, or hidden or unavailable) changed; otherwise only the band, on the
--- SLOW tick. The mail icon and "Now playing" are drawn when they are told.
+-- SLOW tick. The two mail icons and "Now playing" are drawn when they are
+-- told.
 local function update_side(player, state, slow)
 	if not state.box then read_box(player, state) end
 	if not state.side then create_side(player, state) end
@@ -819,18 +830,23 @@ function M.now_playing(name)
 	return state ~= nil and state.playing ~= nil
 end
 
--- The mail icon (Round 48, the round plan's interface 3.1; grug_mail calls
--- it on every change of the unread count and at join): `count` unread
--- letters and broadcasts, 0 hides the icon, 1-9 show the digit, more "9+".
--- The count is kept per player, so a relayout or a mode switch draws it
--- again.
-function M.set_mail_count(name, count)
-	count = math.max(0, math.floor(tonumber(count) or 0))
-	mail_counts[name] = count > 0 and count or nil
+-- The mail icons (Round 48, the round plan's interface 3.1; grug_mail calls
+-- it on every change of an unread count and at join): `letters` unread
+-- letters on the mail icon, `announcements` unread announcements on the
+-- icon under it (Round 84 default 15; until then one count for both); 0
+-- hides an icon, 1-9 show the digit, more "9+". The counts are kept per
+-- player, so a relayout or a mode switch draws them again.
+function M.set_mail_count(name, letters, announcements)
+	letters = math.max(0, math.floor(tonumber(letters) or 0))
+	announcements = math.max(0, math.floor(tonumber(announcements) or 0))
+	mail_counts[name] = letters > 0 and letters or nil
+	announce_counts[name] = announcements > 0 and announcements or nil
 	local state = players[name]
 	local player = state and state.side_layout and core.get_player_by_name(name)
 	if player then
-		M.stats.changes = M.stats.changes + draw_mail(player, state)
+		-- "Now playing" in the corner follows the stack's height.
+		M.stats.changes = M.stats.changes + draw_mail(player, state) +
+			(state.side_frame and 0 or draw_playing(player, state))
 	end
 end
 
@@ -925,7 +941,7 @@ core.register_on_joinplayer(function(player)
 end)
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	players[name], where[name], mail_counts[name] = nil, nil, nil
+	players[name], where[name], mail_counts[name], announce_counts[name] = nil, nil, nil, nil
 end)
 grug_parties.register_on_change(function(name)
 	local state = players[name]

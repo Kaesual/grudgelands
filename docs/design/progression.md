@@ -140,7 +140,8 @@ Revised 2026-09-23, Round 18:
 - **A death wears the equipped items** (Round 70, the user's ruling of
   2026-11-07, reversing Round 18's "no extra durability-on-death" and "no
   replacement penalty"): 10 % of each item's maximum durability, which can
-  break it, except after an enemy player's hit in the last 30 s.
+  break it, from player level 10 on (Round 84 ruling 5), except after an enemy
+  player's hit in the last 30 s.
   [durability_repair.md](durability_repair.md) owns the rule. Travel back
   remains a consequence too.
 - XP is capped at the cumulative threshold for level 60; overflow from normal

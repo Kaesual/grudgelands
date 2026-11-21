@@ -21,10 +21,12 @@
 --      drops: "Already at the cap"), only the recipe's tier, only the
 --      profession's families; enchants award profession progress through
 --      award_progress, upgrades never;
---   E. the crown (round70-plan.md §2.10): tier top + 10, 70 at most, only
---      below 70, every enchant +1 tier (T7 at most), once per item, refusals
---      (crowned, level 70 and up, would not raise, no equipment), the preview
---      text;
+--   E. the crown (round70-plan.md §2.10, round84-plan.md ruling 1 and
+--      defaults 17, 19): tier top + 10, 70 at most, every enchant below T7
+--      +1 tier, again and again while a number rises (the reported level 70
+--      item with a T6 enchant, a second crown, the chain of six), refused
+--      when none would (all T7 at 70, at the target without enchants, capped
+--      by the level), empty channels kept, the preview text;
 --   F. families: bow enchants and upgrades at the Leatherworker (leather),
 --      spellbooks at the Tailor (bolts; the recipe 2 bolts + Parchment, no
 --      mastery band since Round 45), the Woodcarver keeps staves and wands;
@@ -479,8 +481,8 @@ do
 	-- A T5 sword at 41 with T5 Strength and T4 Crit: 60, T6 and T5.
 	local item = enchanted
 	local text = Q.crown_preview(item)
-	eq(text, "Item level 41 becomes 60. T5 Strength becomes T6. T4 Crit becomes T5.",
-		"E the preview text")
+	eq(text, "Item level 41 becomes 60. T5 Strength +11 becomes T6 +19. " ..
+		"T4 Crit +3.5% becomes T5 +3.9%.", "E the preview text")
 	local crowned, shown = Q.crown_item(item, player)
 	check(crowned ~= nil and shown == text, "E the crown applies")
 	local cm = crowned:get_meta()
@@ -492,26 +494,56 @@ do
 	eq(affix_on(crowned, "suffix").tier, 5, "E Crit +1 tier")
 	check(description(crowned):find("Crowned", 1, true), "E the tooltip says Crowned")
 	eq(item:get_meta():get_int("grug_crowned"), 0, "E the crown works on a copy")
-	local again, why = Q.crown_item(crowned)
-	check(again == nil and why == "This item is already crowned.", "E once per item")
-	_, why = plan("upgrade:weaponsmith:t5", crowned, 1)
+	local _, why = plan("upgrade:weaponsmith:t5", crowned, 1)
 	eq(why, "Already at the cap (item level 50).",
 		"E a crowned item above its tier top is not upgraded")
-	-- An upgraded T6 item with T6 enchants reaches T7 at 70.
+	-- Round 84 ruling 1 (reverses "once per item"): a crowned item takes
+	-- another crown while one raises a number. The level stays at 60; T5
+	-- Crit gains value (its cap rises to 60), T6 Strength only its tier
+	-- label (60 caps it), and the preview says so.
+	local again, again_text = Q.crown_item(crowned, player)
+	eq(again_text, "T6 Strength +19 becomes T7, still +19 at item level 60. " ..
+		"T5 Crit +3.9% becomes T6 +4.3%.", "E a second crown: only what changes")
+	eq(again and again:get_meta():get_int("grug_ilvl"), 60, "E ...the level stays")
+	eq(again and affix_on(again, "prefix").tier, 7, "E ...Strength still gains its tier")
+	check(again and near(affix_on(again, "suffix").value, 4.3), "E ...Crit gains value")
+	check(again and select(2, description(again):gsub("Crowned", "")) == 1,
+		"E ...the tooltip still says Crowned once")
+	-- Default 19: a crown that would raise no number is refused (the
+	-- level is the binding cap of every enchant: T6 Crit at 60 = T7 at 60).
+	local third, third_why = Q.crown_item(again)
+	check(third == nil and third_why == "The crown would raise nothing: the item " ..
+		"stays at item level 60, and no enchant would gain value at that level.",
+		"E a third crown raises nothing and is refused (" .. tostring(third_why) .. ")")
+	-- An upgraded T6 item with T6 enchants reaches T7 at 70; its empty
+	-- suffix stays empty (default 17).
 	local abyssal = crafted("grug_gear:sword_abyssal_steel")
 	abyssal = plan("enchant:sword:prefix:str:t6", abyssal).output
 	abyssal = plan("upgrade:weaponsmith:t6", abyssal, 9).output
+	local top_text = Q.crown_preview(abyssal)
+	eq(top_text, "Item level 60 becomes 70. T6 Strength +19 becomes T7 +24. " ..
+		"The empty suffix stays empty.", "E the preview names the empty channel")
 	local top = Q.crown_item(abyssal)
 	eq(top:get_meta():get_int("grug_ilvl"), 70, "E a T6 item crowns to 70, the cap")
 	eq(affix_on(top, "prefix").tier, 7, "E T6 becomes T7")
 	eq(affix_on(top, "prefix").value, 24, "E a crowned T7 Strength reads its item-level-70 value")
+	eq(affix_on(top, "suffix"), nil, "E the empty suffix stays empty")
 	-- Re-enchanting a crowned item warns about the lost T7.
 	result = plan("enchant:sword:prefix:str:t6", top)
 	eq(result and result.warning, "Replaces T7 Strength with T6 Strength.",
 		"E the crowned T7 overwrite warns")
-	-- Refusals: the crown works only below 70, so neither a King's nor a
-	-- dragon's drop takes it; the enchant-only crown of Round 33 is gone.
-	local ONLY_BELOW = "The crown works only on items below item level 70."
+	-- The reported case (round84-plan.md ruling 1): level 70, one T7 and one
+	-- T6 enchant. The T6 gains value; the T7 has nothing to change.
+	local reported = plan("enchant:sword:suffix:crit_percent:t6", top).output
+	local reported_text = Q.crown_preview(reported)
+	eq(reported_text, "T6 Crit +4.3% becomes T7 +4.8%.", "E level 70 with T7 + T6 is accepted")
+	local reported_crowned = Q.crown_item(reported)
+	eq(reported_crowned and affix_on(reported_crowned, "suffix").tier, 7, "E ...the T6 becomes T7")
+	check(reported_crowned and near(affix_on(reported_crowned, "suffix").value, 4.8),
+		"E ...and reads its item-level-70 value")
+	local ALL_T7 = "The crown would raise nothing: the item stays at item level 70, and "
+	local _, done_why = Q.crown_preview(reported_crowned)
+	eq(done_why, ALL_T7 .. "its enchants are T7.", "E level 70 with only T7 enchants is refused")
 	local function dropped(kind)
 		for seed = 1, 50 do
 			for _, stack in ipairs(Q.roll_mob_gear(boss(kind), seed)) do
@@ -521,24 +553,55 @@ do
 	end
 	eq(boss_item and Q.effective_ilvl(boss_item), 70, "E a King drops item level 70")
 	local refused, boss_why = Q.crown_item(boss_item)
-	check(refused == nil and boss_why == ONLY_BELOW, "E a King's level 70 drop is refused")
+	check(refused == nil and boss_why and boss_why:find(ALL_T7 .. "its enchant", 1, true) == 1,
+		"E a King's level 70 drop with T7 enchants is refused (" .. tostring(boss_why) .. ")")
 	local dragon_item = dropped("dragon")
 	eq(dragon_item and Q.effective_ilvl(dragon_item), 70, "E a dragon drops item level 70")
 	local dragon_refused, dragon_why = Q.crown_item(dragon_item)
-	check(dragon_refused == nil and dragon_why == ONLY_BELOW,
-		"E a dragon's level 70 drop is refused")
+	check(dragon_refused == nil and dragon_why and dragon_why:find(ALL_T7, 1, true) == 1,
+		"E a dragon's level 70 drop with T7 enchants is refused")
+	-- Ruling 1 reverses Round 70: a T6 enchant on a level 70 item takes the
+	-- enchant-only crown again.
 	local reenchanted = plan("enchant:sword:prefix:str:t6", boss_item)
 	if check(reenchanted ~= nil, "E a King drop takes a T6 enchant") then
-		local only, only_why = Q.crown_item(reenchanted.output)
-		check(only == nil and only_why == ONLY_BELOW,
-			"E a T6 enchant on a level 70 item gets no enchant-only crown")
+		local only_text = Q.crown_preview(reenchanted.output)
+		check(only_text and only_text:find("T6 Strength +19 becomes T7 +24.", 1, true) == 1,
+			"E a T6 enchant on a level 70 item gets the enchant-only crown (" ..
+			tostring(only_text) .. ")")
 	end
-	-- An item pinned at or above its target: nothing raises the item level.
+	-- A level 60 item with a T7 enchant: the level rises, so does the value.
+	local pinned_t7 = ItemStack("grug_gear:sword_abyssal_steel")
+	Q.roll_enchants(pinned_t7, 70, 1, 77)
+	pinned_t7:get_meta():set_int("grug_ilvl", 60)
+	local t7_affix = affix_on(pinned_t7, "prefix")
+	local t7_text = Q.crown_preview(pinned_t7)
+	check(t7_text and t7_text:find("Item level 60 becomes 70. T7 ", 1, true) == 1 and
+		t7_text:find(" becomes +", 1, true) and not t7_text:find("becomes T", 1, true),
+		"E a level 60 item with a T7 enchant is accepted, the value rises (" ..
+		tostring(t7_text) .. ")")
+	eq(t7_affix and t7_affix.tier, 7, "E ...the enchant was T7")
+	-- An item at its target without enchants: nothing would rise.
 	local pinned = crafted("grug_gear:sword_bronze")
 	pinned:get_meta():set_int("grug_ilvl", 20)
 	local same, same_why = Q.crown_item(pinned)
-	check(same == nil and same_why == "The crown would not raise this item's level (20).",
-		"E an item already at its target is refused")
+	check(same == nil and same_why == "The crown would raise nothing: the item stays " ..
+		"at item level 20, and it has no enchants.", "E an item already at its target is refused")
+	-- The chain ends: a T1 enchant on a T6 item takes six crowns (T1 to T7),
+	-- each raising a number, and the seventh is refused.
+	local chain = plan("enchant:sword:prefix:str:t1", crafted("grug_gear:sword_abyssal_steel")).output
+	local crowns, rising = 0, true
+	for _ = 1, 10 do
+		local before_value = affix_on(chain, "prefix").value
+		local before_level = Q.effective_ilvl(chain)
+		local next_item = Q.crown_item(chain)
+		if not next_item then break end
+		crowns = crowns + 1
+		rising = rising and (affix_on(next_item, "prefix").value > before_value or
+			Q.effective_ilvl(next_item) > before_level)
+		chain = next_item
+	end
+	eq(crowns, 6, "E a T1 enchant on a T6 item: six crowns, then none")
+	check(rising and affix_on(chain, "prefix").tier == 7, "E ...each crown raised a number")
 	-- The worked cases of §2.10 not met above: an item at 61-69 lifts to 70,
 	-- whatever bracket drop it is; a General's 65 and a rift boss's 60.
 	local general_item = dropped("general")
@@ -561,9 +624,15 @@ do
 	check(tool_why ~= nil, "E a tool or non-item is refused")
 	local _, empty_why = Q.crown_preview(ItemStack(""))
 	eq(empty_why, "Hand over the item to crown.", "E nothing to crown")
-	-- A plain item is crowned too: only its item level rises.
-	local plain = Q.crown_item(crafted("grug_gear:chest_cloth_patch"))
+	-- A plain item is crowned too: only its item level rises, its channels
+	-- stay empty and the preview says so.
+	local plain_item = crafted("grug_gear:chest_cloth_patch")
+	local plain_text = Q.crown_preview(plain_item)
+	check(plain_text and plain_text:find(" becomes 20. Both channels stay empty.", 1, true),
+		"E the preview of a plain item names its empty channels (" .. tostring(plain_text) .. ")")
+	local plain = Q.crown_item(plain_item)
 	eq(plain and plain:get_meta():get_int("grug_ilvl"), 20, "E a plain T1 item crowns to 20")
+	eq(plain and #Q.get_affixes(plain), 0, "E ...and keeps no enchants")
 end
 
 ------------------------------------------------------------------------------

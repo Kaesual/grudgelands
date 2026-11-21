@@ -285,10 +285,13 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     `register_on_mailbox_open(fn(player, pos))` callbacks, then shows the
     window. `mailbox_label(pos)`: the `display_name` of the settlement whose
     `waypoint` socket lies within 16 nodes (collected at mods-loaded).
-  - `unread_count(name)` (unread letters plus, for an online player, unread
-    broadcasts) and `refresh_count(name)`, which hands the count to
-    `grug_map.minimap.set_mail_count(name, n)` when that function exists
-    (lane HUD); called at every change and at join.
+  - `unread_counts(name)` (the unread letters and, for an online player,
+    the unread broadcasts, apart; Round 84), `unread_count(name)` (their
+    sum) and `refresh_count(name)`, which hands both to
+    `grug_map.minimap.set_mail_count(name, letters, announcements)` when
+    that function exists (lane HUD); called at every change and at join.
+    `send_broadcast` also posts one feed line per online player (key
+    `announcement:<id>`); nothing at join.
   - Tickets: `send_ticket(player, topic, subject, body, mailbox)`,
     `report_letter(player, id, reason, note, mailbox)` (a "Player report"
     ticket with a frozen `report` copy of the letter), `tickets()`,
@@ -652,27 +655,34 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
 
 ### Side elements
 
-  **Side elements** (Round 48): the mail icon, the daytime band and the
+  **Side elements** (Round 48): the mail icon, the announcements icon
+  (Round 84), the daytime band and the
   "Now playing" box are `state.side`, apart from the minimap's own
   `state.hud`: created at the first step, never removed while the player
   is online, placed by `minimap_view.lua` `side_layout(box, frame)` (one row,
   band then mail icon, equally high as the client draws them: left of the
   bezel and top-aligned with a frame, right-aligned in the box's top-right
-  corner without one, "Now playing" below it) again
+  corner without one; two places for the announcements icon at the mail
+  icon's scale, `announce_top` in the mail icon's place and `announce`
+  under it, and without a frame "Now playing" tops below one row and below
+  both, `playing_top` and `playing_top_two`; `side_stack(L, letters,
+  announcements)` picks the place and the top from the counts) again
   whenever the window box or the mode changes. The globalstep reads the
   window box for both every 0.5 s and runs the side part also without a
   view (minimap unavailable) and with the minimap hidden; the band is
   recomputed on the 5 s check (`daytime_position(timeofday, start, end)`,
   pure: real seconds since 04:30, 40 steps over the two clock speeds) and
   sent only when its image changes. Other mods use
-  `grug_map.minimap.set_mail_count(name, n)` (0 hides; grug_mail calls it on
-  every unread change and at join; the count is kept per online player in
-  `mail_counts`, so a call before grug_map's join callback still counts) and
+  `grug_map.minimap.set_mail_count(name, letters, announcements)` (0 hides
+  an icon; grug_mail calls it on every unread change and at join; the
+  counts are kept per online player in `mail_counts` and `announce_counts`,
+  so a call before grug_map's join callback still counts) and
   `set_now_playing(name, track)`. The images are finished files from
   `tools/r48_hud/gen_hud_textures.py` (`--check`; its parts in
   `tools/r48_hud/parts/`, the count's digits from `tools/r40_cd`). Fixtures
   `tools/r48_hud` (position, badge, the row's geometry over windows, the
-  unavailable runtime) and `tools/r27_minimap` block H (beside the bezel, hide and
+  unavailable runtime), `tools/r84_map` (the announcements icon's geometry
+  and images) and `tools/r27_minimap` block H (beside the bezel, hide and
   show).
 
 ### Zone and town names

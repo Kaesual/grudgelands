@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Breach Road · The Battlegrounds · Grudgelands</title>
+<style>
+:root{color-scheme:dark;--bg:#101a1d;--panel:#182428;--line:#394648;--type:#f3ebdb;--soft:#b8c2ba;--gold:#dbc08c;--serif:"Spectral",Georgia,serif;--sans:"Barlow","Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--type);font:16px/1.5 var(--sans)}main,header>div,footer>div{width:min(1460px,94%);margin:auto}header{border-bottom:1px solid var(--line)}header>div,footer>div{display:flex;align-items:center;justify-content:space-between;gap:18px}header>div{min-height:62px}.wordmark{display:flex;gap:13px;align-items:center;font:small-caps 600 21px var(--serif);letter-spacing:.055em}.sigil{width:17px;height:17px;transform:rotate(45deg);border:2px solid var(--gold);outline:1px solid #8b795e;outline-offset:3px;display:inline-grid;place-items:center;margin:0 5px}.sigil:after{content:"";width:5px;height:5px;background:var(--gold)}.round,.kicker,.measure dt,.view-label{font:600 11px/1.5 var(--sans);text-transform:uppercase;letter-spacing:.13em;color:var(--gold)}.round{color:var(--soft)}.intro{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:clamp(25px,3.5vw,55px) 0 25px}.intro h1{font:normal clamp(32px,4.4vw,64px)/1.04 var(--serif);letter-spacing:-.04em;margin:0}.intro p{max-width:32em;color:var(--soft);font-size:15px;margin:0}button,select,a{font:inherit}button,select{cursor:pointer;color:var(--type);background:var(--panel);border:1px solid var(--line);border-radius:3px}button:hover,a:hover,select:hover{color:var(--gold);border-color:var(--gold)}button:focus-visible,a:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button[aria-pressed=true]{border-color:var(--gold);background:#e4c795;color:#1e2625}.choices{display:flex;border-top:1px solid var(--line);align-items:center;gap:9px;padding:14px 0}.choices button{padding:9px 17px}.choices a{margin-left:auto;color:var(--soft);text-underline-offset:4px;font-size:14px}.spread{display:grid;grid-template-columns:minmax(0,2fr) minmax(285px,.83fr);border:1px solid var(--line);background:var(--panel)}.viewer{background:#111b1f;min-width:0;border-right:1px solid var(--line);display:flex;flex-direction:column}.frame{position:relative;aspect-ratio:7/4;background:#223032;overflow:hidden;isolation:isolate}.frame>img,#stage,#stage canvas{display:block;width:100%;height:100%;position:absolute;inset:0}#stage canvas{touch-action:none}#stage[hidden]{display:none}.frame>img{object-fit:contain}.view-label{position:absolute;top:13px;left:13px;background:#152023df;border:1px solid #ffffff35;padding:4px 9px;color:#f3e8cf;pointer-events:none}.frame .explore{position:absolute;bottom:13px;right:13px;padding:8px 12px;background:#162124ed;color:var(--type);border:1px solid #cab58d}.view-controls{display:flex;gap:10px;align-items:center;padding:14px 16px;flex-wrap:wrap}.view-controls label{font-size:13px;color:var(--soft)}select{padding:7px 28px 7px 10px;max-width:100%}.view-controls button{padding:7px 12px}.feedback,.caption{margin:0 16px 13px;color:var(--soft);font-size:14px}.feedback:empty{display:none}.caption{min-height:2.6em}.notes{padding:clamp(20px,2.1vw,34px);background:#eae0ca;color:#273131}.notes .kicker{color:#715837;margin:0 0 6px}.notes h2{font:normal clamp(31px,3vw,47px)/1.05 var(--serif);letter-spacing:-.035em;margin:0 0 15px}.rationale{font-size:16px;line-height:1.55;margin:0}.measure{display:flex;gap:30px;padding:19px 0;margin:18px 0;border-block:1px solid #bcb29d}.measure dt{color:#615849}.measure dd{font:normal 26px/1.25 var(--serif);margin:2px 0}.notes .smaller{font-size:14px}.notes .smaller:last-child{margin-bottom:0}.atlas{padding:42px 0 36px}.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px}.section-head h2,.shared h2{font:normal 30px var(--serif);margin:0 0 16px}.section-head p{color:var(--soft);font-size:14px;margin:0}.plans{display:grid;grid-template-columns:1fr 1fr;gap:18px}.plans figure{margin:0;border:1px solid var(--line);background:var(--panel)}.plans img{display:block;width:100%;height:auto}.plans button{display:block;position:relative;width:100%;border:0;background:none;padding:0}.plans figcaption{padding:12px 16px 16px;color:var(--soft);font-size:14px}.plans strong{color:var(--type)}.compare{margin-top:16px;padding:9px 15px}.shared{display:grid;grid-template-columns:1fr 1fr;gap:34px;border-top:1px solid var(--line);padding:24px 0}.shared h2{font-size:23px}.shared p,footer{font-size:14px;color:var(--soft);max-width:65em}footer{border-top:1px solid var(--line);max-width:none}footer>div{padding:12px 0 24px;align-items:start}details{max-width:65em}summary{cursor:pointer;color:var(--gold)}pre{white-space:pre-wrap;font:12px/1.5 monospace}.lightbox{width:min(1040px,96vw);border:1px solid var(--line);padding:12px;background:var(--bg);color:var(--type)}.lightbox::backdrop{background:#080f11db}.lightbox img{display:block;width:100%}.lightbox button{display:block;margin:8px 0 0 auto;padding:6px 20px}noscript img{max-width:100%}[hidden]{display:none!important}
+@media(max-width:920px){.intro{display:block}.intro p{margin-top:10px;max-width:52em}.spread{grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr)}.measure{gap:12px}.view-controls{gap:7px}.view-controls label{display:none}}
+@media(max-width:700px){.spread,.shared,.plans{grid-template-columns:1fr}.viewer{border-right:0}.notes{padding:19px}.measure{margin:11px 0;padding:10px 0;gap:32px}.intro{padding-top:22px}.round{font-size:9px}.choices{gap:6px}.choices button{padding:7px 10px}.choices a{font-size:12px}.atlas{padding:24px 0}.section-head{display:block}.section-head p{margin:-8px 0 12px}.shared{gap:4px}.view-controls{padding:9px}.view-controls select,.view-controls button{font-size:13px}.section-head h2{font-size:25px}.caption{margin:0 11px 10px;min-height:0}.frame .explore{bottom:7px;right:7px;font-size:13px}.view-label{top:7px;left:7px;font-size:9px}footer>div{display:block}.lightbox{padding:4px}}
+</style></head><body>
+<header><div><div class="wordmark"><i class="sigil" aria-hidden="true"></i>Grudgelands</div><div class="round">World design &nbsp; / &nbsp; Round 84</div></div></header>
+<main>
+<section class="intro"><h1>Breach Road</h1><p>Where The Broken Causeway meets The Shattered Line, the middle road passes below two ruined galleries.</p></section>
+<nav class="choices" aria-label="Arena design"><button data-site="breach" aria-pressed="true">Breach Road</button><button data-site="first" aria-pressed="false">First pass</button><a href="#plans">Compare plans ↓</a></nav>
+<div class="spread">
+<section class="viewer" aria-label="Site viewer"><div class="frame"><img id="still" alt=""><div id="stage" hidden></div><span class="view-label" id="mode">Field plate</span><button class="explore" id="explore" type="button">Explore in 3D ↗</button></div>
+<div class="view-controls"><label for="camera">Camera</label><select id="camera">
+<option value="arrival">Arriving on the road</option><option value="aerial">Whole site from above</option><option value="accord">The Accord from the field</option><option value="throng">The Throng from the field</option><option value="inside">Inside the friendly hall</option><option value="eastExit">The Accord · at the threshold</option><option value="westExit">The Throng · at the threshold</option><option value="eastMouth">The Accord · out to the field</option><option value="westMouth">The Throng · out to the field</option><option value="crossing">Below the arcade</option><option value="side">Terraces in profile</option><option value="high">From the high spur</option></select>
+<button id="reset" hidden>Reset view</button><button id="planButton">Ground plan</button></div>
+<p class="caption" id="caption"></p><p class="feedback" id="feedback" aria-live="polite"></p></section>
+<article class="notes"><p class="kicker" id="kicker"></p><h2 id="name">Breach Road</h2><p class="rationale" id="rationale"></p>
+<dl class="measure"><div><dt>Footprint · nodes</dt><dd id="size"></dd></div><div><dt>Gate to gate</dt><dd id="gap"></dd></div></dl>
+<p class="smaller" id="fieldNote"></p><p class="smaller" id="choiceNote"></p></article></div>
+<section class="atlas" id="plans"><div class="section-head"><h2>Compare the ground plans</h2><p>North up · elevations relative to the road</p></div><div class="plans"><figure><button data-plan="breach" aria-label="Enlarge Breach Road plan"><img alt="Breach Road survey with both halls, entrances, ruins and scale" id="plan-breach"></button><figcaption><strong>Breach Road.</strong> The section follows the stepped crossing between gates. Rings mark the two smoke wells.</figcaption></figure><figure><button data-plan="first" aria-label="Enlarge first-pass plan"><img alt="Original level field with the same faction halls and arcade" id="plan-first"></button><figcaption><strong>First pass.</strong> The arcade, gates and road shared one level.</figcaption></figure></div><button class="compare" id="overviewButton">View before and after ↗</button></section>
+<section class="shared"><div><h2>Where safety ends</h2><p>Each hall has room for a dozen players. The plan places the discoverable waystone on an inlaid plinth. An emberglass lamp marks its position in the draft. Two bronze sills mark the edge of friendly territory. Outside each sill an open-air return court bends around a solid screen.</p><p>The whole site is protected from building and digging. PvP contact currently lingers for 60 seconds and some area effects cross walls. The territory boundary alone gives no immediate immunity.</p></div><div><h2>At the edge of the works</h2><p>The example has forest litter to the west and mesa clay to the east. Two broken apple trunks and two basalt outcrops mark the back approaches. The six-node fringe picks up the local soil and a three-node cut or fill. Beyond it, the model shows illustrative terrain.</p><p>Across eleven seeds the centre square spans 21–139 nodes of relief. Round 85 still has to fit the terraces, handle lake columns and connect the road where it misses the site.</p></div></section>
+<noscript><p>Enable JavaScript to explore the site and enlarge the plans.</p><img alt="Road and aerial views of both passes" src="__OVERVIEW__"></noscript>
+</main>
+<footer><div><details><summary>Materials and credits</summary><p>All model cells use shipped Grudgelands nodes. The model includes an illustrative woodland and clay rim. The far hills in the plates are painted. Texture attribution and the renderer licence follow.</p><pre>__MEDIA__</pre><pre>__LICENSE__</pre></details><span>Grudgelands · Arena studies</span></div></footer>
+<dialog class="lightbox" id="dialog"><img id="large" alt=""><form method="dialog"><button>Close</button></form></dialog>
+<script>__THREE__</script><script type="application/json" id="payload">__DATA__</script>
+<script>
+__ORBIT__
+__RENDERER__
+__CANVAS__
+const data=JSON.parse(document.getElementById('payload').textContent);
+const byId=id=>document.getElementById(id);
+const stage=byId('stage'), selector=byId('camera');
+let site='breach', view=null, setup=null, live=false;
+const presets=[...selector.options].map(o=>[o.value,o.textContent]);
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+function smokeTime(){return reduced.matches ? 0 : performance.now()/1000;}
+function smokeCards(fx,seconds){
+  return fx.puffs.map(p=>{
+    const age=(p.age+seconds)%fx.life,t=age/fx.life;
+    const [x,y,z]=p.origin.map((v,i)=>v+p.drift[i]*age);
+    return {x,y,z,width:fx.sizes[0]+t*(fx.sizes[1]-fx.sizes[0]),alpha:fx.opacity*(1-t*t)};
+  });
+}
+function webSmoke(v){
+  const fx=data.smoke;
+  const tex=new THREE.TextureLoader().load(data.textures[fx.texture],()=>v.step());
+  tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;
+  tex.encoding=THREE.sRGBEncoding;
+  const cards=fx.puffs.map(()=>{
+    const color=new THREE.Color(...fx.tint.map(c=>c/255)).convertSRGBToLinear();
+    const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,color,depthWrite:false,transparent:true}));
+    v.scene.add(sprite);
+    return sprite;
+  });
+  return seconds=>{
+    smokeCards(fx,seconds).forEach((p,i)=>{
+      cards[i].position.set(p.x,p.y,-p.z);
+      cards[i].scale.set(p.width,p.width,1);
+      cards[i].material.opacity=p.alpha;
+    });
+    v.step();
+  };
+}
+function caption(key) {
+  const common={
+    arrival:'North approach. The Accord stands east of the road, The Throng west.',
+    aerial:site==='first'?'The original level field and rectangular survey rim.':'The two lookout spurs face opposite road entrances. Each has a flank stair and a level approach from its hall.',
+    accord:'The Accord. The blue standard hangs between the separate ways back to the hall.',
+    throng:'The Throng. Dark uprights and red timber ring beams frame the return courts.',
+    inside:'The glowing emberglass block marks the waystone. The inlaid aisle leads to both bronze sills.',
+    eastExit:'At the bronze sill of The Accord. The traverse ahead screens the field. Turn along it to reach the outer gate.',
+    westExit:'At the bronze sill of The Throng. Both routes make a turn in contested ground.',
+    eastMouth:'At the outer gate of The Accord. The friendly boundary is already behind you.',
+    westMouth:'At the outer gate of The Throng, looking back across the contested field.',
+    crossing:'At road level. The pale pier caps mark the gallery above the stairs.',
+    side:'North elevation. The road runs at 0, the arcade at +3 and the two hall floors at +6.',
+    high:'From the saddle on the +6 spur. The flank stair opens behind the broken breastwork.'
+  };
+  return common[key];
+}
+function fit(){
+  if(!view || !live)return;
+  const bounds=stage.getBoundingClientRect();
+  if(!bounds.width || !bounds.height)return;
+  view.renderer.setSize(bounds.width,bounds.height,false);
+  Object.assign(view.renderer.domElement.style,{width:"100%",height:"100%"});
+  view.camera.aspect=bounds.width/bounds.height;
+  view.camera.updateProjectionMatrix();
+  view.step();
+}
+function camera(){
+  const key=selector.value;
+  byId('still').src=data.figures[site][key];
+  byId('still').alt=data.sites[site].name+' — '+selector.selectedOptions[0].textContent;
+  byId('caption').textContent=caption(key);
+  if(live && view){
+    const [eye,target,fov]=data.scene.poses[key];
+    view.camera.fov=fov;view.lookAt(eye,target);fit();
+  }
+}
+function syncMode(){
+  stage.hidden=!live;byId('still').hidden=live;
+  byId('reset').hidden=!live;byId('mode').textContent=live?'Interactive model':'Field plate';
+  byId('explore').hidden=site==='first';
+  byId('explore').textContent=live?'Return to plate':'Explore in 3D ↗';
+  byId('feedback').textContent=live?'Drag to orbit · wheel to zoom · right-drag to pan. On touch, pinch and drag with two fingers.':'';
+}
+function choose(next){
+  site=next;const s=data.sites[next];
+  if(site==='first') live=false;
+  syncMode();
+  const key=selector.value;
+  selector.replaceChildren(...presets.filter(([k])=>data.figures[next][k]).map(([k,title])=>new Option(title,k)));
+  selector.value=data.figures[next][key]?key:'arrival';
+  byId('kicker').textContent=next==='breach'?'The Battlegrounds · second pass':'The Battlegrounds · archive';
+  byId('name').textContent=next==='breach'?'Road, gallery, crown':s.name;
+  byId('rationale').textContent=s.rationale;
+  byId('size').textContent=(s.rx*2+1)+' × '+(s.rz*2+1);
+  byId('gap').textContent=(s.back*2-40)+' nodes';
+  byId('fieldNote').textContent=s.field_note;
+  byId('choiceNote').textContent=next==='breach'?'Two cold hearths send a little smoke above the cut. Six flights on each side reach the galleries, the hall gates and the high spur.':'Select a field plate or open the original plan to compare the approaches.';
+  document.querySelectorAll('[data-site]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.site===site)));
+  camera();
+}
+function showPlan(id){
+  const img=byId('large');img.src=data.figures[id].plan;img.alt=data.sites[id].name+' ground plan and scale';
+  byId('dialog').showModal();
+}
+async function createView(){
+  const probe=document.createElement('canvas');
+  const gl=probe.getContext('webgl2') || probe.getContext('webgl');
+  if(gl){
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    try{
+      const v=createNodeView({stage,onTexture:()=>{if(live)v.step();},types:data.types,textures:data.textures,meshes:data.meshes});
+      v.scene.background=new THREE.Color(0xc4c4ae);
+      v.scene.fog=new THREE.Fog(0xc4c4ae,100,290);
+      v.controls.addEventListener('change',()=>v.step());
+      // The shared view starts loading textures while constructing its first mesh.
+      // Its image load callback schedules a redraw (inserted by the page builder).
+      v.drawSmoke=webSmoke(v);
+      return v;
+    }catch(e){stage.replaceChildren();}
+  }
+  return canvasView(stage,data.types,data.textures,data.smoke);
+}
+async function explore(){
+  if(site!=='breach')return;
+  const button=byId('explore');
+  if(!view){
+    button.disabled=true;button.textContent='Opening 3D…';
+    try{setup??=createView();view=await setup;
+        view.setData(decodeCells(data.scene.cells,data.scene.count));}
+    catch(e){setup=null;byId('feedback').textContent='3D could not open. All camera plates and plans are available.';button.textContent='Retry 3D';return;}
+    finally{button.disabled=false;}
+  }
+  if(site!=='breach'){syncMode();return;}
+  live=!live;
+  syncMode();
+  if(live)view.drawSmoke(smokeTime());
+  camera();
+}
+document.querySelectorAll('[data-site]').forEach(b=>b.onclick=()=>choose(b.dataset.site));
+for(const s of Object.keys(data.sites))byId('plan-'+s).src=data.figures[s].plan;
+document.querySelectorAll('[data-plan]').forEach(b=>b.onclick=()=>showPlan(b.dataset.plan));
+byId('planButton').onclick=()=>showPlan(site);
+byId('overviewButton').onclick=()=>{
+  byId('large').src='__OVERVIEW__';byId('large').alt='First and second pass, from the road and from the air';
+  byId('dialog').showModal();
+};
+// The software view composites the sprites onto its cached, depth-tested field.
+setInterval(()=>{if(live && !document.hidden && !reduced.matches)view.drawSmoke(smokeTime());},100);
+byId('explore').onclick=explore;
+byId('reset').onclick=camera;
+selector.onchange=camera;
+new ResizeObserver(fit).observe(stage);
+window.addEventListener('resize',()=>requestAnimationFrame(fit));
+choose(site);
+</script></body></html>

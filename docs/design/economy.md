@@ -217,22 +217,40 @@ items without one:
   hotbar layout and the potion belt (Round 70: crafted potions land there
   first), with no marker (`grug_inventory.consume_lists`, the lists
   every consumer counts and takes from; Round 56 ruling 8). A good that
-  sells singly keeps one row per slot with **1**, **5**, **10** and **All**, at its quality
-  factor. A **lot good** gets **one row per item name**, its count summed
-  over those lists
+  sells singly keeps one row per slot, at its quality factor. A **lot
+  good** gets **one row per item name**, its count summed over those lists
   (30 + 30 Cobblestone make a lot of 50), e.g. `Cobblestone x143` ·
-  `1c per 50` · **All (2c)**. Lot goods sell without a quality factor and
-  wear is ignored, so merging their stacks changes no price.
+  `1c per 50` · **50** · **All (2c)**. Lot goods sell without a quality
+  factor and wear is ignored, so merging their stacks changes no price.
 - Below its lot size the row is greyed with `Need 50 to sell` and has no
   button, so the player learns that the item sells in lots.
 - Hovering a row's item image shows the item tooltip with the stack's own
   description (quality, enchants; a lot row shows its first stack's), as
   the mail attachments do (Round 49).
-- The quantity buttons count items for single goods and whole lots for lot
-  goods; unavailable quantities are not actionable. **All** sells as many
-  whole lots as the player carries and leaves the
-  rest: `Sold 100 Cobblestone for 2c. 43 left.` The units are taken with the
-  engine's `remove_item`, list by list, only after every check has passed.
+- **The quantity buttons** (Round 84 ruling 2, defaults 20 and 21) are one
+  rule for every buy and sell row, the reputation page, the Trade-in and the
+  Stonewright, from the item's stack size, the row kind and what the player
+  holds; each button carries its real count and its tooltip the amount's
+  total (the one-item button excepted: the row's price says it):
+  - **buying:** **1 / 5 / 20 / Stack** (one whole stack); a button whose
+    count exceeds the stack size or repeats another falls away (gear: 1; a
+    potion: 1 / 5 / 20; arrows: 1 / 5 / 20 / Stack 100; most goods: 1 / 5 /
+    20 / Stack 99). An amount the player cannot pay for or carry is greyed
+    text. An amount is paid and delivered as one transaction or not at all:
+    the room is checked first, then the money is taken, then the items
+    given; at a price of `p` each (the kinship discount per item) `n` cost
+    `n × p`;
+  - **selling a slot:** 1 / 5 / 20 up to what the slot holds, and **Stack**,
+    the whole slot (at most one stack), with its count, also below a full
+    stack: 13 potions show 1 / 5 / Stack 13, a full 20 shows 1 / 5 / 20. A
+    slot whose count changed since the render is refused;
+  - **lot goods:** **one lot** (the button shows the lot's count, `50`) and
+    **All (2c)**, every whole lot, which falls away when it is the one lot.
+    The guild's Trade-in and the Stonewright count lots or conversions and
+    take this form; the camp vendor's reputation page takes the buying one
+    ([miners_guild.md](miners_guild.md) §5). All leaves the rest: `Sold 100 Cobblestone for 2c. 43 left.` The units
+    are taken with the engine's `remove_item`, list by list, only after
+    every check has passed.
 - Security as for every trade action: the row is recomputed server-side on
   every click and cross-checked against the one shown (item, lot, copper,
   total count); a mismatch re-renders without selling. A sale that would
@@ -310,8 +328,10 @@ items without one:
 - **The crown** (Round 33, [item_tiers.md](item_tiers.md) §4): the
   Crownbinder at the gate of every capital's goldsmith hall applies one Fallen Crown to one item for one
   hour of band-6 income, **1g 48s** (`grug_traders.CROWN_FEE`, checked by
-  `income.py`). Once per item, only below item level 70; a King's or a
-  dragon's drop is refused.
+  `income.py`). An item may be crowned again (Round 84) while a crown still
+  raises its item level or an enchant's value; the fee and the Fallen Crown
+  are paid per crown, and a crown that would raise nothing is refused at no
+  cost.
 - **Culture vendor** (Round 75, [decorations.md](decorations.md)): the
   Decor Merchant at every capital's woodcarver hall sells household details,
   building accents, lights, special displays and art at fixed prices with the

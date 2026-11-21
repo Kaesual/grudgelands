@@ -455,8 +455,18 @@ end
 -- round42-plan.md ruling 18).
 local function grug_liquid_speed(self, v)
 
+	local def = core.registered_nodes[self.standing_in]
+
+	-- GRUG PATCH (Round 84 WATER, round84-plan.md ruling 4): water (group
+	-- `water`) no longer slows a mob, so a swimming player cannot outpace a
+	-- land mob; a definition's `_grug_water_speed_factor` (the Tortoise)
+	-- makes it faster there. Every other viscous liquid (lava) still slows.
+	if v > 0 and def.groups and (def.groups.water or 0) > 0 then
+		return v * (self._grug_water_speed_factor or 1)
+	end
+
 	-- is mob standing in liquid?
-	local visc = min(core.registered_nodes[self.standing_in].liquid_viscosity or 0, 7)
+	local visc = min(def.liquid_viscosity or 0, 7)
 
 	-- only slow moving mobs when inside a viscous fluid they cannot swim in
 	-- e.g. fish in water, spiders in cobweb
@@ -4227,6 +4237,9 @@ function mobs:register_mob(name, def)
 		-- GRUG PATCH (Round 56 MOBAI): a definition's own shot range (nil:
 		-- view_range + GRUG_SHOT_RANGE_EXTRA, grug_shot_range).
 		_grug_shot_range = def._grug_shot_range,
+		-- GRUG PATCH (Round 84 WATER): a definition's speed factor in water
+		-- (nil: its land speed, grug_liquid_speed).
+		_grug_water_speed_factor = def._grug_water_speed_factor,
 		stay_near = def.stay_near,
 		randomly_turn = def.randomly_turn ~= false,
 		ignore_invisibility = def.ignore_invisibility,

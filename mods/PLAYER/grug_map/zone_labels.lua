@@ -7,8 +7,8 @@
 -- inaccessibility on a GRID_STEP grid), nudged clear of the labels placed
 -- before it and of the baked region names. Placed once per start from the
 -- world authority's zone queries; the formspec draws it at every zoom with
--- compact text at 2x and above, smaller text at 1x. The Zones button opens
--- at 2x; a manual 1x overview may still have collisions.
+-- compact text at 2x and above, smaller text at 1x. The Zones button keeps
+-- the current zoom (Round 84 ruling 13); at 1x labels may still collide.
 -- PURE Lua: the zone queries come in as arguments, so the portable fixture
 -- runs the real file.
 local Z = {}

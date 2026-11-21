@@ -49,7 +49,8 @@
 --      is gone (TAB_ORDER, grug_quests/init.lua);
 --   Z  zoom 1-2-4-8 with the view centre kept (once the player scrolled)
 --      and scroll values clamped; the Map tab opens the window and goes
---      back to the homepage;
+--      back to the homepage; (Round 84 ruling 13) no layer button, from
+--      any layer or quest mode, changes the zoom, the scroll or the lock;
 --   M  (0.45.1) the soft lock through the window's events: zoom from 1x
 --      centres on the player, the player's scrolling breaks the lock, 1x
 --      restores it; the map's scrollbar is focused (set before it) so the
@@ -1743,16 +1744,60 @@ do
 			#rows.poi, #rows.pvp, #rows.boss))
 end
 
--- The compact Zones view uses the existing zoom route without locking it.
+-- No layer changes the zoom or the scroll (Round 84 ruling 13; reversed:
+-- Zones entered at 2x since 2026-10-13). Every layer's button, from every
+-- other layer and from quest mode, at 1x (the lock) and at 4x after the
+-- player's own scrolling (no lock), with the scrollbars' echo the client
+-- sends with every click.
 do
-    W.open(accord)
-    local session = W.sessions.ann
-    session.layer, session.zoom = "quests", 1
-    fields(accord, {grug_map_layer_zones = "true"})
-    eq(session.zoom, 2, "Zones opens at readable 2x")
-    fields(accord, {grug_map_zoom_out = "true"})
-    eq(session.zoom, 1, "Zones still permits a manual whole-world overview")
-    fields(accord, {quit = "true"})
+	W.open(accord)
+	local session = W.sessions.ann
+	local bad = {}
+	local function pick(from, to, zoom, sx, sy, follow, quest)
+		session.layer, session.zoom, session.scroll_x, session.scroll_y = from, zoom, sx, sy
+		session.follow, session.shown_zoom, session.quest_selected = follow, zoom, quest
+		advance(2)
+		fields(accord, {["grug_map_layer_" .. to] = "x", grug_map_scroll_x = "VAL:" .. sx,
+			grug_map_scroll_y = "VAL:" .. sy})
+		advance(2)
+		local form = shows[#shows].form
+		local bars = {}
+		for axis, value in form:gmatch("scrollbar%[[^;]+;[^;]+;(%a+);grug_map_scroll_%a;(%d+)%]") do
+			bars[axis] = tonumber(value)
+		end
+		if session.layer ~= to or session.zoom ~= zoom or session.scroll_x ~= sx or
+				session.scroll_y ~= sy or session.follow ~= follow or
+				bars.horizontal ~= sx or bars.vertical ~= sy or
+				not form:find(("label%%[[^;%%]]+;%dx%%]"):format(zoom)) then
+			bad[#bad + 1] = ("%s->%s at %dx"):format(from, to, zoom)
+		end
+	end
+	local cases = 0
+	for _, to in ipairs(grug_map.layers.LIST) do
+		for _, from in ipairs(grug_map.layers.LIST) do
+			if from.id ~= to.id then
+				pick(from.id, to.id, 1, 0, 0, true)
+				pick(from.id, to.id, 4, 1234, 2345, false)
+				cases = cases + 2
+			end
+		end
+		pick(to.id, to.id, 4, 2100, 600, false, "q_kill")
+		pick(to.id, to.id, 2, 700, 300, true, "q_kill")
+		cases = cases + 2
+	end
+	check(#bad == 0 and cases == #grug_map.layers.LIST * #grug_map.layers.LIST * 2,
+		("Z no layer button changes zoom or scroll (%d cases; %s)"):format(cases,
+			table.concat(bad, ", ")))
+	-- Selecting a quest (the window's other filter) keeps them too.
+	session.layer, session.zoom, session.scroll_x, session.scroll_y = "zones", 4, 1500, 900
+	session.follow, session.shown_zoom, session.quest_selected = false, 4, nil
+	advance(2)
+	fields(accord, {grug_quest_list_row_1 = "true", grug_map_scroll_x = "VAL:1500",
+		grug_map_scroll_y = "VAL:900"})
+	check(session.quest_selected ~= nil and session.zoom == 4 and session.scroll_x == 1500 and
+		session.scroll_y == 900 and session.follow == false,
+		"Z selecting a quest keeps zoom and scroll")
+	fields(accord, {quit = "true"})
 end
 
 -- ---------------------------------------------------------------------------

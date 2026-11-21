@@ -161,6 +161,19 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
     deactivation then stores a second copy, so the entity comes back twice.
     Pass what identifies the entity in `add_entity`'s staticdata
     (`start_npcs.lua` `place`: `_grug_unplaced`, Round 30).
+  - **An actor the map never saves is added unsaved** (Round 84 ELITE,
+    `grug_mobs/unsaved.lua`; [upstream workarounds](../upstream-workarounds.md)
+    §11): `static_save = false` after the add is too late, because the
+    add-time snapshot survives a block that unloads with the object alive.
+    `grug_mobs.add_mob_unsaved` / `add_entity_unsaved` mark the name being
+    placed, and `grug_mobs.unsaved_claim`, the first statement of
+    `init.lua`'s after_activate wrapper, turns static_save off inside the
+    add. A definition with `_grug_unsaved` (the leader sub-types,
+    `subtypes.lua`; the rift boss) has no saved form: every other
+    activation of it is an old snapshot and removes itself before anything
+    else runs (no fight, drop or credit). The leaders, the rift boss and the
+    depth pulse's arrivals go through these helpers; a spawner that adds an
+    `_grug_unsaved` actor past them loses it at once, with a log line.
 
 #### Per-step allocation
 
@@ -362,7 +375,11 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
     and leaders (`SR.leader_tick`) in `SR.SLOW_SLICES` (20) zone slices of
     0.25 s, so each zone is still served once per `SR.SLOW_PERIOD` (5 s)
     but no step weighs every camp against every player (fixture
-    `tools/r28_s1`, section "Round 32 F4"). Rules: [spawn_regions.md](../../design/spawn_regions.md),
+    `tools/r28_s1`, section "Round 32 F4"). A leader is added through
+    `grug_mobs.add_mob_unsaved` and tracked by its ObjectRef only
+    (`live_leaders`); its sub-type is `_grug_unsaved`, so a snapshot 0.83.0
+    or older left in the map removes itself at activation (fixtures
+    `tools/r28_s1` "Leaders", `tools/r84_elite`). Rules: [spawn_regions.md](../../design/spawn_regions.md),
     [biomes_mobs.md](../../design/biomes_mobs.md) §4.2.
   - `depth_pulse.lua` (Round 46, `grug_mobs.depth_pulse`): the depth pulse
     below y −300 ([biomes_mobs.md](../../design/biomes_mobs.md) §4.1). One
@@ -371,9 +388,11 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
     within 24 nodes (`DP.cap`, `_grug_pulse` entities), a spot by up to four
     rays (`DP.find_spot` over `DP.world`), the refusals (`DP.refused`), a
     2 s wind-up (`depth_windup`, `depth_burst` in
-    `grug_core/particle_effects.lua`) and `grug_mobs.add_mob` with
-    `ignore_count`; the arrival gets `_grug_pulse`, `_grug_no_coin_bag`,
-    `static_save = false` and `underground_spawned(..., skip_elite)`, and
+    `grug_core/particle_effects.lua`) and `grug_mobs.add_mob_unsaved` with
+    `ignore_count` (unsaved from its first activation; snapshots older
+    versions left look like ordinary mobs and stay); the arrival gets
+    `_grug_pulse`, `_grug_no_coin_bag` and
+    `underground_spawned(..., skip_elite)`, and
     fades after 10 s without a target. `DP.players` is the seam the depth
     probe (`tools/r24_density_xp` `POINTS=pulse`) replaces with stand-ins;
     the pure parts are driven by `tools/r46_dp`. The roster bands
@@ -443,7 +462,9 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
   respawn and particle numbers) and `rift.lua` (the void node, the one-time
   crack behind the storage key `rift_crack:<site>`, the particles, the rift
   boss and its once-a-second pass; `grug_mobs.rift_players` is the probe's
-  seam for stand-in players). The boss settles through `bosses.lua`'s ledger
+  seam for stand-in players). The boss is `_grug_unsaved` and added through
+  `grug_mobs.add_entity_unsaved` (Round 84 ELITE; a saved copy removes
+  itself). It settles through `bosses.lua`'s ledger
   (`grug_mobs.boss_settle`); a boss reward hook is `fn(self, boss_id, player,
   locked)`, `locked` for a kill inside the character's lockout (grug_quality
   rolls `BOSS_DROPS.locked`'s tier, the rift boss's elite row, else nothing).
@@ -540,3 +561,14 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
   `grug_mobs/aggro.lua` `shore_check` in the 1 Hz leash tick (an idle
   floating mob in water swims toward its home). `floats` is a boolean in
   every definition. Fixture and engine probe `tools/r34_f1`.
+- **Speed in water (Round 84 WATER, rulings 3 and 4):** the vendored
+  `grug_liquid_speed` (`mobs/api.lua`, shared by `set_velocity` and the stuck
+  detector's expected speed) leaves a mob in a `water`-group node at its land
+  speed times its definition's `_grug_water_speed_factor` (nil: 1; copied
+  onto the entity by `register_mob`, so a retune reaches saved mobs); any
+  other viscous liquid (lava) still divides by viscosity + 1. A per-medium
+  speed is this factor, never a second writer of `walk_velocity` /
+  `run_velocity` (those belong to the root/slow engine, init.lua). The
+  Tortoise (`tortoise.lua`) uses it (1.25) and is a neutral `dogshoot` mob
+  with `_grug_shot_range` 33 and its own homing mud ball, whose hit slows
+  through `grug_mobs.slow_player`. Fixture `tools/r84_water`.

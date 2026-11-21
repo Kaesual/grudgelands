@@ -794,3 +794,19 @@ kind's tinted placeholder.
 | File | Author | Source | License |
 |------|--------|--------|---------|
 | `textures/grug_mobs_runners_packet.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Runner's Packet, a flat waxed-hide envelope with a triangular closing flap and an offset wide carrying strap; `tools/r61_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## Tortoise mud ball — Round 84
+
+Original 16×16 pixel art of this project (Round 84 WATER, 2026-11-21), not
+derived from any vendored or third-party asset: the projectile sprite of
+`grug_mobs:tortoise_mud`, the Tortoise's slowing shot (`tortoise.lua`).
+Authored as an ASCII map plus a palette and written by a deterministic
+generator (no randomness):
+
+```sh
+python3 tools/r84_water/gen_mud_texture.py mods/ENTITIES/grug_mobs/textures
+```
+
+| File | Author | License | How it was made |
+|------|--------|---------|-----------------|
+| `textures/grug_mobs_tortoise_mud.png` | Grudgelands project | CC0 1.0 | generator, a brown mud ball with a wet highlight and a drip, transparent background |

@@ -1,31 +1,34 @@
 # Project status
 
-Snapshot of 2026-11-18. This file is replaced, not extended: a round's end adds its row
+Snapshot of 2026-11-21. This file is replaced, not extended: a round's end adds its row
 at the top of the table, drops the oldest row and replaces the lines that changed. Check the live state with `git status -sb`,
 `git log --oneline -5` and `git tag -l`. History through Round 79 is in the
 [archive](archive/status-through-round-79.md).
 
 ## Now
 
-- **Game:** 0.83.0 (`game.conf`), Round 83 (the bridge command `character.delete`: the website
-  erases a character on request, compatible), `53d17e9b`, tag `round-83`, pushed 2026-11-18. Before
-  it: 0.82.0, Round 82 (world generation speed), `8fd02cb1`, tag `round-82`, pushed.
+- **Game:** 0.84.0 (`game.conf`), Round 84 (player feedback; compatible), on the branch
+  `round84`, not yet squashed onto main. Main holds 0.83.0 (Round 83, `53d17e9b`, tag
+  `round-83`) plus two commits (the Round 84 plan, a process note), not pushed; only the
+  user pushes.
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the read-only code audit of 2026-11
   ([audit](audit-2026-11/README.md)), whose findings Rounds 81 and 82 fixed or left as
   carry-overs.
-- **Next:** no round planned yet; the platform's side of Round 80 (the pin, `emote:cheer`
-  for every account, the six donor cloaks), of Round 80.1 (the website reads the new
-  `creation` key) and of Round 83 (the website sends `character.delete`; the game's answer
-  is in the round's Completion).
-- **Other branches:** `town-viewer` (kept on purpose: the three.js town viewer for design
-  feedback); `study-dwarf-architecture` and `study-website-screenshots` (unmerged studies
-  of 2026-11-11; the second has its own worktree).
+- **Next:** Round 85, the arena at the map's centre with a full map reset including claims
+  (the user, 2026-11-21; [Round 84 plan](planning/round84-plan.md#round-85-the-users-rulings-of-2026-11-21));
+  the platform's side of Rounds 80, 80.1 and 83 as listed in their Completions.
+- **Other branches:** the Round 84 lane branches and the preparation branches
+  `r84-arenadraft`, `r84-accountmock`, `r84-site` (not merged); `town-viewer` (kept on
+  purpose: the three.js town viewer); `study-dwarf-architecture` and
+  `study-website-screenshots` (unmerged studies of 2026-11-11).
 - **GUI acceptance is not tracked** (the user, 2026-11-16): an agent proposes a human test
   when it is unsure that something works as planned.
 
 ## Open for the user
 
+- Round 84's open decisions (touch eating, the Pond Terrapin) and whether the preparation
+  branches are merged: [Carry-overs](planning/round84-plan.md#carry-overs).
 - The end-to-end account test on the rehearsal realm once the platform side is ready
   (Round 79; [contract §9](technical/web-accounts.md#9-testing)).
 
@@ -33,11 +36,11 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
+| 84 | 0.84.0 | compatible | no | [Round 84](planning/round84-plan.md#completion-2026-11-21) |
 | 83 | 0.83.0 | compatible | yes | [Round 83](planning/round83-plan.md#completion-2026-11-18) |
 | 82 | 0.82.0 | compatible | yes | [Round 82](planning/round82-plan.md#completion-2026-11-18) |
 | 81 | 0.81.0 | compatible | yes | [Round 81](planning/round81-plan.md#completion-2026-11-17) |
 | 80 | 0.80.0–0.80.1 | compatible | yes | [Round 80](planning/round80-plan.md#completion-2026-11-16), [80.1](planning/round80.1-plan.md#completion-2026-11-16) |
-| 79 | 0.79.0 | compatible | yes | [Round 79](planning/round79-plan.md#completion-2026-11-15) |
 
 Round 77 (a keep-claims map reset) was discarded; the number is not reused. The upgrade
 kinds come from `tools/web_data/upgrade.json` and the

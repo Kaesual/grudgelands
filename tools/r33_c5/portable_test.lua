@@ -16,10 +16,11 @@
 --      the Weak Healing Potion 35, every potion shares one 60 s clock, the
 --      elixirs carry item_tiers' values, no two recipes share their inputs
 --      and every input is at most the recipe's tier;
---   F. the Crownbinder against a stub of the crown operation: the fee and
---      one Fallen Crown are taken together with the crowned item written,
---      or nothing changes (no crown, not enough money, a changed item, the
---      operation's refusal, no operation at all);
+--   F. the Crownbinder with the real crown operation: the fee and one
+--      Fallen Crown are taken together with the crowned item written, once
+--      per accepted crown and again on a second crown (Round 84), or nothing
+--      changes (no crown, not enough money, a changed item, the operation's
+--      refusal when no number would rise, no operation at all);
 --   G. the Decor Merchant's shelf: decorations and displays at fixed prices,
 --      no profession supplies, 5 % buy-back; both capital services in every
 --      capital's service plots.
@@ -534,7 +535,11 @@ do
 	dofile(ROOT .. "/mods/PLAYER/grug_money/init.lua")
 	-- Without the operation the NPC refuses cleanly.
 	grug_items = nil
+	local crown_fields -- the window's receive handler (Round 84: stale clicks)
+	local register_fields = core.register_on_player_receive_fields
+	core.register_on_player_receive_fields = function(fn) crown_fields = fn end
 	dofile(ROOT .. "/mods/ENTITIES/grug_traders/crown.lua")
+	core.register_on_player_receive_fields = register_fields
 	local none, why = grug_traders.crown_operation(ItemStack(grug_gear.weapon_item("sword", 5)))
 	check(none == nil and type(why) == "string", "F no crown operation: a refusal, no error")
 	-- The real operation (grug_quality/init.lua, lane C4).
@@ -568,6 +573,17 @@ do
 			state = (state * 48271) % 2147483647
 			return low + state % (high - low + 1)
 		end}
+	end
+	-- Enchants round-trip through the item meta (Round 84: the re-crown below
+	-- needs an enchant to raise).
+	local serial = {}
+	core.serialize = function(value)
+		serial[#serial + 1] = table.copy(value)
+		return "S" .. #serial
+	end
+	core.deserialize = function(text)
+		local index = type(text) == "string" and tonumber(text:match("^S(%d+)$"))
+		return index and table.copy(serial[index]) or nil
 	end
 	modpaths.grug_quality = ROOT .. "/mods/ITEMS/grug_quality"
 	current_mod = "grug_quality"
@@ -633,11 +649,15 @@ do
 		grug_items.effective_ilvl(crowned) == 60, "F the crowned item (item level 60) replaces the old one")
 	eq(equipment_changed, 1, "F an equipped item refreshes the equipment")
 	check(tooltips >= 1, "F the weapon's effective-damage line is rebuilt")
-	-- Once per item: the operation's refusal is shown, no button.
+	-- Round 84 (default 19, reverses "once per item"): a crown that would
+	-- raise no number is refused at no cost. The plain sword is at its
+	-- target (60) and has no enchants: the operation's refusal, no button.
 	p.lists.main[2] = ItemStack("grug_mobs:fallen_crown")
 	rows = grug_traders.crown_rows(p)
-	check(rows[1] and not rows[1].result and rows[1].reason == "This item is already crowned.",
-		"F a crowned item shows the refusal")
+	check(rows[1] and not rows[1].result and rows[1].reason == "The crown would raise " ..
+		"nothing: the item stays at item level 60, and it has no enchants.",
+		"F a crowned item nothing would raise shows the refusal (" ..
+		tostring(rows[1] and rows[1].reason) .. ")")
 	ok, message = grug_traders.crown_apply(p, rows[1])
 	check(not ok and grug_money.get(p) == 5200 and p.lists.main[2]:get_name() ==
 		"grug_mobs:fallen_crown", "F ...and crowning it again changes nothing")
@@ -666,12 +686,49 @@ do
 		w.lists.grug_weapon[1]:get_meta():get_int("grug_crowned") == 0,
 		"F crown_apply refuses it too and nothing changes")
 	wearer_level = 60
-	-- A boss drop at level 70 is refused: the crown works only below it.
+	-- A boss drop at level 70 with a T7 enchant is refused: nothing rises.
 	local drop = ItemStack(grug_gear.weapon_item("sword", 6))
 	grug_items.roll_enchants(drop, 70, 1, 7)
 	local text, reason = grug_traders.crown_preview(drop)
-	check(text == nil and reason == "The crown works only on items below item level 70.",
-		"F an item-level-70 drop is refused")
+	check(text == nil and reason == "The crown would raise nothing: the item stays at " ..
+		"item level 70, and its enchant is T7.", "F an item-level-70 T7 drop is refused (" ..
+		tostring(reason) .. ")")
+	-- Round 84 ruling 1: an item is crowned again while a number rises; the
+	-- fee and one Fallen Crown go exactly once per accepted crown, never on
+	-- the refusal. A T6 sword at 41 with a T5 enchant: 70 and T6, then T7,
+	-- then nothing.
+	local r = new_player(40000)
+	local twice = ItemStack(grug_gear.weapon_item("sword", 6))
+	grug_items.roll_enchants(twice, 41, 1, 7)
+	r.lists.main[1] = twice
+	for i = 2, 4 do r.lists.main[i] = ItemStack("grug_mobs:fallen_crown") end
+	local function crowns_left()
+		local n = 0
+		for i = 2, 4 do
+			if r.lists.main[i]:get_name() == "grug_mobs:fallen_crown" then n = n + 1 end
+		end
+		return n
+	end
+	local accepted = {}
+	for round = 1, 3 do
+		local recrown = grug_traders.crown_rows(r)
+		local row
+		for _, candidate in ipairs(recrown) do
+			if candidate.list == "main" and candidate.index == 1 then row = candidate end
+		end
+		local done = row and row.result and grug_traders.crown_apply(r, row)
+		accepted[round] = {done = done and true or false, money = grug_money.get(r),
+			crowns = crowns_left(), reason = row and row.reason}
+	end
+	check(accepted[1].done and accepted[1].money == 25200 and accepted[1].crowns == 2,
+		"F the first crown takes one fee and one Fallen Crown")
+	check(accepted[2].done and accepted[2].money == 10400 and accepted[2].crowns == 1,
+		"F the second crown takes them again, once")
+	check(not accepted[3].done and accepted[3].money == 10400 and accepted[3].crowns == 1 and
+		accepted[3].reason and accepted[3].reason:find("^The crown would raise nothing") ~= nil,
+		"F the third is refused at no cost (" .. tostring(accepted[3].reason) .. ")")
+	eq(grug_items.effective_ilvl(r.lists.main[1]), 70, "F ...the item stands at 70")
+	eq(grug_items.get_affixes(r.lists.main[1])[1].tier, 7, "F ...with its enchant at T7")
 	-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): the window
 	-- focuses Close when it opens and after a Crown click, never a preview
 	-- textarea (which would eat the inventory key).
@@ -693,6 +750,34 @@ do
 		local bare = focus.initial(focus.without_set_focus(shown[2]), {new_form = true})
 		eq(bare and bare.type, "textarea", "F 0.45.1 without set_focus a textarea would be")
 	end
+	-- Round 84 (review): a click sent from a form drawn before the last
+	-- crown never crowns anything, though the item would take another
+	-- crown; a click from the redrawn form does, and page turns still work.
+	local s = new_player(40000)
+	local stale_item = ItemStack(grug_gear.weapon_item("sword", 6))
+	grug_items.roll_enchants(stale_item, 41, 1, 7)
+	s.lists.main[1] = stale_item
+	for i = 2, 4 do s.lists.main[i] = ItemStack("grug_mobs:fallen_crown") end
+	local names = {}
+	core.show_formspec = function(_, formname) names[#names + 1] = formname end
+	grug_traders.open_crownbinder(s, "Crownbinder", {x = 0, y = 0, z = 0}, "accord")
+	local first_name = names[#names]
+	crown_fields(s, first_name, {crown_1 = "Crown"})
+	local second_name = names[#names]
+	check(grug_money.get(s) == 25200 and second_name ~= first_name,
+		"F a crown redraws the window under a new form name")
+	local after_first = ItemStack(s.lists.main[1])
+	crown_fields(s, first_name, {crown_1 = "Crown"})
+	check(grug_money.get(s) == 25200 and s.lists.main[3]:get_name() == "grug_mobs:fallen_crown" and
+		s.lists.main[1]:equals(after_first) and names[#names] == second_name,
+		"F a stale click from the old form takes nothing and changes nothing")
+	crown_fields(s, second_name, {next = "true"})
+	eq(names[#names], second_name, "F a page turn keeps the form name")
+	crown_fields(s, second_name, {crown_1 = "Crown"})
+	check(grug_money.get(s) == 10400 and s.lists.main[3]:is_empty() and
+		grug_items.get_affixes(s.lists.main[1])[1].tier == 7,
+		"F a click from the redrawn form crowns again")
+	core.show_formspec = show_formspec
 end
 
 ------------------------------------------------------------------------------

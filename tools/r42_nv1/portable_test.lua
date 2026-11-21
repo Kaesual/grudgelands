@@ -298,7 +298,15 @@ do
 	local chunk = assert(loadstring(src))
 	setfenv(chunk, setmetatable({min = math.min}, {__index = _G}))
 	local speed = chunk()
-	check(speed({standing_in = "water"}, 4.6) == 2.3, "D8 water halves the speed")
+	-- Round 84 WATER (ruling 4) reversed "water halves the speed": land mobs
+	-- swim at full speed; a viscous liquid that is not water still slows.
+	check(speed({standing_in = "water"}, 4.6) == 4.6, "D8 water keeps the land speed")
+	check(speed({standing_in = "water", _grug_water_speed_factor = 1.25}, 3) == 3.75,
+		"D8 a definition's water factor applies in water")
+	core.registered_nodes.thick = {name = "thick", walkable = false, liquidtype = "source",
+		liquid_viscosity = 7, groups = {lava = 3, liquid = 2}}
+	check(speed({standing_in = "thick"}, 4.6) == 4.6 / 8, "D8 a viscosity-7 liquid (lava) slows to 1/8")
+	core.registered_nodes.thick = nil
 	check(speed({standing_in = "water", fly_in = "water"}, 4.6) == 4.6,
 		"D8 a swimmer keeps its speed")
 	check(speed({standing_in = "air"}, 4.6) == 4.6, "D8 dry ground keeps it")

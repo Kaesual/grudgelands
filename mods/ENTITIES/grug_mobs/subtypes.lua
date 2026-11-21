@@ -566,6 +566,10 @@ local function register_subtype(i, row)
 		-- A leader resets at once when it cannot reach its target (Round 72
 		-- GUARDNAV, aggro.lua grug_mobs.reach_reset).
 		def._grug_reach_reset = true
+		-- Placed only by its spot (spawn_regions.lua SR.leader_tick) and
+		-- never saved with the map: a saved copy removes itself (Round 84
+		-- ELITE, unsaved.lua).
+		def._grug_unsaved = true
 	end
 	if sub.levels[2] <= START_BAND_MAX then
 		def.group_attack = false

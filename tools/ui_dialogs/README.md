@@ -34,7 +34,9 @@ cleanup targets only its own temporary paths and Xvfb process.
 subdirectories. Extra scenarios accepted by `ONLY` include `quest_ready`
 (a real offered kill quest credited through the quest API), `creation_start`
 (the creation window before any choice; Round 66), `craft_busy`
-(real recipe jobs) and `crown_empty`. These alter disposable test state only.
+(real recipe jobs), `crown_empty` and `crown_enchanted` (Round 84: enchanted
+items with the longest crown previews, a second crown and the refusals).
+These alter disposable test state only.
 Round 69's Trash box: `inventory_trash_refused`, `inventory_trash`,
 `inventory_trash_both` and `inventory_trash_long` in that order (the state
 carries over) go through the box's real callbacks, the guards included, and

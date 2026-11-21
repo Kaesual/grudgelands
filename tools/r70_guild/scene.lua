@@ -23,13 +23,13 @@ return function(api)
 	end
 	local function submit(player, fields)
 		for _, fn in ipairs(core.registered_on_player_receive_fields) do
-			if fn(player, "grug_traders:trade", fields) then return end
+			if fn(player, grug_traders.trade_formname(player:get_player_name()), fields) then return end
 		end
 	end
 	local function open(player, fields)
 		local real = core.show_formspec
 		core.show_formspec = function(name, formname, formspec)
-			if formname == "grug_traders:trade" then
+			if formname:find("^grug_traders:trade") then
 				captured = formspec
 				return
 			end

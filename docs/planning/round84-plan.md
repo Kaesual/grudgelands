@@ -74,6 +74,8 @@ From the conversation of 2026-11-21:
    a browser; the look takes up the character creation screen's opening image.
 7. **The arena's map reset keeps claims:** chunks that hold claims are not deleted, because
    nothing else in world generation changes and the Battlegrounds hold no claims.
+   **Replaced on 2026-11-21** by the user's ruling that Round 85 is a full map reset including
+   claims ([Round 85](#round-85-the-users-rulings-of-2026-11-21)).
 8. **The Account page shows what the website decides.** Which rewards every linked account
    gets is set by the owner in the website's administration (today: the Cheer emote; a cloak
    may follow). The game receives that through the bridge and only displays it, also for an
@@ -337,7 +339,233 @@ and one headless boot. Human-test proposals (offers, not open items):
   round-end run.
 - **Decided during the round:** the user's picks on the two pages and the two screenshot sets.
 
+## Completion (2026-11-21)
+
+The six release lanes (Opus each) ran in one wave and each got an independent Opus review;
+every verdict was MERGE. CROWN and TRADE each had a fix round for a stale double click, each
+closed by an independent delta review (MERGE). TRADE, MAP and CROWN (whose window layout
+changed) merged only after the user's go on their screenshots. Lane D (this section) runs on
+`round84` after the first pass of the round-end gates. Release **0.84.0**, **compatible**:
+no world generation change and no saved key read or written differently (each lane's
+classification, checked by its reviewer); copies of leaders and the rift boss that older
+versions saved remove themselves at activation, with no migration step (§3.1).
+
+Merges into `round84`, in this order (working notes until the squash): SMALL `79ff752e`,
+WATER `9a917cee`, ELITE `d744ccac`, CROWN `d2a2e0b4`, TRADE `9809d463`, MAP `81ec1a74`; then
+the coordinator's fixture-list fix `2d706942`; after lane D, on the user's go, the three
+preparation branches (tools only) SITE `cbd86d21`, ACCOUNTMOCK `47d9df6c`, ARENADRAFT
+`fecc36bc`, and SMALL fix round 1 (the user's touch rulings below). Before those, 98
+files, about +4,200/−540 lines (43 of the files under `tools/`).
+
+**What shipped:**
+
+- **TRADE** (ruling 2, defaults 20 and 21): one rule, `grug_traders.quantities(kind, size,
+  held)`, gives every row its buttons. Buying: 1 / 5 / 20 / Stack up to the stack size (gear
+  1, potions 1 / 5 / 20, arrows Stack 100, most goods Stack 99). Selling a slot: the numbers
+  up to the slot's count and Stack for the whole slot (13 potions: 1 / 5 / Stack 13; amounts
+  above the slot are left out, not greyed). Lot goods, the guild Trade-in and the Stonewright:
+  one lot and All. The camp vendor's reputation page: the buy form. Fields are
+  `<prefix><key>_<index>`, and the count is derived again from the key on the fresh row, so a
+  forged or stale key does nothing. Buy rows show "Xc each"; each button's tooltip gives the
+  total (not on "1"); an amount above the player's money or room is grey text. A purchase
+  checks room first, then takes count × price and gives one stack; `grug_guild.buy` gained a
+  `count` (error `"count"`). A single-good sell row now also re-checks the count and the unit
+  price against its snapshot. The longest page, the Decor Merchant's (128 rows), grew from
+  52,497 to 63,375 bytes (61,596 logged by the engine; the lane first had 80,737 and cut it by
+  styling the names once per shelf and dropping the "1" tooltip); the other pages stayed about
+  the same or shrank. Fix round 1: a new form name per render (`grug_traders:trade:<serial>`),
+  so a click or quit from an older form acts on nothing (the review found a stale second
+  click on the Sell tab selling the item that moved into the row). Fixtures: new
+  `tools/r84_trade` (with section G, the double clicks), and `r48_sell`, `r56_small`,
+  `r58_rep`, `r58_campnpc`, `r70_guild` rewritten to the rule.
+- **CROWN** (ruling 1, defaults 17 and 19): `crown_plan` lifts the item level to
+  max(item level, min(10 × T + 10, 70)) and every enchant below T7 by one tier; it refuses
+  only when neither the level nor any enchant's value rises ("The crown would raise nothing:
+  …"), and nothing is taken then. Empty channels stay empty and the preview says so; the
+  preview gives each enchant's value before and after and the level line only when the level
+  rises. The reported case (level 70, T7 Strength, T6 Crit) gives "T6 Crit +4.3% becomes T7
+  +4.8%." The chain ends: the level reaches its target at the first crown, every later crown
+  must lift a tier, tiers stop at T7, so one set of enchants takes at most six crowns (the
+  fixture loops to exactly six). `grug_crowned` now means "crowned at least once" and drives
+  only the tooltip's "Crowned" line (the lane's decision: no new key, no counter). The fee
+  line reads "and one Fallen Crown per crown"; `CROWN_FEE` is unchanged. Layout follow-up
+  (display only, checked by the coordinator on the screenshot): five rows of 1.08 per page,
+  so two-line previews show without a scrollbar. Fix round 1: a new form name after every
+  crown, so a double click from the old form crowns nothing. Fixtures: `r33_c4` E and
+  `r33_c5` F rewritten (no `tools/r84_crown`: the existing harnesses load the real code);
+  the capture scene `crown_enchanted` in `tools/ui_dialogs`.
+- **WATER** (rulings 3 and 4): `grug_liquid_speed` (vendored `mobs/api.lua`, two GRUG PATCH
+  markers, `VENDOR.md` totals 158 / 196): water (group `water`) no longer slows a mob, and a
+  definition's `_grug_water_speed_factor` makes it faster there; lava keeps v / (viscosity +
+  1), 1/8, and the stuck detector shares the number. The Tortoise: `dogshoot` (bite close
+  in), a homing mud ball `grug_mobs:tortoise_mud` (damage stamped for the level, a slow to
+  0.55 for 3 s through `grug_mobs.slow_player` on players only), shot range 33, a shot about
+  every 2.5 s, run 3, water factor 1.25 (3.75), view range 8, still neutral; the shot plays
+  the bite clip and is silent; a generated sprite (CC0,
+  `tools/r84_water/gen_mud_texture.py`). It applies to all six tiers (§3.1). The lane
+  confirmed from the engine source that a hit at 32 nodes makes the attacker the target
+  (no distance test; give-up distance 45 or unlimited) and that the mob stays active there
+  with the default `active_block_range` 4. Fixtures: new `tools/r84_water`; `r42_nv1` D8
+  rewritten; a `register_homing_arrow` stub in `r51_mobs`.
+- **ELITE:** the cause, confirmed in the engine source and at runtime: the engine stores an
+  object's staticdata in its block at the add, after the activation callbacks, and a later
+  `static_save = false` does not remove it when the block unloads while the object lives
+  ([upstream workarounds §11](../technical/upstream-workarounds.md#11-an-unsaved-objects-add-time-entry-survives-its-blocks-unload)).
+  New `grug_mobs/unsaved.lua`: `add_mob_unsaved` and `add_entity_unsaved` mark the entity
+  being placed, and `unsaved_claim` (the first statement of `init.lua`'s after_activate
+  wrapper, before `live_claim`) turns static saving off inside that activation; any other
+  activation of a definition marked `_grug_unsaved` (the 45 leader sub-types, the rift boss)
+  removes itself before anything runs, with one `action` log line. The leader spots, the
+  rift boss and the depth pulse add through the helpers; old depth-pulse copies look like
+  ordinary mobs and stay (default 18). Fixtures: new `tools/r84_elite`; `r28_s1` (with the
+  saved-copy cases), `r36_r`, `r46_dp` run the real claim; the probe `r36_q0` adds its rift
+  boss through the helper (review Low 1, a coordinator fix). The engine probe
+  `tools/r84_elite/engine.sh` ran three times: the first failed in its own setup, the second
+  ran away (its log wrapper caught its own lines: 2 × 8.4 GB in `/tmp` within a minute, killed
+  by the coordinator; probe code only, now capped at 200 lines), the third passed (an object
+  made unsaved after its add came back, a leader added the 0.83.0 way came back and removed
+  itself, a leader added unsaved left nothing).
+- **MAP** (ruling 13, default 15): the step to 2× on Zones is gone, and `r44_mq` now clicks
+  every layer from every other and from quest mode, at 1× and 4× with the scrollbar echo,
+  checking zoom, scroll, lock and the sent form. `grug_mail.unread_counts` hands the minimap
+  letters and announcements apart (`set_mail_count(name, letters, announcements)`); the
+  shield icon (ten textures 1–9 and 9+ from `tools/r48_hud/gen_hud_textures.py`, CC0, derived
+  from the Round 48 badge) stands under the letter icon, or in its place when no letter is
+  unread (the user's correction during the round, follow-up 1), with "Now playing" below the
+  icons shown when the minimap is hidden; `send_broadcast` posts "New announcement:
+  <subject>." to every online player. Fixtures: new `tools/r84_map`; `r44_mq`, `r48_mail`,
+  `r48_hud`, `r27_minimap` rewritten.
+- **SMALL** (ruling 5, defaults 14 and 16): the cloak picker sorts its own fresh list ("No
+  cloak" first, then by the shown name, case-insensitive, articles counted; `R.unlocked`
+  keeps the catalogue order); `grug_repair.DEATH_WEAR_LEVEL = 10` (the mod now declares
+  `grug_xp`); food sets `touch_interaction` (pointed at nothing a long tap holds place, at a
+  node and, since fix round 1, at an object a short tap places), with a tooltip line and
+  Help in the same words ("the sky or anything out of reach"). The touch table, read from the
+  engine source and confirmed by the reviewer (the object row by fix round 1's delta review): eating works wherever the player points at
+  nothing; a short tap still opens a door or a chest and talks to an NPC or trader; at an
+  object a long tap punches (no damage with food in hand; it picks up a dropped item), so no
+  eating there. Fixtures: new `tools/r84_small`; `r33_c3` F, `r70_death` W, `r56_small` F
+  rewritten.
+
+**Reviews:** SMALL MERGE (one optional Low: the tooltip's wording, fixed in fix round 1 on the
+user's ruling). WATER MERGE (one Low: the fixture's swim model, a carry-over). ELITE MERGE (one
+Low, fixed by the coordinator: the `r36_q0` probe). CROWN MERGE (one Low: a quick double click
+paid for a second crown, plus two doc lines; fix round 1, delta review MERGE). TRADE MERGE (a
+Low on `room_for` per row; its backlog note on the stale Sell click became fix round 1, delta
+review MERGE). MAP MERGE (one Low, a stale comment in `zone_labels.lua`, fixed by the
+coordinator).
+
+**The user's choices during the round:** TRADE "looks good", with both lane questions as
+built (sell rows leave out amounts above the slot; the buy button reads "Stack 99" /
+"Stack 100"). CROWN: go on the five-row screenshot. MAP: the announcements icon moves up into
+the letter icon's place when no letter is unread (a change of default 15), then go. The
+preparation pages: "Breach Road" for the arena and "The Charter" for the Account page (see
+Round 85 below).
+
+**Decided on 2026-11-21 (the user, after lane D):** touch eating: with food in hand a short
+tap at an NPC talks to it (`pointed_object = "long_dig_short_place"`, SMALL fix round 1; a
+long tap at an object then punches); no touch eating in a small room where everything is
+within reach is accepted as it is; the tooltip's touch sentence takes Help's wording. The
+start-zone Pond Terrapin keeps shooting back (§3.1, as built). The three preparation
+branches (SITE, ACCOUNTMOCK, ARENADRAFT; tools only) were merged into `round84` on the user's
+go.
+
+**Deviations from the plan:**
+
+- Refuted lead (WATER): a swimming player keeps about 2.7 nodes/s, not 4 (engine source); the
+  reasoning of ruling 4 holds the more.
+- Default 16's limit (plan review H3) did not hold before the round either: with food in
+  hand a short tap at an NPC punches under the default touch settings. The lane left objects
+  as they were; on the user's ruling of 2026-11-21 SMALL fix round 1 made a short tap at an
+  object a click, so the limit now holds.
+- CROWN has no `tools/r84_crown`; its cases live in `r33_c4` E and `r33_c5` F.
+- TRADE's optional room data once per render was not built (it needs a new shared helper in
+  `grug_inventory/storage.lua`).
+- The preparation lanes (ARENADRAFT, ACCOUNTMOCK, SITE) were not planned to merge into
+  `round84` (§1); on the user's go they were merged after lane D (tools only).
+
+**Gates** (first pass on `round84` at `81ec1a74`, before lane D, on the user's instruction):
+the one full fixture run 380 passed and 1 failed: `r72_ranged` R2, whose list of ranged mob
+files lacked the Tortoise that WATER made a shooter; the coordinator added it (test list
+only, `2d706942`) and reran that fixture alone: PASS. `check_fresh_server.py` PASS,
+`check_upgrade.py` PASS (then still at 0.83.0), `income.py --check` PASS,
+`validate.py --game` 0 errors (the 18 known warnings), one smoke boot PASS (listening, no
+error; two spawn-region warnings, Carry-overs). No seed fleet: no world generation changed.
+Lane D: `check_upgrade.py` PASS at 0.84.0, `check_fresh_server.py` PASS, the fixtures that
+read the version, the declaration and the changelog (`r37_dc`, `r41_up`, `r43_gs`) PASS, and
+`r72_ranged` once more on the branch head: PASS (222 checks).
+
+**Preparation for Round 85 (shipped nothing):** ARENADRAFT (GPT-6.2 Astra): "Breach Road"
+(99 × 87) over "Hollow Span"; a second pass after the user's notes (terraces, a less uniform
+field, sparse smoke, some dressing, a palette that fits the zone), which the user liked. ACCOUNTMOCK (GPT-6.2
+Astra): "The Charter" over "Village Road". SITE (Opus, read-only, 11
+seeds): (0, 0) lies on the border of zones 35 and 36 on every seed; relief within 200 nodes
+75–307, the 100 × 100 square 21–139 nodes high and holding up to 370 water columns; the
+middle road crosses that square on 10 of 11 seeds; a fixed anchor of the dragon arenas' kind
+changes claim zones on 9 of 11 seeds, the variant hidden from the zone field, terrain field
+and inland water without a road reserve changes none. With the full map reset (below) that
+constraint no longer binds. The website message (the rewards every linked account gets) went
+to the user; the platform message for a keep-claims reset is obsolete.
+
+**Human tests (offers):** the three of §6 (touch eating, plus with food in hand a short tap at
+an NPC that talks and a long tap at a hostile mob that does no damage; the Tortoise from maximum bow
+range on land and across water, a leader after walking away); Zones at 1× on a phone or a web
+window (are the names readable without the old zoom); at a vendor buy 20 arrows and a Stack of
+torches and sell a part-filled potion slot with Stack, on desktop and web; at a Crownbinder
+crown a level 70 King drop that has one re-enchanted T6 enchant.
+
+## Carry-overs
+
+Each line names where it came from. None is wanted work yet, so none has a BACKLOG line. The
+round's open user decisions (the touch points, the Pond Terrapin, the preparation branches)
+were decided on 2026-11-21 (Completion).
+
+**Notes:**
+
+- **WATER review Low 1:** the fixture's swim model (`tools/r84_water/portable_test.lua`, about
+  line 402) scales the acceleration `inc` by `physics_speed`; the engine scales only the
+  target speed, so swimming stays near 2.7 nodes/s (at most about 3.0) whatever the buff, not
+  the report's 4.11 at the 1.5 cap. Game code and docs are not affected; the Tortoise's 3.75
+  stays above.
+- **`minetest.conf:129`:** the comment says swimming is 4 nodes/s; it is about 2.7.
+- **Tortoise tuning (WATER):** a slowed player (about 2.2 nodes/s) cannot walk away from a
+  Tortoise (3) while hits renew the slow; the fight ends with the 15 s damage grace once the
+  player stops attacking. Tune after play.
+- **Tortoise reach (WATER):** answering at 32–33 nodes needs the mob active there, which holds
+  with the engine default `active_block_range` 4 (the game does not set it); production's own
+  setting is unknown.
+- **Trade window (TRADE review):** `render_buy` and `render_reputation` call
+  `grug_inventory.room_for` once per row (128 times per render on the Decor Merchant, per
+  click, not per tick; not measured). The Decor Merchant's single page is 63,375 bytes (it was
+  already above the 30 KB the user found heavy); categories or pages would shrink it. Each
+  scrollbar packet on that shelf tests 4 × 128 field names.
+- **`grug_guild.buy` (TRADE review):** an undelivered remainder after `fits` (an impossible
+  state) is only logged; `do_buy` refunds it.
+- **Fast clicks (TRADE delta review):** a second click sent before the redrawn form arrived
+  is lost, by design (noticeable on the web build or with lag).
+- **`grug_money.format`** prints "5s 0c" (older than this round; TRADE).
+- **The announcement feed line (MAP review):** up to about 78 characters, which may run wide
+  on narrow windows.
+- **Announcement expiry (MAP):** an announcement that expires while a player is online lowers
+  the count only at the next mail event or join (as before).
+- **Leaders spawned by hand (ELITE review):** an admin's `/spawnentity` of a leader sub-type
+  or the rift boss removes itself at once with the log line, by design of the unsaved rule.
+- **`placing` (ELITE review):** the mark is not reset if an activation raises (already a
+  fatal error).
+- **The 2026-11 audit's MOB2 line** ("leaders are static_save = false, so no leader survives
+  an unload") was wrong in effect; the audit is a historical document and stays as it is
+  (ELITE).
+- **A long tap drifting** between the sky and a node switches between eating and digging (the
+  engine reads the gesture every frame; harmless; SMALL review).
+- **`tools/ui_polish_review/src/app.js:53`** still shows the old crown mock-up text (CROWN
+  review; a tool).
+- **Smoke boot:** two `grug_mobs` spawn-region warnings (`kragmar_redtusk_savanna`,
+  `kragmar_ossuary_reach`), not checked for whether they are new this round.
+
 ## Round 85 outline (not a plan yet)
+
+Written before the round; where it speaks of ruling 7 and keeping claims, the user's rulings
+of 2026-11-21 ([below](#round-85-the-users-rulings-of-2026-11-21)) replace it.
 
 Decided: rulings 6, 10, 12, and ruling 7 as the user's intent; whether its condition holds
 (nothing outside the Battlegrounds changes) is SITE's question. Coordinator proposal, not a
@@ -352,3 +580,34 @@ waystone rows are a fixed list that takes two more entries; a new point of inter
 reset under the upgrade contract. Open until SITE and the draft picks: the footprint and exact
 levelling, the road's routing through the site, the guards, the hostile-spawn-free area, and
 whether the Account page ships with it.
+
+## Round 85: the user's rulings of 2026-11-21
+
+Given after checkpoint C3, during Round 84's end.
+
+**Rulings:**
+
+- **The arena** stands at the map's centre (ruling 6). The design is "Breach Road", in its
+  second pass with terraces; its preparation came from the branches `r84-arenadraft` and
+  `r84-site` (tools and pages only, merged into `round84` on the user's go). The
+  battlefield must blend smoothly into the landscape, with no steep cut walls where they can
+  be avoided.
+- **Round 85 is a FULL map reset, claims included.** It replaces ruling 7 (a reset that keeps
+  claims): the arena's placement makes no compromise for claims. So SITE's measured constraint
+  (an anchor hidden from the zone field, the terrain field and inland water, without a road
+  reserve) no longer binds: the arena may be a real anchor with a blending envelope and roads
+  routed to it. The platform message for a keep-claims reset is obsolete.
+- **The Account page** takes the mock-up "The Charter" (from `r84-accountmock`, merged). The
+  page still lacks the hint that the player must click "Create Character" to generate the code;
+  the implementation adds it.
+
+**Open (under discussion, not decided):**
+
+- **A Claim Stone rework with the same reset:** a claim of one map chunk (80 × 80 nodes;
+  today 101 × 101); restricted claimable areas (for example keeping quest spawns free); one
+  shared stone per account and faction. The user's further ideas (claims placed like points
+  of interest, a capacity question, a link refused when both characters already have a
+  stone, waystone travel to the stone from level 20, no character holding a stone after the
+  reset) are to be discussed in detail and planned; the rework may be left out if it gets
+  too hard. Starting points: [housing.md](../design/housing.md) for today's claim and
+  [accounts-concept.md](accounts-concept.md) §5.5 for the shared stone.

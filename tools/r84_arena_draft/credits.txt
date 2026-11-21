@@ -1,0 +1,21 @@
+Layout, plates and horizon — Grudgelands, Round 84.
+The plates and overview combine the textures below, under CC BY-SA 3.0.
+
+CC BY-SA 3.0 · creativecommons.org/licenses/by-sa/3.0/
+Stone bricks and blocks, sandstone brick, pine and acacia timber — paramat.
+Silver sandstone block — paramat, derived from GreenXenith.
+Wood and mese lamp — BlockMen. Emberglass adds the shipped warm tint.
+Dry dirt and coniferous litter — TumeniNodes.
+Dirt — random-geek, derived from Neuromancer.
+Cobble and mossy cobble — Neuromancer, based on Brane praefect.
+Blue and red wool and apple trunk — Cisoun.
+Forest litter — Grudgelands recolour of the default coniferous litter.
+Basalt outcrops — Lifora, basalt side texture.
+
+CC0 1.0 · creativecommons.org/publicdomain/zero/1.0/
+Smoke — Ferk, default_item_smoke.png, tinted for the draft.
+Gravel — sofar, derived from Gambit's PixelBOX light gravel.
+Basalt brick and rubble, marble and slate tile — adrido / darkage contributors.
+Moss soil (archived plate), mesa clay and bronze block — GPT-6 Astra for Grudgelands.
+
+The shared building viewer and local orbit controls use Three.js r147.

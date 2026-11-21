@@ -4,8 +4,9 @@
 -- table here; tools/r29_e1 checks how they are resolved) and drives the sell
 -- tab through its field handler:
 --   A. one row for Cobblestone in three slots over main and a bag, "1c per
---      50" and one button "All (2c)"; a single good keeps a row per slot with
---      "1" and "All"; the new hint line;
+--      50", one lot "50" and "All (2c)"; a single good keeps a row per slot
+--      with "1" and "Stack N" (Round 84 ruling 2 replaced 1 / 5 / 10 / All;
+--      tools/r84_trade covers the rule); the new hint line;
 --   B. All sells whole lots over several slots with remove_item and leaves
 --      the rest ("Sold 100 Cobblestone for 2c. 43 left.");
 --   C. 49 Sand shows the greyed "Need 50 to sell" row without a button, and
@@ -204,10 +205,10 @@ local function setup(slots, start_money)
 	money = start_money or 0
 	removes = 0
 	grug_traders.open(player, "grug_traders:vendor_general_accord", {x = 0, y = 0, z = 0}, "accord")
-	handler(player, "grug_traders:trade", {mode_sell = "Sell"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {mode_sell = "Sell"})
 end
 local function click(field)
-	handler(player, "grug_traders:trade", {[field] = "x"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {[field] = "x"})
 end
 local function has(text) return shown:find(text, 1, true) ~= nil end
 
@@ -220,11 +221,11 @@ check(has("Cobblestone x143"), "A one row Cobblestone x143 over main and a bag")
 local _, cobble_rows = shown:gsub("Cobblestone x", "")
 eq(cobble_rows, 1, "A exactly one Cobblestone row")
 check(has("label[6.9,2.85;1c per 50]"), "A the first row reads 1c per 50")
-check(has("button[13.0,2.50;2.4,0.6;sellall_1;All (2c)]"), "A one button All (2c)")
-check(has("sell1_1;"), "A one-lot button on a lot row")
+check(has("button[13.00,2.50;2.4,0.6;sellall_1;All (2c)]"), "A one button All (2c)")
+check(has("sell1_1;50]"), "A one-lot button on a lot row, by the lot's count")
 check(has("Gem x2") and has("Gem x3") and has("4c each"), "A a single good keeps one row per slot")
-check(has("sell1_2;1]") and has("sellall_2;All (8c)]") and has("sellall_3;All (12c)]"),
-	"A single rows keep 1 and All")
+check(has("sell1_2;1]") and has("sellstack_2;Stack 2]") and has("sellstack_3;Stack 3]"),
+	"A single rows: 1 and Stack (Round 84 ruling 2: Stack replaces All)")
 check(has(core.formspec_escape("The vendor buys most things you carry.\nCheap goods sell " ..
 	"in lots, e.g. 1c per 50; the rest stays with you.")), "A the new hint line")
 
@@ -284,30 +285,33 @@ local blue = ItemStack("t:gem 2")
 blue:get_meta():set_int("grug_quality", 2)
 setup({})
 inv:set_stack("main", 9, blue)
-handler(player, "grug_traders:trade", {mode_sell = "Sell"})
+handler(player, grug_traders.trade_formname(player:get_player_name()), {mode_sell = "Sell"})
 check(has("12c each"), "F a blue gem sells at x3")
 click("sell1_1")
 eq(money, 12, "F one sold for 12c")
 eq(count_of(inv, "t:gem"), 1, "F one left")
 
--- Explicit quantities preserve whole lots and reject unavailable requests.
+-- Explicit quantities preserve whole lots and reject unavailable requests
+-- (Round 84 ruling 2: a lot row has one lot and All, a slot 1 / 5 / 20 / Stack).
 setup({{"main", 9, "default:cobble 550"}})
-check(has("sell5_1;5]") and has("sell10_1;10]"), "G bulk quantities are shown")
+check(has("sell1_1;50]") and has("sellall_1;All (11c)]") and not has("sell5_1"),
+	"G a lot row: one lot and All")
 click("sell5_1")
-eq(count_of(inv, "default:cobble"), 300, "G five means five whole lots")
-eq(money, 5, "G five lots pay five copper")
-click("sell10_1")
-eq(count_of(inv, "default:cobble"), 300, "G unavailable ten lots refused")
-click("sell5_1")
-eq(count_of(inv, "default:cobble"), 50, "G another five lots sells")
+eq(count_of(inv, "default:cobble"), 550, "G a forged five lots sells nothing")
+click("sell1_1")
+eq(count_of(inv, "default:cobble"), 500, "G one lot sells 50")
+eq(money, 1, "G one lot pays one copper")
 setup({{"main", 9, "t:gem 16"}})
-click("sell10_1")
-eq(count_of(inv, "t:gem"), 6, "G ten single goods sell")
-eq(money, 40, "G single goods keep their price")
+check(has("sell5_1;5]") and has("sellstack_1;Stack 16]") and not has("sell20_1"),
+	"G 16 gems: 1 / 5 / Stack 16")
 click("sell5_1")
-eq(count_of(inv, "t:gem"), 1, "G five single goods sell")
-click("sell5_1")
-eq(count_of(inv, "t:gem"), 1, "G unavailable single goods refused")
+eq(count_of(inv, "t:gem"), 11, "G five single goods sell")
+eq(money, 20, "G single goods keep their price")
+click("sell20_1")
+eq(count_of(inv, "t:gem"), 11, "G unavailable single goods refused")
+click("sellstack_1")
+eq(count_of(inv, "t:gem"), 0, "G Stack sells the whole slot")
+eq(money, 64, "G ...at the same price each")
 
 ------------------------------------------------------------------------------
 -- H. Each row's image carries its stack's own tooltip.
@@ -319,15 +323,15 @@ do
 	setup({{"main", 9, "default:cobble 50"}})
 	inv:set_stack("main", 10, fine)
 	inv:set_stack("bag1", 1, ItemStack("t:gem 2"))
-	handler(player, "grug_traders:trade", {mode_sell = "Sell"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {mode_sell = "Sell"})
 	check(has("item_image[0.7,2.50;0.7,0.7;default:cobble]tooltip[0.7,2.50;0.7,0.7;Cobblestone]"),
 		"H the lot row's image carries its tooltip")
 	check(has("item_image[0.7,3.30;0.7,0.7;t:gem]tooltip[0.7,3.30;0.7,0.7;" ..
 		core.formspec_escape("Gem\nQuality: Fine") .. "]"),
 		"H a quality stack's tooltip shows its own description")
 	check(has("tooltip[0.7,4.10;0.7,0.7;Gem]"), "H a plain stack shows the item's description")
-	local _, tips = shown:gsub("tooltip%[", "")
-	eq(tips, 3, "H one tooltip per row")
+	local _, tips = shown:gsub("tooltip%[0%.7,", "")
+	eq(tips, 3, "H one image tooltip per row")
 end
 
 ------------------------------------------------------------------------------
@@ -337,7 +341,11 @@ do
 	setup({}, 10000)
 	local bought = {}
 	grug_inventory.fits = function() return true end
-	grug_inventory.give = function(_, stack) bought[#bought + 1] = stack:get_name() end
+	grug_inventory.room_for = function(_, stack) return stack:get_count() end
+	grug_inventory.give = function(_, stack)
+		bought[#bought + 1] = stack:get_name()
+		return ItemStack("")
+	end
 	grug_traders.stock = {}
 	local gear = {}
 	for i = 1, 18 do
@@ -357,11 +365,11 @@ do
 	check(maximum > 0 and thumb > 0 and thumb < maximum + 1,
 		"I short General shelf has a draggable thumb smaller than the track")
 	local before = shown
-	handler(player, "grug_traders:trade", {offers_scroll = "CHG:10"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {offers_scroll = "CHG:10"})
 	eq(shown, before, "I scrollbar-only event sends no replacement form")
-	click("buy_14")
+	click("buy1_14")
 	eq(scroll_value(), 10, "I purchase retains the CHG scroll value")
-	handler(player, "grug_traders:trade", {offers_scroll = "VAL:15", buy_14 = "Buy"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {offers_scroll = "VAL:15", buy1_14 = "1"})
 	eq(scroll_value(), 15, "I purchase saves the submitted VAL before resending")
 	eq(bought[1], "t:offer14", "I first click buys the shown lower offer")
 	eq(bought[2], bought[1], "I second click buys the same offer")
@@ -369,26 +377,26 @@ do
 	eq(scroll_value(), 15, "I clicking the active tab keeps its position")
 	click("tab_1")
 	eq(scroll_value(), 0, "I changing shelf resets position")
-	handler(player, "grug_traders:trade", {offers_scroll = "VAL:800", buy_18 = "Buy"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {offers_scroll = "VAL:800", buy1_18 = "1"})
 	eq(scroll_value(), 800, "I lower Gear shelf purchase retains position")
 	-- Stock shrinks between draw and click: existing transaction validation
 	-- still refuses the removed offer and the replacement form clamps scroll.
 	for i = 18, 15, -1 do gear[i] = nil end
-	click("buy_18")
+	click("buy1_18")
 	eq(scroll_value(), maximum, "I redraw clamps the old position to the shorter shelf")
 	eq(#bought, 3, "I missing offer spends nothing and gives nothing")
 	for _, value in ipairs({"CHG:bad", "CHG:1.5", "BAD:0", "VAL:nan"}) do
-		handler(player, "grug_traders:trade", {offers_scroll = value, buy_14 = "Buy"})
+		handler(player, grug_traders.trade_formname(player:get_player_name()), {offers_scroll = value, buy1_14 = "1"})
 		eq(scroll_value(), maximum, "I malformed scroll is ignored: " .. value)
 	end
-	handler(player, "grug_traders:trade", {offers_scroll = "VAL:-90", buy_14 = "Buy"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {offers_scroll = "VAL:-90", buy1_14 = "1"})
 	eq(scroll_value(), 0, "I negative scroll is clamped")
-	handler(player, "grug_traders:trade", {offers_scroll = "VAL:9999999999999999999999999", buy_14 = "Buy"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {offers_scroll = "VAL:9999999999999999999999999", buy1_14 = "1"})
 	eq(scroll_value(), maximum, "I oversized scroll is bounded")
 	click("mode_sell")
 	click("mode_buy")
 	eq(scroll_value(), 0, "I leaving and returning to Buy resets position")
-	handler(player, "grug_traders:trade", {offers_scroll = "CHG:10"})
+	handler(player, grug_traders.trade_formname(player:get_player_name()), {offers_scroll = "CHG:10"})
 	grug_traders.open(player, "grug_traders:vendor_general_accord", {x = 0, y = 0, z = 0}, "accord")
 	eq(scroll_value(), 0, "I reopening starts a fresh scroll session")
 end

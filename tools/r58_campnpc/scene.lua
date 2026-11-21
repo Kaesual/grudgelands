@@ -44,7 +44,7 @@ return function(api)
 	local function with_capture(fn)
 		local real = core.show_formspec
 		core.show_formspec = function(name, formname, formspec)
-			if formname == "grug_traders:trade" or formname:find("^grug_repair:service:") or
+			if formname:find("^grug_traders:trade") or formname:find("^grug_repair:service:") or
 					formname == "grug_quests:dialogue" then
 				captured = formspec
 				return
@@ -78,7 +78,7 @@ return function(api)
 		local o = with_origin and camp_here(player) or nil
 		with_capture(function()
 			grug_traders.open(player, vendor, player:get_pos(), "accord", o)
-			for _, f in ipairs(fields or {}) do submit(player, "grug_traders:trade", f) end
+			for _, f in ipairs(fields or {}) do submit(player, grug_traders.trade_formname(player:get_player_name()), f) end
 		end)
 	end
 	local function carry(player)
@@ -142,7 +142,7 @@ return function(api)
 				for i, row in ipairs(grug_guild.catalog.CONSUMABLES) do
 					if row.item == "grug_guild:ore_sense_t1" then index = i end
 				end
-				open(p, CAMP, {{mode_buy = "Buy"}, {["repbuy_" .. index] = "x"}})
+				open(p, CAMP, {{mode_buy = "Buy"}, {["repbuy1_" .. index] = "x"}})
 				api.log("balance after the buy " .. grug_guild.balance(p) .. ", lifetime " ..
 					grug_guild.lifetime(p))
 			end, formspec = shot},

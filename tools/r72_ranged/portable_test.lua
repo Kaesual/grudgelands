@@ -101,7 +101,7 @@ end
 do
 	local files = {"bandit_archer", "bog_witch", "crystal_shard", "dungeon_master",
 		"ember_wisp", "goblin_miners", "golem", "night_families", "rift",
-		"skeleton_archer", "skeleton_raider", "zero_asset_variants", "bosses"}
+		"skeleton_archer", "skeleton_raider", "tortoise", "zero_asset_variants", "bosses"}
 	for _, name in ipairs(files) do
 		local text = read("mods/ENTITIES/grug_mobs/" .. name .. ".lua")
 		local dogshoot = select(2, text:gsub("attack_type%s*=%s*[^\n]*\"dogshoot\"", ""))

@@ -28,26 +28,34 @@ end
 -- The unread count and its HUD icon
 --
 
--- Unread letters plus unread broadcasts (§3.11). Broadcasts count only for
--- an online player: their read set is player meta.
-function grug_mail.unread_count(name)
-	local box = S.box(name)
+-- The unread letters and the unread broadcasts (§3.11), apart (Round 84
+-- default 15: each has its own icon). Broadcasts count only for an online
+-- player: their read set is player meta.
+function grug_mail.unread_counts(name)
+	local now = S.now()
+	local letters = M.unread_letters(S.box(name), now)
 	local player = core.get_player_by_name(name)
-	if not player then return M.unread(box, {}, {}, S.now()) end
-	return M.unread(box, S.broadcasts(), S.read_set(player), S.now())
+	if not player then return letters, 0 end
+	return letters, M.unread_broadcasts(S.broadcasts(), S.read_set(player), now)
 end
 
--- Recomputes an online player's count and hands it to the minimap's mail
--- icon (lane HUD's grug_map.minimap.set_mail_count, looked up at call time:
--- it may merge after this mod).
+-- Both together.
+function grug_mail.unread_count(name)
+	local letters, broadcasts = grug_mail.unread_counts(name)
+	return letters + broadcasts
+end
+
+-- Recomputes an online player's counts and hands them to the minimap's
+-- letter and announcement icons (grug_map.minimap.set_mail_count, looked up
+-- at call time: it may merge after this mod). Returns the total.
 function grug_mail.refresh_count(name)
 	if not core.get_player_by_name(name) then return end
-	local count = grug_mail.unread_count(name)
+	local letters, broadcasts = grug_mail.unread_counts(name)
 	local minimap = rawget(_G, "grug_map") and grug_map.minimap
 	if minimap and type(minimap.set_mail_count) == "function" then
-		minimap.set_mail_count(name, count)
+		minimap.set_mail_count(name, letters, broadcasts)
 	end
-	return count
+	return letters + broadcasts
 end
 
 --
@@ -321,7 +329,13 @@ function grug_mail.send_broadcast(subject, body, admin_name)
 	S.save_broadcasts(broadcasts)
 	log(("broadcast #%d by %s: %s: %s"):format(broadcast.id, tostring(admin_name),
 		broadcast.subject, broadcast.body))
+	-- One feed line per new announcement to the players online (Round 84
+	-- default 15); a later join shows only the icon.
+	local subject = broadcast.subject
+	local line = subject == "" and "New announcement." or ("New announcement: " .. subject ..
+		(subject:find("[%.!?]$") and "" or "."))
 	for _, player in ipairs(core.get_connected_players()) do
+		grug_core.feed(player, "notice", line, "announcement:" .. broadcast.id)
 		grug_mail.refresh_count(player:get_player_name())
 	end
 	return broadcast.id

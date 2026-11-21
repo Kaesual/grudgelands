@@ -188,6 +188,9 @@ _G.grug_mobs = {
 		local ent = {name = def.name, health = 10}
 		ent.object = new_object({x = pos.x, y = pos.y, z = pos.z}, {static_save = true})
 		ent.object.ent = ent
+		-- The activation inside the add runs init.lua's after_activate
+		-- wrapper, whose first statement is the unsaved claim (Round 84 ELITE).
+		grug_mobs.unsaved_claim(ent)
 		added[#added + 1] = {pos = pos, def = def, ent = ent}
 		return ent
 	end,
@@ -197,6 +200,7 @@ _G.grug_mobs = {
 		return false
 	end,
 }
+assert(loadfile(repo .. "/mods/ENTITIES/grug_mobs/unsaved.lua"))()
 _G.mobs = {}
 function mobs:can_spawn(pos, name)
 	if NODES[name_at(pos)].walkable then return nil end

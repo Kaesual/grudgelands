@@ -10,7 +10,8 @@
 --                      is the enchant rule at the item level and tier
 --                      (item_tiers.md §1.1), rewritten whenever either changes
 --   grug_ilvl          per-stack item level; absent falls back to _grug_ilvl
---   grug_crowned       1 once a Fallen Crown was applied (crown_item)
+--   grug_crowned       1 once a Fallen Crown was applied (crown_item; it may
+--                      be applied again while it raises a number)
 --   grug_req_level     per-stack equip requirement, absent without an ilvl
 --   grug_base_name     uncolored, unaffixed definition name used on rebuild
 --   grug_roll_seed     exact PcgRandom seed used for the last affix roll
@@ -800,14 +801,24 @@ function grug_items.operation_plan(recipe, stack, player, levels)
 	return grug_items.operation_result(recipe, stack, player, levels)
 end
 
--- The crown (round33-plan.md §2.5, round70-plan.md §2.10, item_tiers.md §4):
--- one Fallen Crown lifts one item below CROWN_CAP to its material tier's
--- top + 10, CROWN_CAP at most, and every enchant one tier (T7 at most); once
--- per item. It always raises the item level: a King's or a dragon's drop is
--- refused, and so is an item the rule would not lift. Returns the crowned copy
--- and the preview text, or nil and the refusal. The crown NPC (grug_traders)
--- takes the crown and the fee.
+-- The crown (round33-plan.md §2.5, round70-plan.md §2.10, round84-plan.md
+-- ruling 1 and default 19, item_tiers.md §4): one Fallen Crown lifts one item
+-- to its material tier's top + 10, CROWN_CAP at most (never lower than it is),
+-- and every enchant below T7 one tier; empty channels stay empty. It may be
+-- applied again and again, but only while it raises a number: the item level
+-- or an enchant's value. A value is capped by the item level (L = min(item
+-- level, 10 x tier, 70)), so a tier alone is no gain and is refused. The chain
+-- ends: the level reaches its target at the first crown, and every later one
+-- must lift an enchant tier, which stops at T7 (six crowns at most).
+-- `grug_crowned` marks an item crowned at least once (the "Crowned" line).
+-- Returns the crowned copy and the preview text, or nil and the refusal. The
+-- crown NPC (grug_traders) takes the crown and the fee.
 grug_items.CROWN_CAP = 70
+
+local function crown_value_text(stat, value)
+	return "+" .. grug_items.format_enchant_value(stat, value) ..
+		(AFFIX[stat].percent and "%" or "")
+end
 
 local function crown_plan(stack)
 	if not stack or stack:is_empty() then return nil, "Hand over the item to crown." end
@@ -817,24 +828,42 @@ local function crown_plan(stack)
 	local tier = material_tier(stack)
 	local ilvl = effective_ilvl(stack)
 	if not tier or not ilvl then return nil, "This item has no tier." end
-	local meta = stack:get_meta()
-	if meta:get_int("grug_crowned") == 1 then return nil, "This item is already crowned." end
-	if ilvl >= grug_items.CROWN_CAP then
-		return nil, "The crown works only on items below item level " ..
-			grug_items.CROWN_CAP .. "."
-	end
-	local target = math.min(10 * tier + 10, grug_items.CROWN_CAP)
-	if target <= ilvl then
-		return nil, "The crown would not raise this item's level (" .. ilvl .. ")."
-	end
-	local affixes = read_affixes(meta)
-	local lines = {"Item level " .. ilvl .. " becomes " .. target .. "."}
+	local target = math.max(ilvl, math.min(10 * tier + 10, grug_items.CROWN_CAP))
+	local affixes = read_affixes(stack:get_meta())
+	local lines, rises, below_t7 = {}, target > ilvl, false
+	if rises then lines[1] = "Item level " .. ilvl .. " becomes " .. target .. "." end
+	local filled = {}
 	for index = 1, #affixes do
 		local affix = affixes[index]
-		if affix.tier < 7 then
-			lines[#lines + 1] = enchant_name(affix) .. " becomes T" .. (affix.tier + 1) .. "."
-			affix.tier = affix.tier + 1
+		filled[affix.channel] = true
+		local next_tier = math.min(affix.tier + 1, 7)
+		below_t7 = below_t7 or affix.tier < 7
+		local before = grug_items.enchant_value(affix.stat, ilvl, affix.tier)
+		local after = grug_items.enchant_value(affix.stat, target, next_tier)
+		local name = enchant_name(affix) .. " " .. crown_value_text(affix.stat, before)
+		if after > before then
+			rises = true
+			lines[#lines + 1] = name .. " becomes " ..
+				(next_tier > affix.tier and "T" .. next_tier .. " " or "") ..
+				crown_value_text(affix.stat, after) .. "."
+		elseif next_tier > affix.tier then
+			lines[#lines + 1] = name .. " becomes T" .. next_tier .. ", still " ..
+				crown_value_text(affix.stat, after) .. " at item level " .. target .. "."
 		end
+		affix.tier = next_tier
+	end
+	if not rises then
+		local enchants = #affixes == 0 and "it has no enchants" or
+			(not below_t7 and (#affixes == 1 and "its enchant is T7" or "its enchants are T7")) or
+			"no enchant would gain value at that level"
+		return nil, "The crown would raise nothing: the item stays at item level " ..
+			ilvl .. ", and " .. enchants .. "."
+	end
+	if not filled.prefix and not filled.suffix then
+		lines[#lines + 1] = "Both channels stay empty."
+	elseif not filled.prefix or not filled.suffix then
+		lines[#lines + 1] = "The empty " .. (filled.prefix and "suffix" or "prefix") ..
+			" stays empty."
 	end
 	local out = ItemStack(stack)
 	local out_meta = out:get_meta()

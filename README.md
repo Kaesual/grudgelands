@@ -98,9 +98,11 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.83.0** lets you delete a character from the realm's website: the game erases it, online
-or offline, and a new character of the same name starts fresh. 0.82.0 made world generation
-faster while the world comes out exactly as before. Since 0.79.0 you can link your characters
+**0.84.0** answers player reports: vendors buy and sell in amounts (1 / 5 / 20 / Stack),
+the Crownbinder crowns an item again while a crown still raises a number, mobs swim
+at full speed and the Tortoise shoots back, zone leaders no longer appear twice, and
+announcements have their own icon beside the minimap. 0.83.0 lets you delete a character
+from the realm's website. Since 0.79.0 you can link your characters
 to an account on the realm's website (grudgelands.com/play); the account's rewards, such as
 the **Cheer** emote and the Supporter and donor cloaks, reach every linked character. Accounts
 are optional ([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)).

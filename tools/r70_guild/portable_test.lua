@@ -15,8 +15,9 @@
 -- D. stonewright_rows and stonewright_make: lots, the rest, the fee, rank,
 --    money, room (a full bag converts its own stacks; a refusal changes
 --    nothing), no faction, malformed amounts.
--- E. The window: one page without modes, rows locked by rank, lots 1 / 5 /
---    10 / All, forged and stale clicks, other vendors have no such fields.
+-- E. The window: one page without modes, rows locked by rank, one lot and
+--    All (Round 84), forged and stale clicks, other vendors have no such
+--    fields.
 -- F. The socket: the sorter's in all six capitals, a service role, the
 --    machines in the six templates in reach of it, one facedir per machine.
 -- G. The removed rule: a vendor may sell an exchanged item; no doc keeps it.
@@ -457,7 +458,6 @@ local shown
 core.show_formspec = function(_, _, formspec) shown = formspec end
 core.close_formspec = function() shown = nil end
 local function has(text) return shown ~= nil and shown:find(text, 1, true) ~= nil end
-local FORM = "grug_traders:trade"
 core.chat_send_player = function() end
 vector = {distance = function(a, b)
 	local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
@@ -467,7 +467,7 @@ local handlers = rawget(core, "registered_on_player_receive_fieldss") or {}
 check(#handlers > 0, "E the trade window's field handler is registered")
 local function submit(player, fields)
 	for _, fn in ipairs(handlers) do
-		if fn(player, FORM, fields) then return end
+		if fn(player, grug_traders.trade_formname(player:get_player_name()), fields) then return end
 	end
 end
 local WRIGHT = "grug_traders:stonewright"
@@ -486,9 +486,11 @@ check(not has("mode_buy") and not has("mode_sell") and not has("mode_tradein") a
 check(has("label[0.6,1.75;Miner's Guild]") and has("Rank 2 of 10"), "E the guild lines")
 check(not has("Charter of Stone"), "E no proper name in the interface")
 check(has("10 Gravel") and has("10 Cobblestone + 1c"), "E the first row: output and cost")
-check(has("stone1_1;1]") and has("stone5_1;5]") and has("stoneall_1;All (50)]"),
-	"E the Trade-in's lots: 1, 5, All (50 made)")
-check(not has("stone10_1;"), "E only five lots: no 10 button")
+-- Round 84 default 21: one conversion (its button counts what it makes) and
+-- All, no 5 or 10.
+check(has("stone1_1;10]") and has("stoneall_1;All (50)]"),
+	"E the Trade-in's lots: one (10 made), All (50 made)")
+check(not has("stone5_1;") and not has("stone10_1;"), "E no 5 or 10 button")
 check(has("Need 10 Gravel"), "E a row without a lot says what is missing")
 check(not has("stone1_2;"), "E that row has no button")
 check(has("Reach Reputation Rank 3") and has("Reach Reputation Rank 8"), "E locked rows say their rank")

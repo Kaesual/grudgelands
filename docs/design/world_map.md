@@ -250,9 +250,10 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   flat buttons above the map in the toolkit's navigation style (Layout);
   the active one is marked by the accent (its text and an
   edge under it), none in quest mode; each button's tooltip is its long
-  name, its label the short one. A new session starts on Quests; the
-  chosen layer is kept between openings until the player leaves (not
-  stored). Buttons, not a dropdown: every send recreates a dropdown and
+  name, its label the short one. Choosing a layer (or a quest) never
+  changes the zoom or the scroll (Round 84 ruling 13). A new session
+  starts on Quests; the chosen layer is kept between openings until the
+  player leaves (not stored). Buttons, not a dropdown: every send recreates a dropdown and
   closes an open list, and opening it sends no event the server could wait
   for.
 
@@ -323,8 +324,10 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   2× and above; larger zooms make room for the more readable type. Box
   dimensions and rendering share the same font metrics (0.52 em per
   character, 1.2 em line height; 16 px times GUI scaling, pixels per unit
-  from window information). Selecting Zones from a 1× overview enters
-  the existing 2× zoom around the player; minus still permits 1×.
+  from window information). Choosing Zones, like every other layer, keeps
+  the zoom and the scroll as they were (Round 84 ruling 13; until then
+  Zones entered 2× from a 1× overview); the names are small at 1× until
+  the player zooms.
   Placement (`grug_map/zone_labels.lua`) reuses Round 28 M1's: at startup
   sample land on the 32-node grid, prefer the cell farthest from border and
   coast, and nudge clear of earlier labels and baked region names in both
@@ -828,15 +831,24 @@ drawn from the base image above. The gliding version (approved in playtest,
   side elements below stay in either case. A Claim Stone in the hand shows
   the minimap while the switch is off (claim mode above).
 - **Side elements** (Round 48): two small images in one row beside the
-  minimap, sized with the minimap's box (they grow with the window like the
-  bezel):
+  minimap and a third under the mail icon, sized with the minimap's box
+  (they grow with the window like the bezel):
   - the **mail icon** (an envelope with its count right of it, as high as
-    the envelope) shows the player's unread letters and broadcasts: hidden
+    the envelope) shows the player's unread letters (since Round 84 only
+    letters, admin letters and answers included): hidden
     at 0, the digit 1–9, "9+" above ([mail plan](../planning/mail-plan.md)
     ruling 14; the image is wide enough for "9+" beside the envelope, the
     user's choice, so a single digit leaves room on its right and every
     count has the same width); drawn exactly as high as the band (72 × 23
     px at 1080p, 47 × 15 at 720p);
+  - the **announcements icon** (Round 84, coordinator default 15: the
+    announcement badge of the mail windows with its count right of it)
+    shows the unread announcements the same way. While letters are unread
+    too it stands under the mail icon, left-aligned with it and 4 HUD px
+    below the row; otherwise it takes the mail icon's place in the row, so
+    no empty slot stands above it (the user's correction of 2026-11-21).
+    It is drawn at the mail icon's scale so the two counts line up (72 × 24
+    px at 1080p: the badge's art is one pixel higher than the envelope);
   - the **daytime band** shows roughly where the world day stands, not a
     clock (no numbers): one 20-minute day of day and night sections at their
     real lengths (the 15-minute day phase three quarters of it, with the
@@ -851,20 +863,25 @@ drawn from the base image above. The gliding version (approved in playtest,
 
   The two stand in one row, band left and mail icon right, 8 HUD px apart,
   the same height and vertically centred on the row (the user's variant A,
-  2026-10-14); the mail icon's place stays kept while it is hidden, so
-  nothing jumps when a letter arrives. With the minimap shown, the row
+  2026-10-14); the mail icon's place in the row stays kept while no icon
+  shows, so the band never moves. With the minimap shown, the row
   stands left of the bezel (the mail icon 4 HUD px from it), its top on the
-  bezel's top; the location line and "Now playing" stay under the bezel.
+  bezel's top, the announcements icon in it or under the mail icon as
+  above; the location line and "Now playing" stay under the bezel.
   With the minimap hidden or unavailable, the row stands right-aligned in
-  the top-right corner inside the minimap's box, and "Now playing" 4 HUD px
-  below it, so the quest tracker and the other elements laid out around that
-  box keep their places (round plan ruling 2.1). Both images are finished files
-  (`grug_map_daytime_00` … `_39`, `grug_map_mail_1` … `_9` and `_9p`)
-  composed by `tools/r48_hud/gen_hud_textures.py` from its parts (the
-  count's digits are the cooldown digits); the HUD only switches the file
+  the top-right corner inside the minimap's box, the announcements icon
+  in it or under its mail icon, and "Now playing" 4 HUD px below the icons
+  that show (the row, or the second icon when both show), so the quest tracker and the other elements laid out around that
+  box keep their places (round plan ruling 2.1). The images are finished files
+  (`grug_map_daytime_00` … `_39`, `grug_map_mail_1` … `_9` and `_9p`,
+  `grug_map_announce_1` … `_9` and `_9p`)
+  composed by `tools/r48_hud/gen_hud_textures.py` from its parts and the
+  announcement badge (the count's digits are the cooldown digits); the HUD
+  only switches the file
   name. The band is checked at the minimap's 5 s check and sends one
   `hud_change` when its step changes, so a clock jump (`/time`, sleeping)
-  shows within 5 s; the mail icon changes when the mail count does. Both
+  shows within 5 s; the two mail icons change when their counts do
+  (grug_mail tells both on every change and at join). They
   carry the user's Round 48 art picks (band A, envelope B; `tools/r48_artm`).
 - No client mod, per-viewer entity proxies or fog of war.
 
@@ -917,7 +934,8 @@ were in, and quest texts and level routes now name zones.
   between tracks, while a pick waits for its download, on leaving the
   capital (with the fade-out), and with music off or at volume 0. With the
   minimap hidden or unavailable it stands in the top-right corner below the
-  row of the daytime band and the mail icon, its right edge on the minimap box's (Round 48; until then
+  row of the daytime band and the mail icon, or below the announcements
+  icon when that stands under the mail icon (Round 84), its right edge on the minimap box's (Round 48; until then
   it was hidden). grug_ambience tells the minimap only when the playing track changes; the
   minimap places the box again after a window or GUI scaling change and
   sends only what changed. The note icon is the user's pick (a silver

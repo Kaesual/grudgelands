@@ -314,6 +314,9 @@ local function activate(name, staticdata, pos)
 	entity.health = 100
 	for k, v in pairs(core.deserialize(staticdata) or {}) do entity[k] = v end
 	live[#live + 1] = entity
+	-- init.lua's after_activate wrapper opens with the unsaved claim (Round
+	-- 84 ELITE; the plain entities here carry no `_grug_unsaved`).
+	grug_mobs.unsaved_claim(entity)
 	return object, entity
 end
 core.add_entity = function(pos, name, staticdata) return (activate(name, staticdata, pos)) end
@@ -411,6 +414,7 @@ _G.grug_mobs = {
 	-- routes.lua (Round 42 NV3; not loaded here).
 	route_settlement = noop,
 }
+dofile(mobs_dir .. "/unsaved.lua")
 dofile(mobs_dir .. "/guard.lua")
 dofile(mobs_dir .. "/bosses.lua")
 local carrier_text = {}

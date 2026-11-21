@@ -274,7 +274,7 @@ local function show(player, kind)
   if kind == "vendor_exchange" then submit(player,last_form,{mode_tradein="true"}) end
   if kind == "vendor_repair" then
    submit(player,last_form,{repair="true"})
-   assert(last_form=="grug_traders:trade" and last_fs:find("quote_",1,true),"Embedded repair did not open")
+   assert(last_form:find("^grug_traders:trade") and last_fs:find("quote_",1,true),"Embedded repair did not open")
   end
   if previous then player:set_pos(previous) end
  elseif kind == "repair" then
@@ -291,6 +291,25 @@ local function show(player, kind)
   end
   grug_traders.open_crownbinder(player,"Crownbinder",base,"accord")
  elseif kind == "crown" then grug_traders.open_crownbinder(player,"Crownbinder",base,"accord")
+ elseif kind == "crown_enchanted" then
+  -- Extra-only scenario (Round 84): the longest previews and the refusals
+  -- of the repeatable crown, through the real operation.
+  local inv = player:get_inventory()
+  for index, stack in ipairs(inv:get_list("main")) do
+   if core.get_item_group(stack:get_name(), "grug_gear") > 0 then inv:set_stack("main", index, "") end
+  end
+  local function made(item, ilvl, stats)
+   local affixes = {}
+   for i, stat in ipairs(stats) do affixes[i] = {channel = i == 1 and "prefix" or "suffix", stat = stat} end
+   return assert(grug_items.make_stack(item, ilvl, affixes, player))
+  end
+  local long = made("grug_gear:sword_embersteel", 41, {"attack_speed_percent", "max_mana_percent"})
+  local once = assert(grug_items.crown_item(made("grug_gear:sword_embersteel", 35, {"attack_speed_percent", "max_mana_percent"}), player))
+  local twice = assert(grug_items.crown_item(once, player))
+  local top = made("grug_gear:sword_abyssal_steel", 70, {"str"})
+  local reported = assert(grug_items.operation_result(grug_jobs.station_operation("enchant:sword:suffix:crit_percent:t6"), top, player)).output
+  for _, stack in ipairs({long, once, twice, reported, top, made("grug_gear:sword_steel", 25, {})}) do inv:add_item("main", stack) end
+  grug_traders.open_crownbinder(player,"Crownbinder",base,"accord")
  elseif kind == "profession" or kind == "alchemy" then grug_jobs.open_trainer(player,kind == "alchemy" and "alchemist" or "weaponsmith",base)
  elseif kind == "riding" or kind == "shipwright" then
   local service=grug_mounts.SERVICES[kind == "riding" and "riding_trainer" or "shipwright"]

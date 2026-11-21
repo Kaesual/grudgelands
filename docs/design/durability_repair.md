@@ -31,7 +31,9 @@ a death can break an item and ten deaths break a fresh one. That covers the
 Weapon and offhand slots and the four armor slots, by the same `eligible` test
 as all other wear: trinkets do not wear, and a tool or hoe in the hotbar is not
 equipped. Every kind of death counts, a fall or a drowning too; a broken item
-stays broken and Creative spends nothing. It is one event: one equipment
+stays broken and Creative spends nothing. **The wear starts at player level
+10** (Round 84 ruling 5, `grug_repair.DEATH_WEAR_LEVEL`): a character below it
+dies for free, so the first steps cost no repairs. It is one event: one equipment
 notification (a full change only if an item broke) and one break cue for the
 whole set.
 

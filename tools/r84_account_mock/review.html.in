@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Account page · Grudgelands design review</title>
+<style>
+*{box-sizing:border-box}
+:root{font:16px/1.45 "Segoe UI",system-ui,sans-serif;color:#292b27;background:#e7e6de}
+body{margin:0}
+main{min-height:100svh;display:grid;grid-template-columns:clamp(270px,22vw,345px) minmax(0,1fr)}
+aside{max-height:100svh;overflow-y:auto;background:#f6f5ee;border-right:1px solid #bebfb3;padding:clamp(22px,3vw,46px) clamp(21px,2.4vw,38px);display:flex;flex-direction:column;justify-content:safe center;gap:1.45rem}
+header{border-bottom:1px solid #c5c5b7;padding-bottom:1.15rem}
+h1,h2,p{margin:0}
+h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:400}
+h1{font-size:clamp(36px,3.3vw,55px);letter-spacing:-.055em;line-height:1.1}
+header p,.legend{color:#5d6258;font-size:.86rem;letter-spacing:.035em;font-weight:600}
+header p{margin-bottom:.45rem}
+.legend,label[for=state]{display:block;margin:0 0 .52rem}
+button,select,input{font:inherit}
+button,select,summary{cursor:pointer}
+button:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #916d2f;outline-offset:3px}
+.choices{display:grid;gap:.32rem}
+.choices button{display:flex;align-items:center;gap:.7rem;text-align:left;background:transparent;color:#41473d;border:1px solid #c5c5b7;padding:.56rem .78rem;font-size:1.04rem}
+.choices button::before{content:"";width:.68rem;height:.68rem;border-radius:50%;border:1px solid #929888}
+.choices button[aria-pressed=true]{background:#253b38;color:#faf6e9;border-color:#253b38}
+.choices button[aria-pressed=true]::before{background:#dbbc80;border-color:#dbbc80}
+.reason,.note{font-size:.95rem;color:#51584f;line-height:1.47;margin:.65rem 0 0}
+.switch{display:flex;border:1px solid #b3b9ab}
+.switch button{border:0;background:transparent;color:#454d45;flex:1;padding:.45rem .28rem}
+.switch button[aria-pressed=true]{background:#d5ddcf;color:#182b22;font-weight:600}
+label[for=state]{font-size:.86rem;margin:.8rem 0 .32rem;font-weight:600;color:#5d6258}
+.select-wrap{position:relative}
+.select-wrap::after{position:absolute;content:"";right:1rem;top:43%;width:.43rem;height:.43rem;transform:rotate(45deg);border:solid #51594d;border-width:0 1.5px 1.5px 0;pointer-events:none}
+select{width:100%;appearance:none;border:1px solid #b3b9ab;background:#fafaf5;color:#222c23;padding:.52rem 2rem .52rem .65rem;border-radius:0}
+footer{border-top:1px solid #c5c5b7;padding-top:.85rem}
+.plain,summary{color:#34463b;font-size:.91rem;background:none;border:0;text-decoration:underline;text-underline-offset:.2rem;padding:0;text-align:left}
+details{margin-bottom:.6rem}
+details p{margin-top:.45rem;font-size:.9rem}
+code{font:1em ui-monospace,monospace;overflow-wrap:anywhere}
+.stage{display:flex;min-width:0;align-items:center;justify-content:center;padding:16px}
+.frame{position:relative;width:min(100%,120svh,1296px);aspect-ratio:4/3;container-type:inline-size}
+canvas{display:block;width:100%;height:100%;background:#151b20}
+#actions{position:absolute;inset:0}
+.hot{position:absolute;display:block;border:0;margin:0;border-radius:0;background:transparent}
+button.hot{padding:0}
+button.hot:hover{background:#eeece313}
+.hot:focus-visible{outline:2px solid #ebd1a0;outline-offset:-2px}
+.refusal{position:absolute;color:#efafa2;font:1.64cqw/1.45 Arial,sans-serif;pointer-events:none}
+input.hot{background:#243235;color:#eeeae1;padding:0 .75cqw;font:1.65cqw Arial,sans-serif;caret-color:#eeeae1}
+dialog{border:1px solid #bcb7a4;background:#f8f7ef;color:#293026;width:min(90vw,55rem);max-height:85svh;padding:clamp(18px,3vw,38px)}
+dialog::backdrop{background:#121c1bd1}
+dialog h2{font-size:2rem;margin:0 0 .63rem}
+dialog p{margin:.55rem 0}
+dialog .dialog-close,.dialog-link{display:inline-block;border:1px solid #889487;color:#25372c;background:#e4e9df;text-decoration:none;padding:.45rem .9rem;margin:.4rem .4rem .4rem 0}
+.dialog-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+dialog details{margin:1rem 0;border-top:1px solid #c6c8b9;padding-top:.7rem}
+dialog ul{padding-left:1.25rem}
+.url{max-width:35rem}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+td,th{text-align:left;padding:.35rem .44rem;border-bottom:1px solid #d8dace;vertical-align:top}
+td:last-child{overflow-wrap:anywhere}
+thead{background:#e3e8dc}
+td:nth-child(n+2):nth-child(-n+5){font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+[hidden]{display:none!important}
+@media(max-width:900px){main{display:flex;flex-direction:column}aside{max-height:none;border:0;padding:16px 22px;display:grid;grid-template-columns:1fr 1fr;gap:1rem}header,footer{grid-column:1/-1}header{padding-bottom:.6rem}footer{padding-top:.5rem}h1{font-size:2.3rem}.stage{padding:10px}.frame{width:min(100%,120svh)}}
+@media(max-width:500px){aside{padding:14px;gap:.65rem}.choices button{font-size:.92rem}.reason,.note{font-size:.86rem}.stage{padding:4px}td,th{padding:.25rem .12rem}}
+</style>
+</head>
+<body>
+<main>
+<aside aria-label="Design review">
+<header><p>Grudgelands · Round 84</p><h1>Account page</h1></header>
+<section aria-labelledby="layout-label">
+<div id="layout-label" class="legend">Layout</div>
+<div class="choices" id="layouts"></div><p id="reason" class="reason"></p>
+</section>
+<section aria-labelledby="view-label">
+<div id="view-label" class="legend">Character</div>
+<div class="switch"><button id="unlinked">Unlinked</button><button id="linked">Linked</button></div>
+<label for="state">Preview state</label><div class="select-wrap"><select id="state"></select></div>
+<p id="note" class="note"></p>
+</section>
+<footer>
+<details id="trial"><summary>Try the code field</summary>
+<p>Use <code id="example"></code> to preview confirmation. Entries stay on this page.</p></details>
+<button type="button" class="plain" id="inspect">Builder’s coordinates &amp; art</button>
+</footer>
+</aside>
+<section class="stage" aria-label="Inventory preview">
+<div class="frame"><canvas id="picture" width="1280" height="960" role="img"></canvas>
+<div id="actions"></div></div>
+</section>
+</main>
+<div id="announce" class="sr" aria-live="polite"></div>
+<dialog class="url" id="website" aria-labelledby="site-title">
+<h2 id="site-title">Open the website?</h2>
+<p><strong>grudgelands.com/play</strong></p><p>The website opens in a new tab. To stay offline, use the sample code <code id="site-code"></code> in the preview.</p>
+<button class="dialog-close" type="button">Stay here</button>
+<a class="dialog-link" href="https://grudgelands.com/play" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Open website</a>
+</dialog>
+<dialog id="notes" aria-labelledby="notes-title">
+<div class="dialog-top"><h2 id="notes-title">Builder’s coordinates</h2><button class="dialog-close">Close</button></div>
+<p id="notes-view"></p>
+<p>The 20 × 13.5 body begins at (0, 1.5) in the 20 × 15 inventory. Keep the existing navigation and call the Account page with the inventory grid hidden. The table uses body-local real units. Label y is its midline, w its measured text advance, and h is zero because labels size themselves.</p>
+<details open><summary>Element list for this view</summary><table><thead><tr><th>Element</th><th>x</th><th>y</th><th>w</th><th>h</th><th>Content or style</th></tr></thead><tbody id="elements"></tbody></table></details>
+<details><summary>Implementation notes</summary>
+<ul>
+<li>Draw each image and flat box in order. Emit panel backgrounds before foreground elements. Use the shared button role styles and restore scoped label styles. Arimo is rasterized at a 21 px reference size per 64 px unit. Apply the inventory’s fitted text scale in game.</li>
+<li>Use the catalogue for each known ID’s icon, name, kind and use hint. Read advertised IDs only from the website’s list. Read owned IDs only from the linked account. The three- and four-item previews use a hypothetical website configuration. Unknown IDs drop out. A missing list omits the whole shelf.</li>
+<li>The Charter stacks advertised rewards on the left. Village Road gives each reward 4.6 units across. Both fit four at once. For a longer owned list, repeat Charter rows at a 2.38-unit pitch or Village Road rows two across below the banner. Use a native scroll container in the collection space above the fixed help row. Keep backgrounds outside the scroller.</li>
+<li>Fit account and character names within their title rectangles. Use wrapped, escaped prose or a measured ellipsis and a full-name tooltip. Keep the link offer’s complete account name readable before confirmation.</li>
+<li>The code field and Enter both use the existing check, offer and confirmation flow. Start on the existing neutral focus target. Preserve the typed code on refusal. Keep actions inert in place while checking or confirming and put the current status beside them. Character creation keeps its existing one-line gate.</li>
+<li>The website control maps to <code>button_url</code> with the visible address as a manual fallback. Only a website administrator unlinks a character.</li>
+</ul>
+</details>
+<details><summary>Existing art &amp; credits</summary>
+<p>The Charter uses the approved Grudgelands crest by Jan Hangebrauck (CC0 1.0). Village Road crops the shipped human character-creation scene with a fixed texture crop. Its arrangement is by the Grudgelands project, CC BY-SA 3.0. The original blocks, plants and props retain their component licences. The build uses the original inventory faction mark, UI plates and catalogue icons. Both layouts need zero new art.</p>
+<p>Cheer uses the player model by MirceaKitsune and contributors, with the Grudgelands skin, pose and render (CC BY-SA 3.0). The cloak designs, heraldic tab mark and UI theme are Grudgelands artwork (CC0 1.0). The crest and icon proportions are preserved. The village crop uses the original pixels scaled to the banner. Arimo is by The Noto Project Authors (SIL OFL 1.1).</p>
+<p>CC BY-SA 3.0 · creativecommons.org/licenses/by-sa/3.0/</p>
+</details>
+</dialog>
+<script id="data" type="application/json">__ACCOUNT_VIEWS__</script>
+<script>
+"use strict";
+const data = JSON.parse(document.getElementById("data").textContent);
+const $ = id => document.getElementById(id);
+const images = new Map();
+const picture = $("picture"), ctx = picture.getContext("2d");
+let layout = "charter", state = "unlinked", typed = "", drawNumber = 0;
+let entry = "unlinked", refusal = "";
+function activeView() {
+  return data.views[layout+"-"+(refusal ? entry : state)];
+}
+function img(src) {
+  if (!images.has(src)) {
+    const im = new Image();
+    im.src = src;
+    images.set(src, im.decode().then(() => im));
+  }
+  return images.get(src);
+}
+function selectState(next, value, previousEntry, message = "") {
+  state = next;
+  entry = previousEntry ?? (["three","four","empty","missing"].includes(next) ? next : "unlinked");
+  refusal = message;
+  const preset = data.views[layout+"-"+next].actions.find(a => a.role === "code");
+  typed = value ?? preset?.value ?? "";
+  render();
+}
+function props(el, a) {
+  el.className = "hot";
+  el.style.left = (a.x*5)+"%"; el.style.top = (a.y/15*100)+"%";
+  el.style.width = (a.w*5)+"%"; el.style.height = (a.h/15*100)+"%";
+  el.setAttribute("aria-label", a.label);
+}
+function submit() {
+  const val = typed.toUpperCase().replace(/[\s-]/g,"");
+  if (val === data.example.replace("-","")) {
+    selectState("offer", typed, entry);
+    return;
+  }
+  const result = val === "M6QWK8HNP3" ? "expired" : "wrong";
+  const message = /^[A-HJ-NP-Z2-9]{10}$/.test(val)
+    ? data.views[layout+"-"+result].error : "Enter the 10 characters shown on the website.";
+  selectState(result, typed, entry, message);
+}
+function controls(view) {
+  $("actions").replaceChildren();
+  for (const a of view.actions) {
+    let el;
+    if (a.role === "tip") {
+      el = document.createElement("span"); el.title = a.label;
+    } else if (a.role === "code") {
+      el = document.createElement("input"); el.value = typed;
+      el.maxLength = 64; el.autocomplete = "off"; el.spellcheck = false;
+      el.addEventListener("input", () => { typed = el.value });
+      el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); submit() } });
+    } else {
+      el = document.createElement("button");
+      el.addEventListener("click", () => {
+        if (a.role === "website") $("website").showModal();
+        if (a.role === "submit") submit();
+        if (a.role === "cancel") selectState(entry,typed);
+        if (a.role === "confirm") selectState("linked");
+      });
+    }
+    props(el, a);
+    // Leave the native slate outline in the picture visible around the editable surface.
+    if (a.role === "code") {
+      el.style.left = ((a.x+.025)*5)+"%"; el.style.top = ((a.y+.025)/15*100)+"%";
+      el.style.width = ((a.w-.05)*5)+"%"; el.style.height = ((a.h-.05)/15*100)+"%";
+    }
+    $("actions").append(el);
+  }
+  if (refusal) {
+    const [x,y,w] = view.status;
+    const message = document.createElement("span");
+    message.className = "refusal";
+    message.textContent = refusal;
+    message.style.left = (x*5)+"%";
+    message.style.top = ((1.5+y-.24)/15*100)+"%";
+    message.style.width = (w*5)+"%";
+    $("actions").append(message);
+  }
+}
+function render() {
+  const n = ++drawNumber;
+  const view = activeView();
+  const linked = state.startsWith("linked");
+  for (const b of $("layouts").children) b.setAttribute("aria-pressed", b.dataset.layout === layout);
+  $("linked").setAttribute("aria-pressed", linked);
+  $("unlinked").setAttribute("aria-pressed", !linked);
+  $("reason").textContent = data.layouts[layout][1];
+  $("note").textContent = data.states[state][1];
+  $("trial").hidden = linked || state === "offer";
+  $("state").replaceChildren();
+  for (const [key, [title]] of Object.entries(data.states)) {
+    if (key.startsWith("linked") === linked) $("state").add(new Option(title, key, false, state === key));
+  }
+  const caption = data.layouts[layout][0]+" · "+data.states[state][0];
+  $("announce").textContent = [caption,refusal].filter(Boolean).join(". ");
+  const lines = view.elements.filter(e => ["label","button","button_url"].includes(e[0])).map(e => e[5].split(" · ")[0]);
+  picture.setAttribute("aria-label", caption+". "+lines.join(". "));
+  controls(view);
+  const patch = view.patch;
+  Promise.all([img(data.bases[layout]), patch && img(patch[4])]).then(([base, overlay]) => {
+    if (n !== drawNumber) return;
+    ctx.drawImage(base,0,0);
+    if (overlay) ctx.drawImage(overlay,patch[0],patch[1]);
+  });
+}
+for (const [id,[name]] of Object.entries(data.layouts)) {
+  const b = document.createElement("button");
+  b.textContent = name; b.dataset.layout = id;
+  b.addEventListener("click", () => { layout = id; render() });
+  $("layouts").append(b);
+}
+$("unlinked").onclick = () => selectState("unlinked");
+$("linked").onclick = () => selectState("linked");
+$("state").onchange = e => selectState(e.target.value);
+$("example").textContent = $("site-code").textContent = data.example;
+document.querySelectorAll(".dialog-close").forEach(b => b.onclick = () => b.closest("dialog").close());
+document.querySelector(".dialog-link").onclick = () => $("website").close();
+$("inspect").onclick = () => {
+  $("notes-view").textContent = data.layouts[layout][0]+" · "+data.states[state][0];
+  $("elements").replaceChildren();
+  const rows = activeView().elements.slice();
+  if (refusal) {
+    const [x,y,w] = activeView().status;
+    rows.push(["prose",x,+(y-.24).toFixed(3),w,.96,refusal]);
+  }
+  for (const row of rows) {
+    const tr = document.createElement("tr");
+    for (const v of row) { const cell = document.createElement("td"); cell.textContent = v; tr.append(cell) }
+    $("elements").append(tr);
+  }
+  $("notes").showModal();
+};
+render();
+</script>
+</body>
+</html>

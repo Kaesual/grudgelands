@@ -173,11 +173,15 @@ end)
 -- that wears loses this share of its maximum durability, down to 0. Which
 -- items that is, is `eligible`'s answer; trinkets never are. One event for
 -- the whole set: one equipment notification, pure wear (it names no list, so
--- every cache drops) unless an item broke, and one break cue.
+-- every cache drops) unless an item broke, and one break cue. A character
+-- below DEATH_WEAR_LEVEL dies for free (Round 84 ruling 5).
 grug_repair.DEATH_WEAR_PERCENT = 10
+grug_repair.DEATH_WEAR_LEVEL = 10
 
 function grug_repair.wear_death(player)
-	if creative(player) then return false end
+	if creative(player) or grug_xp.get_level(player) < grug_repair.DEATH_WEAR_LEVEL then
+		return false
+	end
 	local inv = player:get_inventory()
 	local worn, broke = false, false
 	for _, slot in ipairs(grug_inventory.equipment_slots) do

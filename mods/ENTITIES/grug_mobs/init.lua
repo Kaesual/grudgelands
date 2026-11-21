@@ -108,6 +108,11 @@ end
 --                          active-mob limit (GRUG PATCH in mobs/api.lua);
 --                          NPCs are authored by their type, spawned rares and
 --                          leaders by mobs:add_mob's def
+--   def._grug_unsaved     — true: never saved with the map (the leader
+--                          sub-types, the rift boss): its spawner adds it
+--                          through grug_mobs.add_mob_unsaved/add_entity_unsaved
+--                          and any other activation removes itself
+--                          (unsaved.lua)
 --   def.walk_velocity     — the idle roaming pace (mobs_redo stand/walk
 --                          states); at most grug_mobs.CALM_WALK_MAX, see
 --                          below. Combat movement uses run_velocity.
@@ -868,6 +873,9 @@ function grug_mobs.register_mob(name, def)
 
 	local old_tag_after_activate = def.after_activate
 	def.after_activate = function(self, staticdata, mob_def, dtime)
+		-- A saved copy of an actor the map never saves removes itself
+		-- before anything else runs (unsaved.lua, Round 84 ELITE).
+		if not grug_mobs.unsaved_claim(self) then return end
 		-- A stale or second copy of a named rare or a dragon removes itself
 		-- before anything else runs (liveness.lua).
 		if not grug_mobs.live_claim(self) then return end
@@ -1079,6 +1087,10 @@ function grug_mobs.register_mob(name, def)
 	if def._grug_reach_reset then
 		core.registered_entities[name]._grug_reach_reset = true
 	end
+	-- Never saved with the map, by definition (Round 84 ELITE; unsaved.lua).
+	if def._grug_unsaved then
+		core.registered_entities[name]._grug_unsaved = true
+	end
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
@@ -1112,6 +1124,8 @@ dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")
 -- Round 37 MP: liveness of the named rares and the dragons (MOC-01, MOC-03).
 dofile(modpath .. "/liveness.lua")
+-- Round 84 ELITE: the actors the map never saves (leaders, the rift boss).
+dofile(modpath .. "/unsaved.lua")
 -- Round 42 DR: settlement NPCs open, pass and close doors (before the walks).
 dofile(modpath .. "/npc_doors.lua")
 -- 0.49.1 DOOR: a click on a closed door in front of a dialog NPC opens the door.

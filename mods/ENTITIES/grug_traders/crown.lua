@@ -1,7 +1,8 @@
--- The Crownbinder (round33-plan.md §2.5, item_tiers.md §4): one in every
--- capital applies a Fallen Crown to one item below item level 70. The item's
--- level becomes its tier's top + 10, 70 at most, and every enchant gains one
--- tier; the operation itself and its refusals belong to grug_items (lane
+-- The Crownbinder (round33-plan.md §2.5, round84-plan.md ruling 1,
+-- item_tiers.md §4): one in every capital applies a Fallen Crown to one item.
+-- The item's level becomes its tier's top + 10, 70 at most, and every enchant
+-- below T7 gains one tier; an item may be crowned again while a crown raises a
+-- number. The operation itself and its refusals belong to grug_items (lane
 -- C4). This file is the NPC's side:
 -- which items it is offered, the fee, and the one atomic payment.
 --
@@ -13,7 +14,7 @@ grug_traders.CROWN_FEE = 14800
 grug_traders.CROWN_ITEM = "grug_mobs:fallen_crown"
 
 local FORM_PREFIX = "grug_traders:crown:"
-local PAGE_SIZE = 6
+local PAGE_SIZE = 5 -- rows of 1.08: a two-line preview fits (Round 84)
 local RANGE = 6 -- m, as the trade window
 
 --
@@ -172,23 +173,23 @@ local function form(player, session)
 		"label[0.4,1.7;" .. esc("\"A crown remembers its king. Lend me one, " ..
 			"and your gear will remember it too.\"") .. "]",
 		"label[0.4,2.15;" .. esc("Fee: " .. grug_money.format(grug_traders.CROWN_FEE) ..
-			" and one Fallen Crown. Once per item.") .. "]",
+			" and one Fallen Crown per crown.") .. "]",
 		"label[0.4,2.6;" .. esc("Your money: " ..
 			grug_money.format(grug_money.get(player)) .. "    Fallen Crown: " ..
 			(crown and "yes" or "none")) .. "]"}
 	local first = (session.page - 1) * PAGE_SIZE + 1
 	for i = first, math.min(#rows, first + PAGE_SIZE - 1) do
-		local row, y = rows[i], 3.15 + (i - first) * 0.9
-		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.04, 15.5, 0.86) ..
+		local row, y = rows[i], 3.15 + (i - first) * 1.08
+		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.04, 15.5, 1.04) ..
 			"style_type[textarea;border=false;font_size=" .. grug_core.ui.font_size(0.85, growth) .. "]"
-		fs[#fs + 1] = ("item_image[0.4,%.2f;0.8,0.8;%s]"):format(y, esc(row.expected:get_name()))
-		fs[#fs + 1] = ("label[1.4,%.2f;%s]"):format(y + 0.2, esc(first_line(row.expected)))
-		-- A read-only textarea wraps the preview ("Item level 50 becomes 55.
-		-- Strength becomes T7. ...") inside the row.
-		fs[#fs + 1] = ("textarea[1.4,%.2f;11.6,0.55;;;%s]"):format(y + 0.4,
+		fs[#fs + 1] = ("item_image[0.4,%.2f;0.8,0.8;%s]"):format(y + 0.1, esc(row.expected:get_name()))
+		fs[#fs + 1] = ("label[1.4,%.2f;%s]"):format(y + 0.18, esc(first_line(row.expected)))
+		-- A read-only textarea wraps the preview ("Item level 50 becomes 60.
+		-- T5 Strength +12 becomes T6 +19. ...") inside the row.
+		fs[#fs + 1] = ("textarea[1.4,%.2f;11.6,0.66;;;%s]"):format(y + 0.34,
 			esc(row.result and (row.text or "") or (row.reason or "")))
 		if row.result then
-			fs[#fs + 1] = ("button[13.6,%.2f;2,0.55;crown_%d;Crown]"):format(y, i)
+			fs[#fs + 1] = ("button[13.6,%.2f;2,0.55;crown_%d;Crown]"):format(y + 0.21, i)
 		end
 	end
 	if #rows == 0 then
@@ -265,6 +266,13 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			if ok then grug_core.feed(player, "notice", message, "crown") end
 			session.rows = grug_traders.crown_rows(player)
 			session.status = message
+			-- The redrawn rows get a new form name: a click sent from the
+			-- old form (a double click before the redraw arrives) fails the
+			-- name check above and crowns nothing, as the item may take
+			-- another crown (Round 84). The client swaps the open form's
+			-- name without a quit (game_formspec.cpp showFormSpec).
+			serial = serial + 1
+			session.formname = FORM_PREFIX .. serial
 			show(player, session)
 			return true
 		end

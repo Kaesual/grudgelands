@@ -88,7 +88,8 @@ eligibility and flag".
 - **A PvP death costs no durability** (Round 70): a death counts as PvP when
   an enemy player landed a hit on the victim in the last **30 s**, a window of
   its own beside the 15 s kill credit; the rule and what counts are in
-  [durability_repair.md](durability_repair.md). A logout death is decided at
+  [durability_repair.md](durability_repair.md) (a character below level 10
+  pays for no death at all). A logout death is decided at
   the logout and saved with its mark: `1` (a PvP death, and every mark from
   before Round 70) or `wear`.
 - **Flight is unchanged** ([mounts.md](mounts.md) §4): own peaceful land to

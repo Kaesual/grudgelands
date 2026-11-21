@@ -436,7 +436,10 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
   `upgrade_span(stack)` gives item level, cap (10 × material tier) and tier;
   a plan's `warning` names a replaced higher-tier enchant.
   `grug_items.crown_item(stack, player)` / `crown_preview(stack)` apply the
-  Fallen Crown (the crown NPC owns the fee and the crown item). Gear drops
+  Fallen Crown (the crown NPC owns the fee and the crown item): `crown_plan`
+  refuses only when neither the item level nor any enchant's value would
+  rise (Round 84; no once-per-item limit, `grug_crowned` only marks a
+  crowned item for its tooltip line). Gear drops
   (Round 33) are data in `grug_quality/init.lua`: `grug_items.DROP_CHANCES`
   (normal, elite and rare rows; zone leaders and war-camp captains roll the
   elite row), `BOSS_DROPS` (two items at each boss's fixed item level),
@@ -682,17 +685,17 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     Trade-in (`trade.lua`; it opens on it): "Miner's Guild" (never a
     guild's proper name: those belong in texts and on buildings), the rank
     and the balance, and a row per exchanged item from
-    `grug_guild.trade_in_rows`, its All button `tradein_<catalogue index>` and quantity buttons
-    `tradein1_`, `tradein5_`, `tradein10_` with the same index,
+    `grug_guild.trade_in_rows`, its one-lot button `tradein1_<catalogue index>` and All
+    `tradeinall_` with the same index (the window's quantity rule, below),
     traded through `grug_guild.trade_in` after the row is re-checked against
     the one shown. The camp vendor and the
     guild house's exchange counter carry the field. The guild's consumables
     pay their catalogue `sell_copper` (`prices.lua`). A guild vendor with
     `guild_page = true` (the camp vendor, lane CAMPNPC) has the reputation
-    page as its Buy mode: `grug_guild.vendor_rows`, buttons
-    `repbuy_<index in catalog.CONSUMABLES>` for the rows the rank unlocks
+    page as its Buy mode: `grug_guild.vendor_rows`, the buy form's buttons
+    `repbuy<key>_<index in catalog.CONSUMABLES>` for the rows the rank unlocks
     (`session.rep_shown`, the click's cross-check), bought through
-    `grug_guild.buy`. `repairs = true` (the camp vendor) shows a Repair
+    `grug_guild.buy(player, item, count)`. `repairs = true` (the camp vendor) shows a Repair
     mode in the same vendor session. It uses a server-owned repair quote and
     `grug_repair.quote_formspec`; serial-prefixed actions reject replay after
     a quote refresh, and every action rechecks the authored provider socket
@@ -706,7 +709,7 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     takes over `GUILD_HALL.stonewright` the same way; `stonewright = true`
     gives it one page without modes, the recipes of
     `grug_guild.stonewright_rows` with the Trade-in's lots, locked by rank
-    (`stoneN_<index>`, `stoneall_<index>`), made by
+    (`stone1_<index>`, `stoneall_<index>`), made by
     `grug_guild.stonewright_make`.
     The Expedition Registrar has its own core socket `expedition_registrar`
     a few nodes outside each capital's great hall door (0.75.3, map reset;
@@ -729,7 +732,32 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     "stock" is a computed list of names and prices, and **every formspec
     action re-validates from scratch** (session, distance to the stored
     POSITION not an ObjectRef, access rule, and prices/counts recomputed
-    server-side against the snapshot the player was shown).
+    server-side against the snapshot the player was shown). Every render of
+    the trade window takes a new form name (`grug_traders:trade:<serial>`,
+    `session.formname`, `grug_traders.trade_formname(name)` for probes), and
+    only a packet under the current name acts: a click from an older form (a
+    double click whose row the first click replaced) does nothing, and its
+    quit is dropped (Round 84).
+
+### The quantity rule
+
+  - **One rule decides every row's amounts** (Round 84; the design in
+    [economy.md](../../design/economy.md) §2, "The quantity buttons"):
+    `grug_traders.quantities(kind, size, held)` (`trade.lua`) returns the
+    buttons `{key, count, label}` of a `"buy"` row (by the item's
+    `get_stack_max()`), a `"sell"` slot (stack size and the slot's count) or
+    a `"lot"` row (the count one lot shows and the whole lots held). A
+    button's field is `<prefix><key>_<index>`, the key `1`, `5`, `20`,
+    `stack` or `all`, the prefixes `buy`, `sell`, `repbuy`, `tradein` and
+    `stone`; the dispatch tests the keys in that fixed order and re-derives
+    the count from the key on the freshly computed row, so a forged or stale
+    key (one the row does not offer) does nothing. A buy row's bound is
+    `grug_inventory.room_for` and the money (or the reputation balance);
+    amounts above it are greyed labels. `do_buy` checks the room
+    (`grug_inventory.fits`), then takes `count × price` with the atomic
+    `grug_money.take`, then gives one stack; `grug_guild.buy` takes the same
+    optional count. The Buy shelf sets the names' borderless text-area style
+    once per shelf (the Decor Merchant's 128 rows are the longest page).
 
 ### Startup audits
 

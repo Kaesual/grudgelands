@@ -536,7 +536,8 @@ end
 -- The minimap's own elements: without the side elements (Round 48: the
 -- mail icon, the daytime band and "Now playing"), which stay while it is
 -- hidden (tools/r48_hud; block H below).
-local SIDE_TEXT = {"^grug_map_daytime_", "^grug_map_mail_", "^%[fill:", "^grug_ambience_note"}
+local SIDE_TEXT = {"^grug_map_daytime_", "^grug_map_mail_", "^grug_map_announce_", "^%[fill:",
+	"^grug_ambience_note"}
 local function minimap_elements(p)
 	local list = {}
 	for _, e in ipairs(elements(p)) do
@@ -798,8 +799,9 @@ end
 check(minimap.enabled(me), "R the minimap is on by default")
 minimap.set_enabled(me, false)
 -- Round 48: the side elements stay (ruling 2.1), every minimap element goes.
+-- (Six since Round 84: the announcements icon joined the five.)
 check(not minimap.enabled(me) and #minimap_elements(me) == 0 and
-	#elements(me) == 5, "R switch off removes every minimap element")
+	#elements(me) == 6, "R switch off removes every minimap element")
 step(0.25)
 check(#minimap_elements(me) == 0, "R stays off")
 minimap.set_enabled(me, true)
@@ -923,6 +925,20 @@ do
 	minimap.set_mail_count("me", 12)
 	check(side("^grug_map_mail_").text == "grug_map_mail_9p.png" and me.sent == sent + 1,
 		"H twelve letters: 9+, one hud_change")
+	-- Round 84 (default 15): the announcements icon under the mail icon.
+	minimap.set_mail_count("me", 12, 2)
+	local announce = side("^grug_map_announce_")
+	check(announce and announce.text == "grug_map_announce_2.png" and
+		near_px(announce.x, L.announce.x) and near_px(announce.y, L.announce.y) and
+		announce.y >= top + L.mail.h and announce.x + L.announce.w <= left and
+		side("^grug_map_mail_").text == "grug_map_mail_9p.png",
+		"H shown: the announcements icon under the mail icon, left of the bezel")
+	minimap.set_mail_count("me", 0, 2)
+	announce = side("^grug_map_announce_")
+	check(announce and side("^grug_map_mail_") == nil and near_px(announce.x, L.announce_top.x) and
+		near_px(announce.y, top), "H shown: announcements only, in the mail icon's place")
+	minimap.set_mail_count("me", 12)
+	check(side("^grug_map_announce_") == nil, "H no announcement: its icon goes")
 	-- hidden: the corner stack inside the box, "Now playing" below the band
 	local track = {title = "Fantasy Orchestral Theme", artist = "joth"}
 	minimap.set_now_playing("me", track)
@@ -939,6 +955,20 @@ do
 	check(fill and near_px(fill.x, g.x) and near_px(fill.y, g.y) and g.y >= mail.y + H.mail.h and
 		g.y + g.h <= bottom and near_px(g.x + g.w, right),
 		"H hidden: Now playing below the row, inside the box")
+	minimap.set_mail_count("me", 12, 1)
+	local announce_h = side("^grug_map_announce_")
+	local g2 = V.now_playing_corner(box, H.playing_right, H.playing_top_two, track.title, track.artist)
+	fill = side("^%[fill:")
+	check(announce_h and near_px(announce_h.x, mail.x) and near_px(announce_h.y, H.announce.y) and
+		near_px(fill.y, g2.y) and g2.y >= announce_h.y + H.announce.h and g2.y + g2.h <= bottom,
+		"H hidden: the announcements icon under the mail icon, Now playing moved below it")
+	-- Follow-up 1 (the user, 2026-11-21): no letter, no empty slot above it.
+	minimap.set_mail_count("me", 0, 1)
+	announce_h, fill = side("^grug_map_announce_"), side("^%[fill:")
+	check(announce_h and side("^grug_map_mail_") == nil and near_px(announce_h.x, mail.x) and
+		near_px(announce_h.y, mail.y) and near_px(fill.y, g.y),
+		"H hidden: announcements only, in the mail icon's place, Now playing back under the row")
+	minimap.set_mail_count("me", 12)
 	minimap.set_mail_count("me", 0)
 	check(side("^grug_map_mail_") == nil and side("^grug_map_daytime_") ~= nil,
 		"H hidden, no letters: the icon goes, the band stays")

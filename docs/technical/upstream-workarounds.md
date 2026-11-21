@@ -341,6 +341,47 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
   join hook stays while it is the one place such a record is removed.
 - **Affected versions:** 5.18.0 (`e8f12bf1b`).
 
+## 11. An unsaved object's add-time entry survives its block's unload
+
+- **Upstream problem:** `ServerEnvironment::addActiveObjectRaw`
+  (`src/serverenvironment.cpp:1452-1463`) stores the new object's staticdata
+  in its mapblock, after the activation callbacks (`:1419-1421`), whenever the
+  object then allows static saving, and marks the block for writing. An object
+  made `static_save = false` afterwards keeps that entry. It stays alive until
+  its own block leaves memory (`:1682-1684`); `Map::timerUpdate`
+  (`src/map.cpp:317-330`) saves and unloads the entry's block first, writing
+  the active entry too (`src/staticobject.cpp:83-85`). The deactivation then
+  wants the entry gone (`src/serverenvironment.cpp:1763-1764`), but
+  `deleteStaticFromBlock` reloads the block (`emergeBlock`,
+  `src/servermap.cpp:419-431`), where the entry is now a stored one
+  (`src/staticobject.cpp:98-107`), and `StaticObjectList::remove` searches only
+  the active ones (`src/staticobject.h:53-61`, the warning "id=… not found").
+  The entry stays, and the next activation of that block brings a copy of the
+  object as it was at its add. A crash after a map save leaves it too. (A
+  normal removal is clean while the entry's block has stayed in memory:
+  `removeRemovedObjects`, `:1497-1500`, finds the active entry. Once that
+  block was saved and unloaded, for example after the object walked into
+  another block, the removal's `deleteStaticFromBlock` misses the entry the
+  same way.)
+- **What we do (Round 84 ELITE):** actors the map never saves are unsaved
+  inside their own activation, before the entry is written:
+  `grug_mobs/unsaved.lua` (`add_mob_unsaved`, `add_entity_unsaved`, the claim
+  in `init.lua`'s after_activate wrapper), used by the zone leaders
+  (`spawn_regions.lua`), the rift boss (`rift.lua`) and the depth pulse
+  (`depth_pulse.lua`). Copies already saved by 0.83.0 and older of a definition
+  marked `_grug_unsaved` (leader sub-types, the rift boss) remove themselves at
+  activation; that part is about the game's own old worlds, not the engine.
+  Start NPCs meet the same entry with fields written after the add and mark
+  their first snapshot instead (`start_npcs.lua`, `_grug_unplaced`, Round 30).
+- **Fixed when:** a deactivation deletes the object's entry from the stored
+  list too, or `set_properties({static_save = false})` drops the entry. The
+  unsaved add can stay (it is the cheaper path either way); the copy removal
+  stays while a world saved by 0.83.0 or older can occur.
+- **Affected versions:** 5.18.0 (`e8f12bf1b`), read in the source and shown
+  at runtime by `tools/r84_elite/engine.sh` (2026-11-21, the Flatpak server):
+  an object made unsaved after its add came back after its blocks unloaded,
+  with the warning above in the log.
+
 ## Checked and not listed
 
 - `grug_mobs/door_click.lua` (doors before NPCs, 0.49.1): the engine's

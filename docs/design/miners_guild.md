@@ -150,9 +150,11 @@ one picture.
   exchanged.
 - **The mechanism:** like the vendor's Sell tab
   for lot goods: one row per exchanged item the player carries in
-  `grug_inventory.consume_lists` (counts summed), "N points per L", and **1 / 5 / 10 / All**
-  whole-lot choices that leave the remainder. Unavailable quantities cannot
-  be clicked. No quality factor, wear
+  `grug_inventory.consume_lists` (counts summed), "N points per L", and two
+  whole-lot choices that leave the remainder (Round 84 default 21): **one
+  lot**, its button showing the lot's count (`50`), and **All (N)**, every
+  whole lot, which falls away when it is the one lot. Below one lot the row
+  is greyed with "Need L to trade" and has no button. No quality factor, wear
   ignored. Built as the vendor window's **Trade-in** mode, shown by a vendor
   whose definition (`grug_traders.vendors`) carries `guild = true`; the window
   opens on it and shows the guild, the rank and the balance.
@@ -189,8 +191,11 @@ one picture.
   true`) that opens on Trade-in; it sells no copper goods, so its **Buy**
   mode is the reputation page (`guild_page = true`): the guild's rank,
   balance and lifetime as on the Trade-in, then one row per tier with its
-  Ore Sense and Treasure Hunt, each item a button with its price in
-  reputation and the row's use level ("Use from level 21"); a locked row is
+  Ore Sense and Treasure Hunt, each item with its price in reputation, the
+  row's use level ("Use from level 21") and the vendor's buy buttons
+  (Round 84 default 21: **1 / 5 / 20** for these 20-stacks, each tooltip
+  with its total; an amount the balance or the bags cannot take greyed, and
+  paid whole or not at all); a locked row is
   greyed, has no button and says "Reach Reputation Rank N" (its prices
   shown). A purchase that fails (rank, balance, a full bag) spends nothing
   and says why. Its **Repair** tab stays within the vendor window and uses the same quotes
@@ -233,7 +238,8 @@ amounts are the user's accepted ones of 2026-11-07
   socket as the service role `stonewright` and serves the capital's faction. Its
   window (`grug_traders/trade.lua`, `stonewright = true`) is one page without
   modes: the guild lines, then one row per recipe with the Trade-in's lots
-  (**1 / 5 / 10 / All**), a locked row greyed with "Reach Reputation Rank N",
+  (Round 84 default 21: **one conversion**, its button showing what it
+  makes (`10`), and **All (N made)**), a locked row greyed with "Reach Reputation Rank N",
   a row without a lot greyed with what is missing. Whole lots only; the rest
   stays with the player. A count sums `grug_inventory.consume_lists`; a
   conversion that would not fit once its inputs are gone is refused and
@@ -573,11 +579,12 @@ The status id `catalog.STATUS.id` (`mining_sense`), the variant
 | Function | Returns |
 |---|---|
 | `grug_guild.vendor_rows(player)` | six rows `{tier, rank, unlocked, items}`, `items` the tier's two consumable rows |
-| `grug_guild.buy(player, item)` | `true`, or `false, err` (`"no_faction"`, `"unknown"`, `"rank"`, `"insufficient"`, `"full"`: no room, nothing spent) |
+| `grug_guild.buy(player, item[, count])` | `true`, or `false, err` (`"no_faction"`, `"unknown"`, `"count"`: not a whole number from 1 to a stack, `"rank"`, `"insufficient"`, `"full"`: no room, nothing spent); `count` (default 1, Round 84) costs count times the price |
 
 The window and its buttons are `grug_traders`' (the camp vendor kind):
-the page's buttons are `repbuy_<index in catalog.CONSUMABLES>`, and a
-click counts only for an item the page showed buyable. `buy` checks the
+the page's buttons are `repbuy<key>_<index in catalog.CONSUMABLES>` (the
+key `1`, `5`, `20` or `stack`, its count re-derived from the item's stack
+size), and a click counts only for an item the page showed buyable. `buy` checks the
 room before it spends (`grug_inventory.fits`) and gives through
 `grug_inventory.give`; it saves nothing of its own.
 

@@ -6,7 +6,7 @@ players. Decided by the user on 2026-10-14
 ([mail plan](../planning/mail-plan.md) §2, with the round's changes in
 [Round 48](../planning/round48-plan.md) §2); implemented in Round 48:
 the mod `grug_mail` with the mailbox window, the mailbox on the waystone
-pads, the mail icon beside the minimap, the Admin Mail tab and the starter
+pads, the mail icons beside the minimap, the Admin Mail tab and the starter
 quest with the welcome and level letters. Seams and storage: the
 [module guide](../technical/module-guide.md#mail).
 
@@ -142,6 +142,9 @@ quest with the welcome and level letters. Seams and storage: the
   every player's Announcements tab, with the shield badge, also to
   characters created after it was sent, until it expires after 30 days.
   Each player's read state is their own.
+- A new announcement posts one line to the message feed of every player
+  online ("New announcement: <subject>."; Round 84, coordinator default
+  15); a player who joins later sees only the announcements icon (§7).
 
 ## 6. The admin side
 
@@ -188,13 +191,17 @@ quest with the welcome and level letters. Seams and storage: the
   message than the one selected now. Send answer refuses an empty answer
   and one that is only the untouched quote.
 
-## 7. The unread icon
+## 7. The unread icons
 
-- An icon beside the minimap counts unread letters (admin letters and
-  answers included) and unread announcements, with a digit from 1 to 9 and
-  "9+" above; it is gone when nothing is unread. With the minimap hidden it
-  moves into the top-right corner with the daytime band and "Now playing"
-  ([world map](world_map.md)). The count updates at every change and at
+- The letter icon beside the minimap counts unread letters (admin letters
+  and answers included), the announcements icon (the shield badge; Round
+  84, coordinator default 15; until then the letter icon counted both)
+  unread announcements, each with a digit from 1 to 9 and "9+" above; each
+  is gone when its count is 0. With both showing, the announcements icon
+  stands under the letter icon; alone, it takes the letter icon's place
+  (the user's correction of 2026-11-21). With the minimap hidden they move
+  into the top-right corner with the daytime band, "Now playing" below them
+  ([world map](world_map.md)). The counts update at every change and at
   join.
 
 ## 8. System letters

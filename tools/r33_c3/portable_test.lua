@@ -30,7 +30,8 @@
 --      join pass) and reaches the cloak source; an unowned or unknown stored
 --      cloak, or one the catalogue dropped, reads as No cloak; select refuses
 --      what the character does not own;
---   F  the dropdown lists owned cloaks with the selected one marked; the
+--   F  the dropdown lists owned cloaks (No cloak first, then by name since
+--      Round 84) with the selected one marked; the
 --      page's resubmission of the same name changes nothing, a new name
 --      selects and redraws; the tab pages its 20 achievements (the manual
 --      Supporter row is hidden until granted);
@@ -380,8 +381,26 @@ eq(cloak_source(bert), "grug_achievements_cloak_plain_grey.png", "S grey cloak t
 -- drawn into the Character page's mode area (Round 44).
 local AREA = {x = 0.4, y = 1.25, w = 7.5, h = 7.8}
 local fs = A.cloak_dropdown(anna_again, 0, 6.3, 2.6)
-check(fs:find("dropdown%[0.00,6.30;2.60;grug_cloak;No cloak,Plain grey cloak,Hunter's Green," ..
-	"Trail Green,Fallen Crown,Heavy Crown,Stormscale,", 1) ~= nil, "F dropdown items: " .. fs)
+-- Round 84 default 14 reverses the catalogue order: No cloak first, then by
+-- name (tools/r84_small checks the rule's edge cases).
+local expected = {}
+for _, id in ipairs(A.unlocked_cloaks(anna_again)) do
+	if id ~= "none" then expected[#expected + 1] = core.formspec_escape(book.cloak[id].name) end
+end
+table.sort(expected, function(a, b) return a:lower() < b:lower() end)
+eq(fs:match("^dropdown%[0.00,6.30;2.60;grug_cloak;(.*);%d+%]$"),
+	"No cloak," .. table.concat(expected, ","), "F dropdown items")
+local function at(name)
+	for _, edges in ipairs({{";", ","}, {",", ","}, {",", ";"}}) do
+		local found = fs:find(edges[1] .. name .. edges[2], 1, true)
+		if found then return found end
+	end
+end
+check(at("No cloak") and at("Account Closed") and at("Fallen Crown") and at("Hunter's Green") and
+	at("Plain grey cloak") and at("Trail Green") and at("No cloak") < at("Account Closed") and
+	at("Account Closed") < at("Fallen Crown") and at("Fallen Crown") < at("Hunter's Green") and
+	at("Hunter's Green") < at("Plain grey cloak") and at("Plain grey cloak") < at("Trail Green"),
+	"F ...by name: " .. fs)
 check(fs:find(";1%]$") ~= nil, "F No cloak is marked")
 local before = #applied
 check(not A.choose_cloak_by_name(anna_again, "No cloak"), "F the same name changes nothing")

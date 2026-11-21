@@ -1026,12 +1026,17 @@ end
 -- Leaders (ruling 38): rule-placed spot, fixed level, ~5 min respawn after a
 -- kill.
 --
--- A leader is an ordinary mob of its role that is never saved with the map
--- (static_save = false): it exists while its spot is loaded and nowhere
--- else, so a runtime ObjectRef answers "is it out there" exactly and no scan
--- can mistake an unloaded leader for a dead one. Only a kill starts the
--- respawn timer (mod storage, game time, survives restarts); a leader that
--- vanished with its unloaded block is back on the next visit.
+-- A leader is an ordinary mob of its role that is never saved with the map:
+-- it exists while its spot is loaded and nowhere else, so a runtime
+-- ObjectRef answers "is it out there" exactly and no scan can mistake an
+-- unloaded leader for a dead one. Only a kill starts the respawn timer (mod
+-- storage, game time, survives restarts); a leader that vanished with its
+-- unloaded block is back on the next visit. It is added through
+-- grug_mobs.add_mob_unsaved, so static_save is off before the engine could
+-- store a first snapshot; `static_save = false` after the add came too late
+-- and left such snapshots in the map (players met a leader twice, Round
+-- 84). A leader sub-type is `_grug_unsaved` (subtypes.lua): such a snapshot
+-- removes itself when it activates (unsaved.lua).
 --
 
 local storage = grug_mobs.storage
@@ -1161,14 +1166,13 @@ function SR.leader_tick(now, players, zone_ids)
 						not grug_mobs.claim_refuses_spawn(name, pos) then
 					-- Authored (Round 37 MP): placed at mobs_redo's active-mob
 					-- limit too and not counted against it.
-					local ent = grug_mobs.add_mob(pos, {name = name, ignore_count = true,
+					local ent = grug_mobs.add_mob_unsaved(pos, {name = name, ignore_count = true,
 						_grug_authored = true})
 					if ent then
 						ent._grug_leader = true
 						local below = core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
 						SR.sunproof_on_blight(ent, role, below and below.name, true)
 						grug_mobs.relevel(ent, spot.level)
-						ent.object:set_properties({static_save = false})
 						live_leaders[role] = ent.object
 						count("leader_spawned")
 					end

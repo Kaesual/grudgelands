@@ -401,7 +401,7 @@ local shown
 local formnames = {}
 core.show_formspec = function(name, formname, formspec)
 	formnames[#formnames + 1] = formname
-	if formname == "grug_traders:trade" then shown = formspec end
+	if formname:find("^grug_traders:trade") then shown = formspec end
 	if formname:find("^grug_repair:service:") then shown = formspec end
 end
 core.close_formspec = function() end
@@ -440,10 +440,11 @@ grug_traders.open(bo, CAMP, CAMP_POS, "accord", ORIGIN)
 check(has("label[0.6,1.75;Miner's Guild]") and has("mode_tradein;Trade-in]"),
 	"W the camp vendor opens on Trade-in")
 check(has(";repair;Repair]"), "W the camp vendor shows Repair")
-submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
+submit(bo, grug_traders.trade_formname(bo:get_player_name()), {mode_buy = "Buy"})
 check(has("Rank 0 of 10") and has("Reach Reputation Rank 1") and has("Reach Reputation Rank 6"),
 	"W rank 0: the page, every row locked")
-check(not has("repbuy_"), "W rank 0: no buy button")
+-- Round 84 default 21: the page has the buy form's buttons, repbuy<key>_<index>.
+check(not has("repbuy1_"), "W rank 0: no buy button")
 check(not has("tab_general"), "W the page has no shelf tabs")
 -- Round 58 LIFT: the picked reputation icon is set, so a price is the icon
 -- and the number (grug_guild.reputation_formspec).
@@ -451,32 +452,32 @@ check(has("grug_guild_reputation.png]label[") and
 	has(";" .. grug_guild.format_points(T4.price) .. "]"), "W a locked row shows its price")
 -- A forged click on a locked row buys nothing.
 grug_guild.add(bo, 5, "test")
-submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T1.item]] = "x"})
+submit(bo, grug_traders.trade_formname(bo:get_player_name()), {["repbuy1_" .. KEY[T1.item]] = "x"})
 eq(count_of(bo.inv, T1.item), 0, "W a forged click on a locked row buys nothing")
 -- Rank 3.
 grug_guild.add(bo, C.RANKS[3], "test")
-submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
-check(has("Rank 3 of 10") and has("repbuy_" .. KEY[T1.item] .. ";Buy]") and
-	has("repbuy_" .. KEY[T3.item] .. ";Buy]"), "W rank 3: rows 1-3 have buttons")
-check(not has("repbuy_" .. KEY[T4.item] .. ";") and has("Reach Reputation Rank 4") and
+submit(bo, grug_traders.trade_formname(bo:get_player_name()), {mode_buy = "Buy"})
+check(has("Rank 3 of 10") and has("repbuy1_" .. KEY[T1.item] .. ";1]") and
+	has("repbuy1_" .. KEY[T3.item] .. ";1]"), "W rank 3: rows 1-3 have buttons")
+check(not has("repbuy1_" .. KEY[T4.item] .. ";") and has("Reach Reputation Rank 4") and
 	not has("Reach Reputation Rank 3"), "W rank 3: row 4 locked")
 check(has("Use from level 21"), "W an unlocked row says its use level")
 local bl, bb = state(bo)
-submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T1.item]] = "x"})
+submit(bo, grug_traders.trade_formname(bo:get_player_name()), {["repbuy1_" .. KEY[T1.item]] = "x"})
 eq(count_of(bo.inv, T1.item), 1, "W the page's button buys")
 check(has("Bought Ore Sense I for " .. grug_guild.format_points(T1.price) .. " reputation."),
 	"W the status line")
 l, b = state(bo)
 check(l == bl and b == bb - T1.price, "W the page spends the balance, never the lifetime")
-submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T4.item]] = "x"})
+submit(bo, grug_traders.trade_formname(bo:get_player_name()), {["repbuy1_" .. KEY[T4.item]] = "x"})
 eq(count_of(bo.inv, T4.item), 0, "W a forged click on row 4 buys nothing")
 -- The rank is checked again at the purchase: the form showed row 3 unlocked,
 -- then an admin's /faction gives the other guild (rank 0 there).
-submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
+submit(bo, grug_traders.trade_formname(bo:get_player_name()), {mode_buy = "Buy"})
 bo = switch_faction(bo, "throng")
 grug_core.feed = grug_core.feed or function() end
 local refused_life = grug_guild.lifetime(bo)
-submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T3.item]] = "x"})
+submit(bo, grug_traders.trade_formname(bo:get_player_name()), {["repbuy1_" .. KEY[T3.item]] = "x"})
 eq(count_of(bo.inv, T3.item), 0, "W the rank is checked again at the purchase")
 eq(grug_guild.lifetime(bo), refused_life, "W ...and nothing spent")
 bo = switch_faction(bo, "accord")
@@ -487,12 +488,12 @@ grug_guild.add(cy, C.RANKS[6], "test")
 grug_traders.open(cy, EXCHANGE, {x = 0, y = 0, z = 0}, "accord")
 check(has("label[0.6,1.75;Miner's Guild]"), "W the exchange counter opens on Trade-in")
 check(not has(";repair;Repair]"), "W the exchange counter does not repair")
-submit(cy, "grug_traders:trade", {mode_buy = "Buy"})
-check(has("The Miner's Guild sells its goods at the mining camps.") and not has("repbuy_"),
+submit(cy, grug_traders.trade_formname(cy:get_player_name()), {mode_buy = "Buy"})
+check(has("The Miner's Guild sells its goods at the mining camps.") and not has("repbuy1_"),
 	"W the exchange counter has no reputation page")
-submit(cy, "grug_traders:trade", {["repbuy_" .. KEY[T1.item]] = "x"})
+submit(cy, grug_traders.trade_formname(cy:get_player_name()), {["repbuy1_" .. KEY[T1.item]] = "x"})
 eq(count_of(cy.inv, T1.item), 0, "W a forged page click at the exchange counter buys nothing")
-submit(cy, "grug_traders:trade", {mode_sell = "Sell"})
+submit(cy, grug_traders.trade_formname(cy:get_player_name()), {mode_sell = "Sell"})
 check(has("The vendor buys most things"), "W the exchange counter buys like every vendor")
 
 -- The other faction is refused at the window (the camp's faction).
@@ -528,8 +529,8 @@ if check(GEAR ~= nil, "W a repairable gear item exists") then
 	bo.inv:set_stack("main", 9, worn)
 	grug_money.add(bo, 100000)
 	grug_traders.open(bo, CAMP, CAMP_POS, "accord", ORIGIN)
-	submit(bo, "grug_traders:trade", {repair = "Repair"})
-	eq(formnames[#formnames], "grug_traders:trade", "W Repair stays in the trader form")
+	submit(bo, grug_traders.trade_formname(bo:get_player_name()), {repair = "Repair"})
+	check(formnames[#formnames]:find("^grug_traders:trade:") ~= nil, "W Repair stays in the trader form")
 	check(has(";mode_buy;Buy]") and has(";mode_sell;Sell]") and has(";mode_tradein;Trade-in]"), "W Repair keeps all trader navigation")
 	check(not has("button_exit["), "W embedded Repair has no separate Close")
 	check(has("repair_1;Repair "), "W ...listing the worn item")
@@ -540,20 +541,20 @@ if check(GEAR ~= nil, "W a repairable gear item exists") then
 	check(grug_money.get(bo) < money, "W ...for money")
 	-- A stale Buy click cannot buy while the current mode is Repair.
 	local before = count_of(bo.inv, T1.item)
-	submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T1.item]] = "x"})
+	submit(bo, grug_traders.trade_formname(bo:get_player_name()), {["repbuy1_" .. KEY[T1.item]] = "x"})
 	eq(count_of(bo.inv, T1.item), before, "W wrong-mode Buy is ignored")
 	bo.inv:set_stack("main", 9, worn)
 	local after_repair_money = grug_money.get(bo)
-	submit(bo, "grug_traders:trade", {[all_field] = "Repair all"})
+	submit(bo, grug_traders.trade_formname(bo:get_player_name()), {[all_field] = "Repair all"})
 	eq(bo.inv:get_stack("main", 9):get_wear(), 32768, "W stale quote action cannot repair new wear")
 	eq(grug_money.get(bo), after_repair_money, "W stale quote action spends nothing")
-	submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
-	check(has("repbuy_"), "W Buy returns within the same trader session")
-	submit(bo, "grug_traders:trade", {repair = "Repair"})
+	submit(bo, grug_traders.trade_formname(bo:get_player_name()), {mode_buy = "Buy"})
+	check(has("repbuy1_"), "W Buy returns within the same trader session")
+	submit(bo, grug_traders.trade_formname(bo:get_player_name()), {repair = "Repair"})
 	local fresh_all = assert(shown:match(";(quote_%d+_all);Repair all:"))
 	local old_pos = bo.get_pos
 	bo.get_pos = function() return {x = CAMP_POS.x + 20, y = CAMP_POS.y, z = CAMP_POS.z} end
-	submit(bo, "grug_traders:trade", {[fresh_all] = "Repair all"})
+	submit(bo, grug_traders.trade_formname(bo:get_player_name()), {[fresh_all] = "Repair all"})
 	eq(bo.inv:get_stack("main", 9):get_wear(), 32768, "W embedded repair refuses leaving trader range")
 	bo.get_pos = old_pos
 

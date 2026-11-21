@@ -175,7 +175,11 @@ eq(grug_inventory.HOTBAR_STORE, STORE, "S the hidden list's name")
 -- business (tools/r44_ih), not this lane's.
 local given = {}
 grug_inventory.fits = function() return true end
-grug_inventory.give = function(p, stack) given[#given + 1] = p:get_player_name() .. ":" .. stack:to_string() end
+grug_inventory.room_for = function(_, stack) return stack:get_count() end
+grug_inventory.give = function(p, stack)
+	given[#given + 1] = p:get_player_name() .. ":" .. stack:to_string()
+	return ItemStack("")
+end
 
 -- Races and factions; the real refusal line.
 grug_classes = {registered_races = { -- luacheck: ignore
@@ -221,7 +225,7 @@ local function open(p)
 		grug_traders.vendor_faction(grug_traders.vendors[HUMAN_QM]))
 end
 local function click(p, field)
-	handler(p, "grug_traders:trade", {[field] = "x"})
+	handler(p, grug_traders.trade_formname(p:get_player_name()), {[field] = "x"})
 end
 local function has(p, text) return (shown[p.name] or ""):find(text, 1, true) ~= nil end
 local function at(p, list, index) return p.inv:get_stack(list, index):to_string() end
@@ -239,9 +243,11 @@ do
 	open(ann)
 	click(ann, "mode_sell")
 	check(has(ann, "label[1.7,2.85;t:gem x2]"), "S the gem on the inactive layout is row 1, unmarked")
-	check(has(ann, "sell1_1;1]") and has(ann, "sellall_1;All (8c)]"), "S ...with 1 and All")
+	-- Round 84 ruling 2: a slot's row has 1 and Stack, a lot row one lot (and
+	-- All from two lots).
+	check(has(ann, "sell1_1;1]") and has(ann, "sellstack_1;Stack 2]"), "S ...with 1 and Stack")
 	check(has(ann, "label[1.7,3.65;default:cobble x60]"), "S the cobble lot is row 2, unmarked")
-	check(has(ann, "sellall_2;All (1c)]"), "S ...with All (1c)")
+	check(has(ann, "sell1_2;50]"), "S ...with its one lot")
 	check(not has(ann, "You carry nothing this vendor wants."), "S the list is not empty")
 
 	click(ann, "sell1_1")
@@ -254,7 +260,7 @@ do
 	ann.inv:set_stack("main", 10, ItemStack("default:cobble 30"))
 	click(ann, "mode_sell")
 	check(has(ann, "default:cobble x90"), "S the lot counts main and the inactive layout (x90)")
-	local lot_row = has(ann, "sellall_1;All (1c)]") and "sellall_1" or "sellall_2"
+	local lot_row = has(ann, "sell1_1;50]") and "sell1_1" or "sell1_2"
 	click(ann, lot_row)
 	eq(purse.ann, 5, "S one lot of 50 sold for 1c")
 	eq(at(ann, "main", 10), "", "S ...main's 30 taken first")
@@ -295,7 +301,7 @@ do
 	check(shown.dag ~= nil, "Q the dwarf's form opens")
 	check(not has(dag, "Kinship discount"), "Q ...without the discount line")
 	check(has(dag, "Price: 10c") and not has(dag, "normally"), "Q ...at the full price")
-	click(dag, "buy_1")
+	click(dag, "buy1_1")
 	eq(purse.dag, 90, "Q the dwarf buys a torch for 10c")
 	eq(given[#given], "dag:t:torch", "Q ...and gets it")
 
@@ -303,7 +309,7 @@ do
 	open(ann)
 	check(has(ann, "Kinship discount: -10% on every purchase"), "Q the human sees the discount line")
 	check(has(ann, "Price: 9c") and has(ann, "(normally 10c)"), "Q ...and 9c instead of 10c")
-	click(ann, "buy_1")
+	click(ann, "buy1_1")
 	eq(purse.ann_q, 91, "Q the human buys a torch for 9c")
 
 	-- The other faction gets no form and the refusal line.
@@ -316,7 +322,7 @@ do
 	open(dag)
 	dag.faction = "throng"
 	local before = closed.dag or 0
-	click(dag, "buy_1")
+	click(dag, "buy1_1")
 	eq(purse.dag, 90, "Q a faction change while open: nothing bought")
 	eq((closed.dag or 0) - before, 1, "Q ...the form closes")
 	eq(chat.dag, "<Human Quartermaster> I serve only The Accord.", "Q ...with the refusal line")
@@ -434,7 +440,9 @@ do
 		"Regenerates 6% of maximum HP and 6% of maximum Mana every 5 s for 5 min.\n" ..
 		"Grants +2% maximum Mana while active.\n" ..
 		"Cannot eat in combat. Regeneration pauses in combat; other bonuses stay.\n" ..
-		"Requires level 21.\nHold RMB for 1.5 s to eat one portion.",
+		"Requires level 21.\nHold RMB for 1.5 s to eat one portion.\n" ..
+		-- Round 84 default 16: the touch line follows the RMB line.
+		"On a touch screen, long-press the sky or anything out of reach instead.",
 		"F the tooltip is unchanged and names the mana parts")
 
 	-- A mana potion is still refused without a mana pool.

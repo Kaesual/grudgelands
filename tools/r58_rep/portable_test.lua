@@ -52,7 +52,25 @@ local C = grug_guild.catalog
 ------------------------------------------------------------------------------
 -- Fake players: meta, an inventory with the engine's remove_item (from the
 -- end of a list, by name, meta ignored), online through get_player_by_name.
+-- Since Round 84 a buy row asks grug_inventory.room_for, so the harness's
+-- stacks get the engine's add_item (inventory.cpp ItemStack::addItem, 99 to
+-- a stack here), as tools/r70_guild's.
 ------------------------------------------------------------------------------
+local Stack = getmetatable(ItemStack("default:dirt"))
+function Stack:add_item(other)
+	other = ItemStack(other)
+	if other:is_empty() then return other end
+	if self:is_empty() then
+		self.name, self.count, self.meta = other.name, other.count, other.meta
+		return ItemStack("")
+	end
+	if self.name ~= other.name then return other end
+	local into = math.min(99 - self.count, other.count)
+	self.count = self.count + into
+	other.count = other.count - into
+	if other.count == 0 then other.name = "" end
+	return other
+end
 local function new_meta()
 	local data = {}
 	return {
@@ -373,7 +391,7 @@ eq(count_of(stranger.inv, "default:iron_lump"), 5, "B nothing taken without a fa
 ------------------------------------------------------------------------------
 local shown, shown_name
 core.show_formspec = function(name, formname, formspec)
-	if formname == "grug_traders:trade" then shown, shown_name = formspec, name end
+	if formname:find("^grug_traders:trade") then shown, shown_name = formspec, name end
 end
 core.close_formspec = function() end
 core.chat_send_player = function() end
@@ -384,7 +402,7 @@ end}
 local handlers = rawget(core, "registered_on_player_receive_fieldss") or {}
 local function submit(player, fields)
 	for _, fn in ipairs(handlers) do
-		if fn(player, "grug_traders:trade", fields) then return end
+		if fn(player, grug_traders.trade_formname(player:get_player_name()), fields) then return end
 	end
 end
 local function has(text) return shown ~= nil and shown:find(text, 1, true) ~= nil end
@@ -418,49 +436,49 @@ check(has("grug_guild_reputation.png]label[1.15,2.15;" ..
 	grug_guild.format_points(C.RANKS[3] + 34 - 1500) .. "]"), "C the balance after the icon")
 check(has("Lifetime " .. grug_guild.format_points(C.RANKS[3] + 34) .. " of " ..
 	grug_guild.format_points(C.RANKS[4]) .. " for Rank 4"), "C the lifetime and the next rank")
-check(has("Cobblestone x103") and has("1 point per 50") and has("tradein_" .. COBBLE .. ";All (2)]"),
+check(has("Cobblestone x103") and has("1 point per 50") and has("tradeinall_" .. COBBLE .. ";All (2)]"),
 	"C the Cobblestone row: 103, 1 point per 50, All (2)")
-check(has("Sand x49") and has("Need 50 to trade") and not has("tradein_" .. SAND .. ";"),
+check(has("Sand x49") and has("Need 50 to trade") and not has("tradeinall_" .. SAND .. ";"),
 	"C 49 Sand: greyed, Need 50 to trade, no button")
-check(has("Silver x3") and has("8 points each") and has("tradein_" .. SILVER .. ";All (24)]"),
+check(has("Silver x3") and has("8 points each") and has("tradeinall_" .. SILVER .. ";All (24)]"),
 	"C the Silver row: 8 points each, All (24)")
 
 -- All on the first row.
 local life_before = grug_guild.lifetime(eve)
 local old_form = shown
-submit(eve, {["tradein_" .. COBBLE] = "x"})
+submit(eve, {["tradeinall_" .. COBBLE] = "x"})
 eq(grug_guild.lifetime(eve), life_before + 2, "C All traded 2 points")
 eq(count_of(eve.inv, "default:cobble"), 3, "C 3 Cobblestone stay")
 check(has("Traded 100 Cobblestone for 2 reputation. 3 left."), "C the status line")
 check(has("Cobblestone x3") and has("Need 50 to trade"), "C the rest shows greyed")
 -- A second click on the same button of the old form: the row is greyed now,
 -- and the click never reaches the next row's item.
-check(old_form:find("tradein_" .. COBBLE .. ";", 1, true) ~= nil, "C the old form had the button")
+check(old_form:find("tradeinall_" .. COBBLE .. ";", 1, true) ~= nil, "C the old form had the button")
 local twice_life = grug_guild.lifetime(eve)
-submit(eve, {["tradein_" .. COBBLE] = "x"})
+submit(eve, {["tradeinall_" .. COBBLE] = "x"})
 eq(grug_guild.lifetime(eve), twice_life, "C a second click from the old form trades nothing")
 eq(count_of(eve.inv, "grug_materials:silver_lump"), 3, "C ...and never the next row's item")
 -- A forged click on the greyed row trades nothing.
-submit(eve, {["tradein_" .. SAND] = "x"})
+submit(eve, {["tradeinall_" .. SAND] = "x"})
 eq(count_of(eve.inv, "default:sand"), 49, "C a forged All on a greyed row takes nothing")
 -- A stale row: the stack moved between render and click.
 eve.inv:set_stack("main", 11, ItemStack("grug_materials:silver_lump 2"))
 local stale_life = grug_guild.lifetime(eve)
-submit(eve, {["tradein_" .. SILVER] = "x"})
+submit(eve, {["tradeinall_" .. SILVER] = "x"})
 check(has("Your items have changed."), "C a stale row re-renders with the refusal")
 eq(count_of(eve.inv, "grug_materials:silver_lump"), 2, "C a stale row takes nothing")
 eq(grug_guild.lifetime(eve), stale_life, "C a stale row credits nothing")
-submit(eve, {["tradein_" .. SILVER] = "x"})
+submit(eve, {["tradeinall_" .. SILVER] = "x"})
 eq(grug_guild.lifetime(eve), stale_life + 16, "C the fresh row trades")
 -- A row that the first click empties: the second click from the same old
 -- form trades nothing, never the item that moved up into its place.
 local hal = new_player("hal", "accord")
 fill(hal, {{"main", 9, "grug_materials:silver_lump 2"}, {"main", 10, "grug_materials:rough_jade 1"}})
 grug_traders.open(hal, TEST, ORIGIN, "accord")
-submit(hal, {["tradein_" .. SILVER] = "x"})
+submit(hal, {["tradeinall_" .. SILVER] = "x"})
 eq(count_of(hal.inv, "grug_materials:silver_lump"), 0, "C the Silver row traded and gone")
 local hal_life = grug_guild.lifetime(hal)
-submit(hal, {["tradein_" .. SILVER] = "x"})
+submit(hal, {["tradeinall_" .. SILVER] = "x"})
 eq(count_of(hal.inv, "grug_materials:rough_jade"), 1, "C a second click never trades the next item")
 eq(grug_guild.lifetime(hal), hal_life, "C ...and credits nothing")
 
@@ -482,23 +500,24 @@ check(has(";mode_buy;Buy]"), "C its Buy mode remains available")
 submit(eve, {mode_tradein = "Trade-in"})
 check(not has("label[0.6,1.75;Miner's Guild]"), "C a forged Trade-in field is ignored")
 local life_plain = grug_guild.lifetime(eve)
-for i = 1, #C.EXCHANGE do submit(eve, {["tradein_" .. i] = "x"}) end
+for i = 1, #C.EXCHANGE do submit(eve, {["tradeinall_" .. i] = "x"}) end
 eq(grug_guild.lifetime(eve), life_plain, "C a forged trade at a plain vendor credits nothing")
 eq(count_of(eve.inv, "default:iron_lump"), 4, "C ...and takes nothing")
 
--- Requested quantities refer to whole lots and must be affordable in items.
+-- Requested quantities refer to whole lots and must be affordable in items
+-- (Round 84 ruling 2 and default 21: one lot and All, no 5 or 10; the All
+-- field is tradeinall_ since then).
 local quantities = new_player("quantities", "accord")
 quantities.inv:set_stack("main", 9, ItemStack("default:cobble 803"))
 grug_traders.open(quantities, TEST, ORIGIN, "accord")
-check(has("tradein5_" .. COBBLE .. ";5]") and has("tradein10_" .. COBBLE .. ";10]"), "C quantity controls shown")
+check(has("tradein1_" .. COBBLE .. ";50]") and has("tradeinall_" .. COBBLE .. ";All (16)]") and
+	not has("tradein5_"), "C quantity controls shown: one lot and All")
 submit(quantities, {["tradein5_" .. COBBLE] = "x"})
-eq(count_of(quantities.inv, "default:cobble"), 553, "C five whole lots taken")
-submit(quantities, {["tradein10_" .. COBBLE] = "x"})
-eq(count_of(quantities.inv, "default:cobble"), 53, "C ten whole lots taken")
-submit(quantities, {["tradein5_" .. COBBLE] = "x"})
-eq(count_of(quantities.inv, "default:cobble"), 53, "C unavailable five lots refused")
+eq(count_of(quantities.inv, "default:cobble"), 803, "C a forged five lots takes nothing")
 submit(quantities, {["tradein1_" .. COBBLE] = "x"})
-eq(count_of(quantities.inv, "default:cobble"), 3, "C one lot keeps remainder")
+eq(count_of(quantities.inv, "default:cobble"), 753, "C one lot taken")
+submit(quantities, {["tradeinall_" .. COBBLE] = "x"})
+eq(count_of(quantities.inv, "default:cobble"), 3, "C All keeps the remainder")
 eq(grug_guild.lifetime(quantities), 16, "C exact total credited")
 quantities.inv:set_stack("main", 9, ItemStack("default:cobble 503"))
 for _, amount in ipairs({0, -1, 1.5, "5", math.huge, false, 0 / 0}) do
@@ -516,7 +535,7 @@ eq(shown, nil, "C the other faction gets no window")
 grug_traders.open(eve, TEST, ORIGIN, "accord")
 eve.get_pos = function() return {x = 20, y = 0, z = 0} end
 local far_life = grug_guild.lifetime(eve)
-submit(eve, {["tradein_" .. KEY["default:iron_lump"]] = "x"})
+submit(eve, {["tradeinall_" .. KEY["default:iron_lump"]] = "x"})
 eq(grug_guild.lifetime(eve), far_life, "C out of range nothing trades")
 eq(count_of(eve.inv, "default:iron_lump"), 4, "C ...and takes nothing")
 eve.get_pos = function() return {x = 0, y = 0, z = 0} end

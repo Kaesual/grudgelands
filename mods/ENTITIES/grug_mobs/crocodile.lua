@@ -25,9 +25,12 @@
 --     Two owners of the same two fields is exactly the bug class the WP6
 --     notes warn about.
 --   * MVP therefore: ONE speed, 4.6 on land and in water, plus `floats` so
---     the mob swims at the surface instead of sinking (api.lua falling). The
---     5.0-in-water bonus is dropped, NOT postponed silently — a later WP can
---     add it once one owner for the speed fields exists.
+--     the mob swims at the surface instead of sinking (api.lua falling).
+--     True since Round 84 WATER: water no longer halves a mob's speed
+--     (api.lua grug_liquid_speed). The 5.0-in-water bonus is dropped, NOT
+--     postponed silently; the one owner it waited for now exists, a
+--     definition's `_grug_water_speed_factor` read there (the Tortoise's
+--     1.25), so adding it is a one-line change of this definition.
 --
 -- The upstream `fly 400-500` swim clip is therefore unused and left out of
 -- the animation table below: without `fly = true` mobs_redo never selects it.

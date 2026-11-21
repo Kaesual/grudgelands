@@ -10,7 +10,9 @@
 --      that wears at every tier, down to 0; trinkets, bags and hotbar tools
 --      are untouched; ten deaths break a fresh item exactly; a broken item
 --      keeps its stack; the tooltip line follows; Creative costs nothing; one
---      equipment change and one break cue per death;
+--      equipment change and one break cue per death; a character below level
+--      10 dies for free, from level 10 on the death wears (Round 84 ruling 5
+--      reverses "every death": the W cases below run at level 10);
 --   P  the PvP window: 30 s, its own value beside the 15 s kill credit; a
 --      fall, a drowning or a mob inside it costs nothing; an own-faction
 --      hit, a dodged hit and a mob's hit do not count; an enemy who went
@@ -229,6 +231,8 @@ grug_gear = {
 	reference_purchase_price = function() return 100 end,
 }
 grug_items = {regenerate_description = function() end}
+-- The player level grug_repair reads (Round 84): 10 unless a case sets one.
+grug_xp = {get_level = function(player) return player.level or 10 end}
 
 local steps_before = #globalsteps
 current_mod = "grug_repair"
@@ -237,6 +241,8 @@ for _, fn in ipairs(callbacks.loaded) do fn() end
 eq(#globalsteps, steps_before, "H the mod adds no globalstep")
 check(read("mods/ITEMS/grug_repair/mod.conf"):find("grug_pvp", 1, true) ~= nil,
 	"W grug_repair loads after grug_pvp")
+check(read("mods/ITEMS/grug_repair/mod.conf"):find("grug_xp", 1, true) ~= nil,
+	"W grug_repair declares grug_xp, whose level it reads")
 
 local function new_player(name, faction)
 	local p = {name = name, faction = faction, hp = 100, hp_max = 100,
@@ -416,6 +422,28 @@ do
 	eq(wear_of(c, "grug_weapon"), 0, "W Creative costs nothing")
 	eq(#changes, 0, "W Creative changes nothing")
 	leave(c)
+
+	-- Round 84 ruling 5: the wear starts at player level 10.
+	eq(grug_repair.DEATH_WEAR_LEVEL, 10, "W the floor is level 10")
+	local low = new_player("wlevel9", "accord")
+	low.level = 9
+	equip(low, "grug_weapon", "t:sword1")
+	equip(low, "grug_chest", "t:chest1", 65000)
+	join(low)
+	changes, cues = {}, 0
+	die(low)
+	eq(wear_of(low, "grug_weapon"), 0, "W level 9: the weapon keeps its durability")
+	eq(wear_of(low, "grug_chest"), 65000, "W level 9: an item near breaking does not break")
+	eq(#changes, 0, "W level 9: no equipment change")
+	eq(cues, 0, "W level 9: no break cue")
+	check(grug_repair.wear_death(low) == false, "W level 9: wear_death reports nothing worn")
+	low.level = 10
+	die(low)
+	check(math.abs(wear_of(low, "grug_weapon") - 6553.5) <= 0.5, "W level 10: the death wears 10 %")
+	eq(wear_of(low, "grug_chest"), 65535, "W level 10: ...and can break an item")
+	eq(#changes, 1, "W level 10: one equipment change")
+	eq(cues, 1, "W level 10: one break cue")
+	leave(low)
 end
 
 ------------------------------------------------------------------------------

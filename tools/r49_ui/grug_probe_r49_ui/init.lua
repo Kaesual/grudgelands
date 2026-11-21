@@ -30,7 +30,7 @@ end
 local trade_form = ""
 local show_formspec = core.show_formspec
 core.show_formspec = function(name, formname, formspec)
-	if formname == "grug_traders:trade" then trade_form = formspec end
+	if formname:find("^grug_traders:trade") then trade_form = formspec end
 	return show_formspec(name, formname, formspec)
 end
 
@@ -87,7 +87,7 @@ local SHOTS = {
 		core.close_formspec(NAME, "")
 		sell_inventory(player)
 		grug_traders.open(player, "grug_traders:vendor_general_accord", vendor_pos, "accord")
-		submit(player, "grug_traders:trade", {mode_sell = "Sell"})
+		submit(player, grug_traders.trade_formname(player:get_player_name()), {mode_sell = "Sell"})
 		for line in trade_form:gmatch("tooltip%[[^%]]*") do
 			log("trade " .. line:sub(1, 80):gsub("\n", " / "))
 		end

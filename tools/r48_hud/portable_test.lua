@@ -17,9 +17,11 @@
 --      icon, both drawn exactly as high (as the client truncates them) and
 --      vertically centred; the band 75 % of lane HUD's width at 4:1; shown,
 --      the row left of the bezel with its top on the bezel's top; hidden,
---      the row right-aligned in the corner and "Now playing" below it,
---      inside the minimap's box; the gaps; none overlaps another or the
---      quest tracker;
+--      the row right-aligned in the corner and "Now playing" below it
+--      (with one icon; below the second when the announcements icon stands
+--      under the mail icon, Round 84: tools/r84_map), inside the minimap's
+--      box; the gaps; none
+--      overlaps another or the quest tracker;
 --   R  runtime with the minimap unavailable: the side elements are drawn and
 --      updated (the globalstep no longer returns at once), the band sends one
 --      hud_change per position and nothing in between, a clock jump shows
@@ -229,7 +231,11 @@ do
 			end
 			apart = apart and not overlap(mail, band) and not overlap(mail, playing) and
 				not overlap(band, playing)
-			below = below and math.abs(playing.y - (mail.y + mail.h) - gap) <= 1 and
+			-- Round 84: playing_top is below the row with at most one icon
+			-- (the announcements icon, one pixel higher, may stand in the
+			-- mail icon's place); two icons: tools/r84_map.
+			below = below and playing.y >= mail.y + mail.h + gap - 1 and
+				playing.y <= mail.y + mail.h + gap + 2 * box.hud and
 				math.abs(playing.x + playing.w - (bx + box.size)) <= 0.5
 			deepest = math.max(deepest, playing.y + playing.h - by)
 		end
@@ -325,7 +331,7 @@ do
 
 	-- A count told before this mod's join callback (another mod's join ran
 	-- first) is kept.
-	minimap.set_mail_count("me", 3)
+	minimap.set_mail_count("me", 3, 4)
 	players.me = me
 	for _, fn in ipairs(joins) do fn(me) end
 	step(0.25)
@@ -337,6 +343,18 @@ do
 		math.abs(by - H.band.y) < 0.5, "R unavailable: the band in the corner, noon's position")
 	check(mail and mail.text == "grug_map_mail_3.png" and math.abs(mx - H.mail.x) < 0.5 and
 		math.abs(my - H.mail.y) < 0.5, "R unavailable: the mail icon told before the join")
+	local announce, _, ax, ay = find("^grug_map_announce_")
+	check(announce and announce.text == "grug_map_announce_4.png" and
+		math.abs(ax - H.announce.x) < 0.5 and math.abs(ay - H.announce.y) < 0.5,
+		"R unavailable: the announcements icon told before the join, under the mail icon")
+	minimap.set_mail_count("me", 0, 4)
+	_, _, ax, ay = find("^grug_map_announce_")
+	check(mail.text == "" and math.abs(ax - H.announce_top.x) < 0.5 and
+		math.abs(ay - H.announce_top.y) < 0.5 and math.abs(ay - H.mail.y) < 0.5,
+		"R no letter: the announcements icon moves up into the mail icon's place")
+	minimap.set_mail_count("me", 3, 0)
+	check(announce.text == "" and mail.text == "grug_map_mail_3.png",
+		"R no announcement: its icon hidden, the letters' kept")
 	local compass = false
 	for _, def in pairs(me.huds) do compass = compass or def.type == "compass" end
 	check(not compass, "R unavailable: no minimap element")

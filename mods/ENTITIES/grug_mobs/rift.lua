@@ -344,6 +344,9 @@ grug_mobs.register_mob("grug_mobs:rift_boss", {
 	-- Authored (Round 37 MP): his spawn never fails on mobs_redo's active-mob
 	-- limit and he does not count against it.
 	_grug_authored = true,
+	-- Never saved with the map: added by spawn_boss only, a saved copy
+	-- removes itself (Round 84 ELITE, unsaved.lua).
+	_grug_unsaved = true,
 	attack_type = "dogshoot", attack_players = true, attack_npcs = false,
 	group_attack = false, reach = 3, pathfinding = 1,
 	walk_velocity = 1.2, run_velocity = 4.6, walk_chance = 0,
@@ -388,11 +391,11 @@ local function spawn_boss(s, players)
 		local dx, dz = p.x - pos.x, p.z - pos.z
 		if dx * dx + dz * dz < R.SPAWN_CLEAR * R.SPAWN_CLEAR then return false end
 	end
-	local object = core.add_entity(pos, BOSS)
+	-- Unsaved from its first activation on (unsaved.lua).
+	local object = grug_mobs.add_entity_unsaved(pos, BOSS)
 	local ent = object and object:get_luaentity()
 	if not ent then return false end
 	grug_mobs.place_on_ground(object, pos)
-	object:set_properties({static_save = false})
 	ent._grug_boss_id = s.id
 	ent._grug_home = {x = pos.x, y = pos.y, z = pos.z}
 	-- A boss that vanished with its area leaves no ledger behind.

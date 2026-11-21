@@ -1,0 +1,29 @@
+{
+  "breach": [
+    "default:acacia_wood",
+    "default:cobble",
+    "default:dirt",
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt",
+    "default:gravel",
+    "default:pine_tree",
+    "default:silver_sandstone_block",
+    "default:stone_block",
+    "default:stonebrick",
+    "default:tree",
+    "default:wood",
+    "grug_decor:darkage_basalt_brick",
+    "grug_decor:darkage_basalt_rubble",
+    "grug_decor:darkage_marble",
+    "grug_decor:darkage_slate_tile",
+    "grug_materials:basalt",
+    "grug_materials:bronze_block",
+    "grug_materials:emberglass_lamp",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:mesa_clay",
+    "stairs:slab_stone_block",
+    "stairs:stair_sandstonebrick",
+    "wool:blue",
+    "wool:red"
+  ]
+}

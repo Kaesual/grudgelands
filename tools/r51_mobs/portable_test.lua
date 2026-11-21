@@ -337,6 +337,9 @@ _G.grug_mobs = {
 		for i = 1, slots do list[i] = texture end
 		return list
 	end,
+	-- Round 84 WATER: tortoise.lua registers its mud ball (verbs.lua; its
+	-- behaviour is tools/r84_water's).
+	register_homing_arrow = function() end,
 	-- init.lua register_mob, the parts these files and subtypes.lua rely on.
 	register_mob = function(name, def)
 		base_defs[name] = deep_copy(def)

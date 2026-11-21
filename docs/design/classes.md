@@ -470,7 +470,18 @@ right-click at the target the press began on — placing a placeable food
 trader. Holding longer is a **hold**: it eats one serving 1.5 s after
 the press and never interacts with the pointed node or entity; engine place
 repeats during the hold do nothing, and placeable foods show no client
-placement preview. Pointing at nothing, a hold eats as well. In combat the
+placement preview. Pointing at nothing, a hold eats as well. On a touch
+screen (Round 84 default 16) food sets the engine's per-item gesture
+(`touch_interaction`): pointed at nothing (the sky, anything beyond reach) a
+long tap holds place and so eats as above, and a short tap punches the air;
+at a node a short tap stays the click (a door, a chest, planting) and a long
+tap digs, so eating there needs the sky; at an object the same holds (user
+ruling 2026-11-21), whatever the player's punch gesture setting: a short tap
+is the click (talking to an NPC or trader, using a quest object) and a long
+tap punches (no damage, as no skill is selected with food in hand; it picks up a
+dropped item), so eating at
+an object needs the sky too. In a small room where every tap meets a node
+within reach there is no touch eating (accepted, 2026-11-21). In combat the
 hold is refused at the 0.35 s mark with "Cannot eat while in combat." (no
 visual, no slowdown); a click in combat still interacts, and it places only
 what blocks nobody, such as a torch or a plant ([placement in

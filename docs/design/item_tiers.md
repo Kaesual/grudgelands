@@ -91,7 +91,7 @@ value is recomputed whenever the item level or the enchant tier changes
 - **Dropped** enchants have the item's tier: `min(7, floor((ilvl − 1) / 10) + 1)`.
   There is no random value window any more: a found enchant is worth exactly
   what the formula gives at its item level.
-- **The crown** raises every enchant on the item by one tier (§4).
+- **The crown** raises every enchant below T7 on the item by one tier (§4).
 
 <!-- generated: coefficients -->
 | Stat | a | b | c | decimals | minimum |
@@ -642,14 +642,25 @@ The bags and spellbooks in this table need only their profession tier (Round
 
 - The crown NPC in every capital applies one Fallen Crown to one item for a
   money fee: the item level becomes `min(10 × T + 10, 70)` (T = material tier:
-  a T5 item 60, a T6 item 70, an item at 61–69 70) and every enchant gains one
-  tier (T6 → T7 at most). Values follow §1.1: a crowned T6 item's T7 enchants
-  are worth their item-level-70 value.
-- Once per item (a stored flag), and only on items below item level 70: a
-  King's or a dragon's level 70 drop is refused. The crown
-  always raises the item level, so it has no enchant-only use (Round 70; a
-  boss drop took one at equal level until then). A stack crowned earlier stays
-  as it is.
+  a T5 item 60, a T6 item 70, an item at 61–69 70; never lower than it is) and
+  every enchant below T7 gains one tier (T6 → T7 at most); empty channels stay
+  empty. Values follow §1.1: a crowned T6 item's T7 enchants are worth their
+  item-level-70 value.
+- **No once-per-item limit** (Round 84 ruling 1, reversing Round 70's removal
+  of the enchant-only crown): the crown works on an item below item level 70
+  or with an enchant below T7, and again on a crowned item, but only while it
+  raises a number, the item level or an enchant's value (Round 84 default
+  19). An enchant's value is capped by the item level (§1.1), so a tier alone
+  is no gain: a crowned T5 item at 60 with T6 and T5 enchants takes a second
+  crown for the T5 (its cap rises to 60), then is refused, at no cost. A
+  King's level 70 drop with a T6 enchant put on it takes the crown for that
+  enchant; one with only T7 enchants is refused. The chain ends: the first
+  crown sets the level, each later one must lift a tier, and tiers stop at
+  T7 (six crowns at most, a T1 enchant on a T6 item). The window's preview
+  names exactly what changes: the level line only when the level rises, each
+  enchant's tier and value, an enchant whose tier rises with its value held
+  by the level, and the empty channels. The stored flag `grug_crowned` now
+  only marks an item crowned at least once (the tooltip's "Crowned" line).
 - **Fee: one hour of band-6 net solo income**, rounded by
   [economy.md](economy.md) §4.1, from the same income estimate as the mount
   prices (`tools/r29_e4/income.py`): 1g 45s on the estimate before Round 33.
@@ -660,9 +671,11 @@ The bags and spellbooks in this table need only their profession tier (Round
 - Re-enchanting a crowned item uses T1–T6 recipes only; the station preview
   names a weaker replacement, e.g. "replaces T7 Strength with T6 Strength".
 
-*Rationale:* money's use at level 60 (plan §2.6); one hour per crowned item
-makes a crowned set (eight items) a goal of about eight hours of income plus
-eight King kills, next to Master Riding's five hours.
+*Rationale:* money's use at level 60 (plan §2.6); one hour per crown makes a
+crowned set (eight items, one crown each) a goal of about eight hours of
+income plus eight King kills, next to Master Riding's five hours; since
+Round 84 lifting every enchant of a lower tier to T7 takes further crowns,
+up to six per item, at the same price each.
 
 <!-- generated: crown -->
 | Sink | Rule | Price (today's band-6 income) | Price (after) |

@@ -13,6 +13,98 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.84.0 — quantity buttons, the crown, no safe kiting (2026-11-21)
+
+Compatible: no map reset, no new world, nothing for the host to do. This
+round answers player reports.
+
+- **Buy and sell in amounts:** every trade row has the buttons **1 / 5 /
+  20 / Stack**, for buying and for selling. A button falls away when its
+  amount is larger than the item's stack or repeats another one, so gear
+  shows 1, a potion 1 / 5 / 20, arrows 1 / 5 / 20 / Stack 100 and most goods
+  1 / 5 / 20 / Stack 99.
+  - **Buying:** the row shows the price of one ("3c each"), and each
+    button's tooltip the total of its amount. An amount you cannot pay for
+    or carry is grey. You get the whole amount and pay for it at once, or
+    nothing happens; buying used to give one item per click.
+  - **Selling:** Stack replaces All and sells the whole slot of the row,
+    also a part-filled one, and shows its count (13 potions: 1 / 5 / Stack
+    13). Amounts above what the slot holds are not shown.
+  - **Goods sold in lots** ("1c per 50") keep two buttons: one lot (the
+    button shows its count) and All (every whole lot). The Miner's Guild's
+    Trade-in and the Stonewright work the same way (one lot or one recipe,
+    and All); the camp vendor's reputation page has the buy buttons, paid in
+    reputation.
+  - **A quick second click** sent from the window before it redrew no
+    longer acts on the row that moved into its place (selling could sell the
+    next item); it does nothing.
+- **The crown works while it raises a number:** the Crownbinder now also
+  takes a level 70 item when one of its enchants is below T7, and a crowned
+  item can be crowned again: each crown lifts the item level to its tier's
+  top + 10 (70 at most, never lower than it is) and every enchant below T7
+  by one tier. The crown is refused only when it would raise nothing (the
+  item level and every enchant's value would stay as they are), and then
+  nothing is taken. As enchants stop at T7, an item takes at most six
+  crowns (a lower-tier re-enchant opens further ones). Each crown costs
+  the same fee (1g 48s) and one Fallen Crown.
+  - The preview names every change with its value before and after ("T6
+    Crit +4.3% becomes T7 +4.8%"), the item level only when it rises, and an
+    empty enchant channel stays empty. A crowned item shows "Crowned" once,
+    however often it was crowned. The window shows five items per page.
+  - A quick double click no longer pays for a second crown.
+- **No more safe kiting:**
+  - **Mobs swim at their full land speed.** Water halved them until now,
+    so a swimming player could kill a land mob from the water. Lava still
+    slows mobs. The crocodile is now really as fast in water as on land.
+  - **The Tortoise shoots back:** hit from range, it answers with a ball of
+    mud that does normal ranged damage for its level and slows you by 45 %
+    for 3 s (it shares the one slow slot with webs and hexes, so they do not
+    stack), about every 2.5 s and up to 33 nodes away, a little farther
+    than the longest player range. Close in it still bites. It runs 3 nodes
+    per second on land (was 2) and 3.75 in water, faster than a swimming
+    player. It stays neutral and attacks only when attacked. This holds for
+    all six kinds of Tortoise, the Pond Terrapin of the start lakes too.
+- **Zone leaders appear once:** a zone leader, the rift boss and the
+  depth pulse's arrivals are never saved with the map any more, so a leader
+  no longer comes back as a second copy beside the next one after you walk
+  away and return. Copies that earlier versions saved of a leader or the
+  rift boss remove themselves when their area loads, without a fight, loot
+  or quest credit. Old copies of depth-pulse arrivals look like ordinary
+  mobs and stay.
+- **The map:**
+  - **No map layer changes the zoom or the scroll position.** Choosing
+    Zones no longer zooms to 2×; the zone names are small at 1× until you
+    zoom in.
+  - **Announcements get their own icon:** a shield with its own count (1–9,
+    9+) beside the minimap. It stands under the letter icon, or in its place
+    when no letter is unread, and the letter icon counts letters only. A
+    new announcement also shows a line in the message feed ("New
+    announcement: <subject>.") to everyone online.
+- **Smaller changes:**
+  - The cloak picker on the Character page lists "No cloak" first, then the
+    cloaks by name (a leading "The" counts: "The Unbought Banner" under T).
+  - **Death wear starts at level 10:** below level 10, dying costs your
+    equipment no durability.
+  - **Eating on a touch screen:** with food in hand, long-press the sky or
+    anything out of reach; the ring runs and you eat one portion, as when
+    holding the right mouse button. A short tap on a door or chest still
+    opens it, and a short tap on an NPC or trader now talks to them (it
+    used to punch). With food in hand, a long tap on a creature does no
+    damage (as before), and a long tap picks up a dropped item. The food
+    tooltip and Help say so.
+- **Server admins:**
+  - A saved copy of a leader or the rift boss that removes itself writes
+    one `action` line to the server log ("a saved copy of … removed
+    itself").
+  - A zone leader or the rift boss spawned by hand (`/spawnentity`)
+    removes itself at once with the same line; both are placed only by
+    their spawners.
+- Internal: one rule (`grug_traders.quantities`) gives every trade row its
+  buttons, and the trade window gets a new form name at every redraw;
+  `grug_guild.buy` takes a count; spawners add actors the map must never
+  save through `grug_mobs.add_mob_unsaved` / `add_entity_unsaved`
+  ([upstream workarounds](docs/technical/upstream-workarounds.md) §11).
+
 ## 0.83.0 — deleting a character from the website (2026-11-18)
 
 Compatible: no map reset, no new world, nothing for the host to do.

@@ -196,6 +196,16 @@ stays readable at the band's height), bands 160×40, all RGBA. See `tools/r48_ar
 | `textures/grug_map_mail_8.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
 | `textures/grug_map_mail_9.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
 | `textures/grug_map_mail_9p.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_1.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_2.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_3.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_4.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_5.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_6.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_7.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_8.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_9.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_announce_9p.png` | GPT-6 Astra (Round 48) | the announcement badge (`grug_mail/textures/grug_mail_admin_badge.png`) with the unread count; `tools/r48_hud/gen_hud_textures.py` (Round 84); cooldown glyphs remain HUD-owned | CC0-1.0 |
 
 # The Miner's Guild map icons (Round 58 lane LIFT)
 

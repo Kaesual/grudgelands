@@ -220,7 +220,7 @@ the start waystone, still inside.
   bearer cannot enter while the mark lasts.
 - **Logout out of combat** costs nothing: the player comes back where they stood.
 - **Logout on a pack's list** counts as a death, with Round 70's penalty once
-  ([durability](durability_repair.md)), and takes the player off the list. The death
+  ([durability](durability_repair.md), from player level 10), and takes the player off the list. The death
   happens at the next login, and they stand at the start waystone if the Expedition still
   belongs to them. A server shutdown is no logout.
 - **Whoever logs in after their Expedition ended** stands at the waystone of their last

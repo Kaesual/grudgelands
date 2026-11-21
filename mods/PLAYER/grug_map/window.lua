@@ -823,16 +823,13 @@ function W.handle_fields(player, fields)
 		atlas.zoom_view(session, fields.grug_map_zoom_in ~= nil, atlas.view(), player:get_pos(), session.layout)
 		changed = true
 	end
-	-- A layer button (ruling 2): that layer, and the quest deselected.
+	-- A layer button (ruling 2): that layer, and the quest deselected. No
+	-- layer touches the zoom or the scroll (Round 84 ruling 13; Zones
+	-- entered at 2x until then).
 	for _, layer in ipairs(layers.LIST) do
 		if fields["grug_map_layer_" .. layer.id] then
 			if session.layer ~= layer.id or session.quest_selected then
 				session.layer = layer.id
-                -- Names need room on the map. Enter this layer at
-                -- 2x; the normal minus button still restores the whole-world view.
-                if layer.zones and (session.zoom or 1) == 1 then
-                    atlas.zoom_view(session, true, atlas.view(), player:get_pos(), session.layout)
-                end
 				quest_box.deselect(session)
 				changed = true
 			end

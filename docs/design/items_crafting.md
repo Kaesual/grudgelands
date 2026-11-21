@@ -120,7 +120,8 @@ universal pick.
 - **Abyssal Steel** is the ordinary craftable T6 metal. The optional final
   masterwork state is **the crown** (Round 33, [item_tiers.md](item_tiers.md)
   §4): a Crownbinder applies one Fallen Crown to one item, its item level
-  becomes its tier's top + 10, 70 at most, and every enchant gains one tier; it replaces
+  becomes its tier's top + 10, 70 at most, and every enchant below T7 gains
+  one tier, again while a crown raises a number (Round 84); it replaces
   the Grudgeforged item-level-70 upgrade of the WP audit's D3. Named rares
   drop no trophies (D4). No Crown enters an Abyssal Steel bar or pick.
 - Mundane Stone, Copper, Tin, Iron ore, Coal and Gold may retain stable
@@ -1795,8 +1796,8 @@ Round 45, spec §2.26, §2.32) adds +N item levels to an item of its families
 and material tier T, at most up to `10 × T`, never past it and never lower;
 one level costs one own material of tier T (a weapon also a Stick) and 1 s,
 gives no XP, and its enchants follow; a **Fallen Crown** lifts
-an item below 70 to `min(10 × T + 10, 70)` and its enchants one tier, once
-([item_tiers.md](item_tiers.md) §3, §4). There are no Imbue/Temper kits,
+an item to `min(10 × T + 10, 70)` (never lower than it is) and its enchants below T7 one tier, again
+while that raises a number ([item_tiers.md](item_tiers.md) §3, §4). There are no Imbue/Temper kits,
 random crafted application rolls or separate refinement steps.
 
 ## 8. Prices and money pacing

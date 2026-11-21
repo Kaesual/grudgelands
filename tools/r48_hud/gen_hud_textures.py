@@ -24,6 +24,14 @@ them into mods/PLAYER/grug_map/textures/:
       digit leaves room on the right and every image has the same size. The digits are the
       cooldown digits of tools/r40_cd/gen_cooldown_textures.py (read from
       their generated files, at 3 px per glyph cell), the "+" included.
+  grug_map_announce_1.png .. _9.png, grug_map_announce_9p.png  the
+      announcements icon (Round 84 default 15) with its unread count, 87 x 29
+      px each: the announcement badge of the mail windows
+      (mods/PLAYER/grug_mail/textures/grug_mail_admin_badge.png, cropped to
+      its opaque pixels, 26 x 29) centred in the envelope's 46 px slot, the
+      count exactly where the mail icon has it (one pixel lower: the canvas
+      is as high as the badge). minimap_view.lua draws it at the mail icon's
+      scale under the mail icon, so the two counts line up.
 
 Parts (tools/r48_hud/parts/; the art lane replaces them with its picks and
 reruns this script, any 8-bit PNG):
@@ -67,6 +75,8 @@ STEP = BAND_W // POSITIONS  # 4 px per position
 DAY_W = DAY_POSITIONS * STEP  # 120 px of day, 40 of night
 SUN_U, MOON_U = DAY_W // 2, DAY_W + (BAND_W - DAY_W) // 2
 MAIL_W, MAIL_H = 87, 28  # minimap_view.lua V.SIDE mail_w, mail_h
+ANNOUNCE_W, ANNOUNCE_H = 87, 29  # minimap_view.lua V.SIDE announce_w, announce_h
+BADGE = REPO / "mods/PLAYER/grug_mail/textures/grug_mail_admin_badge.png"
 COUNT_GAP = 2  # px between the envelope and the count
 WIDEST_W = (ADVANCE + GLYPH_W) * CELL  # "9+", 39 px
 ENVELOPE_W = MAIL_W - COUNT_GAP - WIDEST_W  # 46
@@ -268,21 +278,27 @@ def pill(width, height, fill, rim):
     return rows
 
 
-def mail_image(text, parts, palette):
-    canvas = [[CLEAR] * MAIL_W for _ in range(MAIL_H)]
+def mail_image(text, parts, palette, icon=None, height=MAIL_H):
+    """The mail icon; with `icon` and `height` the announcements icon (the
+    icon centred in the envelope's slot, the count at the same left)."""
+    canvas = [[CLEAR] * MAIL_W for _ in range(height)]
     envelope = parts["mail_icon"]
-    paste(canvas, envelope, 0, (MAIL_H - len(envelope)) // 2)
+    slot = len(envelope[0])
+    if icon is None:
+        paste(canvas, envelope, 0, (height - len(envelope)) // 2)
+    else:
+        paste(canvas, icon, (slot - len(icon[0])) // 2, (height - len(icon)) // 2)
     glyphs = [glyph(ch) for ch in text]
     text_w = ((len(text) - 1) * ADVANCE + GLYPH_W) * CELL
     text_h = GLYPH_H * CELL
-    top = (MAIL_H - text_h) // 2
-    left = len(envelope[0]) + COUNT_GAP
+    top = (height - text_h) // 2
+    left = slot + COUNT_GAP
     if palette.get("badge"):
         # a pill as high as the image behind the count, within the canvas
         pad = 2
-        w = min(MAIL_W - left, max(MAIL_H, text_w + 2 * pad))
+        w = min(MAIL_W - left, max(height, text_w + 2 * pad))
         rim = color(palette["badge_rim"]) if palette.get("badge_rim") else None
-        paste(canvas, pill(w, MAIL_H, color(palette["badge"]), rim), left, 0)
+        paste(canvas, pill(w, height, color(palette["badge"]), rim), left, 0)
         left += (w - text_w) // 2
     if left + text_w > MAIL_W:
         raise SystemExit("the count %r does not fit beside the envelope" % text)
@@ -366,6 +382,10 @@ def load_parts():
     icon = parts["mail_icon"] = crop(parts["mail_icon"])
     if len(icon) > MAIL_H or len(icon[0]) > ENVELOPE_W:
         raise SystemExit("mail_icon.png's opaque pixels must fit %d x %d" % (ENVELOPE_W, MAIL_H))
+    badge = parts["announce_badge"] = crop(read_png(BADGE))
+    if len(badge) > ANNOUNCE_H or len(badge[0]) > len(icon[0]):
+        raise SystemExit("the announcement badge's opaque pixels must fit %d x %d" %
+                         (len(icon[0]), ANNOUNCE_H))
     return parts, palette
 
 
@@ -378,6 +398,9 @@ def files(parts, palette):
         out["grug_map_mail_%d.png" % count] = png(MAIL_W, MAIL_H,
                                                    mail_image(str(count), parts, palette))
     out["grug_map_mail_9p.png"] = png(MAIL_W, MAIL_H, mail_image("9p", parts, palette))
+    for count in [str(n) for n in range(1, 10)] + ["9p"]:
+        out["grug_map_announce_%s.png" % count] = png(ANNOUNCE_W, ANNOUNCE_H, mail_image(
+            count, parts, palette, parts["announce_badge"], ANNOUNCE_H))
     return out
 
 
@@ -403,7 +426,7 @@ def main():
         else:
             path.write_bytes(data)
     # No stale image of an older set.
-    for pattern in ("grug_map_daytime_*.png", "grug_map_mail_*.png"):
+    for pattern in ("grug_map_daytime_*.png", "grug_map_mail_*.png", "grug_map_announce_*.png"):
         for path in sorted(OUT.glob(pattern)):
             if path.name not in produced:
                 if check:

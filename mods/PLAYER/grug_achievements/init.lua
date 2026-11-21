@@ -457,13 +457,30 @@ grug_visuals.register_cloak_source(function(player)
 	return R.cloak_texture(book, meta, account), id, book.cloak[id].wings
 end)
 
+-- The picker's order (Round 84 default 14): No cloak first, then by the shown
+-- name, case-insensitive and with articles counted ("The Unbought Banner"
+-- under T); equal names keep the catalogue order. R.unlocked keeps the
+-- catalogue order for every other reader (this sorts its fresh list).
+local function picker_order(ids)
+	local position = {}
+	for index, id in ipairs(ids) do position[id] = index end
+	table.sort(ids, function(a, b)
+		if (a == R.NONE) ~= (b == R.NONE) then return a == R.NONE end
+		local name_a, name_b = book.cloak[a].name:lower(), book.cloak[b].name:lower()
+		if name_a ~= name_b then return name_a < name_b end
+		return position[a] < position[b]
+	end)
+	return ids
+end
+
 -- The Character page's cloak picker (Stats mode, beside the model). Items are
--- the owned cloaks by name; the client sends the chosen name back.
+-- the owned cloaks by name; the client sends the chosen name back, so the
+-- order is the picker's own (choose_cloak_by_name matches the name).
 function grug_achievements.cloak_dropdown(player, x, y, w)
 	local meta, account = player:get_meta(), account_cloaks(player)
 	local selected = R.selected(book, meta, account)
 	local items, index = {}, 1
-	for position, id in ipairs(R.unlocked(book, meta, account)) do
+	for position, id in ipairs(picker_order(R.unlocked(book, meta, account))) do
 		items[position] = core.formspec_escape(book.cloak[id].name)
 		if id == selected then
 			index = position

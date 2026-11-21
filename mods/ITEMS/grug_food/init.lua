@@ -499,7 +499,8 @@ function grug_food.register_item(item_name, tier, kind, role)
 	groups["grug_food_role_" .. role] = 1
 	core.override_item(item_name, {
 		description = tostring(definition.description or item_name) .. "\n" ..
-			tooltip_for(tier, effect) .. "\nHold RMB for 1.5 s to eat one portion.",
+			tooltip_for(tier, effect) .. "\nHold RMB for 1.5 s to eat one portion.\n" ..
+			"On a touch screen, long-press the sky or anything out of reach instead.",
 		groups = groups,
 		_grug_ilvl = tier_def.min_level,
 		_grug_tier = tier,
@@ -508,6 +509,21 @@ function grug_food.register_item(item_name, tier, kind, role)
 		-- A click places on RELEASE, so the client must not predict a node on
 		-- press (game.cpp nodePlacement) or on the engine's repeated place.
 		node_placement_prediction = "",
+		-- Touch screens (Round 84 default 16; lua_api.md "touch_interaction",
+		-- touchcontrols.cpp applyContextControls): pointed at nothing (the sky,
+		-- anything beyond reach) a long tap holds place, the same hold as RMB,
+		-- and a short tap only punches the air (food has no use there). At a
+		-- node and at an object a short tap stays a place click (a door, a
+		-- chest, planting; talking to an NPC or trader, user ruling 2026-11-21),
+		-- so a long tap there digs or punches and never eats: with food
+		-- in hand no skill is selected, so the punch does no damage; it picks
+		-- up a dropped item. Fixed for objects,
+		-- not "user", so the player's touch_punch_gesture no longer decides.
+		touch_interaction = {
+			pointed_nothing = "short_dig_long_place",
+			pointed_node = "long_dig_short_place",
+			pointed_object = "long_dig_short_place",
+		},
 		-- Native RMB calls only report the press to contextual input; it
 		-- settles click versus hold and never lets a repeat place or interact.
 		on_place = function(stack, player, pointed)

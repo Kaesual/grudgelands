@@ -305,13 +305,19 @@ function M.unread_broadcasts(broadcasts, read_set, now)
 	return count
 end
 
--- Unread letters plus unread broadcasts (§3.11).
-function M.unread(box, broadcasts, read_set, now)
+-- The unread letters of a box (admin letters and answers included); the
+-- letter icon's count since Round 84 (default 15).
+function M.unread_letters(box, now)
 	local count = 0
 	for _, letter in ipairs(box.letters) do
 		if not letter.read and not M.expired(letter, now) then count = count + 1 end
 	end
-	return count + M.unread_broadcasts(broadcasts or {}, read_set or {}, now)
+	return count
+end
+
+-- Unread letters plus unread broadcasts (§3.11).
+function M.unread(box, broadcasts, read_set, now)
+	return M.unread_letters(box, now) + M.unread_broadcasts(broadcasts or {}, read_set or {}, now)
 end
 
 -- The read set kept to the broadcasts that still exist.

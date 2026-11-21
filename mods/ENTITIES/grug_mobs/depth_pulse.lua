@@ -42,7 +42,8 @@
 --             so ambient mobs of the same registration keep theirs).
 --
 -- The pulse never places, digs or removes a node. Arrivals are never saved
--- (static_save = false): an unloaded block takes them with it.
+-- (grug_mobs.add_mob_unsaved, static_save off from their first activation;
+-- unsaved.lua): an unloaded block takes them with it.
 --
 -- Cost: one throttled globalstep, the players and the live arrivals spread
 -- over four slices of each second (spawn_regions.lua's pattern), so no step
@@ -318,7 +319,8 @@ DP.arrivals = {} -- {obj = ObjectRef, lost_since = clock or nil}
 
 -- Adds the arrival; its ObjectRef or nil (mobs_redo's limit, no room).
 function DP.spawn(mob, spot, now)
-	local ent = grug_mobs.add_mob(spot, {name = "grug_mobs:" .. mob, ignore_count = true})
+	-- Unsaved from its first activation on (unsaved.lua, Round 84 ELITE).
+	local ent = grug_mobs.add_mob_unsaved(spot, {name = "grug_mobs:" .. mob, ignore_count = true})
 	if not ent then
 		return nil
 	end
@@ -326,7 +328,6 @@ function DP.spawn(mob, spot, now)
 	-- ambient mobs of the same name, which keep their coin bags.
 	ent._grug_pulse = true
 	ent._grug_no_coin_bag = true
-	ent.object:set_properties({static_save = false})
 	-- The underground sight (view range past the spawn distance), without
 	-- the elite roll (D5: never elite; a def-elite stays what it is).
 	grug_mobs.underground_spawned(ent, spot, true)
