@@ -433,10 +433,20 @@ end
 -- press pointed at: the item's own placement/planting (which also runs a
 -- pointed node's on_rightclick), or its secondary use followed by the
 -- entity's own on_rightclick (`rightclick`, the unwrapped entity callback).
+-- A click at a dropped item picks it up instead, as a punch does (0.84.1: a
+-- short tap at an object is this click on a touch screen, touch_interaction
+-- below): one attempt; a full inventory leaves the drop where it lies, and
+-- the wielded stack is not written back, since the pickup may have merged
+-- into it.
 function grug_food.click(player, pointed, rightclick)
 	local stack = player:get_wielded_item()
 	local food = held_foods[stack:get_name()]
 	if not food or not pointed then return false end
+	local entity = pointed.type == "object" and pointed.ref and pointed.ref:get_luaentity()
+	if entity and entity.name == "__builtin:item" then
+		grug_inventory.pick_up_pointed(player, pointed)
+		return true
+	end
 	local result
 	if pointed.type == "node" then
 		local item_name = stack:get_name()
@@ -514,11 +524,12 @@ function grug_food.register_item(item_name, tier, kind, role)
 		-- anything beyond reach) a long tap holds place, the same hold as RMB,
 		-- and a short tap only punches the air (food has no use there). At a
 		-- node and at an object a short tap stays a place click (a door, a
-		-- chest, planting; talking to an NPC or trader, user ruling 2026-11-21),
-		-- so a long tap there digs or punches and never eats: with food
-		-- in hand no skill is selected, so the punch does no damage; it picks
-		-- up a dropped item. Fixed for objects,
-		-- not "user", so the player's touch_punch_gesture no longer decides.
+		-- chest, planting; talking to an NPC or trader, user ruling 2026-11-21;
+		-- picking up a dropped item, grug_food.click, 0.84.1), so a long tap
+		-- there digs or punches and never eats: with food in hand no skill is
+		-- selected, so the punch does no damage; it picks up a dropped item
+		-- too. Fixed for objects, not "user", so the player's
+		-- touch_punch_gesture no longer decides.
 		touch_interaction = {
 			pointed_nothing = "short_dig_long_place",
 			pointed_node = "long_dig_short_place",

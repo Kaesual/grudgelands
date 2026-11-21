@@ -470,18 +470,40 @@ right-click at the target the press began on — placing a placeable food
 trader. Holding longer is a **hold**: it eats one serving 1.5 s after
 the press and never interacts with the pointed node or entity; engine place
 repeats during the hold do nothing, and placeable foods show no client
-placement preview. Pointing at nothing, a hold eats as well. On a touch
-screen (Round 84 default 16) food sets the engine's per-item gesture
-(`touch_interaction`): pointed at nothing (the sky, anything beyond reach) a
-long tap holds place and so eats as above, and a short tap punches the air;
-at a node a short tap stays the click (a door, a chest, planting) and a long
-tap digs, so eating there needs the sky; at an object the same holds (user
-ruling 2026-11-21), whatever the player's punch gesture setting: a short tap
-is the click (talking to an NPC or trader, using a quest object) and a long
-tap punches (no damage, as no skill is selected with food in hand; it picks up a
-dropped item), so eating at
-an object needs the sky too. In a small room where every tap meets a node
-within reach there is no touch eating (accepted, 2026-11-21). In combat the
+placement preview. Pointing at nothing, a hold eats as well. A click at a
+dropped item picks it up, as a punch does (0.84.1; a full inventory leaves
+it lying).
+
+On a touch screen (Round 84 default 16) food sets the engine's per-item
+gesture (`touch_interaction`): pointed at nothing a long tap holds place
+(the RMB hold above), at a node and at an object a short tap is the click
+and a long tap holds dig (user ruling 2026-11-21, whatever the player's
+punch gesture setting). With food in hand no skill is selected, so a punch
+does no damage. What a tap does with food in hand, under the engine's
+default touch settings (tap interaction, a long tap after 0.4 s), out of
+combat and on foot unless the row says otherwise; read from the engine and
+game source, not tried on a touch device:
+
+| Pointed at | Short tap | Long tap |
+|---|---|---|
+| The sky, or anything out of reach | nothing | eats one portion, 1.5 s after the long tap begins (about 1.9 s after the touch) |
+| A door, a chest or anything else you can use (a furnace, a sign, a workbench, a berry bush) | uses it, as an empty hand would (a locked door or chest of somebody else stays shut) | digs the block, as an empty hand would (a wooden door, an empty chest; never where protection forbids it) |
+| Another node | places the food if it is a block (an apple, a meat block) or plants it if it plants (never where protection forbids it); otherwise nothing | digs the block, as an empty hand would (never where protection forbids it) |
+| An NPC or a trader | talks | nothing |
+| A dropped item | picks it up (0.84.1) | picks it up |
+| A hostile mob | nothing | nothing |
+| Another player | nothing | nothing |
+| Your own mount or boat, while riding | dismounts | nothing |
+
+A quest object answers like an NPC: a short tap starts its use, a long tap
+does nothing. So eating on a touch screen needs the sky; in a small room where every tap
+meets a node within reach there is no touch eating (accepted, 2026-11-21).
+The engine decides a long tap again by what it points at now: held on after
+it has picked up a drop, it digs the node behind it or, with the sky
+behind, eats. While riding, the mount's pointing box also covers the rider,
+and in first person the rider's eye lies inside it, so every tap then
+points at the mount (in third person, a tap on the rider or the mount
+does). In combat the
 hold is refused at the 0.35 s mark with "Cannot eat while in combat." (no
 visual, no slowdown); a click in combat still interacts, and it places only
 what blocks nobody, such as a torch or a plant ([placement in

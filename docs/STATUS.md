@@ -7,9 +7,11 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.84.0 (`game.conf`), Round 84 (player feedback; compatible), on main as the
-  squash commit `78b787a6`, tag `round-84`; synced to the user's game, not pushed (only the
-  user pushes: `git push origin main round-84`).
+- **Game:** 0.84.1 (`game.conf`), the Round 84 follow-up (with food in hand a short tap
+  picks up a dropped item; compatible), on the branch `round84.1`, not squashed yet. Main
+  holds 0.84.0, Round 84 (player feedback; compatible), as the squash commit `78b787a6`,
+  tag `round-84`; synced to the user's game, not pushed (only the user pushes:
+  `git push origin main round-84`).
 - **Production:** 0.78.0 (the user, 2026-11-16).
 - **Last change besides rounds:** the read-only code audit of 2026-11
   ([audit](audit-2026-11/README.md)), whose findings Rounds 81 and 82 fixed or left as
@@ -35,7 +37,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
-| 84 | 0.84.0 | compatible | no | [Round 84](planning/round84-plan.md#completion-2026-11-21) |
+| 84 | 0.84.0–0.84.1 | compatible | no | [Round 84](planning/round84-plan.md#completion-2026-11-21), [84.1](planning/round84-plan.md#follow-up-0841-2026-11-21) |
 | 83 | 0.83.0 | compatible | yes | [Round 83](planning/round83-plan.md#completion-2026-11-18) |
 | 82 | 0.82.0 | compatible | yes | [Round 82](planning/round82-plan.md#completion-2026-11-18) |
 | 81 | 0.81.0 | compatible | yes | [Round 81](planning/round81-plan.md#completion-2026-11-17) |

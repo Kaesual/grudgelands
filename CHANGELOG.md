@@ -13,6 +13,16 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.84.1 — a short tap picks up drops with food in hand (2026-11-21)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Touch screens:** with food in hand, a short tap at a dropped item picks
+  it up, as with any other item in hand (in 0.84.0 only a long tap did). A short tap at an NPC still talks, and a long press at the sky
+  still eats. On desktop, a short right-click with food in hand at a
+  dropped item now picks it up too. A full inventory leaves the item lying,
+  as before.
+
 ## 0.84.0 — quantity buttons, the crown, no safe kiting (2026-11-21)
 
 Compatible: no map reset, no new world, nothing for the host to do. This
@@ -90,8 +100,8 @@ round answers player reports.
     holding the right mouse button. A short tap on a door or chest still
     opens it, and a short tap on an NPC or trader now talks to them (it
     used to punch). With food in hand, a long tap on a creature does no
-    damage (as before), and a long tap picks up a dropped item. The food
-    tooltip and Help say so.
+    damage (as before), and a long tap picks up a dropped item (a short
+    tap does too since 0.84.1). The food tooltip and Help say so.
 - **Server admins:**
   - A saved copy of a leader or the rift boss that removes itself writes
     one `action` line to the server log ("a saved copy of … removed

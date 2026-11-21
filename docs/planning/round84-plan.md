@@ -514,6 +514,40 @@ window (are the names readable without the old zoom); at a vendor buy 20 arrows 
 torches and sell a part-filled potion slot with Stack, on desktop and web; at a Crownbinder
 crown a level 70 King drop that has one re-enchanted T6 enchant.
 
+### Follow-up 0.84.1 (2026-11-21)
+
+A small follow-up round on its own branch `round84.1` (one lane, Opus), from the user's
+report of 2026-11-21: since SMALL fix round 1 made a short tap at an object a place click,
+a short tap with food in hand at a dropped item did nothing (only a long tap, a punch,
+picked it up); with any other item in hand a short tap picks a drop up. Release **0.84.1**,
+**compatible** (no saved state, no world generation; one runtime branch).
+
+- **What changed:** `grug_food.click`, the food click a short tap at an object (or a short
+  RMB click) performs on release, hands a pointed `__builtin:item` to the one pickup path,
+  `grug_inventory.pick_up_pointed` (one attempt through the entity's own `on_punch`; a full
+  inventory leaves the drop lying; the wielded stack is not written back), and does nothing
+  else there. `grug_food` now declares `grug_inventory` (it already loaded after it through
+  `grug_abilities`; no cycle). On desktop a short right-click with food in hand at a drop
+  picks it up as well (accepted in the brief). A held press still never clicks: the click
+  runs only while the press is undecided (`input.lua` `release_right`), so a press that
+  reached the eating stage at 0.35 s never picks up; on a touch screen a long tap at an
+  object is a punch, which picks up as before.
+- **The touch table** (what a short and a long tap do with food in hand, per thing pointed
+  at, read from the engine and game source) replaces the touch prose in
+  [classes.md](../design/classes.md); not tried on a touch device. The pickup rule in
+  [inventory_equipment.md](../design/inventory_equipment.md) names the food click.
+- **Fixtures:** `tools/r84_small` gained section P (the real `grug_food.click` with a stub
+  pickup: one attempt at a drop, also with a full inventory, no entity right-click, no
+  wield write; an NPC still gets its right-click; a removed object and a non-food hand do
+  nothing). Run: `r84_small` (the new case), and `r37_dc` and `r41_up` (they read the
+  version, the declaration and the changelog). `check_upgrade.py` and
+  `check_fresh_server.py` PASS; `check_lua.sh` on the changed Lua files PASS. No full run,
+  no engine boot.
+- **Not verified:** nothing was tried on a touch device or in a running game; the
+  touch rows rest on the source reading. **Human test (offer):** on a phone or the web
+  build with touch, food in hand: a short tap at a dropped item picks it up, a short tap at
+  a trader talks, a long press at the sky eats.
+
 ## Carry-overs
 
 Each line names where it came from. None is wanted work yet, so none has a BACKLOG line. The

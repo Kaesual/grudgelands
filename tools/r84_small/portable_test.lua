@@ -16,7 +16,12 @@
 --      engine's names (c_content.cpp es_TouchInteractionMode:
 --      long_dig_short_place, short_dig_long_place, user); no field is "user", so the player's touch_punch_gesture never
 --      decides; food stays without on_use; the tooltip names the touch
---      gesture in the Help text's words.
+--      gesture in the Help text's words;
+--   P  (0.84.1) the food click on release (a short tap at an object) at a
+--      dropped item makes one pickup attempt through
+--      grug_inventory.pick_up_pointed and nothing else (no entity
+--      right-click, no wield write, a full inventory included); at an NPC
+--      it still runs the entity's right-click.
 -- The death wear's level floor (ruling 5) is checked in tools/r70_death.
 -- Prints "R84 SMALL PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
@@ -189,6 +194,56 @@ do
 	end
 	check(foods >= 14, "T every current food and the gathering food registered (" .. foods .. ")")
 	check(overrides["t:potato"] ~= nil, "T a gathering food carries it too")
+
+	-- P (0.84.1): the click on release (a short tap at an object on a touch
+	-- screen, a short RMB click on desktop) at a dropped item picks it up
+	-- through the one pickup path and does nothing else; at any other
+	-- entity it still runs that entity's right-click.
+	local pickups, clicks, writes, takes = {}, {}, 0, true
+	grug_inventory = {pick_up_pointed = function(player, pointed) -- luacheck: ignore
+		pickups[#pickups + 1] = {player = player, pointed = pointed}
+		return takes
+	end}
+	local wielded = "default:apple"
+	local player = {
+		get_wielded_item = function() return {get_name = function() return wielded end} end,
+		set_wielded_item = function() writes = writes + 1 end,
+		get_player_name = function() return "rowan" end,
+	}
+	local function object(name)
+		local entity = name and {name = name}
+		return {type = "object", ref = {get_luaentity = function() return entity end}}
+	end
+	local function rightclick(entity) clicks[#clicks + 1] = entity.name end
+	local function click(pointed)
+		pickups, clicks, writes = {}, {}, 0
+		return grug_food.click(player, pointed, rightclick)
+	end
+
+	local drop = object("__builtin:item")
+	eq(click(drop), true, "P a drop: the click is handled")
+	eq(#pickups, 1, "P a drop: one pickup attempt")
+	check(pickups[1] and pickups[1].player == player and pickups[1].pointed == drop,
+		"P a drop: the pickup gets the player and the pointed drop")
+	eq(#clicks, 0, "P a drop: no entity right-click")
+	eq(writes, 0, "P a drop: the wielded stack is not written back (the pickup may merge into it)")
+
+	takes = false -- a full inventory: the pickup takes nothing
+	eq(click(drop), true, "P a drop, inventory full: handled")
+	eq(#pickups, 1, "P a drop, inventory full: still one attempt")
+	eq(#clicks + writes, 0, "P a drop, inventory full: nothing else happens")
+	takes = true
+
+	eq(click(object("grug_traders:vendor")), true, "P an NPC: the click is handled")
+	eq(#pickups, 0, "P an NPC: no pickup")
+	eq(clicks[1], "grug_traders:vendor", "P an NPC: its own right-click runs (talks)")
+
+	click(object(nil))
+	eq(#pickups + #clicks, 0, "P an object gone since the press: nothing")
+
+	wielded = "t:not_food"
+	eq(click(drop), false, "P no food in hand: not a food click")
+	eq(#pickups, 0, "P no food in hand: no pickup")
 end
 
 print(("%d checks, %d failures"):format(checks, failures))

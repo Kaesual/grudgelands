@@ -98,6 +98,7 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.84.1** lets a short tap on a touch screen pick up a dropped item with food in hand.
 **0.84.0** answers player reports: vendors buy and sell in amounts (1 / 5 / 20 / Stack),
 the Crownbinder crowns an item again while a crown still raises a number, mobs swim
 at full speed and the Tortoise shoots back, zone leaders no longer appear twice, and

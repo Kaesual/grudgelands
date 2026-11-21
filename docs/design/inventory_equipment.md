@@ -643,7 +643,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   on a dropped item would use the item instead: every `on_use` first hands
   a pointed drop to its pickup (`grug_inventory.pick_up_pointed`), a broken
   hoe too. A press that takes any of the drop does nothing else; one that
-  can take none (a full inventory) goes on to the item's own use.
+  can take none (a full inventory) goes on to the item's own use. Food's
+  click on release (a short right-click, or a short tap at an object on a
+  touch screen) hands a pointed drop to the same pickup and does nothing
+  else there, a full inventory included (0.84.1).
 - **Consumption and the inactive hotbar layout** (Round 50 ruling 3):
   every consumer keeps its own order and takes from the inactive layout
   last. Crafting ingredients (§4) walk their own slot order in
