@@ -9,10 +9,8 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 - **Game:** 0.86.0 (`game.conf`): Round 86 (the account Claim Stone, home names, the
   claim preview by map chunk, the Account page "The Charter", road cuts that fade into the
-  hillside; **map reset**); as the squash commit `daa45ca7`, tag `round-86`, synced to the user's game. Not
-  pushed, like Round 84 (`78b787a6`, `round-84`), 0.84.1 (`b4540eba`, `round-84.1`) and
-  Round 85 (`6dec5010`, `round-85`): `git push origin main round-84 round-84.1 round-85
-  round-86` (only the user pushes).
+  hillside; **map reset**); as the squash commit `daa45ca7`, tag `round-86`, synced to the user's game
+  and pushed with Rounds 84 to 85 (`round-84`, `round-84.1`, `round-85`).
 - **Production:** 0.83.0; to be upgraded to 0.86.0 in one step with one map reset, which
   covers 0.85.0's (Round 86 ruling 5).
 - **Last change besides rounds:** the read-only code audit of 2026-11
@@ -39,9 +37,9 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
-| 86 | 0.86.0 | map reset | no | [Round 86](planning/round86-plan.md#completion-2026-11-22) |
-| 85 | 0.85.0 | map reset | no | [Round 85](planning/round85-plan.md#completion-2026-11-22) |
-| 84 | 0.84.0–0.84.1 | compatible | no | [Round 84](planning/round84-plan.md#completion-2026-11-21), [84.1](planning/round84-plan.md#follow-up-0841-2026-11-21) |
+| 86 | 0.86.0 | map reset | yes | [Round 86](planning/round86-plan.md#completion-2026-11-22) |
+| 85 | 0.85.0 | map reset | yes | [Round 85](planning/round85-plan.md#completion-2026-11-22) |
+| 84 | 0.84.0–0.84.1 | compatible | yes | [Round 84](planning/round84-plan.md#completion-2026-11-21), [84.1](planning/round84-plan.md#follow-up-0841-2026-11-21) |
 | 83 | 0.83.0 | compatible | yes | [Round 83](planning/round83-plan.md#completion-2026-11-18) |
 | 82 | 0.82.0 | compatible | yes | [Round 82](planning/round82-plan.md#completion-2026-11-18) |
 
