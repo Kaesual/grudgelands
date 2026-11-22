@@ -59,8 +59,8 @@ local TEXT_OF = {
 	title = "Link your character",
 	connect = "Connect %s to your Grudgelands website account.",
 	step1 = "Open the website",
-	step2 = "Sign in and press \"" .. grug_accounts.CODE_BUTTON .. "\"",
-	step2_line = "It shows your code, valid for 10 minutes.",
+	step2 = "Sign in and choose \"" .. grug_accounts.ADD_ENTRY .. "\"",
+	step2_line = "Then \"" .. grug_accounts.CODE_BUTTON .. "\". The code is valid for 10 minutes.",
 	-- The link by password (web-accounts.md §6a), the way that needs no code.
 	password = "Or link it there with this character's name and password.",
 	step3 = "Enter your 10-character code",

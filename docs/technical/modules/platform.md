@@ -409,9 +409,10 @@ the mod keeps the website's list and never writes a binding.
   (`idle`, `checking`, `offer`, `confirming`, `linked` as the one-off success line,
   `refused`; the page's own refusals appear as `refused` with a message), `request_link`,
   `confirm_link`, `cancel_link`, `register_on_link_state(fn(player))`. `WEBSITE` is the
-  one address the page names (`WEBSITE_URL` the one its buttons open), `CODE_BUTTON`
-  the website's label of the button that creates a link code ("Create Character", Round
-  86 ruling 3). The bridge alone calls `attach(push_event)`,
+  one address the page names (`WEBSITE_URL` the one its buttons open), `ADD_ENTRY` and
+  `CODE_BUTTON` the website's two labels on the way to a link code ("Add character", then
+  "Link with a code"; 0.86.1, which replaced Round 86 ruling 3's "Create Character"). The
+  bridge alone calls `attach(push_event)`,
   `apply_list(list)`, `link_answer(args)`, `catalog_rows()` and `accounts_version()`.
 - **The list's version** (Round 86, [contract](../web-accounts.md) §5.1): `model.lua`
   keeps `default_rewards` (well-formed ids, each once, in the order sent; an unknown id

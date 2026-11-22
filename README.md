@@ -98,6 +98,7 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.86.1** names the website's real way to a link code on the Account page.
 **0.86.0** completes the new housing. A Claim Stone claims one map square of 80 × 80
 nodes in your faction's level 11–30 or capital zones, and with the stone in hand the
 minimap shows which squares you can claim and why the one you stand in cannot. A

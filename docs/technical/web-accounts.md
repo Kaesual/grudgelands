@@ -16,6 +16,10 @@ the list's new field `default_rewards` with the capability `rewards.defaults` (�
 §5.1, §5.2, §8, §9 step 8), agreed with the website on 2026-11-22; §10's shared Claim
 Stone is built without anything new from the website.
 
+**Amended 2026-11-22** (game 0.86.1, [round86-plan.md](../planning/round86-plan.md#follow-up-0861-2026-11-22)):
+§8's note on the page's steps names the website's two labels on the way to a link code,
+from the website's correction; nothing in the protocol changed.
+
 Written for the agent that builds the website and bridge side. It names what the
 website must do, what it sends, what it receives and how the game behaves.
 
@@ -573,9 +577,11 @@ back to none. There is no command for either.
   which rewards every linked account gets stays the website owner's setting. The
   website sends that setting as `default_rewards` (§5.2), and the game shows it on
   the Account page before linking; a linked character's page shows its account's
-  `rewards`. The game's page also tells the player to
-  press the website's button that creates the link code; the website tells the game's
-  maintainers when that button's label changes, because the page names it.
+  `rewards`. The game's page also names the website's way to a link code after
+  signing in: "Add character" (the entry below the character list), then "Link with a
+  code" (game 0.86.1; the website's correction of 2026-11-22). The website keeps these
+  two labels stable and tells the game's maintainers before either changes, because
+  the page names them.
 
 ## 9. Testing
 

@@ -1,7 +1,7 @@
 # Upgrade contract: the declared releases
 
 The per-release case history of the [upgrade contract](upgrade-contract.md) §2 (the
-declaration): why each release from 0.41.0 to 0.86.0 declared its map reset, step or
+declaration): why each release from 0.41.0 to 0.86.1 declared its map reset, step or
 neither. Section numbers (§) refer to the upgrade contract. The rules are in the
 contract; this file only records the cases.
 
@@ -186,3 +186,7 @@ contract; this file only records the cases.
   containers for its account and faction. No step; `map_reset_pass` stays
   0.50.0. The production world moves from 0.83.0 to 0.86.0 across one
   reset, which covers 0.85.0's.
+- 0.86.1 (Round 86.1, the Account page's step 2 names the website's labels)
+  is compatible: a text change, no saved state, no world generation; no
+  step. The production world takes it in the same move from 0.83.0, across
+  0.86.0's reset.

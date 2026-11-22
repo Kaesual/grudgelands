@@ -7,12 +7,14 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.86.0 (`game.conf`): Round 86 (the account Claim Stone, home names, the
-  claim preview by map chunk, the Account page "The Charter", road cuts that fade into the
-  hillside; **map reset**); as the squash commit `daa45ca7`, tag `round-86`, synced to the user's game
-  and pushed with Rounds 84 to 85 (`round-84`, `round-84.1`, `round-85`).
-- **Production:** 0.83.0; to be upgraded to 0.86.0 in one step with one map reset, which
-  covers 0.85.0's (Round 86 ruling 5).
+- **Game:** 0.86.1 (`game.conf`), the Round 86 follow-up (the Account page names the
+  website's real way to a link code; compatible), on the branch `round86.1`, not squashed
+  yet. Main holds 0.86.0, Round 86 (the account Claim Stone, home names, the claim preview
+  by map chunk, the Account page "The Charter", road cuts that fade into the hillside;
+  **map reset**), as the squash commit `daa45ca7`, tag `round-86`, synced to the user's
+  game and pushed with Rounds 84 to 85 (`round-84`, `round-84.1`, `round-85`).
+- **Production:** 0.83.0; to be upgraded to 0.86.1 in one step with 0.86.0's map reset,
+  which covers 0.85.0's (Round 86 ruling 5).
 - **Last change besides rounds:** the read-only code audit of 2026-11
   ([audit](audit-2026-11/README.md)), whose findings Rounds 81 and 82 fixed or left as
   carry-overs.
@@ -28,7 +30,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Open for the user
 
-- The production upgrade to 0.86.0 with the platform's note for it, and the website's note
+- The production upgrade to 0.86.1 (0.86.0's map reset) with the platform's note for it, and the website's note
   on `default_rewards` (both to forward).
 - The end-to-end account test on the rehearsal realm once the platform side is ready
   (Round 79; [contract §9](technical/web-accounts.md#9-testing)).
@@ -37,7 +39,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
-| 86 | 0.86.0 | map reset | yes | [Round 86](planning/round86-plan.md#completion-2026-11-22) |
+| 86 | 0.86.0–0.86.1 | map reset | 0.86.0 yes, 0.86.1 no | [Round 86](planning/round86-plan.md#completion-2026-11-22), [86.1](planning/round86-plan.md#follow-up-0861-2026-11-22) |
 | 85 | 0.85.0 | map reset | yes | [Round 85](planning/round85-plan.md#completion-2026-11-22) |
 | 84 | 0.84.0–0.84.1 | compatible | yes | [Round 84](planning/round84-plan.md#completion-2026-11-21), [84.1](planning/round84-plan.md#follow-up-0841-2026-11-21) |
 | 83 | 0.83.0 | compatible | yes | [Round 83](planning/round83-plan.md#completion-2026-11-18) |

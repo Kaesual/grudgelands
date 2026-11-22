@@ -13,6 +13,17 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.86.1 — the Account page names the website's way to a link code (2026-11-22)
+
+Compatible: no map reset, no new world, nothing for the host to do. A world
+on 0.83.0 or 0.84.x still takes 0.86.0's map reset on the way.
+
+- **Account page:** step 2 now names the website's real way to a link code:
+  sign in, choose "Add character", then "Link with a code". In 0.86.0 it
+  named a button "Create Character" that the website does not have. The
+  code is still valid for 10 minutes, and linking with the character's name
+  and password still works.
+
 ## 0.86.0 — the account Claim Stone, home names and the claim preview (2026-11-22)
 
 **Map reset** needed: road cuts into hills take a new shape, so an existing

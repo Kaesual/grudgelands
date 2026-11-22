@@ -383,8 +383,10 @@ do
 	has(fs, "grudgelands.com/play", "P1 the address")
 	has(fs, "button_url[15.270,4.680;3.540,0.820;grug_account_website;Open website;https://grudgelands.com/play]",
 		"P1 Open website")
-	has(fs, "Sign in and press \"Create Character\"", "P1 step 2 names the website's button (ruling 3)")
-	has(fs, "It shows your code\\, valid for 10 minutes.", "P1 the code's validity")
+	-- 0.86.1: the website's real way to a code replaced ruling 3's "Create Character".
+	has(fs, "Sign in and choose \"Add character\"", "P1 step 2 names the website's entry (0.86.1)")
+	has(fs, "Then \"Link with a code\". The code is valid for 10 minutes.",
+		"P1 the website's code choice and the code's validity (0.86.1)")
 	has(fs, "Or link it there with this character's name and password.", "P1 the link by password stays")
 	has(fs, "Enter your 10-character code", "P1 step 3")
 	has(fs, "field[9.080,10.140;5.960,1.000;grug_account_code;;]", "P1 the code field")
@@ -406,7 +408,7 @@ do
 	lacks(fs, "Every linked account gets", "P3 no defaults: no strip")
 	has(fs, "image[1.150,3.580;5.880,5.880;grug_creation_crest.png]", "P3 the crest alone")
 	has(fs, "grug_account_code", "P3 the field stays")
-	has(fs, "Sign in and press", "P3 the steps stay")
+	has(fs, "Sign in and choose", "P3 the steps stay") -- 0.86.1: step 2's new wording
 	defaults({"cloak:future"})
 	lacks(view(rowan), "Every linked account gets", "P3 an unknown id alone: no strip")
 

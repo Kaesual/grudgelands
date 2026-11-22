@@ -19,11 +19,13 @@ local META_SEEN = "grug_accounts:seen"
 -- "Open website" buttons open.
 grug_accounts.WEBSITE = "grudgelands.com/play"
 grug_accounts.WEBSITE_URL = "https://" .. grug_accounts.WEBSITE
--- The label of the website's button that creates a link code (Round 86
--- ruling 3; the website's label, the user, 2026-11-21): the page's steps
--- and Help name it. The website tells the maintainers when it changes
--- (web-accounts.md §8).
-grug_accounts.CODE_BUTTON = "Create Character"
+-- The website's labels on the way to a link code (Round 86 ruling 3, the
+-- labels corrected by the website in 0.86.1): after signing in, the entry
+-- below the character list, then the choice that shows the code. The page's
+-- step 2 names both. The website keeps them stable and tells the
+-- maintainers before either changes (web-accounts.md §8).
+grug_accounts.ADD_ENTRY = "Add character"
+grug_accounts.CODE_BUTTON = "Link with a code"
 -- The most default rewards the page shows (web-accounts.md §5.2).
 grug_accounts.DEFAULTS_SHOWN = 4
 

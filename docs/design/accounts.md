@@ -54,10 +54,13 @@ builds on; it is not repeated here.
 14. **Reward cloaks always have wings** (2026-11-16): the wings mark the
     "better" cloaks.
 15. **The Account page is "The Charter"** (Round 86 ruling 3, the mock-up
-    `tools/r84_account_mock`): its steps tell the player to press the
-    website's button that creates the code, labelled "Create Character" (the
-    user, 2026-11-21; the label is the website's and one constant in the game,
-    `grug_accounts.CODE_BUTTON`).
+    `tools/r84_account_mock`): its steps tell the player the website's way to
+    the code: sign in, choose "Add character" (the entry below the character
+    list), then "Link with a code" (the website, 2026-11-22, in 0.86.1; ruling
+    3's "Create Character" is no button there). The labels are the website's,
+    each one constant in the game (`grug_accounts.ADD_ENTRY`,
+    `grug_accounts.CODE_BUTTON`); the website keeps them stable and says
+    before either changes.
 16. **Which rewards every linked account gets** is the website owner's
     setting; the game only shows what the website sends, also to a character
     that is not linked (Round 86 ruling 4).
@@ -86,10 +89,11 @@ The user's choices during Round 79 (2026-11-15), on the screenshots:
   to use it); without any the panel shows only the crest and nothing else
   changes. The column says "Link your character", then three steps: open the
   website (`grudgelands.com/play` and **Open website**, which the client
-  confirms before it opens a browser), sign in and press "Create Character"
-  (the code is valid for 10 minutes; a line below says the character can
-  instead be linked there with its name and password), and enter the
-  10-character code in the field with **Check code**. Lower case, spaces and
+  confirms before it opens a browser), sign in and choose "Add character",
+  then "Link with a code" (the code is valid for 10 minutes; a line below
+  says the character can instead be linked there with its name and
+  password), and enter the 10-character code in the field with **Check
+  code**. Lower case, spaces and
   the hyphen are accepted; a code that is not 10 symbols of the alphabet is
   refused at once, without asking the website. These rewards are only shown:
   a character gets a reward only from its own account.

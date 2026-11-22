@@ -598,6 +598,37 @@ south-west) and at −2039, −293 (looking north), where a 20–38-node wall st
 rehearsal realm after a reset, two members open the account stone's Belongings and one
 takes.
 
+### Follow-up 0.86.1 (2026-11-22)
+
+A small follow-up round on its own branch `round86.1` (one lane, Opus), from the website
+coordinator's reply of 2026-11-22: ruling 3's label was wrong. The website has no button
+"Create Character"; after signing in on `grudgelands.com/play` the way to a link code is
+"Add character" (the entry below the character list), then "Link with a code" (the dialog
+that shows the code carries the same title). The website keeps both labels stable and
+tells the game before either changes. Release **0.86.1**, **compatible** (text only: no
+saved state, no world generation); production goes from 0.83.0 to 0.86.1 with 0.86.0's
+map reset.
+
+- **What changed:** step 2 of the Account page (not linked) reads `Sign in and choose "Add
+  character"`, the line below `Then "Link with a code". The code is valid for 10 minutes.`;
+  the line about linking with name and password stays, and so does the layout. The two
+  labels are constants of `grug_accounts`: `ADD_ENTRY` ("Add character", new) and
+  `CODE_BUTTON` (now "Link with a code"). Help's linking line ("create a link code there")
+  was already right and stays. [accounts.md](../design/accounts.md) ruling 15 and the
+  page description, the [module guide](../technical/modules/platform.md#website-accounts),
+  the [mod map](../technical/mod-map.md) and
+  [web-accounts.md](../technical/web-accounts.md) §8 name the two labels; ruling 3 above
+  and the ACCOUNT lines of the Completion stay as history.
+- **Fixtures:** `tools/r86_account` pins the new step-2 texts (P1) and checks the steps by
+  the new wording (P3). Run: `r86_account`, and `r37_dc` and `r41_up` (they read the
+  version, the declaration and the changelog). `check_upgrade.py` and
+  `check_fresh_server.py` PASS; `check_lua.sh` on the changed Lua files PASS. No full run.
+- **Pictures:** one capture boot of `tools/r86_account/capture.sh` (also the smoke boot),
+  16 shots, server status 0, no error line. A1 to A3 at 1366 x 768 and 1920 x 1080: the
+  step-2 texts are whole inside the column (at 1366 the title ends about 160 pixels and the
+  line below about 70 pixels before the column's edge), and the gap to the code panel is as
+  in 0.86.0. Not tried on the web build or at a larger text scale.
+
 ## Carry-overs
 
 Each line names where it came from. The first four are wanted work and have BACKLOG lines.
