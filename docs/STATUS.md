@@ -9,7 +9,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 - **Game:** 0.86.0 (`game.conf`): Round 86 (the account Claim Stone, home names, the
   claim preview by map chunk, the Account page "The Charter", road cuts that fade into the
-  hillside; **map reset**); squash commit and tag `round-86`: set after the squash. Not
+  hillside; **map reset**); as the squash commit `daa45ca7`, tag `round-86`, synced to the user's game. Not
   pushed, like Round 84 (`78b787a6`, `round-84`), 0.84.1 (`b4540eba`, `round-84.1`) and
   Round 85 (`6dec5010`, `round-85`): `git push origin main round-84 round-84.1 round-85
   round-86` (only the user pushes).
