@@ -9,15 +9,20 @@
 --    target, not yet visited, combat, a trip already pending).
 -- B. The shipped grug_home (init, travel, waypoints) on a fake engine:
 --    proximity discovery once a second with one message, enemy stones never
---    unlocked, right-click on an own stone discovers it and lists the seven
---    own stones (Round 31: the fortress is the seventh) (here / Travel / Not yet visited), right-click on an enemy
+--    unlocked, right-click on an own stone discovers it and lists the eight
+--    own stones (Round 31: the fortress is the seventh; Round 85: the arena
+--    Breach Road's hall the eighth) (here / Travel / Not yet visited), right-click on an enemy
 --    stone answers with a line only; travel refused in combat, to an
 --    unvisited stone and to an enemy stone; a trip emerges, dismounts and
 --    arrives beside the destination stone (the next free side when the
 --    first is blocked), never touches the home cooldown, is canceled by
 --    combat during the emerge, stays in place when no side is free, and a
 --    second request while one is pending is refused; a player without a
---    faction has no markers and discovers nothing (Round 81).
+--    faction has no markers and discovers nothing (Round 81); (Round 85) the
+--    arena's two halls (grug_mapgen.breach, the real breach_layout.lua): the
+--    own hall's stone is discovered by proximity and by right-click, lists
+--    the network and is a destination arriving at the hall's arrival
+--    socket, the enemy hall's stone is inert.
 -- C. The mapgen data: every start blueprint has one waystone, at its
 --    `travel_waypoint` socket, on a signature-stone cross; every capital
 --    core has one at its socket; the shared stable publishes the
@@ -184,6 +189,17 @@ for i, fortress in ipairs({{"pvp_fortress_accord", "human", "Ashenward Bastion"}
  STONE[fortress[1]] = vnew(anchor.x + 40, 101, 0)
  cells[key(STONE[fortress[1]])] = "grug_mapgen:waystone"
 end
+-- Round 85: the arena Breach Road's halls, their stones at the layout's cells
+-- (a site far east of the others; the datum 94 puts the hall floor's top at
+-- the fake ground, y = 100).
+local breach_layout = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/breach_layout.lua")
+local BREACH = breach_layout.world({x=20000, z=0, y=94, reach=20})
+local HALL = {}
+for _, faction in ipairs({"accord", "throng"}) do
+ HALL[faction] = vnew(BREACH.halls[faction].waystone)
+ cells[key(HALL[faction])] = "grug_mapgen:waystone"
+end
+rawset(_G, "grug_mapgen", {breach=BREACH})
 rawset(_G, "grug_mobs", {register_start_socket_role=function() end})
 rawset(_G, "grug_mounts", {dismount=function() dismounts = dismounts + 1 end})
 -- Like the real one: nil while no faction is chosen.
@@ -261,7 +277,7 @@ formspec = nil
 home.use_waystone(player, STONE.sunscar)
 check(formspec == nil and last_chat() == "<Waystone> I serve only The Throng." and
  known() == "highcourt", "B enemy stone inert")
--- Right-click on an own stone: discovered, list of seven.
+-- Right-click on an own stone: discovered, list of eight.
 player.pos = vnew(STONE.lethariel.x + 2, 101, 0)
 home.use_waystone(player, STONE.lethariel)
 check(known() == "highcourt lethariel", "B right-click discovers")
@@ -270,7 +286,8 @@ check(formspec and formspec:find("Lethariel Waystone", 1, true) and
  formspec:find("go_highcourt", 1, true) and not formspec:find("go_lethariel", 1, true) and
  not formspec:find("go_sunscar", 1, true), "B list: here, own start, discovered capital")
 local _, unknown = formspec:gsub("Not yet visited", "")
-check(unknown == 4, "B list: four not yet visited (with the fortress)")
+-- Round 85: five, the arena's hall the fifth (the eighth stone of the network).
+check(unknown == 5, "B list: five not yet visited (with the fortress and the hall)")
 
 -- Refusals.
 player.combat = true; fields({go_highcourt="Travel"})
@@ -373,6 +390,38 @@ local was = player.pos
 player.pos = vnew(STONE.silverleaf.x + 1, 101, 0)
 check(pcall(step) and known() == before, "B no discovery without a faction")
 data.faction, player.pos = "accord", was
+
+-- Round 85: the arena's halls, ordinary stones of their networks.
+check(HALL.accord.y == 101 and HALL.accord.x == 20038 and HALL.throng.x == 19962,
+ "B the halls' stones at the layout's cells")
+player.pos = vnew(HALL.throng.x + 1, 101, 0); step()
+check(not known():find("breach_road", 1, true), "B the enemy hall's stone not discovered")
+formspec = nil
+-- (the refusal line's two-second limit: a later clock than the first one's)
+core.get_us_time = function() return 10000000 end
+home.use_waystone(player, HALL.throng)
+core.get_us_time = function() return 0 end
+check(formspec == nil and last_chat() == "<Waystone> I serve only The Throng." and
+ not known():find("breach_road", 1, true), "B the enemy hall's stone inert")
+player.pos = vnew(HALL.accord.x - 3, 101, 2); step()
+check(known():find("breach_road_accord", 1, true) and
+ flashes[#flashes] == "Waypoint discovered: Breachward Hall", "B the own hall's stone discovered by proximity")
+check(#home.known_waypoints(player) == 5, "B known_waypoints: the hall joins")
+home.use_waystone(player, HALL.accord)
+check(formspec and formspec:find("Breachward Hall Waystone", 1, true) and
+ formspec:find("You are here", 1, true) and formspec:find("go_dawnmere", 1, true) and
+ not formspec:find("go_breach_road_throng", 1, true) and not formspec:find("Breakfang", 1, true),
+ "B the hall's list: the own network")
+fields({go_dawnmere="Travel"}); finish()
+check(math.abs(player.pos.x - STONE.dawnmere.x) <= 1 and math.abs(player.pos.z) <= 1, "B from the hall to Dawnmere")
+drop_timeouts()
+home.use_waystone(player, STONE.dawnmere)
+check(formspec:find("go_breach_road_accord", 1, true), "B the hall is a destination")
+fields({go_breach_road_accord="Travel"}); finish()
+check(player.pos.x == HALL.accord.x - 1 and player.pos.z == 0 and
+ math.abs(player.pos.y - 100.51) < 1e-9 and
+ BREACH.halls.accord.arrival.x == HALL.accord.x - 1, "B arrives at the hall's arrival socket")
+drop_timeouts()
 
 -- ---------------------------------------------------------------------------
 -- C: mapgen data

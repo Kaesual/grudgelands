@@ -24,8 +24,9 @@ end
 -- `pvp_rule` and `faction_here` are grug_zones' answers for the position:
 -- "contested" on contested ground (the 31-60 zones, the islands, land at
 -- y <= -501), "enemy" in the other faction's peaceful territory, "friendly"
--- in the own; nil in deep ocean and the dragon channels (nil rule) and for a
--- player without a faction.
+-- in the own (a hall of the arena Breach Road too, R.zone_answers); nil in
+-- deep ocean and the dragon channels (nil rule) and for a player without a
+-- faction.
 function R.territory(pvp_rule, faction_here, own_faction)
 	if not own_faction then
 		return nil
@@ -40,6 +41,41 @@ function R.territory(pvp_rule, faction_here, own_faction)
 		return "friendly"
 	end
 	return nil
+end
+
+-- The arena Breach Road's halls (Round 85, round85-plan.md rulings 1, 10 and
+-- 11): inside a hall's interior box its faction is at home, in 3D, so the
+-- doorway, the roof, the courts and the field stay what the zone says.
+-- `halls` is a list of {faction, min = {x, y, z}, max = {x, y, z}} (inclusive
+-- node boxes, `breach_layout.lua` world().halls[faction].interior); the
+-- faction whose box holds the node of `pos`, or nil.
+function R.hall_at(halls, pos)
+	if not halls or not pos then
+		return nil
+	end
+	local floor = math.floor
+	local x, y, z = floor(pos.x + 0.5), floor(pos.y + 0.5), floor(pos.z + 0.5)
+	for index = 1, #halls do
+		local hall = halls[index]
+		local lo, hi = hall.min, hall.max
+		if x >= lo.x and x <= hi.x and y >= lo.y and y <= hi.y and
+				z >= lo.z and z <= hi.z then
+			return hall.faction
+		end
+	end
+	return nil
+end
+
+-- grug_zones' answers for a position (its PvP rule and, on peaceful ground,
+-- the faction owning it), with a hall's interior as its faction's peaceful
+-- ground: the one answer the location flag and the zone banner read.
+function R.zone_answers(zones, halls, pos)
+	local hall = R.hall_at(halls, pos)
+	if hall then
+		return "peaceful", hall
+	end
+	local rule = zones.pvp_rule_at(pos)
+	return rule, rule == "peaceful" and zones.faction_at(pos) or nil
 end
 
 -- The location flag after one sample: contested ground and enemy territory

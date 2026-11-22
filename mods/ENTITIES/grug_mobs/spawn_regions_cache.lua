@@ -231,6 +231,14 @@ return function(deps)
 			end
 			return best and regions[best] or nil
 		end
+		-- Round 85 (lane MASK): the cell grid itself, for the claim mask's
+		-- quota: the frame of cell indices and the region of one cell (nil
+		-- for a cell that is no land cell of the zone; no neighbour fallback).
+		map.cell_frame = {i0 = i0, j0 = j0, w = w, h = h}
+		function map.cell_region(i, j)
+			local id = id_at(i, j)
+			return id > 0 and regions[id] or nil
+		end
 		return map
 	end
 

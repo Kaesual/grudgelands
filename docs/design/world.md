@@ -231,10 +231,11 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     height up to 10 nodes above the highest node the POI template places.
     These boxes live in the same grid. Hard-protected functional anchors
     keep their own R1 volume.
-  - **Inside a Claim Stone claim** roads are allowed, but the road corridor
-    stays protected for everyone, the claim owner included: world protection
-    wins over claim permissions. A claim keeps 16 nodes from every POI,
-    village and camp core box (`housing.md` §2, §9; Round 25 ruling 27).
+  - **Claim Stone claims** hold no road: since Round 85 a map chunk with a
+    column of a road corridor is no claim ground (`housing.md` §2 rule 3,
+    §9). World protection wins over claim permissions everywhere, for the
+    claim owner too. A claim keeps 16 nodes from every POI, village and
+    camp core box (`housing.md` §2, §9; Round 25 ruling 27).
   - **Water stays out** of these corridors and boxes (Round 81 ruling 3):
     water poured beside them does not flow in; the water guard refuses the
     flow and restores flooded air as the water barrier, as in R1's
@@ -305,8 +306,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   included (user decision 2026-09-29,
   [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) E5).
 - **R5 — Active Claim Stones**: a fuelled Claim Stone provides the only
-  player-owned protection (§5, `housing.md`). Inside its 101 × 101 column
-  from y = −100 upward, only the owner and players on its permission list may
+  player-owned protection (§5, `housing.md`). Inside its column of one map
+  chunk (80 × 80) from y = −100 upward, only the owner and players on its permission list may
   act: "Interact" allows use only (doors, trapdoors, gates, chests, furnaces,
   stations), "Everything" adds digging and building. Every world, faction and
   R1b rule is evaluated
@@ -930,18 +931,23 @@ The complete Claim Stone contract is [housing.md](housing.md) (Round 25,
 Private housing islands, royal land grants, purchased depth rights and guild
 land do not exist.
 
-- A claim is a 101 × 101 column around one Claim Stone, from y = −100
-  upward without limit. Each player has one soulbound stone, handed out free
-  by the Housing Steward in every capital from level 20.
-- The whole square must lie in the claimant's own faction home territory, in
-  its level-11–30 zones (seven per faction), and may not touch a level-1–10 or
-  level-31+ zone, a capital zone or the other faction's territory, and keeps
-  16 nodes from hard-protected footprints and from POI, village and camp
-  cores (Round 25 ruling 27; blend envelopes are no barrier). Lakes, rivers and
-  bay water inside an eligible zone may lie in a claim, bay water only within
-  24 nodes of the coast (farther out it is protected, Round 51); the belt and
-  the ocean may not. There are no housing masks and no coastal
-  housing areas. Claims never overlap but may touch.
+- A claim is the column of the map chunk (80 × 80, Round 85) that holds its
+  Claim Stone, from y = −100 upward without limit. Each player has one
+  soulbound stone, handed out free by the Housing Steward in every capital
+  from level 20.
+- The chunk must be claim ground for the claimant's faction as a whole
+  (`housing.md` §2, the claim mask): in its own home territory, in its
+  level-11–30 zones (seven per faction) or its three capital zones (one whole
+  chunk away from the capital's city), touching no level-1–10 or level-31+
+  zone and no other faction's territory, keeping 16 nodes from hard-protected
+  footprints and from POI, village and camp cores (Round 25 ruling 27; blend
+  envelopes are no barrier), holding no road, no camp's spawn cells and no
+  leader's spot, quest place or rare's route point within 16 nodes. Lakes,
+  rivers and bay water inside an eligible zone may lie in a claim, bay water
+  only within 24 nodes of the coast (farther out it is protected, Round 51);
+  the belt and the ocean may not. A quota keeps half of every quest-named
+  mob kind's ground free. There are no housing masks and no coastal housing
+  areas. One claim per chunk; claims touch at chunk edges.
 - A placed stone is a draft that protects nothing and crumbles after
   5 minutes unless the owner activates it with 5 lumps; for 12 hours after
   activation it cannot be picked up (Round 26, `housing.md` §2a).
@@ -954,7 +960,7 @@ land do not exist.
   there: "Interact" allows use only (doors, trapdoors, gates, chests,
   furnaces, stations); "Everything" adds digging and building. World
   protection (§2 R1, R1b) wins over every claim
-  permission, the owner's included: roads through a claim stay protected.
+  permission, the owner's included.
 - No natural renewal (wild plants, trees) and no hostile mob spawns inside
   an active claim; mobs may walk in, and an idle aggressive roamer turns away
   from it ([housing.md](housing.md) §6.4). An expired claim renews and spawns
@@ -973,19 +979,23 @@ WP17).
 **Waypoint network** (the classic action-RPG model, decided 2026-08-06; built in Round 29,
 [travel plan](../planning/travel-boats-waypoints-plan.md) §1.1 "Waypoints"):
 
-- Waypoints: every race starting settlement, every capital and, since
-  Round 31, each faction's PvP fortress (pvp-plan ruling 18), and no others
+- Waypoints: every race starting settlement, every capital, since
+  Round 31 each faction's PvP fortress (pvp-plan ruling 18) and since Round
+  85 each faction's hall of the arena Breach Road ([pvp.md](pvp.md) §6.4:
+  Breachward Hall, Breakfang Hall), and no others
   (no zone-hub waypoints; user decision 2026-09-29). Each is a **waystone**
   node (`grug_mapgen:waystone`) the mapgen places at the centre of the
   settlement's waypoint pad, in the cell of its `travel_waypoint` socket
-  ([settlements.md](settlements.md#waypoint-pads)). A faction's network is its
-  three starts, three capitals and its fortress, seven waystones.
+  ([settlements.md](settlements.md#waypoint-pads)); a hall's stands at the
+  cell the arena's layout names (`breach_layout.lua`). A faction's network is
+  its three starts, three capitals, its fortress and its hall, eight
+  waystones.
 - **Unlocked by visiting, per character** (player meta
   `grug_home:waypoints`): standing within 8 nodes horizontally (and 8 up or
   down) of an own-faction waystone, checked once a second, or right-clicking
   it, discovers it with one flash and chat line "Waypoint discovered: <name>".
   The character's own start counts as discovered from creation.
-- **Right-click** opens the list of the seven own-faction waypoints: "You are
+- **Right-click** opens the list of the eight own-faction waypoints: "You are
   here", **Travel** (discovered) or a greyed "Not yet visited". Since Round 72
   the window has two tabs, **Waystones** (this list, shown first) and
   **Expeditions**: the Expedition the player may enter, with **Enter**, else one

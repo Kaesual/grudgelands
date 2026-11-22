@@ -21,6 +21,25 @@ grug_mapgen.wp40 = dofile(modpath .. "/wp40/r7_loader.lua")(
 -- gates; the zone authority already protects their boxes.
 grug_mapgen.guild_rooms = grug_mapgen.wp40.guild_rooms
 
+-- The arena "Breach Road" of this world (Round 85, wp40/breach_layout.lua
+-- world(): footprint, halls with their interiors and waystones, protected and
+-- fringe boxes), for its territory, waystones, spawn rules and name. The
+-- world protection holds its protected box already (kind "arena": no digging
+-- or building for anyone); the terrain guard below keeps every system change
+-- out of it too (fire, explosions, water, growth: grug_core.world_alterable).
+grug_mapgen.breach = grug_mapgen.wp40.breach
+do
+	local box = grug_mapgen.breach.protected
+	local min_x, min_y, min_z = box.min.x, box.min.y, box.min.z
+	local max_x, max_y, max_z = box.max.x, box.max.y, box.max.z
+	local floor = math.floor
+	grug_core.register_world_alteration_guard(function(pos)
+		local x, y, z = floor(pos.x + 0.5), floor(pos.y + 0.5), floor(pos.z + 0.5)
+		return not (x >= min_x and x <= max_x and y >= min_y and y <= max_y and
+			z >= min_z and z <= max_z)
+	end)
+end
+
 -- The camps of the Miner's Guild of this world (Round 58, `wp40/r58_camps.lua`):
 -- every camp with its lift column and levels, the camps under construction,
 -- `get(id)` and `near(pos)`. The mapgen environment builds the same lists
@@ -47,6 +66,10 @@ do
 		wayposts.write_texts(rows, minp, maxp, is_waypost, write)
 	end)
 end
+
+-- The arena "Breach Road"'s hearth smoke (Round 85 lane BUILD), at the
+-- hearths of the layout published above.
+dofile(modpath .. "/breach_smoke.lua")(core, grug_core.particles, grug_mapgen.breach)
 
 -- The one-off rewrite of the camps under construction (Round 69): resumes a
 -- pending rewrite at this start, and the migration 0.69.0 requests it.

@@ -479,8 +479,9 @@ end
 -- "village", "camp", "fortress", "war_camp", "mining_camp" or "poi" (a
 -- settlement's building core, 10 below its placement height to 10 above
 -- its highest node; a Round 31 PvP fortress or war camp, and a Round 58 camp
--- under construction, which answers "war_camp", 10 nodes wider); nil
--- elsewhere and before installation.
+-- under construction, which answers "war_camp", 10 nodes wider); "arena"
+-- (Round 85, the arena Breach Road's protected box); nil elsewhere and
+-- before installation.
 function grug_core.world_feature_at(pos)
 	if not world_feature_kind_at or type(pos) ~= "table" or
 			type(pos.x) ~= "number" or type(pos.y) ~= "number" or

@@ -124,9 +124,9 @@ and section G.
   trainer for gold". `economy.md` §4 and `world.md` §3 state the same
   no-trainer rule.)*
 - **Level 20 — Claim Stone:** the Housing Steward in every capital hands out
-  the player's one free, soulbound Claim Stone. It claims a 101 × 101 home in
-  the player's own level-11–30 home zones while it is fuelled
-  ([housing.md](housing.md)). There are no claim tiers, upgrades or
+  the player's one free, soulbound Claim Stone. It claims one map chunk of
+  80 × 80 as a home in the player's own level-11–30 home zones or capital
+  zones while it is fuelled ([housing.md](housing.md)). There are no claim tiers, upgrades or
   additional stones, and a claim never buys mining depth or a private
   material source.
 

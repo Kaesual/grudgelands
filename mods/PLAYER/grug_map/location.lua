@@ -5,8 +5,10 @@
 --   * one location per player, sampled every second: the zone's display
 --     name, or the town's name inside a start town or capital city (their
 --     protected footprint, grug_zones.hard_footprint_in); villages, outposts,
---     camps and POIs keep the zone's name; inside a Claim Stone's claim
---     (grug_housing.claim_at, exact in 3D, every claim state; fix 0.50.2)
+--     camps and POIs keep the zone's name; on the arena Breach Road's
+--     footprint (grug_mapgen.breach, Round 85) "Breach Road"; inside a Claim
+--     Stone's claim (grug_housing.claim_at, exact in 3D, every claim state;
+--     fix 0.50.2)
 --     "Your Home" for its owner and "<owner>'s Home" for everybody else,
 --     in place of the zone's name only;
 --   * inside a box of a live Expedition (grug_expeditions.run_at, arithmetic;
@@ -53,6 +55,16 @@ local resolve, town_at
 -- The claims (fix 0.50.2): grug_map depends on grug_housing, so it is
 -- loaded; a fixture without it names no claim.
 local housing = rawget(_G, "grug_housing")
+-- The arena Breach Road of this world (grug_mapgen's layout; Round 85): its
+-- footprint's columns show its name; a fixture without it names none.
+local mapgen = rawget(_G, "grug_mapgen")
+local breach = mapgen and mapgen.breach
+local floor = math.floor
+local function arena_text(pos)
+	if breach and breach.inside(floor(pos.x + 0.5), floor(pos.z + 0.5)) then
+		return breach.name
+	end
+end
 
 local function zone_names()
 	return setmetatable({}, {__index = function(names, id)
@@ -84,9 +96,10 @@ local function build_resolver()
 end
 resolve, town_at = build_resolver()
 
--- The location text at a position ("" before the world authority exists).
+-- The location text at a position ("" before the world authority exists),
+-- the arena's name on its footprint.
 function M.text_at(pos)
-	return resolve and resolve(pos.x, pos.z) or ""
+	return arena_text(pos) or resolve and resolve(pos.x, pos.z) or ""
 end
 
 -- ---------------------------------------------------------------------------
@@ -162,6 +175,8 @@ local function sample(player, rec)
 		text, town, here, zone = resolve(pos.x, pos.z)
 		rec.capital = L.capital_at(town_at, rec.capital, pos.x, pos.z, here)
 	end
+	-- On the arena's footprint its name, like a claim's below.
+	text = arena_text(pos) or text
 	-- Inside a claim its name instead (ruling H1, no hysteresis: H2); the
 	-- zone handed to the discovery stays the column's.
 	local claim = housing and housing.claim_at(pos)

@@ -26,6 +26,22 @@
 -- Every recipe quest place is placed on the seed (Round 60, quest_places
 -- below).
 --
+-- The arena "Breach Road" (Round 85, arena below): its levelled hull is dry
+-- land at the datum (no swamp pool either), no lake or river lies where its
+-- blend grades, the middle road runs straight through both mouths at
+-- the datum and on from each mouth to its capital, and the levelling adds
+-- at most LIMIT (`breach_site.lua`) to the natural grade (4-node baseline,
+-- both axes, across the zone border too, on the columns it reaches; road
+-- columns follow their own profile); no camp, leader, quest place or rare
+-- patrol point stands on its footprint and fringe (Round 85 lane TERRITORY,
+-- ruling 13); the chunk columns of its footprint join the sample at the
+-- datum, and at every chunk layer up to the arena's reach. In those chunks
+-- the arena's blocks (Round 85 lane BUILD, `breach_model.lua`) are checked:
+-- every cell of the model holds its node (the ground's roles and the
+-- dressing their column's biome family, the rim its natural surface), solid
+-- ground under every footprint column, only air above each column's highest
+-- cell up to the reach (arena_blocks below).
+--
 -- Digest mode (Round 82, tools/r82_gen; opt-in, the printed line stays the
 -- same): with a third argument the seed also writes a digest file there, one
 -- line per item in a fixed order -- the roster, the tree roll-up, the world
@@ -44,7 +60,9 @@
 --
 -- Prints one line, "OK <seed> <seconds> <roster sha256> chunks=<n>
 -- chunk_seconds=<s> trees=<the generated tree templates' roll-up, 16 hex>
--- places=<recipe quest places checked> place_seconds=<s> wayposts=<stacks>" or
+-- places=<recipe quest places checked> place_seconds=<s> wayposts=<stacks>
+-- arena_cells=<the arena's cells checked> arena_added=<the largest rise
+-- the levelling adds over 4 nodes>/4[,fallback]" or
 -- "FAIL <seed> <seconds> <error>" and then raises (a non-zero exit). A failure
 -- in the per-chunk path names the chunk.
 local repo, seed, digest_file = arg[1], arg[2], arg[3]
@@ -164,7 +182,11 @@ end
 -- zones, planner and roads, as tools/r28_regions/regions.lua does), each
 -- place placed (spawn_regions.md step 8). quest_targets.py checks the same
 -- on the six rendered seeds; this covers every fleet seed. Returns the
--- count of places checked.
+-- count of places checked. The maps are built with the arena's fringe
+-- reserved, as the game builds them (Round 85, `reserved_of`), and kept for
+-- the arena's check below (region_map).
+local region_maps = {}
+local region_map
 local function quest_places()
 	local core = dofile(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
 	local json = dofile(repo .. "/tools/r28_b1/json.lua")
@@ -185,24 +207,42 @@ local function quest_places()
 	end
 	local zones = R.built.zones_session
 	assert(R.planner_source and R.planner_source.column_values_at, "the runtime published no planner source")
+	local L = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/breach_layout.lua")
 	local q = core.queries({zones = zones, column_values_at = R.planner_source.column_values_at,
-		road_polylines = R.main.road_polylines(), source = SOURCE})
+		road_polylines = R.main.road_polylines(), source = SOURCE,
+		reserved = core.reserved_of(L.world(L.from_placement(R.main.placement_layout_text())))})
 	local checked = 0
 	local dir = repo .. "/mods/ENTITIES/grug_mobs/data/zones"
-	for _, row in ipairs(SOURCE.zones) do
-		local zone = row.id
+	local function recipe_data(zone)
 		local f = io.open(dir .. "/" .. zone .. ".spawns.json", "rb")
 		local data = f and json.parse(f:read("*a"))
 		if f then f:close() end
-		if data and data.recipe and type(data.recipe.places) == "table" and #data.recipe.places > 0 then
-			local record = zones.get(zone)
-			local recipe = core.parse_recipe(zone, data.recipe, {
-				band = {record.level_min, record.level_max},
-				role_levels = function(role) return catalogue[role] and catalogue[role].levels end,
-				leader = function(role) return catalogue[role] ~= nil and catalogue[role].leader == true end,
-				pois = function(id) return core.zone_pois(SOURCE, id, labels) end,
-			})
-			local map = core.build(zone, q, recipe)
+		return data and data.recipe and data
+	end
+	-- the zone's region map (nil without a recipe), built once
+	function region_map(zone)
+		if region_maps[zone] == nil then
+			local data = recipe_data(zone)
+			region_maps[zone] = false
+			if data then
+				local record = zones.get(zone)
+				local recipe = core.parse_recipe(zone, data.recipe, {
+					band = {record.level_min, record.level_max},
+					role_levels = function(role) return catalogue[role] and catalogue[role].levels end,
+					leader = function(role) return catalogue[role] ~= nil and catalogue[role].leader == true end,
+					pois = function(id) return core.zone_pois(SOURCE, id, labels) end,
+				})
+				region_maps[zone] = {map = core.build(zone, q, recipe), recipe = recipe}
+			end
+		end
+		return region_maps[zone] or nil
+	end
+	for _, row in ipairs(SOURCE.zones) do
+		local zone = row.id
+		local data = recipe_data(zone)
+		if data and type(data.recipe.places) == "table" and #data.recipe.places > 0 then
+			local built = region_map(zone)
+			local map, recipe = built.map, built.recipe
 			local placed = {}
 			for _, place in ipairs(map.places or {}) do placed[place.id] = true end
 			for _, place in ipairs(recipe.places) do
@@ -214,6 +254,143 @@ local function quest_places()
 		end
 	end
 	return checked
+end
+
+-- the largest rise the levelling adds over 4 nodes (printed: how near the
+-- limit a seed comes) and whether the site is the search's fallback
+local arena_added, arena_fallback = 0, false
+
+-- The arena (Round 85): the checks above the sample's header names. The
+-- natural ground comes from a roadless world built from main's placement
+-- and water texts (emerge's way, `world_assembly.lua`). Returns its site.
+local function arena()
+	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local L = dofile(wp40 .. "/breach_layout.lua")
+	local site = L.from_placement(R.main.placement_layout_text())
+	local zones, q = R.built.zones_session, R.planner_source
+	local where = ("arena %d,%d: "):format(site.x, site.z)
+	for lz = -L.HALF_Z, L.HALF_Z do
+		for lx = -L.HALF_X, L.HALF_X do
+			if L.in_hull(lx, lz) then
+				local x, z = site.x + lx, site.z + lz
+				if zones.water_query_at(x, z) ~= nil then
+					error(where .. ("water at %d,%d"):format(x, z), 0)
+				end
+				if zones.terrain_height_at(x, z) ~= site.y and q.road_column_at(x, z) ~= "surface" then
+					error(where .. ("ground off the datum at %d,%d"):format(x, z), 0)
+				end
+			end
+		end
+	end
+	local roads = dofile(wp40 .. "/road_layout.lua").deserialize(R.main.road_layout_text())
+	local inner, legs = nil, {}
+	for _, r in pairs(roads.roads) do
+		if r.a == "breach_south" and r.b == "breach_north" then inner = r
+		elseif r.a == "breach_south" or r.a == "breach_north" then legs[r.a] = r end
+	end
+	if not inner or #inner.X ~= 2 * L.HALF_Z + 1 then error(where .. "no inner road", 0) end
+	for i = 1, #inner.X do
+		if inner.X[i] ~= site.x or inner.R[i] ~= site.y then
+			error(where .. "the inner road leaves the axis or the datum", 0)
+		end
+	end
+	for _, m in ipairs(L.world(site).mouths) do
+		local leg = legs["breach_" .. m.id]
+		if not leg or math.abs(leg.X[1] - m.x) > 0.25 or leg.Z[1] ~= m.z or leg.R[1] ~= site.y or
+				not leg.b:match("^anchor_") then
+			error(where .. "no road from the " .. m.id .. " mouth to its capital", 0)
+		end
+		if q.road_column_at(m.x, m.z) ~= "surface" or zones.terrain_height_at(m.x, m.z) ~= site.y then
+			error(where .. "the " .. m.id .. " mouth is no road at the datum", 0)
+		end
+	end
+	local A = dofile(wp40 .. "/world_assembly.lua")(wp40, R.sha)
+	local W = A.world(seed, {placement = R.main.placement_layout_text(),
+		water = R.main.water_layout_text()}, {roads = false, protection = A.square_cities(120)})
+	local source = W.place()
+	local height = W.height_factory({source = source, canonical = A.canonical,
+		deterministic = A.deterministic, raw_sha256 = R.sha,
+		horizontal_session = W.horizontal_factory({source = source, schemas = A.schemas,
+			canonical = A.canonical, deterministic = A.deterministic,
+			raw_sha256 = R.sha}).new(seed),
+		terrain_field = A.terrain_field}).new_runtime(seed)
+	local natural = height.natural_height_at
+	-- the columns the arena reaches (another fitting's may lie near)
+	local profile = A.breach.profile(site, natural)
+	local function reached(x, z)
+		return A.breach.ground(profile, x, z, natural(x, z), natural) ~= nil
+	end
+	local limit = 4 * A.breach.P.LIMIT
+	local stats = R.main.placement_stats()
+	arena_fallback = stats and stats.breach and stats.breach.fallback or false
+	local r = site.reach + 4
+	-- (every pair 4 apart in x and z with a column the arena reaches, so the
+	-- step across the hull's edge counts on all four sides)
+	for lz = -L.HALF_Z - r - 4, L.HALF_Z + r do
+		for lx = -L.HALF_X - r - 4, L.HALF_X + r do
+			do
+				local x, z = site.x + lx, site.z + lz
+				local n0, f0 = natural(x, z), zones.terrain_height_at(x, z)
+				local a0 = reached(x, z)
+				-- (a swamp pool may lie in the blend, as on any gentle swamp
+				-- ground: it never flows; lakes and rivers may not)
+				if a0 and n0 ~= f0 and L.hull_project(lx, lz) > 0 and
+						q.road_column_at(x, z) == nil and height.inland_water_at(x, z) ~= nil then
+					error(where .. ("a lake or river in the blend at %d,%d"):format(x, z), 0)
+				end
+				for _, o in ipairs({{4, 0}, {0, 4}}) do
+					local x2, z2 = x + o[1], z + o[2]
+					local n1, f1 = natural(x2, z2), zones.terrain_height_at(x2, z2)
+					if (a0 or reached(x2, z2)) and q.road_column_at(x, z) == nil and
+							q.road_column_at(x2, z2) == nil then
+						local added = math.abs(f1 - f0) - math.abs(n1 - n0)
+						if added > arena_added then arena_added = added end
+						if added > limit then
+							error(where .. ("the levelling steepens %d,%d by %d over 4"):format(x,
+								z, added), 0)
+						end
+					end
+				end
+			end
+		end
+	end
+	-- no spawn-region content on the footprint and its fringe (ruling 13):
+	-- no camp, leader or quest place of the region maps of the zones the
+	-- fringe touches (built as the game builds them, quest_places above) and
+	-- no rare's patrol point (the consumer payload, as grug_core.rare_route
+	-- serves them)
+	local f = L.world(site).fringe
+	local function on_fringe(x, z)
+		return x >= f.min.x and x <= f.max.x and z >= f.min.z and z <= f.max.z
+	end
+	local seen = {}
+	for x = f.min.x, f.max.x, 8 do
+		for z = f.min.z, f.max.z, 8 do
+			local id = zones.id_at(x, z)
+			if id and not seen[id] then
+				seen[id] = true
+				local built = region_map(id)
+				for _, list in ipairs(built and {built.map.camps, built.map.leaders, built.map.places} or {}) do
+					for _, s in ipairs(list) do
+						if on_fringe(s.x, s.z) then
+							error(where .. ("%s %s at %d,%d on the fringe"):format(id,
+								tostring(s.id or s.role), s.x, s.z), 0)
+						end
+					end
+				end
+			end
+		end
+	end
+	for _, row in ipairs(R.built.consumer_payload.rare_routes) do
+		local a = zones.anchor(row.anchor.zone_id, row.anchor.slot_id)
+		for _, o in ipairs(row.patrol_offsets) do
+			if on_fringe(a.x + o.x, a.z + o.z) then
+				error(where .. ("rare %s's patrol point %d,%d on the fringe"):format(row.id,
+					a.x + o.x, a.z + o.z), 0)
+			end
+		end
+	end
+	return site
 end
 
 -- The sample: {label, x, z} columns, chosen by bytes of a digest of the seed.
@@ -270,6 +447,105 @@ local function sample()
 	columns[#columns + 1] = {"collar " .. other.key, other.anchor.x + direction[1] * reach,
 		other.anchor.z + direction[2] * reach}
 	return columns
+end
+
+-- The arena's blocks (Round 85 lane BUILD): the model its writer stamps.
+local arena_B, arena_model
+local function arena_model_of()
+	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	arena_B = arena_B or dofile(wp40 .. "/breach_model.lua")
+	arena_model = arena_model or arena_B.new(wp40)
+	return arena_B, arena_model
+end
+
+-- The arena's footprint (Round 85): every chunk column its bounds touch, at
+-- the datum and every chunk layer up to its blocks' reach ({label, x, z, nil,
+-- chunk origin y, arena = true}; 4 to 18 chunks).
+local function arena_columns(site)
+	local L = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/breach_layout.lua")
+	local _, model = arena_model_of()
+	local columns = {}
+	for oy = R.origin(site.y), R.origin(site.y + model.REACH), 80 do
+		for oz = R.origin(site.z - L.HALF_Z), R.origin(site.z + L.HALF_Z), 80 do
+			for ox = R.origin(site.x - L.HALF_X), R.origin(site.x + L.HALF_X), 80 do
+				columns[#columns + 1] = {"arena " .. ox .. "," .. oy .. "," .. oz, ox, oz, nil, oy,
+					arena = true}
+			end
+		end
+	end
+	return columns
+end
+
+-- The arena's blocks in one written chunk (header): raises on the first
+-- cell that is missing, floats or lies buried.
+local function arena_blocks(site, minp, vm)
+	local B, model = arena_model_of()
+	local fake = R.fake
+	local air = fake.CONTENT_AIR
+	local data = vm.written.data or vm.native.data
+	local param2 = vm.written.param2 or vm.native.param2
+	local ex, ey, ez = minp.x - 16, minp.y - 16, minp.z - 16
+	local function at(x, y, z)
+		local i = (z - ez) * 12544 + (y - ey) * 112 + (x - ex) + 1
+		return data[i], param2[i]
+	end
+	local q = R.planner_source
+	local function family(x, z) return B.FAMILIES[B.family((select(4, q.column_values_at(x, z))))] end
+	local function inside(x, y, z)
+		return x >= minp.x and x <= minp.x + 79 and y >= minp.y and y <= minp.y + 79 and
+			z >= minp.z and z <= minp.z + 79
+	end
+	local where = ("arena blocks %d,%d (chunk %d,%d,%d): "):format(site.x, site.z, minp.x, minp.y,
+		minp.z)
+	local dressed = {}
+	for _, g in ipairs(model.dressing) do
+		for _, cell in ipairs(g.cells[family(site.x + g.x, site.z + g.z).dress]) do
+			dressed[(site.x + cell.x) .. "," .. (site.y + cell.y) .. "," .. (site.z + cell.z)] =
+				cell.entry
+		end
+	end
+	local checked = 0
+	for _, c in ipairs(model.columns) do
+		local x, z = site.x + c.lx, site.z + c.lz
+		if inside(x, minp.y, z) then
+			local f
+			if inside(x, site.y - 1, z) then
+				local name = fake.get_name_from_content_id((at(x, site.y - 1, z)))
+				if name == "air" or name:find("water", 1, true) or name:find("lava", 1, true) then
+					error(where .. ("%s under the arena at %d,%d,%d"):format(name, x, site.y - 1, z), 0)
+				end
+			end
+			for ly = 0, model.REACH do
+				local y = site.y + ly
+				if inside(x, y, z) then
+					local want = dressed[x .. "," .. y .. "," .. z] or c.cells[ly + 1]
+					local got, p2 = at(x, y, z)
+					local label = ("%d,%d,%d"):format(x, y, z)
+					if want == nil or want == B.AIR then
+						if got ~= air then
+							error(where .. fake.get_name_from_content_id(got) .. " buries the arena at " ..
+								label, 0)
+						end
+					elseif want == B.KEEP then
+						if got == air then error(where .. "no ground at the rim at " .. label, 0) end
+					else
+						local e = model.entries[want]
+						local name = e.name
+						if e.role then
+							f = f or family(x, z)
+							name = f[e.role]
+						end
+						if got ~= fake.get_content_id(name) or p2 ~= e.param2 then
+							error(where .. ("%s %d missing at %s (holds %s %d)"):format(name, e.param2,
+								label, fake.get_name_from_content_id(got), p2), 0)
+						end
+					end
+					checked = checked + 1
+				end
+			end
+		end
+	end
+	return checked
 end
 
 -- The named chunks of this seed: {label, minp}.
@@ -527,11 +803,22 @@ local function wayposts()
 end
 local posts = 0
 local chunks, chunk_seconds = 0, 0
+local arena_site, arena_cells = nil, 0
 if ok then
 	local started = os.clock()
 	local columns, rows
 	ok, err = pcall(sample)
 	if ok then columns = err end
+	if ok then
+		local site
+		ok, site = pcall(arena)
+		if ok then
+			arena_site = site
+			for _, column in ipairs(arena_columns(site)) do columns[#columns + 1] = column end
+		else
+			err = site
+		end
+	end
 	if ok then
 		ok, rows = pcall(wayposts)
 		if ok then
@@ -551,7 +838,7 @@ if ok then
 			err = extra
 		end
 	end
-	local function run_chunk(minp, label)
+	local function run_chunk(minp, label, site)
 		local result
 		local before = digest_file and counters()
 		ok, result = pcall(R.chunk, minp)
@@ -561,6 +848,15 @@ if ok then
 			return
 		end
 		chunks = chunks + 1
+		if site then
+			local checked
+			ok, checked = pcall(arena_blocks, site, minp, result.vm)
+			if not ok then
+				err = checked
+				return
+			end
+			arena_cells = arena_cells + checked
+		end
 		if digest_file then
 			digest_lines[#digest_lines + 1] = ("chunk %d,%d,%d nodes=%s light=%s meta=%s %s")
 				:format(minp.x, minp.y, minp.z, result.data_hash, result.light_hash:sub(1, 16),
@@ -573,7 +869,7 @@ if ok then
 		local minp = {x = R.origin(x),
 			y = column[5] or R.origin(math.max(R.ground_at(x, z), 1)) - 80 * (column[4] or 0),
 			z = R.origin(z)}
-		run_chunk(minp, label)
+		run_chunk(minp, label, column.arena and arena_site)
 		if not ok then break end
 	end
 	for _, named in ipairs(ok and named_chunks() or {}) do
@@ -598,7 +894,8 @@ if ok then
 	print("OK", seed, seconds, roster, "chunks=" .. chunks,
 		("chunk_seconds=%.1f"):format(chunk_seconds), "trees=" .. trees:sub(1, 16),
 		"places=" .. places, ("place_seconds=%.1f"):format(place_seconds),
-		"wayposts=" .. posts)
+		"wayposts=" .. posts, "arena_cells=" .. arena_cells,
+		("arena_added=%d/4%s"):format(arena_added, arena_fallback and ",fallback" or ""))
 else
 	print("FAIL", seed, seconds, (tostring(err):gsub("[\t\n]", " ")))
 	error("seed " .. seed .. " failed", 0)

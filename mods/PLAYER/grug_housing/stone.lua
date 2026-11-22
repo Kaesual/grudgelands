@@ -115,8 +115,9 @@ local DRAFT_TEXTURE = TEXTURE .. "^[opacity:150"
 
 core.register_node(STONE, {
 	description = "Claim Stone\nPlace it in your faction's home land (level " ..
-		"11-30 zones) and activate it with 5 coal within 5 minutes to claim a " ..
-		"101 x 101 home.\nSoulbound: dropping it destroys it.",
+		"11-30 and capital zones) and activate it with 5 coal within 5 minutes " ..
+		"to claim the 80 x 80 square it stands in as your home.\nSoulbound: " ..
+		"dropping it destroys it.",
 	tiles = {TEXTURE},
 	paramtype = "light",
 	light_source = 4,

@@ -16,7 +16,9 @@
 -- `road_writer` (optional, Round 22 Phase 4) dresses the road columns first,
 -- before P9G, world content, anchors and settlements (`road_writer.lua`).
 -- `arena_writer` (optional, Round 31 DA2) dresses the dragon arenas last,
--- after the settlements (`arena_writer.lua`).
+-- after the settlements (`arena_writer.lua`); since Round 85 `r7_runtime.lua`
+-- passes it composed with the arena "Breach Road"'s blocks
+-- (`breach_writer.lua`), written after the dragon arenas.
 -- `swamp_config` (optional, Round 47 lane SW) writes the swamp's pools and
 -- their plants right after the roads, before P9G and world content, so
 -- those see the water (`swamp_writer.lua`).

@@ -16,7 +16,8 @@ stdout carries one JSON object per line; the last one is the result:
   {"event": "refusal", "reason": <code>, "message": <text>}            exit 2
   {"event": "pack_start", "seq": <n>, "claims": <n>}            --map-reset
   {"event": "pack_done", "seq", "counts": {"claims", "players", "containers",
-   "items", "charcoal", "blocks_read"}, "nodes", "empty", "seconds"}
+   "items", "charcoal", "blocks_read"}, "nodes", "empty", "skipped":
+   {"unknown_version", "undecodable"}, "seconds"}
   {"event": "step_start", "step": <v>, "from": <version>}
   {"event": "step_done", "step": <v>, "counts": {<kind>: <n>, ...}}
   {"event": "failed", "step": <v>|null, "reason": <code>, "message": <text>}  exit 1
@@ -24,7 +25,8 @@ stdout carries one JSON object per line; the last one is the result:
    "due", "applied" (migrate) or "write_checked" (check), "backends"; with
    --map-reset also "map_reset": true and "pack_seq" (migrate) or
    "map_checked" and "pack" (check: the pass's dry run, {"seq", "counts",
-   "nodes", "empty", "seconds"} as pack_done would carry them)}  exit 0
+   "nodes", "empty", "skipped", "seconds"} as pack_done would carry them)}
+   exit 0
 Refusal reasons: usage, checkout, world_mt, backend, database_missing,
 connection, layout, lock, write_access, record, world_newer, pack_baseline,
 pack_pending, map_block, map_empty, internal.
@@ -295,9 +297,10 @@ def read_pass(backends, map_reader, out, dry=False):
     if text is not None and not text.isdigit():
         raise Refusal("internal", "grug_housing pack_seq %r is no number" % text)
     seq = int(text or 0) + 1
-    claims, bad = pack.read_claims(store)
-    if bad:
-        out.say("%d claim record(s) do not decode and are skipped, as the game does" % bad)
+    claims, skipped = pack.read_claims(store)
+    if any(skipped.values()):
+        out.say("claim records skipped, as the game drops them: %d of an unknown version, "
+                "%d that do not decode" % (skipped["unknown_version"], skipped["undecodable"]))
     if not dry:
         out.event("pack_start", "pass %d: %d claim(s)" % (seq, len(claims)),
                   seq=seq, claims=len(claims))
@@ -316,7 +319,7 @@ def read_pass(backends, map_reader, out, dry=False):
         raise Refusal("map_block", str(err)) from None
     except mapblock.map_errors() as err:
         raise Refusal("connection", "map backend: cannot read: %s" % err) from None
-    return seq, scans
+    return seq, scans, skipped
 
 
 def prepare_pass(backends, map_reader, out, dry=False):
@@ -324,8 +327,8 @@ def prepare_pass(backends, map_reader, out, dry=False):
     dry run (`--check --map-reset`) alike: the reads, every block of every
     claim decoded, the entries built and proved to read back, none of their
     keys taken. Refusals only; writes nothing. Returns (seq, entries,
-    report) with report = {seq, counts, nodes, empty}."""
-    seq, scans = read_pass(backends, map_reader, out, dry)
+    report) with report = {seq, counts, nodes, empty, skipped}."""
+    seq, scans, skipped = read_pass(backends, map_reader, out, dry)
     entries, counts = pack.build(scans, seq, int(clock()))
     try:
         pack.verify(entries, scans, seq)
@@ -336,7 +339,8 @@ def prepare_pass(backends, map_reader, out, dry=False):
         raise Refusal("internal", "grug_housing already holds %s: pack_seq is behind its "
                       "entries" % ", ".join(taken[:3]))
     nodes, empty = pack.by_node(scans)
-    return seq, entries, dict(seq=seq, counts=counts, nodes=nodes, empty=empty)
+    return seq, entries, dict(seq=seq, counts=counts, nodes=nodes, empty=empty,
+                              skipped=skipped)
 
 
 def run_pass(backends, map_reader, new_world, out):

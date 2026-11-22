@@ -12,19 +12,21 @@
 --      fully outside, exactly on an edge and with zero size; every `[fill`
 --      a recipe holds passes the engine's checks (x and y inside the image,
 --      width and height at least 1: imagesource.cpp `[fill`, CHECK_DIM);
---      the player's square is 101 nodes at the frame's scale on the arrow
---      and its texture's fills are valid at every window;
+--      the player's square is 80 nodes (a map chunk, Round 85) at the
+--      frame's scale on the arrow and its texture's fills are valid at every
+--      window;
 --   V  registry: the claim-set version changes on create, remove (not on a
 --      second remove), load and map reset and nowhere else (activation,
---      fuel, permissions); claims_in equals a scan of every claim;
---      column_problem is validate's zone rule (the same code on a uniform
---      world, territory false judges the zone alone);
+--      fuel, permissions); claims_in equals a scan of every claim's chunk;
+--      the column rule (claim_mask.lua's since Round 85) with territory
+--      false judges the zone alone;
 --   O  overlays (the real render on a small synthetic world, normal size
 --      and a 10:3 "high" render reduced to it): every pixel whose centre
 --      column the rule refuses is red, with its eight neighbours; every
---      pixel within the margin of a settlement core is red; no square of a
---      claim that touches no red is refused by validate's zone and
---      settlement checks ("Conservative red"); a few that touch red pass;
+--      pixel within the margin of a settlement core is red; no 80 x 80
+--      square that touches no red breaks the column rule on a column or
+--      meets a settlement within the margin ("Conservative red"); a few
+--      that touch red pass;
 --   I  install on that world at the game's size: the overlays announced
 --      and handed to the minimap; a failing overlay render keeps the base and
 --      the minimap's copy, without claim mode, overlay media or their key;
@@ -111,10 +113,13 @@ end
 -- G  geometry
 -- ---------------------------------------------------------------------------
 local V = dofile(repo .. "/mods/PLAYER/grug_map/minimap_view.lua")
+-- Round 85: the claim mask's pure rules (api.lua publishes its column rule
+-- and margin for the overlay); a claim is a map chunk, half side 39.5.
+local CM = dofile(repo .. "/mods/PLAYER/grug_housing/claim_mask.lua")
 local BOUNDS = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
 local base = {quality = "normal", width = 1080, height = 960, tiles = {}}
 local v = V.new(base, BOUNDS)
-local R = 50
+local R = 39.5
 do
 	local ox, oy = V.origin(v, 300, 250)
 	local size = v.combined
@@ -200,7 +205,7 @@ do
 			square.size, square.size)
 		layout_ok = layout_ok and ok and n == 5
 	end
-	check(scale_ok, "G the square is 101 nodes at the frame's scale, on the arrow, in the hole")
+	check(scale_ok, "G the square is 80 nodes at the frame's scale, on the arrow, in the hole")
 	check(layout_ok, "G the square's texture is valid at every window")
 	-- the area the claims are asked for covers the texture
 	local min_x, min_z, max_x, max_z = V.texture_area(v, ox, oy)
@@ -251,10 +256,16 @@ do
 	local v4 = model.claim_set_version()
 	model.map_reset()
 	check(model.claim_set_version() ~= v4, "V map reset changes the version")
-	-- claims_in against a scan of every claim
+	-- claims_in against a scan of every claim's chunk (one claim per chunk)
 	math.randomseed(5022)
+	local taken = {}
 	for i = 1, 60 do
-		model.create("p" .. i, {x = math.random(-2000, 2000), y = 0, z = math.random(-2000, 2000)})
+		local x, z = math.random(-2000, 2000), math.random(-2000, 2000)
+		local key = model.chunk_of(x) .. "," .. model.chunk_of(z)
+		if not taken[key] then
+			taken[key] = true
+			model.create("p" .. i, {x = x, y = 0, z = z})
+		end
 	end
 	local same = true
 	for _ = 1, 300 do
@@ -262,8 +273,8 @@ do
 		local x1, z1 = x0 + math.random(0, 600), z0 + math.random(0, 600)
 		local want = {}
 		for _, claim in ipairs(model.all_claims()) do
-			local c = claim.center
-			if c.x - R <= x1 and c.x + R >= x0 and c.z - R <= z1 and c.z + R >= z0 then
+			local a0, b0, a1, b1 = model.claim_bounds(claim)
+			if a0 <= x1 and a1 >= x0 and b0 <= z1 and b1 >= z0 then
 				want[#want + 1] = claim.id
 			end
 		end
@@ -273,8 +284,8 @@ do
 	end
 	check(same, "V claims_in equals a scan of every claim (ordered by id)")
 	model.map_reset()
-	-- column_problem is validate's zone rule: on a uniform world validate's
-	-- scan answers the column's code
+	-- Round 85: validate has no zone rule any more (the claim mask judges
+	-- whole chunks, tools/r85_mask); the overlay's column rule is the mask's.
 	local zone_rows = {
 		{faction = "accord", territory_rule = "accord_home", level_min = 11, level_max = 20},
 		{faction = "throng", territory_rule = "throng_home", level_min = 11, level_max = 20},
@@ -284,29 +295,21 @@ do
 			civic_no_hostiles = true},
 		{territory_rule = "contested", level_min = 11, level_max = 30},
 	}
-	local agree, zone_alone = true, true
+	local zone_alone = true
 	for _, water in ipairs({"land", "planned_water", "coastal_shelf", "deep_ocean"}) do
 		for _, zone in ipairs(zone_rows) do
 			for _, territory in ipairs({"accord_home", "throng_home", "hard_protected",
 					"immutable", "contested"}) do
-				local world = {fixed = false, cube_clear = function() return true end,
-					feature_in = function() return nil end,
-					water_class_at = function() return water end,
-					zone_at = function() return zone end,
-					territory_at = function() return territory end}
 				for _, faction in ipairs({"accord", "throng"}) do
-					local ok, code = model.validate("x", faction, {x = 0, y = 0, z = 0}, world)
-					local want = model.column_problem(faction, water, zone, territory)
-					agree = agree and ((ok and want == nil) or code == want)
-					-- territory false: the territory's own refusals are left out
-					local alone = model.column_problem(faction, water, zone, false)
+					local want = CM.column_problem(faction, water, zone, territory)
+					-- the territory taken as the faction's home: the zone alone
+					local alone = CM.column_problem(faction, water, zone, faction .. "_home")
 					zone_alone = zone_alone and (alone == nil or alone == want) and
 						(want == nil or alone ~= nil or territory ~= faction .. "_home")
 				end
 			end
 		end
 	end
-	check(agree, "V column_problem is validate's zone rule")
 	check(zone_alone, "V column_problem with territory false judges the zone alone")
 end
 
@@ -365,11 +368,31 @@ do
 		end
 		return nil
 	end
-	local claim = {factions = {"accord", "throng"}, problem = model.column_problem,
-		territory_at = territory_at, feature_in = feature_in, margin = model.SETTLEMENT_MARGIN}
-	local world = {fixed = false, cube_clear = function() return true end,
-		water_class_at = water_at, territory_at = territory_at, feature_in = feature_in,
+	-- the overlay's rule as base.lua asks it (Round 85: the claim mask's
+	-- column rule; territory false judges the zone alone)
+	local function problem(faction, water, zone, territory)
+		if territory == false then territory = faction .. "_home" end
+		return CM.column_problem(faction, water, zone, territory)
+	end
+	local claim = {factions = {"accord", "throng"}, problem = problem,
+		territory_at = territory_at, feature_in = feature_in, margin = CM.MARGIN}
+	local world = {water_class_at = water_at, territory_at = territory_at, feature_in = feature_in,
 		zone_at = function(x, z) return zones.id_at(x, z) and Z[id_at(x, z)] or nil end}
+	-- Round 85: a square's column and settlement rules (claim_mask.lua rules
+	-- 1, 2 and 5) checked column by column, as validate's zone scan did.
+	local function square_ok(faction, x0, z0)
+		if feature_in(x0, z0, x0 + 79, z0 + 79, CM.MARGIN) then return false end
+		for z = z0, z0 + 79 do
+			for x = x0, x0 + 79 do
+				local zone = world.zone_at(x, z)
+				if CM.column_problem(faction, water_at(x, z), zone,
+						zone and territory_at(x, z) or nil) then
+					return false
+				end
+			end
+		end
+		return true
+	end
 	local W, H = 60, 60
 	for _, render_size in ipairs({60, 200}) do
 		local label = render_size == 60 and "O normal" or "O high"
@@ -395,7 +418,7 @@ do
 				for i = 0, render_size - 1 do
 					local x = math.floor(view.min_x + (i + 0.5) * scale)
 					local zone = world.zone_at(x, z)
-					if model.column_problem(faction, water_at(x, z), zone,
+					if CM.column_problem(faction, water_at(x, z), zone,
 							zone and territory_at(x, z) or nil) then
 						local ti = math.floor((i + 0.5) * W / render_size)
 						local tj = math.floor((j + 0.5) * H / render_size)
@@ -421,17 +444,18 @@ do
 			check(near, label .. " " .. faction .. ": the village core's margin red")
 			-- no clear square is refused; some squares touching red pass
 			local refused, clear, passed_red = 0, 0, 0
-			for z = -140, 140, 3 do
-				for x = -140, 140, 3 do
-					local i0 = math.floor((x - R - 0.5 - view.min_x) / npp)
-					local i1 = math.ceil((x + R + 0.5 - view.min_x) / npp) - 1
-					local j0 = math.floor((view.max_z - z - R - 0.5) / npp)
-					local j1 = math.ceil((view.max_z - z + R + 0.5) / npp) - 1
+			-- the 80 x 80 square of columns x0 .. x0 + 79, z0 .. z0 + 79
+			for z0 = -180, 100, 6 do
+				for x0 = -180, 100, 6 do
+					local i0 = math.floor((x0 - 0.5 - view.min_x) / npp)
+					local i1 = math.ceil((x0 + 79.5 - view.min_x) / npp) - 1
+					local j0 = math.floor((view.max_z - z0 - 79.5) / npp)
+					local j1 = math.ceil((view.max_z - z0 + 0.5) / npp) - 1
 					local touches = false
 					for j = j0, j1 do
 						for i = i0, i1 do touches = touches or red(i, j) end
 					end
-					local ok = model.validate("probe", faction, {x = x, y = 0, z = z}, world)
+					local ok = square_ok(faction, x0, z0)
 					if not touches then
 						clear = clear + 1
 						if not ok then refused = refused + 1 end
@@ -465,8 +489,8 @@ do
 	rawset(_G, "grug_zones", zones)
 	local function install(fail)
 		announced, written, logged = {}, {}, {}
-		rawset(_G, "grug_housing", {column_problem = model.column_problem,
-			SETTLEMENT_MARGIN = model.SETTLEMENT_MARGIN,
+		rawset(_G, "grug_housing", {column_problem = problem,
+			SETTLEMENT_MARGIN = CM.MARGIN,
 			placement_world = {territory_at = territory_at, feature_in = fail and function()
 				error("forced overlay failure")
 			end or feature_in}})
@@ -551,8 +575,9 @@ rawset(_G, "grug_quests", {marker_states = function() return {}, 1 end,
 rawset(_G, "grug_parties", {view = function() return nil end, register_on_change = function() end})
 rawset(_G, "grug_home", {get = function() return nil end, known_waypoints = function() return {} end,
 	claim_waypoint = function() return nil end})
-rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", RADIUS = model.RADIUS,
-	claims_in = model.claims_in, claim_set_version = model.claim_set_version})
+rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
+	claim_set_version = model.claim_set_version})
 rawset(_G, "grug_map", {quest_slots = function() return {} end, atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Somewhere" end}})
 grug_map.base = B

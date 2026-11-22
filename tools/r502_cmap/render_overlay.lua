@@ -49,7 +49,8 @@ local zones = {}
 for _, name in ipairs({"get", "id_at", "water_class_at", "terrain_height_at", "water_query_at"}) do
 	zones[name] = function(...) return session[name](...) end
 end
-local model = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({
+-- Round 85: the old 101 x 101 rule, frozen (the game's claim is a map chunk)
+local model = dofile(repo .. "/tools/r85_claimcap/registry_084.lua")({
 	storage = {get_string = function() return "" end, set_string = function() end,
 		keys = function() return {} end},
 	now = function() return 0 end})

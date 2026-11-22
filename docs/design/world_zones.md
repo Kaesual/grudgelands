@@ -94,8 +94,9 @@ binding future scope.
 - The Battlegrounds zones rise from both continent-facing sides toward the
   middle of the band. Wyrmglass and Stormscale are flat level 60. Capital
   zones use their published ranges (20–30). Their zone record's
-  `civic_no_hostiles` flag only keeps Claim Stones out of them
-  (`grug_housing`); no spawn code reads it (§3).
+  `civic_no_hostiles` flag marks a claim chunk's capital-zone ground for the
+  capital ring (`grug_housing`, `housing.md` §2 rule 6); no spawn code reads
+  it (§3).
 - **Inner start band (decided 2026-09-17):** surface mob level is exactly
   **1** at integer horizontal Euclidean distance 0–100 nodes from each of the
   six authored start anchors and exactly **2** at distance 101–150 nodes.
@@ -769,7 +770,8 @@ replaced.
   (Round 28 ruling 1: primary 9, secondary 7, trail 5 nodes, inside the
   vegetation exclusion above) and ±5 nodes around the road
   surface, checked analytically against the planned centreline segments.
-  Claims may contain roads; the corridor stays protected inside them.
+  Claims hold no road: a map chunk with a column of a road corridor is no
+  claim ground (`housing.md` §2 rule 3).
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
   flat 112-node civic core and its 40-node collar (§12).
 - **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps the
@@ -796,10 +798,11 @@ replaced.
   the core and a 4-node margin (a dragon arena: a circle of its radius + 4).
 - **No housing masks** (Round 25 ruling 4). The former authored housing
   masks and the four coastal housing areas are removed from the layout and
-  the zone data. Claim eligibility is `housing.md` §2 only: the whole claim
-  lies in the claimant's own level-11–30 home zones and keeps 16 nodes from
-  every hard-protected footprint and every POI, village or camp core
-  (Round 25 ruling 27). Mapgen generates
+  the zone data. Claim eligibility is `housing.md` §2 only: the claim's
+  whole map chunk lies in the claimant's own level-11–30 or capital zones,
+  holds no road and keeps 16 nodes from every hard-protected footprint and
+  every POI, village or camp core (Round 25 ruling 27, Round 85), with the
+  further rules and the quota of `housing.md` §2. Mapgen generates
   nothing housing-specific. Placed Claim Stones change nothing about
   generation; inside an active claim there is no natural renewal
   (`housing.md` §6.4).
@@ -1323,7 +1326,9 @@ stay fixed.
   natural relief under the core within the kind's limit and never above 40
   (a placed POI gets no calm bowl); fitting squares 16 nodes apart from every
   anchor and **128 nodes from a start town's or a capital's square**; the
-  kind's spacing from every other placed POI; in the zones the middle road
+  kind's spacing from every other placed POI; the fitting square 16 nodes
+  clear of the arena's square (its levelled hull and blend, §8.6), never
+  relaxed; in the zones the middle road
   crosses, |x| at least max(80, core / 2 + 58); and the POI's **level band**:
   the third of its zone's level range it had before Round 46 (`band` on its
   anchor row; a camp on a recipe site takes its recipe camp's belt), read on
@@ -1352,7 +1357,7 @@ stay fixed.
   world differs and every spot is good ground. A Mirefolk camp needs its
   water in the first two steps and prefers it after them (the eight are
   those near water when any is). Order: fixed
-  anchors first, then fortresses, war camps, villages, mines, outposts,
+  anchors first, then the arena's site (§8.6), then fortresses, war camps, villages, mines, outposts,
   bandit camps, Mirefolk camps, clash sites and rare dens; rows a later round
   appends go into a later `pass`, so the earlier ones keep their places (the
   Round 58 camps are pass 2: mining camps, then the camps under
@@ -1377,6 +1382,92 @@ stay fixed.
   placement height down to `depth` (Round 46 ships none; later content's
   shafts and chambers use it).
 
+### 8.6 The arena "Breach Road" (Round 85)
+
+The arena stands on the middle road near the map's centre on every world, at
+a site the world generation chooses by rule (round85-plan.md rulings 1, 5, 9,
+18 and 22; `wp40/breach_site.lua`, its layout `wp40/breach_layout.lua`).
+
+- **The footprint.** The draft's rim (99 × 91 nodes, 6,907 columns), the road
+  north-south through its middle, the Accord's hall east of it and the
+  Throng's west (the fortresses' sides). The ground under the footprint's
+  convex hull is flat at one datum, the road's level; the terraces (+3, +6),
+  stairs and halls stand on it as the arena's blocks.
+- **The site.** Main chooses it in the POI placement, before every placed
+  POI, on the natural world alone (the arena is no anchor: the zone field,
+  the terrain field and the inland water never see it, so nothing outside
+  the Battlegrounds moves for its sake but the middle road): candidates every
+  8 nodes within 200 nodes of (0, 0) whose hull and 8 nodes round it are dry
+  land of The Broken Causeway or The Shattered Line, with no lake or river
+  within 4 nodes of the ground the blend grades. The lowest score wins: the
+  mean levelling under the hull, a tenth of the blend's reach, the detour
+  the middle road would take to pass the site (a stand-in for the natural
+  road: the cheapest south-north path across the window with the router's
+  grade costs and its axis guide, 0.02 per node of added cost), 0.02 per
+  node off z = 0, halfway between the factions' capitals, and (fix 2, the
+  user) 4 per unit of the steepest natural grade (rise or fall per node over 4
+  nodes, along the hull's outward normal, from the hull to 8 nodes beyond
+  the blend's edge) above 1.5, so a site with a steep natural bank right
+  behind the hull or the blend's edge loses to one without when one lies
+  near; ordinary ground costs nothing. The datum is the
+  lower median of the natural ground under the hull.
+- **The blend** (rulings 5 and 22). Outside the hull the ground keeps its
+  natural shape, offset toward the datum and fading out with the distance
+  from the hull over a width that grows with the step at the hull's edge (1.5
+  × step / 0.5, from 8 to 64 nodes), so the levelling adds about 0.5 to the
+  natural grade, keeps no flat apron and cuts no wall; within 12 nodes of the
+  hull the edge's own detail eases out so the ground meets the datum. It
+  works across the zone border like anywhere else. A site whose step would
+  need a wider blend is refused. When no site in the window passes (ground
+  so rough round the centre that every site needs more, one seed of the
+  fleet's 304), the site that needs the narrowest blend of the up to 64
+  candidates measured exactly (in the coarse order, not the whole window) is
+  taken and its blend may reach 128 nodes, so the grade rule holds there too;
+  where even that site would need more, the load reports it as
+  `[GRUG-SEVERE]`. The checks (the seed fleet on every seed)
+  hold the levelling to at most 1.25 added to the natural grade over 4
+  nodes; on the eleven study seeds it adds at most 0.75 and the blend
+  reaches 12–45 nodes.
+- **The road** (ruling 18). The middle road runs straight through the arena
+  between its two mouths at the datum, and from each mouth one leg leaves
+  straight along the axis and is routed to its capital (§9.2). Every other
+  road keeps out of the footprint.
+- **The ground stays bare.** The hull is a claim exclusion: no plant, swamp
+  pool or cave on it, and it is protected from the datum down like an
+  anchor's envelope.
+- **The blocks** (Round 85 lane BUILD, ruling 3). The approved draft "Breach
+  Road", second pass (`tools/r84_arena_draft/`), stands on the datum: the
+  ruined galleries at +3, both halls and the lookout spurs at +6, twelve
+  five-wide stair flights (180 stair nodes), broken breastworks, piers and
+  arches, fallen wall footings, the worn road, two cold hearths and four
+  dressing groups. The halls are the building templates `breach_accord` and
+  `breach_throng`, each placed so that its waystone marker stands on the
+  layout's waystone cell, where the game's waystone node (as in the towns and
+  fortresses, no metadata) takes the marker's place with the arrival cell
+  free beside it; the field is data generated from the draft's own
+  construction (`wp40/breach_field.lua`, `tools/r85_build/gen_field.py`). The
+  footprint's rim (1,196 columns along its edge) keeps the natural
+  surface the zone puts there. The ground's patches, the trodden earth of
+  the road, paths and terraces, and the dressing take the family of the
+  biome under each column (`wp40/breach_model.lua`): woodland (forest litter
+  over dirt, broken apple trunks; the draft's west), meadow (grass over
+  dirt), wetland (mud over dirt), badland (mesa clay over dry dirt, basalt;
+  the draft's east), dryland (dry grass over dry dirt, basalt). So the
+  palette follows the zone and biome patch the site stands in, across the
+  zone border too. The masonry, the halls and the stairs are the draft's on
+  every world.
+- **The hearths smoke** (ruling 3): one 1 s spawner per hearth each second
+  (`grug_mapgen/breach_smoke.lua`, the effect `breach_hearth_smoke`): three
+  puffs a second living 3 s, at most 18 live for the pair (the draft: 22),
+  the draft's tint and drift on the game's plain smoke mote, a faster rise
+  in the shorter life. No sound.
+- **A place of the game** (Round 85 lane TERRITORY, [pvp.md](pvp.md) §6.4):
+  each hall's interior is its faction's peaceful ground, each hall's waystone
+  (the node the blocks set on the layout's cell) is an ordinary waystone,
+  the whole site is protected from digging, building, fire and explosions, no hostile mob, camp, leader, quest place or rare patrol point
+  stands on the footprint or its fringe, and its name shows on the location
+  line and the map.
+
 ## 9. Zone neighbors, roads and trails
 
 Rewritten for Round 22 (D9, D14, D15, D18, D19). **Hierarchy: zones, then
@@ -1399,13 +1490,18 @@ graph requirement may shape a zone, and nothing may require a graph to be
   one endpoint in each contested frontier zone: the outpost or clash site
   nearest the home side. Roads enter the contested zones but need not reach
   the Battlegrounds.
-- **The middle road (Round 29, the user 2026-10-02).** One primary road
-  crosses the Battlegrounds at the map's x-middle and joins the continents,
-  Highcourt to Gor Drazhak. It is routed after both faction networks; while
-  it routes, every cell more than 48 nodes off x = 0 costs extra (0.02 per
-  node and per node off), so it stays near the middle (it crosses z = 0
-  within about ±60 nodes and keeps within about ±140 on the tested seeds)
-  and still bends around terrain. It has no waypoint. The two PvP fortresses
+- **The middle road (Round 29, the user 2026-10-02; through the arena since
+  Round 85).** A primary road crosses the Battlegrounds at the map's
+  x-middle and joins the continents, Highcourt to Gor Drazhak, through the
+  arena (§8.6): a straight inner road between the arena's two mouths at its
+  datum and one leg from each mouth to its capital (the south mouth to
+  Highcourt, the north mouth to Gor Drazhak), each leaving its mouth
+  straight along the axis for 40 nodes. They are routed after both faction
+  networks; while a leg routes, every cell more than 48 nodes off x = 0
+  costs extra (0.02 per node and per node off), so it stays near the middle
+  and still bends around terrain. It has no waypoint. A leg or the inner road
+  that finds no route is reported as `[GRUG-SEVERE]` (key `arena_road`, at
+  every start); the world still loads. The two PvP fortresses
   (Round 31, §16) stand beside it, clear of every routing cell it uses on
   the tested seeds, so it keeps its own course; a trail joins each
   fortress gate to it. Other secondary roads and trails may re-route round
@@ -1870,7 +1966,8 @@ Capital protection remains effective; editable ground requires no housing.
   share of its columns rising from a third to all toward its outer edge
   (Round 36 W3, as round a start town); beyond it the
   zone's ordinary rules apply (vegetation, ground cover, resources, caves;
-  capital zones hold no claims, `housing.md` §2). The shape is computed
+  claims only from one whole map chunk beyond the protected city,
+  `housing.md` §2 rule 6). The shape is computed
   once per world start from the capital layout
   (`wp40/capital_protection.lua`, integer column intervals per row, a lookup
   of one row and one or two comparisons) and always lies inside
@@ -2259,7 +2356,8 @@ numeric-truncated seed.
   line, the key lines, one section per text (placement, water, road,
   capital), one with the prepared blueprints as plain data, and one small
   diagnostics section (the first start's placement,
-  capital and road log lines and its `[GRUG-SEVERE]` placement line, the
+  capital and road log lines and its `[GRUG-SEVERE]` placement and arena-road
+  lines, the
   road showcase spots for
   `/road_spots`, the build seconds), each with its length and SHA-256, and a
   final SHA-256 over everything before it. A missing, truncated, edited or

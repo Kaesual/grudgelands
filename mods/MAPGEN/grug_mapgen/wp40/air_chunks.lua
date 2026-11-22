@@ -32,7 +32,9 @@
 --    place there: the preparation surface/content envelope of the owner
 --    columns and their decoded content reach (terrain, water, functional
 --    surfaces, waterfalls, road decks and rails and the tallest decoded
---    template) and the fitted settlement, POI and anchor boxes over the owner.
+--    template) and the fitted settlement, POI and anchor boxes over the owner
+--    (and, since Round 85, the arena "Breach Road"'s box: its blocks stand up
+--    to 28 nodes above its datum, `breach_model.lua`).
 --    The boxes and the owner's own columns are read first (Round 49): one of
 --    them reaching the chunk decides without the reach ring, whose columns
 --    are mostly not the planner's and cost the most to answer.

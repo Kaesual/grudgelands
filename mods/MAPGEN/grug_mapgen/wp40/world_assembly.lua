@@ -63,6 +63,10 @@ return function(wp40_directory, raw_sha256)
 	local road_module = dofile(wp40_directory .. "/road_layout.lua")
 	A.zones_factory = dofile(wp40_directory .. "/zones.lua")
 	A.placement = dofile(wp40_directory .. "/placement.lua")(wp40_directory, raw_sha256)
+	-- The arena "Breach Road" (Round 85): its site comes with the placement
+	-- (`W.source.breach`, {x, z, y = datum, reach}); `breach_site.lua` levels
+	-- its ground in every height session of the world.
+	A.breach = A.placement.breach
 
 	-- The ground node each start's blueprint lays on its pad (its race's WP13
 	-- palette), which the band round the pad carries out into the natural
@@ -213,6 +217,7 @@ return function(wp40_directory, raw_sha256)
 			bound.roads = W.roads
 			bound.reuse = W.reuse
 			bound.start_grounds = A.start_grounds
+			bound.breach = A.breach
 			return height_module_factory(bound)
 		end
 		-- The capital plots `r7_settlement.prepare` takes in main (none when the

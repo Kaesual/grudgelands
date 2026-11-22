@@ -153,8 +153,9 @@ local function marker_px(frame)
 end
 M.marker_px = marker_px
 -- The claims (set by M.install when grug_housing is there): the Claim
--- Stone's item name and the claim's radius. Claim mode needs the overlays
--- too: their tiles by faction and the red.
+-- Stone's item name and half the claim's side (a map chunk, Round 85), for
+-- the square on the arrow. Claim mode needs the overlays too: their tiles by
+-- faction and the red.
 local housing, STONE, RADIUS
 local claim_tiles, CLAIM_RED
 -- The no-fly overlays' tiles by faction (set by M.install when base.lua
@@ -562,14 +563,20 @@ local function flight_mode(player)
 	return faction and flight_tiles[faction] and faction or nil
 end
 
+-- A claim's chunk as the centre and half side the view's claim geometry
+-- takes (minimap_view.lua: columns centre +- half): cx, cz, half.
+local function chunk_square(claim)
+	local x0, z0, x1, z1 = housing.claim_bounds(claim)
+	return (x0 + x1) / 2, (z0 + z1) / 2, (x1 - x0) / 2
+end
+
 -- The claim part of the cell texture: the faction's overlay tiles and one
 -- clipped rectangle per claim on the texture, in id order.
 local function claim_layer(state)
 	local min_x, min_z, max_x, max_z = V.texture_area(view, state.ox, state.oy)
 	local rects = {}
 	for _, claim in ipairs(housing.claims_in(min_x, min_z, max_x, max_z)) do
-		local rect = V.claim_rect(view, state.ox, state.oy, claim.center.x, claim.center.z,
-			RADIUS)
+		local rect = V.claim_rect(view, state.ox, state.oy, chunk_square(claim))
 		if rect then rects[#rects + 1] = rect end
 	end
 	return {tiles = claim_tiles[state.claim], rects = rects, color = CLAIM_RED}
@@ -585,13 +592,13 @@ local function frame_layer(name, state)
 		if claim.owner == name then
 			own = claim
 		else
-			V.claim_frame(view, state.ox, state.oy, claim.center.x, claim.center.z, RADIUS,
-				OTHER_FRAME, rects)
+			local cx, cz, half = chunk_square(claim)
+			V.claim_frame(view, state.ox, state.oy, cx, cz, half, OTHER_FRAME, rects)
 		end
 	end
 	if own then
-		V.claim_frame(view, state.ox, state.oy, own.center.x, own.center.z, RADIUS,
-			OWN_FRAME, rects)
+		local cx, cz, half = chunk_square(own)
+		V.claim_frame(view, state.ox, state.oy, cx, cz, half, OWN_FRAME, rects)
 	end
 	return rects[1] and {rects = rects} or nil
 end
@@ -891,7 +898,7 @@ function M.install(installed)
 	-- (base.lua) too.
 	housing = rawget(_G, "grug_housing")
 	if housing then
-		STONE, RADIUS = housing.STONE_ITEM, housing.RADIUS
+		STONE, RADIUS = housing.STONE_ITEM, (housing.CHUNK - 1) / 2
 		if mini.claim then
 			claim_tiles = mini.claim
 			CLAIM_RED = ("#%02x%02x%02x%02x"):format(unpack(grug_map.base.CLAIM_RED))

@@ -122,11 +122,13 @@ local claims = {
 		paid_until = NOW - 1, perms = {ivy = "interact", eve = "everything"}},
 }
 local calls = {claim_at = 0, is_active = 0, permission = 0}
+-- Round 85: a claim is the map chunk of its stone (api.lua claim_bounds):
+-- claim 1 covers x and z 48..127, claim 2 x 208..287, z 48..127.
 function grug_housing.claim_at(pos)
 	calls.claim_at = calls.claim_at + 1
 	for _, claim in ipairs(claims) do
-		if math.abs(pos.x - claim.center.x) <= grug_housing.RADIUS and
-				math.abs(pos.z - claim.center.z) <= grug_housing.RADIUS and
+		local x0, z0, x1, z1 = grug_housing.claim_bounds(claim)
+		if pos.x >= x0 and pos.x <= x1 and pos.z >= z0 and pos.z <= z1 and
 				pos.y >= grug_housing.MIN_Y then
 			return claim
 		end
@@ -288,8 +290,9 @@ local function player(name)
 	return {get_player_name = function() return name end,
 		is_player = function() return name ~= "" end}
 end
-local IN_ACTIVE = {x = 20, y = 5, z = 30}
-local IN_EXPIRED = {x = 260, y = 5, z = 40}
+-- Round 85: inside the chunks (the old 101 x 101 squares reached x 0 and z 0).
+local IN_ACTIVE = {x = 70, y = 5, z = 80}
+local IN_EXPIRED = {x = 260, y = 5, z = 60}
 local OUTSIDE = {x = 450, y = 5, z = 0}
 local ITEM = {}
 
@@ -458,7 +461,7 @@ do
 	grug_housing.claim_at, grug_housing.is_active = model.claim_at, model.is_active
 	grug_housing.permission = model.permission
 	local claim = model.create("olaf", {x = 5000, y = 10, z = 5000})
-	local spot = {x = 5010, y = 12, z = 4990}
+	local spot = {x = 5005, y = 12, z = 4990} -- the chunk is x and z 4928..5007
 	check(model.is_draft(claim) and not grug_housing.interaction_refused(spot, "stranger"),
 		"R26: a draft guards no interaction")
 	check(grug_housing.protection_reason(spot, "stranger") == nil,

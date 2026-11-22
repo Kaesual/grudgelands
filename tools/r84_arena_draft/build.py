@@ -57,7 +57,8 @@ def template(site, faction, model):
         out.append(f'room_corner {x} 0 {z} top=7 closed=true id=muster')
     out += ['end','']
     txt = '\n'.join(out)
-    path = HERE/'templates'/f'{name}.tpl'
+    # Round 85 lane BUILD moved the halls to where the game loads templates.
+    path = ROOT/'mods/MAPGEN/grug_mapgen/building_templates/templates'/f'{name}.tpl'
     read = templates.parse_template(str(path),txt)
     assert read.pivot==(21,31) and read.size==(21,sy,31)
     assert len(read.cells)==21*sy*31 and templates.UNCHANGED not in read.cells.values()

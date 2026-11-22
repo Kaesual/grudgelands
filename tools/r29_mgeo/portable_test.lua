@@ -7,8 +7,11 @@
 -- builds it (tools/r25_road_poi/world.lua: zones, roster, height, road
 -- layout, every POI blueprint prepared against its catalogue row) and:
 --   1. no road of the network failed to route (stats.failed is unset);
---   2. one primary road joins Highcourt and Gor Drazhak, crosses z = 0 at
---      |x| < 150 and stays within |x| < 300 between the two capitals' edges;
+--   2. the middle road joins Highcourt and Gor Drazhak through the arena
+--      (Round 85 ruling 18: three primary roads now, the arena's straight
+--      inner road and a leg from each mouth to its capital, instead of one
+--      pair), crosses z = 0 at |x| < 150 and stays within |x| < 300 between
+--      the two capitals' edges;
 --   3. Coalbrand Yard and Sunderstrap Camp stand at |x| >= 80, and every
 --      anchor of the source stands in its own zone on land (the zone field's
 --      self-check, observed through the session).
@@ -42,18 +45,25 @@ for _, seed in ipairs(seeds) do
 	local hc = S.anchor("elandor_highcourt", "capital")
 	local gd = S.anchor("kragmar_gor_drazhak", "capital")
 	check(hc and gd, "both capital anchors, seed " .. seed)
-	local road
+	local parts = {}
 	for _, r in ipairs(built.roads) do
-		if (r.a == hc.id and r.b == gd.id) or (r.a == gd.id and r.b == hc.id) then road = r end
+		if r.a == "breach_south" and r.b == "breach_north" then parts.inner = r end
+		if r.a == "breach_south" and r.b == hc.id then parts.south = r end
+		if r.a == "breach_north" and r.b == gd.id then parts.north = r end
 	end
-	check(road ~= nil, "a road joins Highcourt and Gor Drazhak, seed " .. seed)
-	check(road.kind == "primary", "the middle road is primary, seed " .. seed)
-	local cross, max_x = nil, 0
-	for i = 2, #road.X do
-		local z1, z2 = road.Z[i - 1], road.Z[i]
-		if (z1 <= 0) ~= (z2 <= 0) then cross = cross or road.X[i] end
-		-- between the capitals' 532-node squares
-		if math.abs(road.Z[i]) < 1500 - 266 then max_x = math.max(max_x, math.abs(road.X[i])) end
+	check(parts.inner and parts.south and parts.north,
+		"the arena's inner road and a leg from each mouth to its capital, seed " .. seed)
+	local cross, max_x, points = nil, 0, 0
+	for _, key in ipairs({"south", "inner", "north"}) do
+		local road = parts[key]
+		check(road.kind == "primary", "the middle road is primary, seed " .. seed)
+		points = points + #road.X
+		for i = 2, #road.X do
+			local z1, z2 = road.Z[i - 1], road.Z[i]
+			if (z1 <= 0) ~= (z2 <= 0) then cross = cross or road.X[i] end
+			-- between the capitals' 532-node squares
+			if math.abs(road.Z[i]) < 1500 - 266 then max_x = math.max(max_x, math.abs(road.X[i])) end
+		end
 	end
 	check(cross and math.abs(cross) < 150, ("the middle road crosses z = 0 at |x| < 150, seed %s (x %s)")
 		:format(seed, tostring(cross)))
@@ -71,7 +81,7 @@ for _, seed in ipairs(seeds) do
 			("anchor %s in %s on land, seed %s"):format(a.id, zone, seed))
 	end
 	print(("  seed %s: middle road %d nodes, crosses z = 0 at x = %.0f, max |x| %.0f (%.1f s)")
-		:format(seed, #road.X, cross, max_x, os.clock() - t0))
+		:format(seed, points, cross, max_x, os.clock() - t0))
 end
 do
 	local t0 = os.clock()

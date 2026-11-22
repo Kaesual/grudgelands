@@ -160,8 +160,9 @@ for gx = -2250, 2250, 500 do
 		model.create("c" .. placed, {x = gx, y = 10, z = gz})
 	end
 end
-rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", RADIUS = model.RADIUS,
-	claims_in = model.claims_in, claim_set_version = model.claim_set_version})
+rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
+	claim_set_version = model.claim_set_version})
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Dawnmere Fields" end}})
 local base = dofile(repo .. "/mods/PLAYER/grug_map/base.lua")

@@ -13,9 +13,9 @@
 --                      engine builds it
 --   R.chunk(minp[, hooks]) plans and writes the 80^3 chunk at minp (hooks:
 --                      optional before_plan / after_plan functions); returns
---                      {result, plan, data_hash, candidates (the owner-root
---                      decoration rows, a string), plan_seconds,
---                      write_seconds}
+--                      {result, plan, data_hash, vm (the fake VoxelManip,
+--                      Round 85), candidates (the owner-root decoration
+--                      rows, a string), plan_seconds, write_seconds}
 --   R.new_vm(minp)     the fake VoxelManip of a chunk (sets the heightmap
 --                      the next write reads); R.written_hash(vm) the hash of
 --                      what it holds after a write
@@ -25,7 +25,7 @@
 --                      light buffer and logs each calc_lighting and
 --                      update_liquids call with the light and the content
 --                      it starts from;
---                      R.chunk then also returns `vm` and `light_hash`
+--                      R.chunk then also returns `light_hash`
 --   R.seconds          {main, build}: CPU seconds of the two constructions
 --   R.planner_source   the R6 planner's pure column query of the built
 --                      session (Round 60: the spawn regions' query adapter
@@ -368,10 +368,9 @@ return function(repo, seed, mode)
 		local result = R.built.writer.apply(vm, minp, maxp, plan, generation)
 		local t3 = os.clock()
 		local out = {result = result, plan = plan, candidates = candidates,
-			data_hash = R.written_hash(vm),
+			data_hash = R.written_hash(vm), vm = vm,
 			plan_seconds = t2 - t1, write_seconds = t3 - t2}
 		if R.record_light then
-			out.vm = vm
 			out.light_hash = common.hex(raw_sha256(table.concat(vm.light_calls, "\n") ..
 				"\nfinal " .. vm.hash_light()))
 		end

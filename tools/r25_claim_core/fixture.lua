@@ -5,17 +5,18 @@
 -- Runs the shipped bytes of mods/PLAYER/grug_housing (registry.lua,
 -- protection.lua, soulbound.lua, stone.lua) and grug_core/protection.lua
 -- against small engine stubs:
---   1. placement validation on a synthetic world: every refusal reason
---      (rulings 2, 3, 5, 6, 9, 22, 23, 27), edge-to-edge accept, overlap
---      refuse, and the zone check's completeness (a single forbidden column
---      anywhere in the 101 x 101 square refuses; a single landmark column or
---      village core anywhere within 16 of it refuses, none beyond);
+--   1. placement validation over a stub claim mask (Round 85: a claim is
+--      the map chunk of its stone; the zone, water and settlement rules are
+--      the mask's, tools/r85_mask): depth, faction, the mask's refusals with
+--      their messages, the stone one node inside its chunk's edge, the
+--      cube, the quota naming its kind, no mask; one claim per chunk,
+--      neighbouring chunks accepted, claim_at at the chunk's corners;
 --   2. protection by permission level, faction (world protection first),
 --      protection_bypass, empty claims, the arrival cube; the liquid and the
 --      renewal guards;
 --   3. fuel arithmetic: accept limits, remaining time, pick-up refund, expiry
 --      by the wall clock (fake clock), the expiry report, refuel (ruling 20);
---      Round 26: drafts protect nothing but reserve their square and keep
+--      Round 26: drafts protect nothing but reserve their chunk and keep
 --      the arrival cube, activation (at least 5 lumps), and the owner digging
 --      a buildable_to node (snow) in the arrival cube;
 --   4. Round 26: the draft lifetime, the 12 h pick-up lock after activation,
@@ -27,11 +28,9 @@
 --      same claims and records;
 --   7. (unless "none") the real world of one seed (tools/r25_road_poi/
 --      world.lua: zones, roads, settlement cores): hard_footprint_in against
---      a column scan, refusals at every start town, a census of a claim
---      lattice with an exhaustive re-check (the square and its 16-node ring),
---      the nearest feature per kind, a village pair for the engine smoke
---      (20 nodes: refused, 70 nodes: accepted), and the is_protected cost
---      (grug_core alone vs with grug_housing, 0 and 50 claims).
+--      a column scan, and the is_protected cost (grug_core alone vs with
+--      grug_housing, 0 and 50 claims). The 101 x 101 placement census that
+--      stood here went with the old square (Round 85).
 -- Prints "R25 CLAIM CORE FIXTURE PASS checks=<n>" or raises with the
 -- failures. The engine counterpart is `run.sh OUT_DIR` (grug_probe_claims,
 -- two boots on seed 4242424242). evidence/: fixture.txt (this run),
@@ -73,208 +72,94 @@ local function new_model(storage)
 end
 
 -- ---------------------------------------------------------------------------
--- 1. Synthetic world
+-- 1. Placement validation
 -- ---------------------------------------------------------------------------
--- z <= -1000 a level 1-10 home zone, z >= 1000 the other faction, x >= 1000
--- a contested level 31-40 zone, -2000 < x <= -1000 a capital zone, x <= -2000
--- open sea; otherwise two home zones (L11-20 west of x = 0, L21-30 east).
--- A town (hard) square around (500, 500), a village box around (-500, 500),
--- a landmark column at (500, -500).
-local ZONES = {
-	home11 = {id = "home11", faction = "accord", territory_rule = "accord_home",
-		level_min = 11, level_max = 20},
-	home21 = {id = "home21", faction = "accord", territory_rule = "accord_home",
-		level_min = 21, level_max = 30},
-	low = {id = "low", faction = "accord", territory_rule = "accord_home",
-		level_min = 1, level_max = 10},
-	contested = {id = "contested", territory_rule = "contested_land",
-		level_min = 31, level_max = 40},
-	enemy = {id = "enemy", faction = "throng", territory_rule = "throng_home",
-		level_min = 11, level_max = 20},
-	capital = {id = "capital", faction = "accord", territory_rule = "accord_home",
-		level_min = 20, level_max = 30, civic_no_hostiles = true},
-}
-local enclave -- optional {min_x, max_x, min_z, max_z}: a level 1-10 enclave
+-- Round 85: a claim is the map chunk of its stone, and the zone, water,
+-- settlement, road and spawn rules are the claim mask's (claim_mask.lua, its
+-- fixture tools/r85_mask), asked once per chunk; the synthetic zone world
+-- of the 101 x 101 square went with them. A stub mask here: every chunk is
+-- claim ground but those in `refused` (chunk key -> reason id).
+local refused, quota_kind = {}, nil
 local blocked_cube = {}
-local world = {}
--- Water: open ocean west of x = -2000 (no zone); a coastal shelf strip (with
--- an owning home zone, as in zones.lua) at 600..700 / -900..-800; a lake
--- (planned water) at -700..-650 / -100..100.
-function world.water_class_at(x, z)
-	if x <= -2000 then return "deep_ocean" end
-	if x >= 600 and x <= 700 and z >= -900 and z <= -800 then return "coastal_shelf" end
-	if x >= -700 and x <= -650 and z >= -100 and z <= 100 then return "planned_water" end
-	return "land"
-end
-function world.zone_at(x, z)
-	if enclave and x >= enclave[1] and x <= enclave[2] and z >= enclave[3] and
-			z <= enclave[4] then
-		return ZONES.low
-	end
-	if x <= -2000 then return nil end
-	if z <= -1000 then return ZONES.low end
-	if z >= 1000 then return ZONES.enemy end
-	if x >= 1000 then return ZONES.contested end
-	if x <= -1000 then return ZONES.capital end
-	return x < 0 and ZONES.home11 or ZONES.home21
-end
-function world.territory_at(x, z)
-	if math.abs(x - 500) <= 40 and math.abs(z - 500) <= 40 then
-		return "hard_protected"
-	end
-	local zone = world.zone_at(x, z)
-	return zone and zone.territory_rule or "immutable"
-end
-local BOXES = {
-	{id = "town", kind = "town", min_x = 459, max_x = 541, min_z = 459, max_z = 541},
-	{id = "village", kind = "site", min_x = -581, max_x = -419, min_z = 419, max_z = 581},
-	{id = "landmark", kind = "landmark", min_x = 499, max_x = 501, min_z = -501, max_z = -499},
+local mask = {
+	ground = function(_, cx, cz)
+		local why = refused[cx .. "," .. cz]
+		if why then return false, why end
+		return true
+	end,
+	quota_refusal = function() return quota_kind end,
+	add_taken = function(taken) return taken end,
 }
--- Ruling 27: a box within `margin` of the rectangle (in x and in z).
-local feature_calls = {}
-function world.feature_in(min_x, min_z, max_x, max_z, margin)
-	feature_calls[#feature_calls + 1] = margin
-	for _, box in ipairs(BOXES) do
-		if max_x + margin >= box.min_x and min_x - margin <= box.max_x and
-				max_z + margin >= box.min_z and min_z - margin <= box.max_z then
-			return box.kind
-		end
-	end
-	return nil
-end
+local world = {mask = mask, kind_name = function(id) return "the " .. id end}
 function world.cube_clear(pos)
 	return not blocked_cube[pos.x .. "/" .. pos.z]
 end
 
 local storage = new_storage()
 local M = new_model(storage)
-local function validate(name, faction, x, y, z)
-	local ok, code = M.validate(name, faction, {x = x, y = y, z = z}, world)
+local function validate(name, faction, x, y, z, w)
+	local ok, code = M.validate(name, faction, {x = x, y = y, z = z}, w or world)
 	return ok and "ok" or code
 end
 
 out("-- validation")
-check(M.SAMPLE_COUNT == 101 * 101, "every column checked: " .. M.SAMPLE_COUNT)
-check(validate("alice", "accord", -300, 10, 0) == "ok", "accept in an L11-20 zone")
-check(validate("alice", "accord", 0, 10, -300) == "ok",
-	"accept across the L11-20 / L21-30 border")
-check(validate("alice", "accord", 300, -100, 0) == "ok", "accept at y = -100")
-check(validate("alice", "accord", 300, -101, 0) == "too_deep", "refuse at y = -101")
-check(validate("alice", nil, 300, 10, 0) == "no_faction", "refuse without faction")
-check(validate("alice", "throng", 300, 10, 0) == "enemy", "refuse in the other faction's land")
-check(validate("alice", "accord", 0, 10, -950) == "low_level",
-	"refuse: square reaches an L1-10 zone by one column (z -1000)")
-check(validate("alice", "accord", 0, 10, -949) == "ok",
-	"accept: square ends one column before the L1-10 zone")
-check(validate("alice", "accord", 950, 10, 0) == "high_level", "refuse: reaches L31+ zone")
-check(validate("alice", "accord", 0, 10, 950) == "enemy", "refuse: reaches enemy zone")
-check(validate("alice", "accord", -950, 10, 0) == "capital_zone",
-	"ruling 22: refuse, reaches a capital zone")
-check(validate("alice", "accord", -1500, 10, 0) == "capital_zone", "refuse inside a capital zone")
--- Ruling 27: 16 nodes between the claim square and a town, village or
--- landmark (town box z 459, so the square may end at z 442: centre 392).
-check(M.SETTLEMENT_MARGIN == 16, "ruling 27: margin 16")
-check(validate("alice", "accord", 500, 10, 430) == "town", "refuse: touches a town box")
-check(validate("alice", "accord", 500, 10, 393) == "town", "refuse: 15 nodes from the town")
-check(validate("alice", "accord", 500, 10, 392) == "ok", "accept 16 nodes from the town")
-check(feature_calls[#feature_calls] == 16, "feature_in asked with margin 16")
-check(validate("alice", "accord", -500, 10, 353) == "site", "refuse: 15 nodes from a village")
-check(validate("alice", "accord", -500, 10, 352) == "ok", "accept 16 nodes from a village")
-check(validate("alice", "accord", 433, 10, -500) == "landmark",
-	"refuse: 15 nodes from a landmark")
-check(validate("alice", "accord", 432, 10, -500) == "ok", "accept 16 nodes from a landmark")
-blocked_cube["300/0"] = true
-check(validate("alice", "accord", 300, 10, 0) == "cube", "refuse: arrival cube not air")
-blocked_cube["300/0"] = nil
--- Hard protection without a feature box (the sampled territory rule).
-BOXES[1].min_x = 10 ^ 6
-check(validate("alice", "accord", 500, 10, 410) == "town", "refuse: sampled hard column")
-BOXES[1].min_x = 459
-do
-	-- Open sea: the western edge at x = -2000 (nil zone), reached by the square
-	-- of a stone at x = -1950 only through its border columns.
-	local saved = ZONES.capital.civic_no_hostiles
-	ZONES.capital.civic_no_hostiles = nil
-	check(validate("alice", "accord", -1950, 10, 0) == "sea", "refuse: reaches the open sea")
-	ZONES.capital.civic_no_hostiles = saved
+-- x -300 lies in chunk -4 (x -352 .. -273), z 0 in chunk 0 (z -32 .. 47)
+check(M.chunk_of(-300) == -4 and M.chunk_of(0) == 0, "the stone's chunk")
+check(validate("alice", "accord", -300, 10, 0) == "ok", "accept on claim ground")
+check(validate("alice", "accord", -300, -100, 0) == "ok", "accept at y = -100")
+check(validate("alice", "accord", -300, -101, 0) == "too_deep", "refuse at y = -101")
+check(validate("alice", nil, -300, 10, 0) == "no_faction", "refuse without faction")
+for _, reason in ipairs({"enemy", "low_level", "not_home", "town", "site", "road", "camp",
+		"leader", "place", "rare", "capital_ring"}) do
+	refused["-4,0"] = reason
+	check(validate("alice", "accord", -300, 10, 0) == reason, "the mask's refusal: " .. reason)
+	local _, _, message = M.validate("alice", "accord", {x = -300, y = 10, z = 0}, world)
+	check(message == M.MESSAGES[reason], "its own message: " .. reason)
 end
-
--- Ruling 23: lakes, rivers and bay water in an eligible zone are fine; the
--- shelf (which has a zone) and the ocean are not.
-check(validate("alice", "accord", -680, 10, 0) == "ok", "ruling 23: a lake inside the claim")
-check(validate("alice", "accord", 650, 10, -750) == "shelf",
-	"ruling 23: refuse, reaches the coastal shelf by one column")
-check(validate("alice", "accord", 650, 10, -749) == "ok", "ruling 23: accept next to the shelf")
-check(validate("alice", "accord", 650, 10, -849) == "shelf",
-	"ruling 23: refuse, stone on the shelf")
-check(validate("alice", "accord", 800, 10, -700) == "ok", "next to the shelf")
-
--- Every column is checked: a single forbidden column anywhere in the square
--- (border or interior) refuses.
-do
-	local missed, tried = 0, 0
-	for ex = -50, 50 do
-		for ez = -50, 50 do
-			enclave = {-300 + ex, -300 + ex, ez, ez}
-			tried = tried + 1
-			if validate("alice", "accord", -300, 10, 0) ~= "low_level" then
-				missed = missed + 1
-			end
-		end
-	end
-	enclave = nil
-	check(missed == 0, "every single-column enclave found (" .. tried .. " positions)")
-	check(validate("alice", "accord", -300, 10, 0) == "ok", "no enclave: accepted")
-	out(("zone check: %d columns per placement (border 400, interior step %d);" ..
-		" %d single-column enclave positions, %d missed"):format(M.SAMPLE_COUNT,
-		M.SAMPLE_STEP, tried, missed))
+refused["-4,0"] = "an_unknown_reason"
+check(validate("alice", "accord", -300, 10, 0) == "not_ground", "an unknown reason: not ground")
+refused["-4,0"] = nil
+-- the stone at least one node inside its chunk's edge (its arrival cube)
+for _, spot in ipairs({{-352, 0}, {-273, 0}, {-300, -32}, {-300, 47}, {-352, -32}, {-273, 47}}) do
+	check(validate("alice", "accord", spot[1], 10, spot[2]) == "edge",
+		"refuse on the chunk's edge at " .. spot[1] .. "," .. spot[2])
 end
-
--- Ruling 27, brute force: a single landmark column, and a single 3 x 3
--- village core, at every offset within 70 of the centre: refused exactly
--- when it lies within 50 + 16 of the centre in x and in z.
-do
-	local saved = BOXES
-	local wrong, tried = 0, 0
-	for _, size in ipairs({{0, "landmark"}, {1, "site"}}) do
-		for ox = -70, 70 do
-			for oz = -70, 70 do
-				local cx, cz = -300 + ox, oz
-				BOXES = {{kind = size[2], min_x = cx - size[1], max_x = cx + size[1],
-					min_z = cz - size[1], max_z = cz + size[1]}}
-				local reach = 66 + size[1]
-				local expect = (math.abs(ox) <= reach and math.abs(oz) <= reach) and
-					size[2] or "ok"
-				tried = tried + 1
-				if validate("alice", "accord", -300, 10, 0) ~= expect then wrong = wrong + 1 end
-			end
-		end
-	end
-	BOXES = saved
-	check(wrong == 0, "ruling 27: every single column / core within 66 refused," ..
-		" every one beyond accepted (" .. tried .. " positions)")
-	out(("ruling 27: %d single-feature positions around a centre, %d wrong"):format(
-		tried, wrong))
+for _, spot in ipairs({{-351, 0}, {-274, 0}, {-300, -31}, {-300, 46}, {-351, -31}, {-274, 46}}) do
+	check(validate("alice", "accord", spot[1], 10, spot[2]) == "ok",
+		"accept one node inside at " .. spot[1] .. "," .. spot[2])
 end
+blocked_cube["-300/0"] = true
+check(validate("alice", "accord", -300, 10, 0) == "cube", "refuse: arrival cube not air")
+blocked_cube["-300/0"] = nil
+quota_kind = "vale/wolves"
+do
+	local ok, code, message, kind = M.validate("alice", "accord", {x = -300, y = 10, z = 0}, world)
+	check(not ok and code == "quota" and kind == "vale/wolves" and
+		message:find("the vale/wolves", 1, true) ~= nil, "refuse: the quota, naming the kind")
+end
+quota_kind = nil
+check(validate("alice", "accord", -300, 10, 0, {cube_clear = world.cube_clear}) == "no_mask",
+	"no mask: refused")
 
--- Placement, overlap, edge to edge.
+-- Placement, one claim per chunk, edge to edge.
 out("-- claims")
 local a = M.create("alice", {x = -300, y = 10, z = 0})
 check(M.player_state("alice") == "placed", "alice placed")
+check(a.kind == "" and a.name == "", "a new claim's kind and name are empty")
 check(validate("alice", "accord", 300, 10, 0) == "already_placed", "one claim per player")
-check(validate("bob", "accord", -300 + 100, 10, 0) == "overlap", "overlap refused at dx 100")
-check(validate("bob", "accord", -300, 10, 100) == "overlap", "overlap refused at dz 100")
-check(validate("bob", "accord", -300 + 100, 10, 100) == "overlap", "corner overlap refused")
-check(validate("bob", "accord", -300 + 101, 10, 0) == "ok", "edge to edge accepted (dx 101)")
-check(validate("bob", "accord", -300 + 101, 10, 101) == "ok", "corner to corner accepted")
-check(M.claim_at({x = -350, y = 5, z = 50}) == a, "claim_at corner")
-check(M.claim_at({x = -351, y = 5, z = 0}) == nil, "claim_at outside x")
+check(validate("bob", "accord", -280, 10, 20) == "taken", "a second stone in the chunk refused")
+check(validate("bob", "accord", -260, 10, 0) == "ok", "the next chunk east accepted")
+check(validate("bob", "accord", -300, 10, 60) == "ok", "the next chunk north accepted")
+check(M.claim_at({x = -352, y = 5, z = -32}) == a, "claim_at the chunk's first corner")
+check(M.claim_at({x = -273, y = 5, z = 47}) == a, "claim_at the chunk's last corner")
+check(M.claim_at({x = -353, y = 5, z = 0}) == nil, "claim_at outside x")
+check(M.claim_at({x = -300, y = 5, z = 48}) == nil, "claim_at outside z")
 check(M.claim_at({x = -300, y = -100, z = 0}) == a, "claim_at y -100")
 check(M.claim_at({x = -300, y = -101, z = 0}) == nil, "claim_at y -101")
 check(M.claim_at({x = -300, y = 31000, z = 0}) == a, "claim_at unbounded up")
 local b = M.create("bob", {x = -199, y = 10, z = 0})
-check(M.claim_at({x = -250, y = 0, z = 0}) == a and M.claim_at({x = -249, y = 0, z = 0}) == b,
-	"edge-to-edge claims split at the shared edge")
+check(M.claim_at({x = -273, y = 0, z = 0}) == a and M.claim_at({x = -272, y = 0, z = 0}) == b,
+	"edge-to-edge claims split at the shared chunk edge")
 
 -- ---------------------------------------------------------------------------
 -- 2. Protection (grug_housing/protection.lua over a world-protection stub)
@@ -431,7 +316,7 @@ check(P(cube, "bob") == true, "empty claim keeps the arrival cube")
 check(renewal_guard(inside) == true, "expired claim renews (ruling 19)")
 check(renewal_guard(cube) == false, "no renewal into the arrival cube")
 check(world_guard(cube) == false, "empty claim keeps the liquid guard")
-check(validate("carol", "accord", -300 + 100, 10, 0) == "overlap",
+check(validate("carol", "accord", -310, 10, 5) == "taken",
 	"empty claim still blocks other claims")
 
 -- ---------------------------------------------------------------------------
@@ -838,7 +723,7 @@ local function snapshot(model)
 end
 local s1, s2 = snapshot(M), snapshot(N)
 check(s1 == s2, "second model reads back the same state")
-check(N.claim_at({x = 5050, y = 0, z = 4950}).id == d.id, "claim grid rebuilt on load")
+check(N.claim_at({x = 4950, y = 0, z = 4990}).id == d.id, "chunk index rebuilt on load")
 check(N.claim_count() == M.claim_count(), "claim count after load")
 out(s2)
 
@@ -913,221 +798,26 @@ if seed ~= "none" then
 			" %d differ from the column scan"):format(tried, #centres, hits, differ))
 	end
 
-	local zone_records = {}
-	local real = {}
-	function real.zone_at(x, z)
-		local id = Z.id_at(x, z)
-		if not id then return nil end
-		local record = zone_records[id]
-		if not record then record = Z.get(id); zone_records[id] = record end
-		return record
-	end
-	function real.territory_at(x, z) return Z.territory_rule_at({x = x, y = 30000, z = z}) end
-	-- As api.lua: the settlement cores (grug_core.world_feature_boxes_in), then
-	-- the hard footprints of the widened square.
-	function real.feature_in(min_x, min_z, max_x, max_z, margin)
-		if W.protection.boxes_in(min_x, min_z, max_x, max_z, margin) then return "site" end
-		local _, kind = Z.hard_footprint_in(min_x - margin, min_z - margin,
-			max_x + margin, max_z + margin)
-		return kind
-	end
-	function real.cube_clear() return true end
-	function real.water_class_at(x, z) return Z.water_class_at(x, z) end
-	local R = new_model(new_storage())
-	local function real_validate(x, z, faction)
-		local y = Z.terrain_height_at(x, z) + 1
-		local ok, code = R.validate("probe", faction or "accord", {x = x, y = y, z = z}, real)
-		return ok and "ok" or code, y
-	end
-
-	-- Every start town and a point in every L1-10 zone refuse.
-	for _, anchor in ipairs(source.anchors) do
-		if anchor.slot_id == "start" then
-			local faction = Z.get(Z.id_at(anchor.position.x, anchor.position.z)).faction
-			local code = real_validate(anchor.position.x, anchor.position.z + 200, faction)
-			check(code ~= "ok", "near start " .. anchor.id .. " refused (" .. code .. ")")
-			local at_town = real_validate(anchor.position.x, anchor.position.z, faction)
-			check(at_town == "town", "at start " .. anchor.id .. ": town (" .. at_town .. ")")
-		end
-	end
-	-- A lattice of candidate centres (spacing 101, edge to edge) over the map.
-	local census, accepted = {}, {}
-	local t_start = os.clock()
-	local count = 0
-	for x = -2600, 2600, 101 do
-		for z = -2600, 2600, 101 do
-			local id = Z.id_at(x, z)
-			local zone = id and real.zone_at(x, z)
-			if zone and zone.faction then
-				local code = real_validate(x, z, zone.faction)
-				count = count + 1
-				census[code] = (census[code] or 0) + 1
-				if code == "ok" then accepted[#accepted + 1] = {x = x, z = z, zone = zone} end
+	-- Round 85: the real world's placement census (start towns refused, a
+	-- 101-node lattice re-checked column by column, the nearest features, the
+	-- engine smoke's village pair) judged the 101 x 101 square, which the
+	-- claim mask replaced; the mask is checked against the real world by
+	-- tools/r85_mask (run.lua, compare.py) and the capacity study. Kept: the
+	-- footprint query above and the is_protected cost, on claims in the
+	-- middle of one chunk each of the home zones.
+	local accepted = {}
+	for x = -2600, 2600, 160 do
+		for z = -2600, 2600, 160 do
+			local cx = 80 * math.floor((x + 32) / 80) + 8
+			local cz = 80 * math.floor((z + 32) / 80) + 8
+			local id = Z.id_at(cx, cz)
+			local zone = id and Z.get(id)
+			if zone and zone.faction and zone.level_min >= 11 and zone.level_max <= 30 then
+				accepted[#accepted + 1] = {x = cx, z = cz}
 			end
 		end
 	end
-	local elapsed = os.clock() - t_start
-	local codes = {}
-	for code, n in pairs(census) do codes[#codes + 1] = code .. " " .. n end
-	table.sort(codes)
-	out(("census: %d home-faction centres, %s; %.2f ms per validation"):format(count,
-		table.concat(codes, ", "), 1000 * elapsed / count))
-	check(#accepted > 0, "some eligible spots exist")
-	-- Every accepted square: exhaustively re-check all 10201 columns, and the
-	-- ring of the square widened by 16 against every hard column and every
-	-- settlement core (ruling 27).
-	local margin = R.SETTLEMENT_MARGIN
-	local boxes = W.wp.settlement_boxes(W.rows)
-	local function box_gap(box, x, z)
-		local gx = math.max(box.min_x - x, x - box.max_x, 0)
-		local gz = math.max(box.min_z - z, z - box.max_z, 0)
-		return math.max(gx, gz)
-	end
-	local exhaustive_bad, ring_bad = 0, 0
-	local by_zone = {}
-	for _, spot in ipairs(accepted) do
-		by_zone[spot.zone.id] = (by_zone[spot.zone.id] or 0) + 1
-		for dx = -50, 50 do
-			for dz = -50, 50 do
-				local zone = real.zone_at(spot.x + dx, spot.z + dz)
-				local territory = zone and real.territory_at(spot.x + dx, spot.z + dz)
-				local water = real.water_class_at(spot.x + dx, spot.z + dz)
-				if (water ~= "land" and water ~= "planned_water") or
-						not zone or zone.faction ~= spot.zone.faction or zone.level_min < 11 or
-						zone.level_max > 30 or zone.civic_no_hostiles or
-						territory ~= zone.faction .. "_home" then
-					exhaustive_bad = exhaustive_bad + 1
-				end
-			end
-		end
-		local reach = 50 + margin
-		for dx = -reach, reach do
-			for dz = -reach, reach do
-				if (dx < -50 or dx > 50 or dz < -50 or dz > 50) and
-						hard_at(spot.x + dx, spot.z + dz) then
-					ring_bad = ring_bad + 1
-				end
-			end
-		end
-		for _, box in ipairs(boxes) do
-			if box_gap(box, spot.x, spot.z) <= reach then ring_bad = ring_bad + 1 end
-		end
-	end
-	check(exhaustive_bad == 0, "accepted squares hold only eligible columns (exhaustive: " ..
-		exhaustive_bad .. " bad)")
-	check(ring_bad == 0, "ruling 27: no hard column or settlement core within 16 of an" ..
-		" accepted square (exhaustive: " .. ring_bad .. " bad)")
-	local zone_list = {}
-	for id, n in pairs(by_zone) do zone_list[#zone_list + 1] = id .. " " .. n end
-	table.sort(zone_list)
-	out("accepted by zone: " .. table.concat(zone_list, ", "))
-	local first = accepted[1]
-	out(("first accepted spot: %d,%d in %s (L%d-%d)"):format(first.x, first.z,
-		first.zone.id, first.zone.level_min, first.zone.level_max))
-
-	-- Minimum distance (in x and z: the larger of the two gaps) from an
-	-- accepted lattice centre to each kind of feature. By construction at
-	-- least 50 + 16 + 1 = 67.
-	do
-		local best = {}
-		local function note(kind, d)
-			if not best[kind] or d < best[kind] then best[kind] = d end
-		end
-		for _, spot in ipairs(accepted) do
-			for _, box in ipairs(boxes) do note(box.kind, box_gap(box, spot.x, spot.z)) end
-			for _, c in ipairs(landmark_columns) do
-				note("landmark", math.max(math.abs(c.x - spot.x), math.abs(c.z - spot.z)))
-			end
-		end
-		-- Towns: the exact distance by bisection on the raw session's query
-		-- (no functional columns), for every spot whose town index box is
-		-- nearer than the best exact answer so far.
-		local order = {}
-		for _, spot in ipairs(accepted) do
-			local gap = math.huge
-			for _, t in ipairs(town_centres) do
-				local half = t.reach - 10
-				gap = math.min(gap, math.max(math.abs(t.x - spot.x) - half,
-					math.abs(t.z - spot.z) - half, 0))
-			end
-			order[#order + 1] = {spot = spot, gap = gap}
-		end
-		table.sort(order, function(a, b) return a.gap < b.gap end)
-		local raw = W.raw_session
-		for _, entry in ipairs(order) do
-			if best.town and entry.gap >= best.town then break end
-			local s = entry.spot
-			local lo, hi = entry.gap, entry.gap + 600
-			if raw.hard_footprint_in(s.x - hi, s.z - hi, s.x + hi, s.z + hi) then
-				while lo < hi do
-					local mid = math.floor((lo + hi) / 2)
-					if raw.hard_footprint_in(s.x - mid, s.z - mid, s.x + mid, s.z + mid) then
-						hi = mid
-					else
-						lo = mid + 1
-					end
-				end
-				note("town", lo)
-			end
-		end
-		local kinds = {}
-		for kind, d in pairs(best) do
-			kinds[#kinds + 1] = kind .. " " .. d
-			check(d >= 67, "ruling 27: nearest " .. kind .. " at least 67 from a centre")
-		end
-		table.sort(kinds)
-		out("nearest feature to an accepted lattice centre (max of the x and z gaps): " ..
-			table.concat(kinds, ", "))
-	end
-
-	-- The engine smoke's village pair: a stone 20 nodes from a village core
-	-- (refused) and one 70 nodes away, which the old blend envelope (the
-	-- village's 160-node blend square, touched by the 101 square) refused.
-	do
-		local pairs_found, villages = 0, 0
-		for _, box in ipairs(boxes) do
-			if box.kind == "village" then
-				villages = villages + 1
-				local shown = false
-				local anchor
-				for _, row in ipairs(W.rows) do
-					if row.key == box.id then anchor = row.anchor end
-				end
-				for _, dir in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
-					local function at(d)
-						local x = dir[1] > 0 and box.max_x + d or
-							(dir[1] < 0 and box.min_x - d or anchor.x)
-						local z = dir[2] > 0 and box.max_z + d or
-							(dir[2] < 0 and box.min_z - d or anchor.z)
-						return x, z
-					end
-					local fx, fz = at(70)
-					local zone = real.zone_at(fx, fz)
-					if zone and zone.faction then
-						local far = real_validate(fx, fz, zone.faction)
-						local nx, nz = at(20)
-						local near = real_validate(nx, nz, zone.faction)
-						local old = math.abs(fx - anchor.x) <= 81 + 50 and
-							math.abs(fz - anchor.z) <= 81 + 50
-						if far == "ok" then
-							pairs_found = pairs_found + 1
-							check(near == "site", "20 from " .. box.id .. " refused as site")
-							check(old, "70 from " .. box.id .. " lies in the old blend envelope")
-							if not shown then
-								shown = true
-								out(("village pair %s: 20 away %d,%d %s; 70 away %d,%d %s" ..
-									" (inside the old blend envelope: %s)"):format(box.id, nx, nz,
-									near, fx, fz, far, tostring(old)))
-							end
-						end
-					end
-				end
-			end
-		end
-		check(pairs_found > 0, "a village has an eligible spot 70 from its core")
-		out(("village pairs: %d of %d villages x 4 sides accept a stone 70 from the core"):format(
-			pairs_found, villages))
-	end
+	check(#accepted >= 50, "home-zone chunks for the benchmark (" .. #accepted .. ")")
 
 	-- is_protected cost: grug_core alone, then with grug_housing (0 / 50 claims).
 	out("-- is_protected microbenchmark")
@@ -1153,7 +843,8 @@ if seed ~= "none" then
 	local function rand(n) lcg = (lcg * 1103515245 + 12345) % 2147483648; return lcg % n end
 	for i = 1, 2000 do
 		local spot = accepted[1 + rand(#accepted)]
-		positions[i] = {x = spot.x - 50 + rand(101), y = rand(60), z = spot.z - 50 + rand(101)}
+		-- the spot is the chunk's first column + 40: its chunk is spot - 40 .. + 39
+		positions[i] = {x = spot.x - 40 + rand(80), y = rand(60), z = spot.z - 40 + rand(80)}
 	end
 	-- Three independent is_protected chains, measured interleaved; the best
 	-- of several repetitions counts (LuaJIT trace and cache noise).

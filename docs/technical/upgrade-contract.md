@@ -146,7 +146,8 @@ written in `register_on_mods_loaded`, after every clear.
 |---|---|---|
 | `grug_core` `world_preparation` (`starts_preload.lua`) | the plan and its progress: total, cursor, order, geometry, reach, authority digest, selection | `mode` (starts or full): the selected plan starts again |
 | `grug_mobs` (`map_reset.lua`) | every record of the world's authored actors: `startnpc:` and `startnpcdue:` (settlement NPC markers and respawn times), `rare_alive:` and `rare_next:`, `boss:dragon:<id>:alive/due/warned`, `leader_next:`, `rift_crack:` and `rift_boss_due:`, `live_pos:` and `live_absent:` | `live_gen:<key>`, the liveness generations (monotonic: a copy of an older generation never returns) |
-| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>` and `recovered:<player>:<seq>:0.<k>`, until their items are taken), the packed containers' contents `packed:<player>:<seq>:<n>[.<k>]` (until the container is placed) and `pack_seq` (§3.5) |
+| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`, whatever its record version (`v2` until 0.84.x, `v3` since 0.85.0, §3.5), so also a record the running version cannot read; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>` and `recovered:<player>:<seq>:0.<k>`, until their items are taken), the packed containers' contents `packed:<player>:<seq>:<n>[.<k>]` (until the container is placed) and `pack_seq` (§3.5) |
+| `grug_housing`'s world-folder file `grug_claim_mask.txt` (Round 85, `mask.lua`; not mod storage) | the claim mask's snapshot of the map (the mask and its per-chunk fingerprints): the first start after the reset writes it anew for the new map (its header names the seed and the map-reset record, [format](claim-mask-format.md)) | — |
 | `grug_mapgen` (Round 69, `camp_rewrite.lua`) | `camp_rewrite`, the pending box rewrite (§5.9): a new map generates the new blueprint | — |
 | `grug_core` `map_reset_pack:<seq>` (§3.5) | — | the pass's marker until the game's handler has run at the next load |
 | `grug_core` `reset_world` | — | the world record itself |
@@ -158,9 +159,14 @@ written in `register_on_mods_loaded`, after every clear.
 | `grug_accounts` (Round 79): `list`, `id:<name>` | — | not map-bound: account bindings and their index |
 | `grug_bridge` `banlist` | — | not map-bound: the hosting platform's bans |
 
-The world-folder caches (world layouts, region maps, the world-map tiles and
-zone grid) derive from the seed and the code and stay valid. The settlement
+The world-folder caches (world layouts, region maps, the claim mask's column
+scans `grug_claim_ground.txt`, the world-map tiles and zone grid) derive from
+the seed and the code and stay valid. The settlement
 NPCs, rares, dragons, leaders and the rift return as on a fresh world.
+The claim placement quota (Round 85) keeps no state of its own: its taken
+columns are rebuilt from the claim records, so the cleared `claim:` keys clear
+it too. The arena Breach Road (Round 85) stores nothing; its two hall
+waystones are ordinary discovered waypoints (kept below).
 
 | Player meta | Map-bound |
 |---|---|
@@ -225,10 +231,22 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   needs the backup restored in place. The map is never emptied after a
   failure, and nothing repeats automatically.
 - **What it reads:** every claim record (`grug_housing` mod storage
-  `claim:<id>`, `v2|owner|x|y|z|…|paid_until|…`, drafts and claims without
-  fuel included; a record that does not decode is skipped, as the game's
-  load drops it), and in each claim's area (x ± 50, z ± 50, from y = −100
-  upward) the map blocks that exist, nothing else. Every node whose metadata
+  `claim:<id>`, drafts and claims without fuel included), in either version
+  the game has written, each with its own area from y = −100 upward (x, y,
+  z is the stone):
+  - `v2|owner|x|y|z|placed_at|activated_at|paid_until|expired_for|perms`
+    (0.50.0 to 0.84.x): x ± 50, z ± 50. The tool keeps this record and its
+    area frozen, because the game no longer reads it;
+  - `v3|owner|x|y|z|placed_at|activated_at|paid_until|expired_for|perms|kind|name`
+    (since 0.85.0, [round 85 plan](../planning/round85-plan.md) §3.3; `kind`
+    and `name` are not read): the map chunk of 80 × 80 that holds the stone,
+    `cx = floor((floor(x / 16) + 2) / 5)`, x from `80·cx − 32` to
+    `80·cx + 47`, the same in z.
+
+  A record of another version, or one that does not decode, is skipped, as
+  the game's load drops it, and counted in `pack_done` and the dry run
+  (`skipped`: `unknown_version`, `undecodable`). In each claim's area the
+  pass reads the map blocks that exist, nothing else. Every node whose metadata
   has an inventory with at least one list is packed, whoever placed it,
   an empty one too (Round 50 ruling 13: the game's first start turns it
   into its node's own item). A personal workspace record (node meta
@@ -254,6 +272,15 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   transaction begins; inside it, every `recovered:` key is checked to be
   new, every written key to read back and the row count to grow by exactly
   the new keys.
+- **Old claims at a change of the claim's shape** (0.85.0, Round 85 ruling
+  4: the claim becomes one map chunk): nothing converts a claim. The pass
+  packs each old claim's containers from its old area, the map reset clears
+  its record like every claim record (§3.2), its placed stone does not come
+  back, its owner takes a new stone from the Housing Steward and places it
+  under the new rules, and a travel home set to it falls back to the
+  innkeeper (§3.2, player meta). The release is a map reset anyway (world
+  generation changes); a claim record of an older version is never read by
+  the game again.
 - **Later passes append:** earlier entries stay until their items are
   taken; the pass number grows. Every existing `recovered:` key is opaque
   to the pass (the game's first-start clean-up adds
@@ -292,7 +319,8 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   owner, a node's facing).
 - **Code and tests:** `tools/migration/mapblock.py` (the map, read-only, and
   the decoder, with the engine lines it follows), `pack.py` (the pass);
-  `tools/r50_ptool/run.sh` (§5.7).
+  `tools/r50_ptool/run.sh` (§5.7); both record versions and the reset that
+  follows them: `tools/r85_reset`.
 
 ## 4. Unknown ids in saved state
 
@@ -339,7 +367,7 @@ hosts follow the README's
   decodes one map block, which proves zstd importable even without claims,
   and keeps the rolled-back write on mod storage, where the pass writes. It
   writes nothing. Its `done` line carries `"pack"`: `seq`, `counts`,
-  `nodes` and `empty` exactly as the pass's `pack_done` would (only
+  `nodes`, `empty` and `skipped` exactly as the pass's `pack_done` would (only
   `charcoal` follows the clock), and `seconds`. A check that passed leaves
   the pass on the same unchanged world only failures the check cannot
   test: a lock taken after the check, or the transaction itself failing

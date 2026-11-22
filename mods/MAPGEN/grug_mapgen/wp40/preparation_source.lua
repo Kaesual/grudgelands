@@ -3,7 +3,11 @@
 local path = assert(debug.getinfo(1, "S").source:sub(2):match("^(.*)[/\\]"))
 local plot_approach = dofile(path .. "/../wp13/plot_approach.lua")
 local settlement_module = dofile(path .. "/r7_settlement.lua")
-return function(columns, templates, settlements, zones, anchors, identity, sha256)
+-- `extra_boxes` (optional, Round 85): further fitted boxes in the same
+-- shape ({x_min, x_max, z_min, z_max, y_min, y_max, radius}), the arena
+-- "Breach Road"'s (`breach_model.lua` box).
+return function(columns, templates, settlements, zones, anchors, identity, sha256,
+		extra_boxes)
 	assert(type(columns.column_values_at) == "function" and #templates > 0)
 	local reach, below, above = 1, -1, 1
 	local function include(x, y, z)
@@ -59,6 +63,10 @@ return function(columns, templates, settlements, zones, anchors, identity, sha25
 	for _, row in ipairs(anchors.copy_rows()) do
 		boxes[#boxes+1] = {x_min=row.x,x_max=row.x,z_min=row.z,z_max=row.z,
 			y_min=row.y,y_max=row.y+1,radius=0}
+	end
+	for _, b in ipairs(extra_boxes or {}) do
+		boxes[#boxes+1] = {x_min=b.x_min,x_max=b.x_max,z_min=b.z_min,z_max=b.z_max,
+			y_min=b.y_min,y_max=b.y_max,radius=b.radius or 0}
 	end
 	-- Runtime CIDs enter the complete R7 manifest SHA and may be assigned
 	-- differently on a normal restart. Bind stable semantic source identity,

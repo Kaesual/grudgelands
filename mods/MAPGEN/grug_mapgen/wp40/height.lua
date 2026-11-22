@@ -82,6 +82,15 @@ local function height_factory(dependencies)
 	if start_grounds ~= nil and type(start_grounds) ~= "table" then
 		error("WP40 height start grounds differ", 0)
 	end
+	-- The arena "Breach Road" (Round 85): a world's placed source carries its
+	-- site (`placement.lua`, `source.breach`), and `breach` is
+	-- `breach_site.lua` (`world_assembly.lua` binds it), which levels the
+	-- ground round it. The placement session's source has no site.
+	local breach_module = dependencies.breach
+	if source.breach ~= nil and (type(breach_module) ~= "table" or
+			type(breach_module.profile) ~= "function") then
+		error("WP40 height: the arena's site needs breach_site.lua", 0)
+	end
 
 	local WATER_LEVEL = 1
 	-- The world's query bounds (`source/simple_map.lua` world_bounds, as in
@@ -822,6 +831,31 @@ local function height_factory(dependencies)
 		end
 
 		-----------------------------------------------------------------------
+		-- The arena "Breach Road" (Round 85, `breach_site.lua`): its hull flat
+		-- at the datum, its blend offsetting the natural ground toward it, in
+		-- both zones alike (no seam at their border). Its profile is a pure
+		-- function of the site and the natural ground, the same in every
+		-- session; the site's text carries the reach, which must agree.
+		-----------------------------------------------------------------------
+		local breach_profile
+		if source.breach ~= nil then
+			breach_profile = breach_module.profile(source.breach, natural_height_at)
+			if ceil(breach_profile.reach) ~= source.breach.reach then
+				fail("the arena's blend differs from its site line")
+			end
+		end
+		-- The natural ground with the arena's levelling (the roads are routed
+		-- and profiled on it, so the middle road meets the datum).
+		local function breach_natural_at(x, z)
+			local natural = natural_height_at(x, z)
+			if breach_profile then
+				local value = breach_module.ground(breach_profile, x, z, natural, natural_height_at)
+				if value then return value end
+			end
+			return natural
+		end
+
+		-----------------------------------------------------------------------
 		-- Anchor fittings. Starts and capitals sit in the field's calm bowls
 		-- (damping keyed to the anchor), so their cores fit the cut/fill limits
 		-- of their profile. Every other anchor (a POI) takes its height from the
@@ -1028,10 +1062,9 @@ local function height_factory(dependencies)
 					inputs.rivers = water.polylines()
 					inputs.lake_mask = water_module.deserialize(water_cache.text).mask
 					inputs.simplex = terrain_field.simplex
-					-- the carved natural ground and its water (sea: the level)
-					inputs.terrain_at = function(x, z)
-						return natural_height_at(x, z)
-					end
+					-- the carved natural ground (levelled round the arena) and its
+					-- water (sea: the level)
+					inputs.terrain_at = breach_natural_at
 					inputs.water_at = function(x, z)
 						local block, slot = column(x, z)
 						if block.class[slot] ~= LAND then return WATER_LEVEL end
@@ -1236,6 +1269,12 @@ local function height_factory(dependencies)
 		end
 		local function fit_land(x, z, owner, incoming)
 			local terrain_y, kind, feature_id = incoming, nil, nil
+			-- the arena first: natural ground, not a settlement's (no kind)
+			if breach_profile then
+				local graded = breach_module.ground(breach_profile, x, z, incoming,
+					natural_height_at)
+				if graded then terrain_y = graded end
+			end
 			local value, fitting = fitting_grade_at(grids.selected, x, z,
 				terrain_y, owner, LAND)
 			if value ~= nil then terrain_y, kind, feature_id = value, "land_grade", fitting.id end

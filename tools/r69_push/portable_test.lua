@@ -141,9 +141,11 @@ for _, spot in ipairs({{0, 0}, {49, 0}, {51, 0}, {57, 20}, {66, 0}}) do
 end
 check(SR.in_drift({x = 0, y = 5, z = 990}) and not SR.in_drift({x = 0, y = 5, z = 980}),
 	"the road's drift band stands")
-check(hit_count(60, 0) == 3, "the probe alone sees the claim: three ring points")
+-- Round 85: the claim at 0/0 is its map chunk, x and z -32 .. 47 (the old
+-- square reached 50), so the probes stand 10 and 17 nodes off its east edge.
+check(hit_count(57, 0) == 3, "the probe alone sees the claim: three ring points")
 check(hit_count(0, 0) == 8, "the middle of a claim: every point")
-check(hit_count(67, 0) == 0, "out of view: no hit")
+check(hit_count(64, 0) == 0, "out of view: no hit")
 
 -- ---------------------------------------------------------------------------
 -- 2. Active claims only, the same test as a spawn refusal
@@ -249,7 +251,7 @@ do
 	m = mob({_grug_home = {x = 80, y = 5, z = 0}, pos = {x = 20, y = 5, z = 0}})
 	check(nudged(m, 12) >= 2 and m.toward.x > 20 and abs(m.toward.z) < 1e-6,
 		"surrounded by the claim, home outside: toward home")
-	check(nudged(mob({_grug_home = {x = 70, y = 5, z = 0}, pos = {x = 49, y = 5, z = 0}}), 12) > 0,
+	check(nudged(mob({_grug_home = {x = 70, y = 5, z = 0}, pos = {x = 45, y = 5, z = 0}}), 12) > 0,
 		"walked in, home outside: pushed")
 	m = mob({pos = {x = 20, y = 5, z = 0}})
 	m._grug_home = nil

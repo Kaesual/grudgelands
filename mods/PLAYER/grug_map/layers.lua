@@ -19,7 +19,8 @@
 --             discovered waystones (the "home" and "waypoint" providers)
 --   POIs      bandit and Mirefolk camps, mines and gem camps, clash sites,
 --             both factions
---   PvP       the two fortresses and the war camps
+--   PvP       the two fortresses, the war camps and (Round 85) the arena
+--             Breach Road
 --   Zones     every zone's name and level band as text (zone_labels.lua)
 --   None      only the arrows
 --
@@ -136,6 +137,17 @@ local function build_rows()
 					faction = faction_of_race[row.race_id]}
 			end
 		end
+	end
+	-- The arena Breach Road (Round 85, grug_mapgen's layout of this world)
+	-- under PvP at its centre, with the clash sites' crossed swords; no
+	-- settlement, so it is added here.
+	local mapgen = rawget(_G, "grug_mapgen")
+	local breach = mapgen and mapgen.breach
+	if breach then
+		rows.pvp[#rows.pvp + 1] = {id = breach.id, label = breach.name,
+			detail = breach.name .. "\nArena: a hall for each faction", kind = "clash",
+			texture = texture("clash"),
+			position = {x = breach.centre.x, y = breach.datum, z = breach.centre.z}}
 	end
 	for _, dragon in ipairs(dragons) do
 		rows.boss[#rows.boss + 1] = {id = dragon.id, label = dragon.name,

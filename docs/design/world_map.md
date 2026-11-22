@@ -264,7 +264,7 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   | Services | Trainers & traders | the profession and Riding trainers, the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
   | Travel | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
   | Places | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the brown tent and bright pickaxe icon `grug_map_mining_camp.png`), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
-  | PvP | PvP | the two fortresses and the war camps in their faction's colour (Round 66 ruling 8: the Throng's red `grug_map_war_camp.png`, the Accord's blue `grug_map_war_camp_accord.png`, the same symbol; the faction from the slot `pvp_<faction>_<band>`), with the camps under construction (Round 58, the scaffold icon; since Round 66 its cloth in the faction's colour, `grug_map_camp_construction_<faction>.png`, the faction of the camp's race) | both | the name |
+  | PvP | PvP | the two fortresses and the war camps in their faction's colour (Round 66 ruling 8: the Throng's red `grug_map_war_camp.png`, the Accord's blue `grug_map_war_camp_accord.png`, the same symbol; the faction from the slot `pvp_<faction>_<band>`), with the camps under construction (Round 58, the scaffold icon; since Round 66 its cloth in the faction's colour, `grug_map_camp_construction_<faction>.png`, the faction of the camp's race), and the arena Breach Road at its centre (Round 85, the clash sites' `grug_map_clash.png`) | both | the name |
   | Zones | Zones | every zone's name and level band as text | — | — |
   | None | No markers | only the arrows | — | — |
 
@@ -733,14 +733,18 @@ drawn from the base image above. The gliding version (approved in playtest,
   0.47–1.23 per second.
 - **Claim mode** (0.50.2, [housing.md](housing.md) §2 "Placement
   preview"): while a player with a faction holds a Claim Stone, the minimap
-  shows where a claim may go. The cell texture then also holds the
-  faction's overlay tiles after the map's (`[combine` blends them by their
-  alpha): forbidden ground semi-transparent red (about 45 %). Every claim
+  shows where a claim may go, since 0.85.0 only in part: the red follows
+  the mask's column rule and the settlement margin, not the whole chunk
+  rule, and the square is centred on the arrow, not on the chunk the stone
+  would claim (a known defect; Round 86 replaces the preview). The cell
+  texture then also holds the faction's overlay tiles after the map's
+  (`[combine` blends them by their alpha): forbidden ground semi-transparent red (about 45 %). Every claim
   near the cell, drafts included, is one `[fill` in the same red; two
   claims that touch share a pixel line that looks darker (accepted). The
-  player's own 101 × 101 square is one HUD image above the map and below
-  the markers, centred on the arrow: a green fill (about 30 %) with a more
-  opaque frame of one HUD pixel, built as `[fill`s at the size it is drawn
+  player's own 80 × 80 square (a claim's map chunk) is one HUD image above
+  the map and below the markers, centred on the arrow: a green fill (about
+  30 %) with a more opaque frame of one HUD pixel, built as `[fill`s at the
+  size it is drawn
   (it changes only with the window; the map glides under it, so walking
   sends nothing for it). The texture is built again on a cell change, a
   mode change or a change of the claim set (grug_housing's claim-set
@@ -903,6 +907,10 @@ were in, and quest texts and level routes now name zones.
   "Current:" label show the same text.
 - **Expeditions** (Round 71): inside the box of a live Expedition the text is
   that Expedition's name.
+- **The arena** (Round 85): on any column of the arena Breach Road's
+  footprint the text is **"Breach Road"** (`grug_mapgen.breach`, at any
+  height); like a claim's name it changes only the text, and inside a hall
+  the territory line reads the hall's ([pvp.md](pvp.md) §6.4).
 - **Claims** (0.50.2 lane HOME, the user's rulings H1–H2): inside a Claim
   Stone's claim the text is **"Your Home"** for its owner and
   **"<owner>'s Home"** for everybody else (permission holders included;

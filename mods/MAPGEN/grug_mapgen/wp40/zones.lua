@@ -1063,6 +1063,11 @@ local function zones_factory(dependencies)
 					local hard = hard_by_id[row.source_id]
 					if not hard then fail("exclusion hard core missing: " .. tostring(row.id)) end
 					exclusion_floor_by_id[row.id] = hard.y_min
+				elseif row.recipe_id == "exclude_breach_v1" then
+					-- the arena (Round 85): from its datum, like an anchor's envelope
+					if not source.breach then fail("the arena's site is missing") end
+					exclusion_floor_by_id[row.id] =
+						integer(source.breach.y, "arena datum") - PROTECTION_DEPTH
 				end
 			end
 		end

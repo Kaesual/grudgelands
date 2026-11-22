@@ -13,8 +13,9 @@
 --   C.ROOM_FLOOR_Y                  -- {-50, -250, -450, -650, -950, -1050}
 --   local index = C.index(layout[, seams])  -- grug_mapgen.mining_camps
 --
--- `layout` is the placement text ("P1 <count>" and one "<anchor id> <x> <z>
--- <step>" line per placed anchor) or a table anchor id -> {x, z}. A camp of
+-- `layout` is the placement text ("P2 <count>", one "<anchor id> <x> <z>
+-- <step>" line per placed anchor and the arena's "breach" line, Round 85)
+-- or a table anchor id -> {x, z}. A camp of
 -- `camps()`:
 --   {id, kind ("mining_camp" | "war_camp"), faction, race, zone_id, tier,
 --    anchor = {x, z}, lift = {x, z}, levels = {1, ..., tier},
@@ -66,11 +67,14 @@ end
 local function positions_of(layout)
 	if type(layout) == "table" then return layout end
 	if type(layout) ~= "string" then fail("placement layout differs") end
-	local out, count, lines = {}, nil, 0
+	local out, count, lines, site = {}, nil, 0, 0
 	for line in layout:gmatch("[^\n]+") do
 		if not count then
-			count = tonumber(line:match("^P1 (%d+)$"))
+			count = tonumber(line:match("^P2 (%d+)$"))
 			if not count then fail("placement layout header differs") end
+		elseif line:match("^breach ") and lines == count then
+			-- the arena's site line (`breach_layout.lua`), last
+			site = site + 1
 		else
 			local id, x, z = line:match("^(anchor_%d+) (%-?%d+) (%-?%d+) %d+$")
 			if not id then fail("placement layout row differs") end
@@ -78,7 +82,7 @@ local function positions_of(layout)
 			lines = lines + 1
 		end
 	end
-	if not count or lines ~= count then fail("placement layout count differs") end
+	if not count or lines ~= count or site ~= 1 then fail("placement layout count differs") end
 	return out
 end
 local function position(positions, a)

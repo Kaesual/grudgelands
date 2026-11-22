@@ -2,8 +2,9 @@
 -- no engine calls, so tools/r29_w/portable_test.lua runs them as they ship.
 --
 -- A row is one waystone: {id, label, faction, race, start, pos}. `start` is
--- true for the six starts; the others are the six capitals and the two PvP
--- fortresses (Round 31). A faction's network is its own seven rows.
+-- true for the six starts; the others are the six capitals, the two PvP
+-- fortresses (Round 31) and the two halls of the arena Breach Road (Round
+-- 85). A faction's network is its own eight rows.
 -- Discovery is per character: the stored list plus the character's own
 -- start, which counts as discovered from creation.
 

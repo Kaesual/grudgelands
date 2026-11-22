@@ -22,7 +22,8 @@
 --      switch and the health colours are read once and follow their setters.
 --   H  housing: draft_scan and expiry_scan give the full scans' answers
 --      over random placements, activations, refuels, removals, clock jumps
---      and a reload; the overlap refusal equals the old all-claims test;
+--      and a reload; the one-claim-per-chunk refusal ("taken", Round 85)
+--      equals an all-claims test;
 --      stone.lua checks each claim once per 5 s cycle in slices of at most
 --      one eighth, copies the ordered claims only after a change, removes a
 --      vanished stone within one cycle and never one removed meanwhile.
@@ -449,32 +450,34 @@ do
 	end
 	eq(bad, 0, "H draft_scan and expiry_scan equal the full scans")
 	check(reported >= 5, "H the walk reported expiries (" .. reported .. ")")
-	-- The overlap refusal against the old all-claims test.
-	local world = {water_class_at = function() return "land" end,
-		-- Every column is enemy land: a placement without overlap is
-		-- refused by the zone scan's first column ("enemy").
-		zone_at = function() return {faction = "throng", level_min = 11, level_max = 30,
-			territory_rule = "throng_home"} end,
-		territory_at = function() return "accord_home" end,
-		feature_in = function() return nil end,
-		cube_clear = function() return true end}
-	local R = M.RADIUS
+	-- The chunk refusal against an all-claims test. Round 85: a claim is the
+	-- map chunk of its stone, so "overlap" became "taken" (one claim per chunk).
+	-- A mask stub lets every chunk pass; the cube is blocked, so a placement in
+	-- a free chunk ends at the edge or the cube.
+	local world = {mask = {ground = function() return true end,
+			quota_refusal = function() return nil end,
+			add_taken = function(taken) return taken end},
+		cube_clear = function() return false end}
+	local R = M.CHUNK
 	local mismatch, refused = 0, 0
 	for i = 1, 600 do
 		local base = live[random(#live)]
 		local c = base and base.center or {x = 0, z = 0}
-		local pos = {x = c.x + random(-3 * R, 3 * R), y = 0, z = c.z + random(-3 * R, 3 * R)}
+		local pos = {x = c.x + random(-R, R), y = 0, z = c.z + random(-R, R)}
 		local old = false
 		for _, other in ipairs(M.all_claims()) do
-			if math.abs(other.center.x - pos.x) <= 2 * R and math.abs(other.center.z - pos.z) <= 2 * R then
+			if M.chunk_of(other.center.x) == M.chunk_of(pos.x) and
+					M.chunk_of(other.center.z) == M.chunk_of(pos.z) then
 				old = true
 			end
 		end
 		local _, code = M.validate("newcomer" .. i, "accord", pos, world)
-		if (code == "overlap") ~= old or (not old and code ~= "enemy") then mismatch = mismatch + 1 end
+		if (code == "taken") ~= old or (not old and code ~= "edge" and code ~= "cube") then
+			mismatch = mismatch + 1
+		end
 		if old then refused = refused + 1 end
 	end
-	eq(mismatch, 0, "H the overlap refusal equals the all-claims test")
+	eq(mismatch, 0, "H the chunk refusal equals the all-claims test")
 	check(refused > 50 and refused < 550, "H the placements were near and far (" .. refused .. ")")
 end
 

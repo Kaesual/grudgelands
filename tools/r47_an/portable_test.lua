@@ -272,9 +272,11 @@ local clock = 1800000000
 local factory = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")
 local L = 26160
 -- A claim as an earlier version saved it: activated long ago, 50 lumps left.
+-- (Round 85: the v3 record, the only one the game loads; the fuel fields are
+-- v2's.)
 data["next_id"] = "2"
-data["claim:1"] = table.concat({"v2", "owner", 0, 10, 0, clock - 100000, clock - 90000,
-	clock + 50 * L, clock - 90000, ""}, "|")
+data["claim:1"] = table.concat({"v3", "owner", 0, 10, 0, clock - 100000, clock - 90000,
+	clock + 50 * L, clock - 90000, "", "", ""}, "|")
 data["player:owner"] = "v2|placed|1"
 local model = factory({storage = storage, now = function() return clock end})
 model.load()
@@ -312,8 +314,8 @@ grug_inventory = {
 local now = os.time()
 local api_store = {
 	next_id = "2",
-	["claim:1"] = table.concat({"v2", "owner", 0, 10, 0, now - 100000, now - 90000,
-		now + 10 * L + 100, now - 90000, ""}, "|"),
+	["claim:1"] = table.concat({"v3", "owner", 0, 10, 0, now - 100000, now - 90000,
+		now + 10 * L + 100, now - 90000, "", "", ""}, "|"),
 	["player:owner"] = "v2|placed|1",
 }
 core.get_mod_storage = function()

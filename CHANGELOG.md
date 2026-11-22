@@ -13,6 +13,102 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.85.0 — the arena Breach Road and claims by map chunk (2026-11-22)
+
+**Map reset** needed: the arena Breach Road joins world generation with the
+middle road running through it, and a housing claim becomes one square of
+the map's chunk grid, so an existing world's map is generated anew from its
+seed. Characters keep their level, gear, inventory, money, quests,
+professions, mounts and waypoints, as in every map reset; their position and
+home claim go with the old map, and the containers in a housing claim come
+back through the Claim Stone's Belongings tab. Every claim ends with this
+reset: none is moved or converted. No migration step of its own.
+
+- **Breach Road,** an arena on the middle road near the centre of the map,
+  in the Battlegrounds (The Broken Causeway and The Shattered Line). World
+  generation picks its site on every world, within 200 nodes of the centre,
+  on dry land that needs little levelling close to the road's natural
+  course, and blends the levelled ground into the land around it. The
+  middle road between Highcourt and Gor Drazhak now runs straight through
+  the arena, so its course changes and roads that join it may move with it.
+  - **What you find there:** the road at the bottom, ruined galleries three
+    nodes up, and on each side a hall and a lookout six nodes up, joined by
+    stairs, among broken breastworks, piers and arches. Two cold hearths
+    smoke. The ground and the trodden earth take the colours of the land
+    the arena stands on.
+  - **A hall for each faction:** The Accord's east of the road, The
+    Throng's west. Inside your own hall you stand on your faction's
+    peaceful ground: your PvP flag clears once 60 s have passed since your
+    last PvP fight and since you last pressed Flag me for PvP; until then
+    you stay flagged and enemies can still attack you there. An enemy in
+    your hall stands in enemy territory and is flagged. There are no
+    guards: a hall is a muster point, not a safe room. The doorways, the
+    roofs, the courts and the field are contested like the land around.
+  - **Two waystones:** **Breachward Hall** (The Accord) and **Breakfang
+    Hall** (The Throng), one in each hall, discovered by visiting like every
+    other and part of your faction's network, the Expeditions tab included.
+  - **Protected:** nobody can dig or build on the arena ("Arena –
+    protected"), and fire, explosions, liquids and growth stay out of it.
+    The blended ground around it is ordinary land.
+  - **No spawns:** no creature but small critters spawns on the arena or
+    the ground round it, and no camp, zone leader, quest place or rare
+    creature's path lies there. Creatures may still walk in.
+  - **On the map:** "Breach Road" on the location line under the minimap,
+    and a crossed-swords marker in the map's PvP layer.
+- **A claim is one map chunk:** a Claim Stone claims the 80 × 80 square of
+  the map's chunk grid it stands in, from y −100 upward, instead of a
+  101 × 101 square round the stone. One claim per square; neighbouring
+  claims touch edge to edge. The stone must stand at least one node inside
+  its square's edge.
+  - **Where:** in your faction's seven level 11–30 zones as before, and now
+    also in its three capital zones, one whole square away from a capital
+    city. The whole square must be your faction's ground, and no road may
+    run through it; it may not come within 16 nodes of a town, village,
+    camp, point of interest or protected landmark, of a zone leader's spot,
+    a quest place or a rare creature's path, and no camp's grounds may reach
+    into it.
+  - **Room for quests:** for every kind of creature a quest sends you after,
+    at most half of its ground may lie under claims; a square that would
+    take more is refused, naming the creatures' area.
+  - **Every refusal says why** in one line, for example "A road runs
+    through this claim square (80 x 80)."
+- **Old claims end with the reset:** nothing moves into the new squares.
+  The containers of an old claim (its 101 × 101 square from y −100 up) wait
+  packed in the Claim Stone's Belongings tab once you place and activate a
+  stone again; a placed stone does not come back, and the Housing Steward
+  gives you a new one; a carried stone stays. The travel home falls back to
+  your innkeeper.
+- **Known issue: the Claim Stone's minimap preview is still the old one.**
+  With the stone in hand the minimap shows in red only the ground the stone
+  can never reach column by column (other zones, the coast, the sea, towns
+  and the 16 nodes round settlements) and every claim's square; roads,
+  camps, leaders' spots, quest places, rare creatures' paths, the ring round
+  a capital and the quota do not show. The green square is centred on you,
+  not on the map chunk the stone would claim. Placement itself decides
+  correctly and says why it refuses. A later version replaces the preview.
+- **Server admins:**
+  - Stop the server, back the world up, run
+    `python3 tools/migrate.py --world <world directory> --map-reset` from
+    the new version's checkout (it packs the claims' containers, the old
+    101 × 101 claims too), empty the map, raise `grug_reset_world` and start
+    it ([updating a hosted world](README.md#your-own-world-or-server),
+    [upgrade contract](docs/technical/upgrade-contract.md#35-the-pre-reset-pass)).
+  - The first start on the new map takes about 25 s longer: the game builds
+    the claim map (which squares can hold a claim) and writes it with
+    fingerprints per square into the world folder as `grug_claim_mask.txt`.
+    Later starts add a fraction of a second; the claim map is built again
+    (about 20 s) at the first start after an update that changes the code of
+    world generation or of the claim map.
+  - If the claim map cannot be built, the log shows a `[GRUG-SEVERE]` line
+    and every Claim Stone placement is refused. If the middle road finds no
+    route through the arena, the log shows a `[GRUG-SEVERE]` line too; the
+    world still loads.
+- Internal: the claim record is version 3 (twelve fields, the owner's kind
+  and the home's name stored empty for a later round), and the pre-reset
+  pass reads version 2 and 3 records and counts those it skips; the arena's
+  layout is published as `grug_mapgen.breach`, the claim mask as
+  `grug_housing.mask` ([claim mask format](docs/technical/claim-mask-format.md)).
+
 ## 0.84.1 — a short tap picks up drops with food in hand (2026-11-21)
 
 Compatible: no map reset, no new world, nothing for the host to do.

@@ -1079,8 +1079,9 @@ end
 -- The Claim Stone rules for the overlays (claim_overlay): grug_housing's
 -- column rule, its world queries (placement_world, what validate asks) and
 -- its settlement distance, never a copy; with the text that enters the cache
--- key: the rule's own source (registry.lua), its world queries' source
--- (api.lua: territory_at and the feature_in composition) and the digest of
+-- key: the rule's own source (claim_mask.lua since Round 85; registry.lua),
+-- its world queries' source (api.lua: territory_at and the feature_in
+-- composition) and the digest of
 -- the whole mapgen tree grug_mapgen publishes, which holds the settlement
 -- cores' margins and the landmark columns (the fitted cores and footprints
 -- are in the world identity already). Nil (no overlays) when grug_housing or a
@@ -1094,14 +1095,15 @@ local function claim_rules()
 	local world_key = type(wp40) == "table" and wp40.world_key
 	local registry = read_file(core.get_modpath("grug_housing") .. "/registry.lua")
 	local api = read_file(core.get_modpath("grug_housing") .. "/api.lua")
-	if not registry or not api then return nil end
+	local rule = read_file(core.get_modpath("grug_housing") .. "/claim_mask.lua")
+	if not registry or not api or not rule then return nil end
 	local factions = {}
 	for _, faction in ipairs(grug_core.faction_ids) do factions[#factions + 1] = faction end
 	return {factions = factions, problem = housing.column_problem,
 		territory_at = world.territory_at, feature_in = world.feature_in,
 		margin = housing.SETTLEMENT_MARGIN,
 		key = table.concat(factions, ",") .. "\n" .. housing.SETTLEMENT_MARGIN .. "\n" ..
-			core.sha256(registry) .. "\n" .. core.sha256(api) .. "\n" ..
+			core.sha256(registry) .. "\n" .. core.sha256(api) .. "\n" .. core.sha256(rule) .. "\n" ..
 			tostring(type(world_key) == "table" and world_key.source)}
 end
 

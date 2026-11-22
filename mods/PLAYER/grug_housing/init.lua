@@ -4,6 +4,8 @@
 -- Each file has one owner lane so the lanes can work in parallel:
 --   registry.lua     the pure claim model (Lane A)
 --   api.lua          claim core and the interface contract (Lane A)
+--   mask.lua         the claim mask of this world and its world-folder files
+--                    (claim_mask.lua, claim_mask_store.lua; Round 85)
 --   stone.lua        the stone item and nodes, draft and fuel expiry (Lane A)
 --   soulbound.lua    carried-inventory-only items (Lane A; Round 49)
 --   packed.lua       packed containers from a map reset (Round 50)
@@ -19,6 +21,7 @@ grug_housing = {}
 
 local path = core.get_modpath("grug_housing")
 dofile(path .. "/api.lua")
+dofile(path .. "/mask.lua")
 dofile(path .. "/stone.lua")
 dofile(path .. "/soulbound.lua")
 dofile(path .. "/packed.lua")

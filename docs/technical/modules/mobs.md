@@ -363,7 +363,10 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
     `spawn_regions_cache.lua` (pure, plain Lua 5.1) keeps only the compact
     form of each map (`SR.map`; `SR.full_map` builds the full one for tools)
     and `SR.start_maps` reads every current zone from
-    `<world>/grug_region_maps.txt` and builds the rest. Its key is the
+    `<world>/grug_region_maps.txt` and builds the rest; the compact map's
+    `cell_frame` and `cell_region(i, j)` (Round 85) read its cell grid, and
+    `SR.each_cell(zone, fn)` walks every land cell with its region (the
+    claim mask's camps and quota, `grug_housing/mask.lua`). Its key is the
     world-layout key (`grug_mapgen.wp40.world_key`) plus a digest of the
     builder's files: **a new file the build reads must join that key**, or
     `tools/r30_p3` (input coverage) fails. API: `region_at`, `level_at`,

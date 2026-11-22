@@ -221,11 +221,15 @@ local query_env
 local function queries()
 	if not query_env then
 		local wp40 = grug_mapgen.wp40
+		-- Round 85 (ruling 13): no camp, leader or quest place on the arena
+		-- Breach Road's footprint and fringe. Its site is the world's (the
+		-- mapgen key covers it).
 		query_env = CORE.queries({
 			zones = grug_zones,
 			column_values_at = wp40.planner_source.column_values_at,
 			road_polylines = wp40.road_polylines,
 			source = world_source(),
+			reserved = CORE.reserved_of(grug_mapgen.breach),
 		})
 	end
 	return query_env
@@ -305,6 +309,23 @@ function SR.map(zone_id)
 		return nil
 	end
 	return build_map(zone_id, rec)
+end
+
+-- Round 85 (lane MASK): every land cell of the zone's region map with its
+-- region, in row order (j, then i): fn(i, j, region) once per cell. The cell
+-- covers x CELL * i .. CELL * i + CELL - 1, the same in z. Returns false for
+-- a zone without a map (no recipe, or its build failed), else true.
+function SR.each_cell(zone_id, fn)
+	local map = SR.map(zone_id)
+	if not map then return false end
+	local frame = map.cell_frame
+	for j = frame.j0, frame.j0 + frame.h - 1 do
+		for i = frame.i0, frame.i0 + frame.w - 1 do
+			local region = map.cell_region(i, j)
+			if region then fn(i, j, region) end
+		end
+	end
+	return true
 end
 
 -- The region at a world column and its zone (nil, zone without a region).

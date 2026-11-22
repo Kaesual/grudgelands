@@ -495,7 +495,9 @@ end
 -- (grug_core.world_feature_at, the half width + 1 corridor of ruling 1 and
 -- the village, fortress, war-camp and mining-camp boxes; a camp under
 -- construction answers "war_camp"), a start town's footprint and a
--- capital city (grug_zones.hard_protection_kind_at "town"). No margin
+-- capital city (grug_zones.hard_protection_kind_at "town"), and (Round 85
+-- ruling 13) the arena Breach Road's footprint and fringe, every column of
+-- the layout's `fringe` box at any height. No margin
 -- beyond them: the idle push of ruling 2 keeps aggressive mobs off roads and
 -- towns, a margin of aggro range would empty land trails run through.
 -- Bandit and Mirefolk camps and other POIs are not refused (their own mobs
@@ -511,6 +513,15 @@ end
 --
 local capital_zones = {} -- zone id -> bool, from the zone authority
 local last_x, last_y, last_z, last_protected
+
+-- The arena's fringe columns (grug_mapgen's layout of this world; none
+-- without it): the hull's bounds grown by the blend's reach.
+local breach = rawget(_G, "grug_mapgen") and grug_mapgen.breach
+local fringe = breach and breach.fringe
+local fringe_min_x = fringe and fringe.min.x or math.huge
+local fringe_max_x = fringe and fringe.max.x or -math.huge
+local fringe_min_z = fringe and fringe.min.z or math.huge
+local fringe_max_z = fringe and fringe.max.z or -math.huge
 
 -- A capital zone is one whose zone session publishes a `capital` anchor.
 local function capital_zone(zone_id)
@@ -530,7 +541,8 @@ function grug_mobs.protected_spawn_surface(pos)
 	if x == last_x and y == last_y and z == last_z then
 		return last_protected
 	end
-	local protected = grug_mobs.in_start_footprint(x, z, y)
+	local protected = grug_mobs.in_start_footprint(x, z, y) or
+		(x >= fringe_min_x and x <= fringe_max_x and z >= fringe_min_z and z <= fringe_max_z)
 	if not protected then
 		local kind = grug_core.world_feature_at(pos)
 		protected = kind == "road" or kind == "bridge" or kind == "village" or

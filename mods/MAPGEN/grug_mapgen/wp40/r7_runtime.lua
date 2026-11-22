@@ -182,6 +182,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- like the trees.
 	local kit_templates = dofile(wp40_directory .. "/kit_templates.lua")(treegen,
 		tree_templates)
+	-- The arena "Breach Road"'s blocks (Round 85 lane BUILD): the model its
+	-- writer stamps last in the successor settle, and the box it writes in,
+	-- a fitted box of the world envelope (`preparation_source.lua`, so
+	-- `air_chunks.lua` never skips a chunk the halls reach).
+	local breach_module = dofile(wp40_directory .. "/breach_model.lua")
+	local breach_model = breach_module.new(wp40_directory)
+	local breach_boxes = {source.breach and breach_model.box(source.breach) or nil}
 	local fetch_mapgen_object = core_api.get_mapgen_object
 
 	local r6_module = r6_factory({r5_factory = r5_factory,
@@ -398,8 +405,17 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					dofile(wp40_directory .. "/seabed.lua")),
 				dofile(wp40_directory .. "/road_writer.lua")(core_api, source,
 					waypost_rows),
-				dofile(wp40_directory .. "/arena_writer.lua")(core_api, source,
-					dofile(wp40_directory .. "/arena_layout.lua")),
+				(function()
+					-- the dragon arenas, then the arena "Breach Road" (Round 85)
+					local dragons = dofile(wp40_directory .. "/arena_writer.lua")(core_api,
+						source, dofile(wp40_directory .. "/arena_layout.lua"))
+					local breach = dofile(wp40_directory .. "/breach_writer.lua")(core_api,
+						source, breach_module, breach_model)
+					return {dress = function(context)
+						dragons.dress(context)
+						breach.dress(context)
+					end}
+				end)(),
 				swamp_writer.config(core_api),
 				wreck_writer.config(core_api, wreck_shapes, (function()
 					local plants = {}
@@ -541,7 +557,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					full_seed .. ":" .. manifest.values.source_projection_sha256 .. ":" ..
 						dofile(wp40_directory .. "/preparation_identity.lua")(
 							wp40_directory, core_api.sha256) .. ":" .. layouts_digest(),
-					core_api.sha256),
+					core_api.sha256, breach_boxes),
 				mapgen_context = mapgen_context}
 		end
 		-- The same surface/content envelope as the main environment's
@@ -549,7 +565,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		-- (air_chunks.lua). Its identity string is not used here.
 		local writer_bounds = dofile(wp40_directory .. "/preparation_source.lua")(
 			r6_identity.planner_source, r6_identity.template_records,
-			settlements, public_zones_session, anchor_roster, "emerge", sha256_hex)
+			settlements, public_zones_session, anchor_roster, "emerge", sha256_hex,
+			breach_boxes)
 		return {schema = "grug_wp40_r7_runtime_v1", full_seed = full_seed,
 			manifest = manifest, session = session, writer = writer,
 			template_seconds = r6_identity.template_seconds,

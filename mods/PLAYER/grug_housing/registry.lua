@@ -1,11 +1,16 @@
 -- The Claim Stone model (Round 25 Lane A, docs/planning/round25-housing-plan.md
 -- rulings 1-12 and 30-32; Round 26 rulings 8-10): claims and per-player
--- records, their persistence, the claim grid, drafts and activation, fuel as a
--- "paid until" time, permissions, the pick-up lock and placement validation.
+-- records, their persistence, the chunk index, drafts and activation, fuel as
+-- a "paid until" time, permissions, the pick-up lock and placement validation.
 -- Pure: every engine or world access is injected, so the same bytes run in
 -- the engine (api.lua) and in tools/r25_claim_core/fixture.lua.
 --
--- A placed stone starts as a DRAFT (activated_at 0): it reserves its square
+-- A claim is one map chunk (Round 85 ruling 6, plan §3.3): the 80 x 80
+-- columns of the chunk that holds its stone (`center`), from MIN_Y upward.
+-- One claim per chunk; placement asks the claim mask and its quota
+-- (claim_mask.lua, through validate's `world.mask`).
+--
+-- A placed stone starts as a DRAFT (activated_at 0): it reserves its chunk
 -- against other claims and keeps its arrival cube, but protects nothing and
 -- is not active; it disappears DRAFT_SECONDS after placing unless the owner
 -- activates it. Activation pays ACTIVATION_LUMPS lumps at once and starts the
@@ -19,10 +24,16 @@
 -- Storage keys, one line each (player names are [A-Za-z0-9_-], so "|", ","
 -- and "=" never occur inside a field):
 --   next_id             the next claim id
---   claim:<id>          v2|owner|x|y|z|placed_at|activated_at|paid_until|
---                       expired_for|perms  (activated_at 0: a draft)
+--   claim:<id>          v3|owner|x|y|z|placed_at|activated_at|paid_until|
+--                       expired_for|perms|kind|name  (activated_at 0: a
+--                       draft; x, y, z the stone)
 --                       perms = name=level,name=level
+--                       kind, name: empty in Round 85 (the owner's kind and
+--                       the home's name of a later round; a name never holds
+--                       "|" or a newline)
 --   player:<name>       v2|state|claim_id
+-- Only v3 claim records load (the 0.85.0 map reset clears the v2 ones; no
+-- conversion): load() returns the keys it did not load.
 return function(api)
 	assert(type(api) == "table" and type(api.storage) == "table" and
 		type(api.now) == "function", "grug_housing registry: api missing")
@@ -30,7 +41,6 @@ return function(api)
 	local floor, ceil, max, min = math.floor, math.ceil, math.max, math.min
 
 	local M = {}
-	M.RADIUS = 50            -- ruling 1: 101 x 101 around the stone
 	M.MIN_Y = -100           -- rulings 1-2: the claim and the stone from y -100
 	M.LUMP_SECONDS = 26160   -- ruling 10: one lump or charcoal, 7 h 16 min
 	M.FUEL_MAX = 99          -- ruling 10: one fuel slot of 99 items
@@ -42,25 +52,20 @@ return function(api)
 	M.ACTIVATION_LUMPS = 5   -- R26 ruling 9: activation pays 5 lumps at once
 	M.PICKUP_LOCK_SECONDS = 43200 -- R26 ruling 10: 12 h after activation
 	M.ISSUE_LEVEL = 20       -- ruling 7
-	M.ZONE_LEVEL_MIN = 11    -- ruling 3
-	M.ZONE_LEVEL_MAX = 30
-	-- Interior lattice spacing of the zone check (see validate below). At 1
-	-- every column of the square is checked (about 10 ms per placement in the
-	-- engine-free fixture), so no forbidden column can be missed.
-	M.SAMPLE_STEP = 1
-	-- Ruling 27: a claim keeps this distance (in x and in z) from every
-	-- POI, village and camp core and every town, capital or landmark
-	-- footprint; the blend envelopes around them are no barrier.
-	M.SETTLEMENT_MARGIN = 16
-	M.CELL = 128             -- claim grid cell (nodes)
-	local RADIUS, CELL = M.RADIUS, M.CELL
+	-- Round 85 ruling 6: the map chunk (chunksize 5), as claim_mask.lua's
+	-- chunk_of and chunk_bounds (tools/r85_core pins them equal): chunk
+	-- column cx covers x CHUNK * cx + CHUNK_ORIGIN .. + CHUNK - 1, the same
+	-- in z.
+	M.CHUNK = 80
+	M.CHUNK_ORIGIN = -32
+	local CHUNK, ORIGIN = M.CHUNK, M.CHUNK_ORIGIN
 
 	local STATES = {never = true, carried = true, placed = true,
 		destroyed = true, removed = true, needs_stone = true}
 	local LEVELS = {everything = true, interact = true}
 
 	local claims = {}        -- id -> claim
-	local grid = {}          -- grid[cell_z][cell_x] -> array of claims
+	local by_chunk = {}      -- by_chunk[cz][cx] -> the claim of that chunk
 	-- Round 81 (audit P4-02): the periodic scans touch only what can be due.
 	local drafts = {}        -- id -> claim, every draft (activated_at 0)
 	-- Never later than the lowest paid_until of a claim whose expiry is not
@@ -74,6 +79,12 @@ return function(api)
 	-- Changes whenever a claim comes or goes, also on load and map reset
 	-- (fix 0.50.2: the minimap's claim preview rebuilds its texture on it).
 	local claim_set_version = 0
+	-- The quota's taken columns (Round 85 ruling 16): kind id -> columns
+	-- over every claim record, drafts and expired ones included, for the
+	-- mask `taken_for`; nil until validate or quota_taken asks for that
+	-- mask, then kept current by create and remove. Nothing is stored: it
+	-- follows from the records.
+	local taken, taken_for = nil, nil
 
 	-- Serialization -----------------------------------------------------------
 
@@ -99,19 +110,19 @@ return function(api)
 			perms[index] = names[index] .. "=" .. claim.permissions[names[index]]
 		end
 		local c = claim.center
-		return table.concat({"v2", claim.owner, c.x, c.y, c.z, claim.placed_at,
+		return table.concat({"v3", claim.owner, c.x, c.y, c.z, claim.placed_at,
 			claim.activated_at, claim.paid_until, claim.expired_for,
-			table.concat(perms, ",")}, "|")
+			table.concat(perms, ","), claim.kind, claim.name}, "|")
 	end
 
 	local function decode_claim(id, text)
 		local f = split(text, "|")
-		if f[1] ~= "v2" or #f ~= 10 then return nil end
+		if f[1] ~= "v3" or #f ~= 12 then return nil end
 		local claim = {id = id, owner = f[2],
 			center = {x = tonumber(f[3]), y = tonumber(f[4]), z = tonumber(f[5])},
 			placed_at = tonumber(f[6]), activated_at = tonumber(f[7]),
 			paid_until = tonumber(f[8]), expired_for = tonumber(f[9]),
-			permissions = {}}
+			permissions = {}, kind = f[11], name = f[12]}
 		if claim.owner == "" or not claim.center.x or not claim.center.y or
 				not claim.center.z or not claim.placed_at or
 				not claim.activated_at or not claim.paid_until or
@@ -162,47 +173,57 @@ return function(api)
 	-- this file, whose writers call note_expiry themselves.
 	M.note_expiry = note_expiry
 
-	-- Claim grid --------------------------------------------------------------
+	-- The chunk index -----------------------------------------------------------
 
-	local function cell(value) return floor(value / CELL) end
+	-- The chunk column of a node coordinate.
+	local function chunk_of(v) return floor((v - ORIGIN) / CHUNK) end
+	M.chunk_of = chunk_of
 
-	local function grid_add(claim)
-		local c = claim.center
-		for gz = cell(c.z - RADIUS), cell(c.z + RADIUS) do
-			local row = grid[gz]
-			if not row then row = {}; grid[gz] = row end
-			for gx = cell(c.x - RADIUS), cell(c.x + RADIUS) do
-				local list = row[gx]
-				if not list then list = {}; row[gx] = list end
-				list[#list + 1] = claim
-			end
-		end
+	-- The claim's chunk: cx, cz.
+	local function claim_chunk(claim)
+		return chunk_of(claim.center.x), chunk_of(claim.center.z)
+	end
+	M.claim_chunk = claim_chunk
+
+	-- The inclusive x/z node bounds of the claim's chunk: min_x, min_z,
+	-- max_x, max_z (the y range is MIN_Y upward).
+	function M.claim_bounds(claim)
+		local cx, cz = claim_chunk(claim)
+		local x0, z0 = CHUNK * cx + ORIGIN, CHUNK * cz + ORIGIN
+		return x0, z0, x0 + CHUNK - 1, z0 + CHUNK - 1
 	end
 
-	local function grid_remove(claim)
-		local c = claim.center
-		for gz = cell(c.z - RADIUS), cell(c.z + RADIUS) do
-			local row = grid[gz]
-			for gx = cell(c.x - RADIUS), cell(c.x + RADIUS) do
-				local list = row and row[gx]
-				if list then
-					for index = #list, 1, -1 do
-						if list[index] == claim then table.remove(list, index) end
-					end
-					if #list == 0 then row[gx] = nil end
-				end
-			end
-			if row and next(row) == nil then grid[gz] = nil end
+	-- One claim per chunk (validate refuses a second); a world that holds two
+	-- records in one chunk anyway indexes the lower id, and the other is
+	-- reached only through its owner and its id.
+	local function index_add(claim)
+		local cx, cz = claim_chunk(claim)
+		local row = by_chunk[cz]
+		if not row then row = {}; by_chunk[cz] = row end
+		local held = row[cx]
+		if not held or held.id > claim.id then row[cx] = claim end
+	end
+
+	local function index_remove(claim)
+		local cx, cz = claim_chunk(claim)
+		local row = by_chunk[cz]
+		if row and row[cx] == claim then
+			row[cx] = nil
+			if next(row) == nil then by_chunk[cz] = nil end
 		end
 	end
 
 	-- Loading -----------------------------------------------------------------
 
+	-- Returns the claim keys whose record it did not load (another version or
+	-- undecodable), sorted; the caller reports them (api.lua).
 	function M.load()
-		claims, grid, players, claim_count = {}, {}, {}, 0
+		claims, by_chunk, players, claim_count = {}, {}, {}, 0
 		drafts, next_expiry = {}, nil
+		taken, taken_for = nil, nil
 		claim_set_version = claim_set_version + 1
 		next_id = tonumber(storage.get_string("next_id")) or 1
+		local skipped = {}
 		local keys = storage.keys()
 		table.sort(keys)
 		for index = 1, #keys do
@@ -214,15 +235,18 @@ return function(api)
 				if claim then
 					claims[id] = claim
 					claim_count = claim_count + 1
-					grid_add(claim)
+					index_add(claim)
 					if claim.activated_at == 0 then drafts[id] = claim end
 					note_expiry(claim)
 					if id >= next_id then next_id = id + 1 end
+				else
+					skipped[#skipped + 1] = key
 				end
 			elseif name then
 				players[name] = decode_player(storage.get_string(key))
 			end
 		end
+		return skipped
 	end
 
 	-- The platform's map reset (grug_core/map_reset.lua, the upgrade
@@ -236,8 +260,9 @@ return function(api)
 		for index = 1, #keys do
 			if keys[index]:match("^claim:") then storage.set_string(keys[index], "") end
 		end
-		claims, grid, claim_count = {}, {}, 0
+		claims, by_chunk, claim_count = {}, {}, 0
 		drafts, next_expiry = {}, nil
+		taken, taken_for = nil, nil
 		claim_set_version = claim_set_version + 1
 		storage.set_string("next_id", tostring(next_id))
 		for name, rec in pairs(players) do
@@ -255,19 +280,14 @@ return function(api)
 	function M.claim_at(pos)
 		local y = round(pos.y)
 		if y < M.MIN_Y then return nil end
-		local x, z = round(pos.x), round(pos.z)
-		local row = grid[floor(z / CELL)]
-		if not row then return nil end
-		local list = row[floor(x / CELL)]
-		if not list then return nil end
-		for index = 1, #list do
-			local c = list[index].center
-			if x >= c.x - RADIUS and x <= c.x + RADIUS and
-					z >= c.z - RADIUS and z <= c.z + RADIUS then
-				return list[index]
-			end
-		end
-		return nil
+		local row = by_chunk[chunk_of(round(pos.z))]
+		return row and row[chunk_of(round(pos.x))] or nil
+	end
+
+	-- The claim of chunk (cx, cz), or nil.
+	function M.chunk_claim(cx, cz)
+		local row = by_chunk[cz]
+		return row and row[cx] or nil
 	end
 
 	function M.claim_by_id(id) return claims[id] end
@@ -278,25 +298,16 @@ return function(api)
 	-- load and map reset); equal numbers mean the same claim set.
 	function M.claim_set_version() return claim_set_version end
 
-	-- Every claim whose square meets the inclusive x/z rectangle, ordered
-	-- by id: a lookup in the claim grid's cells under the rectangle.
+	-- Every claim whose chunk meets the inclusive x/z rectangle, ordered by
+	-- id: a lookup of the chunks under the rectangle.
 	function M.claims_in(min_x, min_z, max_x, max_z)
-		local found, list = {}, {}
-		for gz = cell(min_z), cell(max_z) do
-			local row = grid[gz]
+		local list = {}
+		local cx0, cx1 = chunk_of(min_x), chunk_of(max_x)
+		for cz = chunk_of(min_z), chunk_of(max_z) do
+			local row = by_chunk[cz]
 			if row then
-				for gx = cell(min_x), cell(max_x) do
-					local cell_list = row[gx]
-					for index = 1, cell_list and #cell_list or 0 do
-						local claim = cell_list[index]
-						local c = claim.center
-						if not found[claim] and c.x - RADIUS <= max_x and
-								c.x + RADIUS >= min_x and c.z - RADIUS <= max_z and
-								c.z + RADIUS >= min_z then
-							found[claim] = true
-							list[#list + 1] = claim
-						end
-					end
+				for cx = cx0, cx1 do
+					if row[cx] then list[#list + 1] = row[cx] end
 				end
 			end
 		end
@@ -465,164 +476,81 @@ return function(api)
 		return true
 	end
 
-	-- Placement validation (rulings 2, 3, 5, 6, 22, 23, 27). `world`:
-	--   water_class_at(x, z) "land" or "planned_water" (rivers, lakes, bay
-	--                        water: allowed, ruling 23); "coastal_shelf",
-	--                        "deep_ocean" and "immutable_dragon_channel"
-	--                        refuse (the shelf has an owning zone, so the zone
-	--                        check alone would not catch it)
-	--   zone_at(x, z)        the zone record owning the column, or nil
-	--                        (fields faction, territory_rule, level_min,
-	--                        level_max, civic_no_hostiles)
-	--   territory_at(x, z)   the territory rule of the column at the world top
-	--                        ("hard_protected" wherever a town or landmark
-	--                        column is, whatever its floor)
-	--   feature_in(min_x, min_z, max_x, max_z, margin)  the kind ("site",
-	--                        "town", "landmark") of a settlement core (POI,
-	--                        village, camp) or a hard footprint (start town,
-	--                        capital city, landmark) that comes within
-	--                        `margin` nodes (in x and in z) of the inclusive
-	--                        rectangle, or nil; exact or conservative
+	-- Placement validation (rulings 2, 3, 5, 6; Round 85 rulings 6, 14-16).
+	-- `world`:
+	--   mask                 the claim mask of the world (grug_housing.mask,
+	--                        claim_mask.lua), or nil when its build failed:
+	--                        then every placement is refused
 	--   cube_clear(pos)      true when the 3 x 3 x 3 cube above pos is air
-	--   fixed                true when the four column queries above never
-	--                        change their answer (the engine's world: the
-	--                        zone layout is fixed per world); the zone scan's
-	--                        result is then kept per faction and column
+	--   kind_name(id)        (optional) a quota kind's name in the player's
+	--                        words (its spawn area's name), for the message
 	--
-	-- Zone check: every column of the square's border (400 columns) first,
-	-- then an interior lattice of spacing SAMPLE_STEP (1: every column, so the
-	-- check is exact). For a larger step the bound is: a forbidden region that
-	-- holds a column of the square and a column outside it contains a border
-	-- column (a step between columns changes x and z by at most one each, so
-	-- no path leaves the square without passing its outermost ring), so it is
-	-- always found. Only a forbidden enclave lying wholly inside the square
-	-- can be missed, and only if it holds no lattice column: every
-	-- SAMPLE_STEP x SAMPLE_STEP block of columns inside the square holds one,
-	-- so an enclave is missed only if it is narrower than SAMPLE_STEP in x or
-	-- in z. Settlements are no sampling matter (ruling 27): feature_in tests
-	-- the square widened by SETTLEMENT_MARGIN against the settlement cores
-	-- and the hard footprints themselves.
-	local function zone_problem(faction, home, water, zone, territory)
-		if water == "coastal_shelf" then return "shelf" end
-		if water ~= "land" and water ~= "planned_water" then return "sea" end
-		if not zone then return "sea" end
-		if zone.faction and zone.faction ~= faction then return "enemy" end
-		if zone.level_min < M.ZONE_LEVEL_MIN then return "low_level" end
-		if zone.level_max > M.ZONE_LEVEL_MAX then return "high_level" end
-		-- Ruling 22: the capital zones (L20-30, civic) are not eligible; the
-		-- seven L11-30 zones per faction are.
-		if zone.civic_no_hostiles then return "capital_zone" end
-		if zone.territory_rule ~= home then return "not_home" end
-		if territory == "hard_protected" then return "town" end
-		-- protected bay water (Round 51 T2) is immutable but no open sea
-		if territory == "immutable" then
-			return water == "planned_water" and "deep_water" or "sea"
-		end
-		if territory ~= home then return "not_home" end
-		return nil
-	end
-
+	-- The mask answers whether the stone's chunk is claim ground for the
+	-- faction, as a whole (its zones, water, settlements, roads, camps,
+	-- leaders, quest places, rare routes and the capital rings), with the
+	-- rule that refused; the quota keeps half of every quest-named kind's
+	-- ground free (`taken` over every claim record, drafts and expired ones
+	-- included).
 	local MESSAGES = {
 		too_deep = "A Claim Stone cannot stand below y = " .. M.MIN_Y .. ".",
 		no_faction = "Choose a faction first.",
 		already_placed = "Your Claim Stone is already placed.",
-		overlap = "Too close to another home: claims may not overlap.",
-		town = "Too close to a town: the claim (101 x 101) must stay " ..
-			M.SETTLEMENT_MARGIN .. " nodes away from it.",
-		landmark = "Too close to a protected landmark: the claim must stay " ..
-			M.SETTLEMENT_MARGIN .. " nodes away from it.",
-		site = "Too close to a village, camp or point of interest: the claim " ..
-			"must stay " .. M.SETTLEMENT_MARGIN .. " nodes away from its buildings.",
-		sea = "The claim (101 x 101) may not reach over the open sea.",
-		deep_water = "The claim (101 x 101) may not reach over protected deep " ..
-			"water (24 nodes or more off the coast).",
-		shelf = "The claim (101 x 101) may not reach over the coastal shelf.",
-		enemy = "The claim (101 x 101) may not reach into enemy territory.",
-		low_level = "The claim (101 x 101) may not reach into a level 1-10 zone.",
-		high_level = "The claim (101 x 101) may not reach into a level 31+ zone.",
-		capital_zone = "The claim (101 x 101) may not reach into a capital's zone.",
-		not_home = "The whole claim (101 x 101) must lie in your faction's home land.",
+		no_mask = "Claim Stones cannot be placed right now: this world's claim " ..
+			"map failed to build. Tell an admin.",
+		taken = "This claim square (80 x 80) already holds another Claim Stone.",
+		quota = "This claim square (80 x 80) would put more than half of %s " ..
+			"under claims; half of it stays free for the creatures quests send you after.",
+		edge = "Too close to the edge of the claim square: place the stone at " ..
+			"least one node further inside.",
 		cube = "The 3 x 3 x 3 space above the stone must be empty.",
+		-- the mask's reasons (claim_mask.lua), in its order
+		shelf = "This claim square (80 x 80) reaches over the coastal shelf.",
+		sea = "This claim square (80 x 80) reaches over the open sea.",
+		enemy = "This claim square (80 x 80) reaches into enemy territory.",
+		low_level = "This claim square (80 x 80) reaches into a level 1-10 zone.",
+		high_level = "This claim square (80 x 80) reaches into a level 31+ zone.",
+		not_home = "The whole claim square (80 x 80) must lie in your faction's " ..
+			"home land.",
+		town = "This claim square (80 x 80) comes within 16 nodes of a town or a " ..
+			"protected landmark.",
+		deep_water = "This claim square (80 x 80) reaches over protected deep " ..
+			"water (24 nodes or more off the coast).",
+		site = "This claim square (80 x 80) comes within 16 nodes of a village, " ..
+			"camp or point of interest.",
+		landmark = "This claim square (80 x 80) comes within 16 nodes of a " ..
+			"protected landmark.",
+		road = "A road runs through this claim square (80 x 80).",
+		camp = "A camp's grounds reach into this claim square (80 x 80).",
+		leader = "This claim square (80 x 80) comes within 16 nodes of where a " ..
+			"zone leader stands.",
+		place = "This claim square (80 x 80) comes within 16 nodes of a quest place.",
+		rare = "This claim square (80 x 80) comes within 16 nodes of a rare " ..
+			"creature's path.",
+		capital_ring = "This claim square (80 x 80) lies next to a capital city: " ..
+			"keep one whole square between your home and its walls.",
+		not_ground = "This claim square (80 x 80) is no claim ground.",
 	}
 	M.MESSAGES = MESSAGES
 
-	-- The column rule above for one column (fix 0.50.2, the minimap's claim
-	-- preview; validate is unchanged): the problem code for `faction`, or
-	-- nil. `territory` false judges the zone part alone (the territory taken
-	-- as the faction's home), so a caller asks the territory only where the
-	-- zone itself is eligible.
-	function M.column_problem(faction, water, zone, territory)
-		local home = faction .. "_home"
-		if territory == false then territory = home end
-		return zone_problem(faction, home, water, zone, territory)
+	-- The quota's taken columns for `mask` (kind id -> columns), built from
+	-- every claim record on the first call for a mask and then kept by
+	-- create and remove. Read it, never write it.
+	function M.quota_taken(mask)
+		if taken_for ~= mask then
+			taken, taken_for = {}, mask
+			for _, claim in pairs(claims) do
+				local cx, cz = claim_chunk(claim)
+				mask.add_taken(taken, cx, cz, 1)
+			end
+		end
+		return taken
 	end
 
-	-- The sample columns (offsets from the centre) in a fixed order.
-	local sample_offsets
-	do
-		sample_offsets = {x = {}, z = {}}
-		local function add(dx, dz)
-			local n = #sample_offsets.x + 1
-			sample_offsets.x[n], sample_offsets.z[n] = dx, dz
-		end
-		for d = -RADIUS, RADIUS do
-			add(d, -RADIUS)
-			add(d, RADIUS)
-		end
-		for d = -RADIUS + 1, RADIUS - 1 do
-			add(-RADIUS, d)
-			add(RADIUS, d)
-		end
-		local inner = {}
-		for d = -RADIUS + M.SAMPLE_STEP, RADIUS - 1, M.SAMPLE_STEP do
-			inner[#inner + 1] = d
-		end
-		for i = 1, #inner do
-			for j = 1, #inner do add(inner[j], inner[i]) end
-		end
-	end
-	M.SAMPLE_COUNT = #sample_offsets.x
-
-	-- The zone scan of the square around column x/z: the first problem code
-	-- in the fixed column order, or nil.
-	local function scan(faction, x, z, world)
-		local home = faction .. "_home"
-		local offsets_x, offsets_z = sample_offsets.x, sample_offsets.z
-		for index = 1, #offsets_x do
-			local sx, sz = x + offsets_x[index], z + offsets_z[index]
-			local water = world.water_class_at(sx, sz)
-			local zone = world.zone_at(sx, sz)
-			local territory = zone and world.territory_at(sx, sz) or nil
-			local problem = zone_problem(faction, home, water, zone, territory)
-			if problem then return problem end
-		end
-		return nil
-	end
-
-	-- The scan's answer per faction and column for a `fixed` world (Round
-	-- 37, audit PLY-04): a held right-click repeats on_place about four
-	-- times a second, and a spot is scanned once. The scan reads no y, so a
-	-- stone placed higher or lower on the same column shares the answer.
-	-- At most SCAN_CACHE entries, then it starts empty again.
-	M.SCAN_CACHE = 64
-	local scans, scan_count = {}, 0
-	local function scan_problem(faction, x, z, world)
-		if not world.fixed then return scan(faction, x, z, world) end
-		local key = faction .. "|" .. x .. "|" .. z
-		local known = scans[key]
-		if known ~= nil then return known or nil end
-		local problem = scan(faction, x, z, world)
-		if scan_count >= M.SCAN_CACHE then scans, scan_count = {}, 0 end
-		scans[key], scan_count = problem or false, scan_count + 1
-		return problem
-	end
-
-	-- Returns true, or false, code, message. The refusals keep this order:
-	-- the cheap ones first (depth, faction, one claim, overlap with another
-	-- claim, settlements), then the zone scan, and last the arrival cube,
-	-- the one refusal the player can fix on the spot. A spot that fails
-	-- the scan and the cube shows the scan's message, so the cube cannot
-	-- spare the scan; the per-column result above spares its repeats.
+	-- Returns true, or false, code, message (and for "quota" the kind id).
+	-- The refusals keep this order: the player's own state first (depth,
+	-- faction, one claim), then the chunk (the mask's rule, another claim in
+	-- it, the quota), and last the two the player can fix on the spot (the
+	-- chunk's edge, the arrival cube).
 	function M.validate(name, faction, pos, world)
 		local function refuse(code, message)
 			return false, code, message or MESSAGES[code]
@@ -636,35 +564,45 @@ return function(api)
 		if rec and rec.state == "placed" and rec.claim_id and claims[rec.claim_id] then
 			return refuse("already_placed")
 		end
-		-- Drafts reserve their square too (R26 ruling 8). A claim whose square
-		-- meets the new one's (the grid holds every claim, drafts included):
-		-- the same as |dx| <= 2 RADIUS and |dz| <= 2 RADIUS (Round 81, P4-10).
-		if #M.claims_in(x - RADIUS, z - RADIUS, x + RADIUS, z + RADIUS) > 0 then
-			return refuse("overlap")
+		local mask = world.mask
+		if not mask then return refuse("no_mask") end
+		local cx, cz = chunk_of(x), chunk_of(z)
+		local ground, reason = mask.ground(faction, cx, cz)
+		if not ground then return refuse(MESSAGES[reason] and reason or "not_ground") end
+		-- Drafts and expired claims hold their chunk too (R26 ruling 8): one
+		-- claim record per chunk.
+		if M.chunk_claim(cx, cz) then return refuse("taken") end
+		local kind = mask.quota_refusal(cx, cz, M.quota_taken(mask))
+		if kind then
+			local label = world.kind_name and world.kind_name(kind) or kind
+			return false, "quota", MESSAGES.quota:format(label), kind
 		end
-		local kind = world.feature_in(x - RADIUS, z - RADIUS, x + RADIUS,
-			z + RADIUS, M.SETTLEMENT_MARGIN)
-		if kind then return refuse(MESSAGES[kind] and kind or "site") end
-		local problem = scan_problem(faction, x, z, world)
-		if problem then return refuse(problem) end
+		local x0, z0 = CHUNK * cx + ORIGIN, CHUNK * cz + ORIGIN
+		if x == x0 or x == x0 + CHUNK - 1 or z == z0 or z == z0 + CHUNK - 1 then
+			return refuse("edge")
+		end
 		if not world.cube_clear({x = x, y = y, z = z}) then return refuse("cube") end
 		return true
 	end
 
 	-- Rulings 3-6 accepted: the new claim, a draft (R26 ruling 8) until the
-	-- owner activates it.
+	-- owner activates it; `kind` and `name` empty (Round 85).
 	function M.create(name, pos)
 		local t = now()
 		local claim = {id = next_id, owner = name,
 			center = {x = round(pos.x), y = round(pos.y), z = round(pos.z)},
 			placed_at = t, activated_at = 0, paid_until = t, expired_for = t,
-			permissions = {}}
+			permissions = {}, kind = "", name = ""}
 		next_id = next_id + 1
 		storage.set_string("next_id", tostring(next_id))
 		claims[claim.id] = claim
 		claim_count = claim_count + 1
 		claim_set_version = claim_set_version + 1
-		grid_add(claim)
+		index_add(claim)
+		if taken then
+			local cx, cz = claim_chunk(claim)
+			taken_for.add_taken(taken, cx, cz, 1)
+		end
 		drafts[claim.id] = claim
 		save_claim(claim)
 		local rec = record(name)
@@ -685,7 +623,11 @@ return function(api)
 		drafts[claim.id] = nil
 		claim_count = claim_count - 1
 		claim_set_version = claim_set_version + 1
-		grid_remove(claim)
+		index_remove(claim)
+		if taken then
+			local cx, cz = claim_chunk(claim)
+			taken_for.add_taken(taken, cx, cz, -1)
+		end
 		storage.set_string("claim:" .. claim.id, "")
 		local rec = record(claim.owner)
 		if rec.claim_id == claim.id then rec.claim_id = nil end

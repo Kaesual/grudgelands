@@ -599,6 +599,12 @@ end
 source.claim_exclusion_recipes[#source.claim_exclusion_recipes+1] =
 	{id="exclude_underground_v1",kind="underground_reservation",
 		footprint_policy_id="centered_half_open_square_v1"}
+-- The arena "Breach Road" (Round 85): its levelled hull, placed with the
+-- world (`placement.lua` view adds the row), keeps every plant, swamp pool
+-- and cave off its ground and protects it down to the datum minus the
+-- protection depth like an anchor's envelope (`zones.lua`).
+source.claim_exclusion_recipes[#source.claim_exclusion_recipes+1] =
+	{id="exclude_breach_v1",kind="arena_footprint",footprint_policy_id="convex_polygon_v1"}
 
 -- The claim exclusions of a set of anchors that all carry a position: the
 -- static source holds those of its fixed anchors; a world's placed source

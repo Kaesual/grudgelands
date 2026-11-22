@@ -98,17 +98,18 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.84.1** lets a short tap on a touch screen pick up a dropped item with food in hand.
-**0.84.0** answers player reports: vendors buy and sell in amounts (1 / 5 / 20 / Stack),
-the Crownbinder crowns an item again while a crown still raises a number, mobs swim
-at full speed and the Tortoise shoots back, zone leaders no longer appear twice, and
-announcements have their own icon beside the minimap. 0.83.0 lets you delete a character
-from the realm's website. Since 0.79.0 you can link your characters
-to an account on the realm's website (grudgelands.com/play); the account's rewards, such as
-the **Cheer** emote and the Supporter and donor cloaks, reach every linked character. Accounts
+**0.85.0** adds **Breach Road**, an arena on the middle road near the centre of the map:
+the road runs through it past ruined galleries, and each faction has a hall there with a
+waystone of its network, its own peaceful ground but no safe room. A Claim Stone now claims
+one map chunk of 80 × 80 nodes, in your faction's level 11–30 zones and, for the first time,
+its capital zones; a chunk with a road in it, or a settlement or quest content close by,
+cannot be claimed, and quest creatures keep half their ground. The Claim Stone's minimap preview does
+not show these rules yet (placement itself says why it refuses). 0.85.0 needs a **map
+reset**: characters keep everything but their position and their claim, whose containers
+come back in the Claim Stone's Belongings tab. Since 0.79.0 you can link your characters to
+an account on the realm's website (grudgelands.com/play); the account's rewards, such as the
+**Cheer** emote and the Supporter and donor cloaks, reach every linked character. Accounts
 are optional ([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)).
-Compatible: existing worlds play on (a world made in full preparation mode needs a map reset
-once since 0.82.0, see the changelog).
 
 Read the [changelog](CHANGELOG.md) for every earlier version and the upgrade
 requirements of each.

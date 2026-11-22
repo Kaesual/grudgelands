@@ -247,6 +247,10 @@ every place a character leaves state.
 
 ### 5.5 Shared Claim Stone (with a later map reset)
 
+**Replaced on 2026-11-21** by [housing-rework-concept.md](housing-rework-concept.md) Part B
+(a choice per character between a personal and an account stone; no map reset needed, no
+refused link, no account-bound chests). The text below is the earlier direction.
+
 Direction from the user (2026-11-15), to be planned with that reset:
 
 - One Claim Stone per account and faction, shared by all its characters of that

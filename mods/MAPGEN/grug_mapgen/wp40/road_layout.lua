@@ -67,6 +67,10 @@ local DEFAULT_P = {
 	START_GATE = 64, START_STRETCH = 32,
 	-- a gated POI's trail leaves straight for this many nodes beyond its core
 	GATE_STRETCH = 24,
+	-- the arena "Breach Road" (Round 85): the middle road leaves each mouth
+	-- straight along the axis for MOUTH_STRETCH nodes; every other road keeps
+	-- out of a square of the footprint's half side + ARENA_PAD round it
+	MOUTH_STRETCH = 40, ARENA_PAD = 8,
 	WIGGLE = 14, WIGGLE_PERIOD = 220, WIGGLE_TAPER = 64, WIGGLE_RMIN = 30,
 	WIGGLE_S0 = 0.12, WIGGLE_S1 = 0.3, WIGGLE_ENV = 40, SMOOTH = 5, SMOOTH_MAXTURN = 0.8,
 	LOOPS = 4, LOOP_RATIO = 1.3, K_ONROAD = 3, LOOP_END_FREE = 80, LOOP_REACH = 1100,
@@ -1311,7 +1315,9 @@ local function new_module(P)
 		-----------------------------------------------------------------------
 		-- Geometry of a routed road: cell path -> smooth 1-node centreline.
 		-----------------------------------------------------------------------
-		local function make_geometry(ctrl, hw)
+		-- `hold`: the first points that keep their line (no wiggle: an arena
+		-- mouth's straight stretch)
+		local function make_geometry(ctrl, hw, hold)
 			local pts = chaikin(ctrl, 3)
 			pts = resample(pts, 1)
 			local X, Z = {}, {}
@@ -1378,6 +1384,7 @@ local function new_module(P)
 				for i = 1, n do
 					local s = i - 1
 					local taper = smoothstep(0, P.WIGGLE_TAPER, s) * smoothstep(0, P.WIGGLE_TAPER, total - s)
+					if hold then taper = taper * smoothstep(hold, hold + P.WIGGLE_TAPER, s) end
 					local rmin = INF
 					for j = max(1, i - 12), min(n, i + 12) do rmin = min(rmin, R[j]) end
 					local calm = smoothstep(P.WIGGLE_RMIN, 3 * P.WIGGLE_RMIN, rmin)
@@ -1390,6 +1397,7 @@ local function new_module(P)
 				for i = 1, n do
 					local a0, a1 = max(0, i - ENV), min(n, i + ENV)
 					local amp = P.WIGGLE * (cum[a1] - cum[a0]) / (a1 - a0)
+					if hold and i - 1 < hold then amp = 0 end
 					local o = amp * wig(X[i] / P.WIGGLE_PERIOD, Z[i] / P.WIGGLE_PERIOD)
 					out[i] = {X[i] + NX[i] * o, Z[i] + NZ[i] * o}
 				end
@@ -1619,6 +1627,14 @@ local function new_module(P)
 				local k = cell_of(ox, oz)
 				local d = nd.gate_dir > 0 and 5 or 13
 				return {{LI[k], d, 0}}, {{gx, gz}, {ox, oz}}
+			elseif nd.kind == "mouth" then
+				-- an arena mouth (Round 85): the road starts on the mouth at the
+				-- datum and leaves straight along the axis, then it is routed
+				local ox, oz = nd.x, nd.z + nd.dz * P.MOUTH_STRETCH
+				local k = cell_of(ox, oz)
+				-- (no land cell there: no source, the step fails and is named)
+				if not (k and LI[k]) then return {}, nil end
+				return {{LI[k], nd.dz > 0 and 5 or 13, 0}}, {{nd.x, nd.z}, {ox, oz}}
 			elseif nd.gate_x then
 				-- a gated POI (a PvP fortress): out of the gate, straight for
 				-- GATE_STRETCH nodes beyond the core edge, then routed; the core
@@ -1678,7 +1694,7 @@ local function new_module(P)
 				ctrl[#ctrl] = {b.x, b.z}
 			end
 			local hw = P.HALF[kind]
-			local X, Z = make_geometry(ctrl, hw)
+			local X, Z = make_geometry(ctrl, hw, a.kind == "mouth" and P.MOUTH_STRETCH / 2 or nil)
 			-- snap the end back onto the parent centreline and record the junction
 			local road = {id = #roads + 1, kind = kind, hw = hw, X = X, Z = Z,
 				a = a.id, a_kind = a.kind, a_y = a.y, b_kind = b_kind, junctions = {}, cells = path,
@@ -1761,7 +1777,9 @@ local function new_module(P)
 				end
 			end
 			-- a trimmed end is pinned to the core's fitted height, so the road
-			-- meets the pad level and leaves the core's ground alone
+			-- meets the pad level and leaves the core's ground alone; a road
+			-- from an arena mouth starts at the datum
+			if a.kind == "mouth" then road.pin_a = a.y end
 			road.a_core = a.core ~= nil
 			road.b_core = b ~= nil and b.core ~= nil and info.kind == "node"
 			road.b_y = b and b.y or nil
@@ -1852,13 +1870,18 @@ local function new_module(P)
 		end
 
 		-- route node a to node b specifically (capital chain, loops)
-		local function route_pair(kind, a, b)
+		-- `any_ring`: b's whole ring is a target, ring_free not asked (the
+		-- middle road's leg to the capital it used to leave from, which took
+		-- any ring cell as a source)
+		local function route_pair(kind, a, b, any_ring)
 			local srcs, lead = endpoint(a)
 			local allow = allow_of(a)
 			for li in pairs(allow_of(b)) do allow[li] = true end
 			local tcells = {}
 			if b.kind == "capital" then
-				for li, cid in pairs(ring) do if cid == b.id and ring_free(b.id, li) then tcells[li] = true end end
+				for li, cid in pairs(ring) do
+					if cid == b.id and (any_ring or ring_free(b.id, li)) then tcells[li] = true end
+				end
 			else
 				local k = cell_of(b.x, b.z)
 				tcells[LI[k]] = true
@@ -2017,6 +2040,30 @@ local function new_module(P)
 			return kit
 		end
 
+		-- A straight road between two fixed points at one level (the arena's
+		-- inner road, Round 85): no search, pinned flat at both ends' level
+		-- and never joined by another road (it lies in the arena's reserve).
+		local function straight(kind, a, b)
+			local hw = P.HALF[kind]
+			local dx, dz = b.x - a.x, b.z - a.z
+			local n = floor(max(abs(dx), abs(dz)) + 0.5)
+			if n < 2 then return nil end
+			local X, Z = {}, {}
+			for i = 0, n do
+				X[i + 1] = floor((a.x + dx * i / n) * LAT + 0.5) / LAT
+				Z[i + 1] = floor((a.z + dz * i / n) * LAT + 0.5) / LAT
+			end
+			local road = {id = #roads + 1, kind = kind, hw = hw, X = X, Z = Z, a = a.id,
+				b = b.id, a_kind = a.kind, b_kind = b.kind, junctions = {}, a_node = a,
+				b_node = b, pin_a = a.y, pin_b = b.y, flat_a = #X}
+			sample_road(road)
+			solve(road)
+			classify(road)
+			audit(road)
+			roads[road.id] = road
+			return road
+		end
+
 		local T1 = os.clock()
 		local order = opts.order
 		-- a step that finds no route: counted, and named for the load log
@@ -2034,13 +2081,16 @@ local function new_module(P)
 						if off > 0 then GUIDE[li] = P.K_AXIS * off end
 					end
 				end
-				local r = route_pair(step.kind, node_by_id[step.a], node_by_id[step.b])
+				local r = route_pair(step.kind, node_by_id[step.a], node_by_id[step.b], step.any_ring)
 				GUIDE = nil
 				if not r then failed(step.a .. " - " .. step.b) end
 			elseif step.op == "join" then
 				local r = route_join(step.kind, node_by_id[step.a], step.budget,
 					step.targets or {primary = true, secondary = true, capital = true})
 				if not r then failed(step.a .. " (join)") end
+			elseif step.op == "straight" then
+				local r = straight(step.kind, node_by_id[step.a], node_by_id[step.b])
+				if not r then failed(step.a .. " - " .. step.b .. " (straight)") end
 			end
 		end
 		stats.t_route_roads = os.clock() - T1
@@ -2611,8 +2661,12 @@ local function new_module(P)
 	-- (every other POI on the two mainlands whose kind's profile says
 	-- `trail`: outposts, mines, bandit and Mirefolk camps, the fortresses;
 	-- D19), reserved areas (capital squares, D59; start envelopes;
-	-- POI cores), the build order and the loop candidates. `position_of(id)`
-	-- returns an anchor's fitted x, z and (optionally) its fitted ground y.
+	-- POI cores; the arena), the build order and the loop candidates.
+	-- `position_of(id)` returns an anchor's fitted x, z and (optionally) its
+	-- fitted ground y. A world's source with the arena "Breach Road"
+	-- (`source.breach`, Round 85 ruling 18) routes the middle road through
+	-- it: the inner road straight between its two mouths at the datum, and
+	-- one leg from each mouth to its capital.
 	---------------------------------------------------------------------------
 	function M.inputs(source, position_of)
 		local prof = {}
@@ -2742,8 +2796,28 @@ local function new_module(P)
 			if id == "elandor_highcourt" or id == "kragmar_gor_drazhak" then middle[c.faction] = c.id end
 		end
 		assert(middle.elandor and middle.kragmar, "road inputs: middle road capitals missing")
-		order[#order + 1] = {op = "pair", kind = "primary", a = middle.elandor, b = middle.kragmar,
-			axis_x = 0}
+		local site = source.breach
+		if site then
+			-- the arena's mouths (`breach_layout.lua` MOUTHS, in the site's
+			-- `world`: the north one toward Gor Drazhak, the south one toward
+			-- Highcourt); the reserve keeps every other road out of the
+			-- footprint
+			local f = site.world.footprint
+			reserved[#reserved + 1] = {id = "breach", x = site.x, z = site.z,
+				half = math.max(f.max.x - site.x, f.max.z - site.z) + P.ARENA_PAD}
+			order[#order + 1] = {op = "straight", kind = "primary", a = "breach_south",
+				b = "breach_north"}
+			-- the leg to Highcourt ends anywhere on its ring, as the single
+			-- pair left it from any ring cell; the leg to Gor Drazhak keeps the
+			-- pair's ring gap there (RING_GAP from every other road's end)
+			order[#order + 1] = {op = "pair", kind = "primary", a = "breach_south",
+				b = middle.elandor, axis_x = 0, any_ring = true}
+			order[#order + 1] = {op = "pair", kind = "primary", a = "breach_north",
+				b = middle.kragmar, axis_x = 0}
+		else
+			order[#order + 1] = {op = "pair", kind = "primary", a = middle.elandor,
+				b = middle.kragmar, axis_x = 0}
+		end
 		local loops = {}
 		for i = 1, #nodes do
 			for j = i + 1, #nodes do
@@ -2754,6 +2828,13 @@ local function new_module(P)
 					local d = math.sqrt(rx * rx + rz * rz)
 					if d < P.LOOP_REACH then loops[#loops + 1] = {a.id, b.id} end
 				end
+			end
+		end
+		if site then
+			-- after the loop candidates: a mouth closes no loop
+			for _, m in ipairs(site.world.mouths) do
+				nodes[#nodes + 1] = {id = "breach_" .. m.id, kind = "mouth", x = m.x, z = m.z,
+					y = m.y, dz = m.dz, faction = "front"}
 			end
 		end
 		return {nodes = nodes, trail_nodes = trail_nodes, reserved = reserved,

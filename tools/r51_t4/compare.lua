@@ -141,7 +141,7 @@ local function dump(c)
 	end
 end
 
--- R.chunk returns no voxel data: keep what its hash reads.
+-- Keep the voxel data its hash reads as result.data (R.chunk returns its vm too).
 do
 	local real_chunk = R.chunk
 	R.chunk = function(minp, hooks)

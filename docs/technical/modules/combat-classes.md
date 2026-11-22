@@ -57,7 +57,9 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
 - **PvP (Round 31, WP41):** `mods/PLAYER/grug_pvp` owns the flag. `rules.lua`
   is pure (the record, the timers 60/60/10/15 s, `credited`); `init.lua`
   keeps one record per online player, samples the location once a second
-  (`pvp_rule_at`, `faction_at`; never on the combat path) and exposes the
+  (`pvp_rule_at`, `faction_at`; never on the combat path; since Round 85 a
+  hall of the arena Breach Road answers first, `R.zone_answers` with the
+  halls' interior boxes from `grug_mapgen.breach`) and exposes the
   API in its header (`flagged`, `can_harm`, `can_support`, `contact`,
   `support_contact`, `flag_now`, `state`, `territory_at`, `stats`,
   `register_on_change`, which also fires once at join, before any HUD

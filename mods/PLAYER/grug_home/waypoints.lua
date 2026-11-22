@@ -2,8 +2,9 @@
 -- the centre of every start's and capital's waypoint pad, placed by the
 -- mapgen (`grug_mapgen:waystone`, whose right-click lands here), and since
 -- Round 31 one on the waypoint pad of each faction's PvP fortress (pvp-plan
--- ruling 18). A faction's network is its three starts, three capitals and
--- its fortress: seven stones. Standing within reach of
+-- ruling 18), and since Round 85 one in each hall of the arena Breach Road.
+-- A faction's network is its three starts, three capitals, its fortress and
+-- its hall: eight stones. Standing within reach of
 -- an own-faction stone, or right-clicking it, discovers it for the
 -- character; the own start counts as discovered from creation. From a stone
 -- a player travels to any discovered stone of the network: instant, free,
@@ -59,6 +60,24 @@ for _, fortress in ipairs(FORTRESSES) do
  local row = settlements[fortress.key]
  if not row then error("[grug_home] fortress missing: " .. fortress.key, 0) end
  add_row(fortress.key, row.display_name or fortress.key, fortress.faction, row.race_id, false)
+end
+-- Round 85 (round85-plan.md rulings 1 and 21): one ordinary waystone in each
+-- hall of the arena Breach Road, the eighth stone of its faction's network,
+-- at the cell grug_mapgen's layout names (its blocks write the stone there);
+-- the arrival side is the hall's arrival socket beside it. No settlement:
+-- the label is here and the stone has no seat race.
+local HALLS = {{id="breach_road_accord", faction="accord", label="Breachward Hall"},
+ {id="breach_road_throng", faction="throng", label="Breakfang Hall"}}
+local mapgen = rawget(_G, "grug_mapgen")
+local breach = mapgen and mapgen.breach
+for _, hall in ipairs(breach and HALLS or {}) do
+ local layout = breach.halls[hall.faction]
+ local pos = vector.new(layout.waystone)
+ local row = {id=hall.id, label=hall.label, faction=hall.faction, start=false, pos=pos,
+  side={x=layout.arrival.x - pos.x, z=layout.arrival.z - pos.z}}
+ rows[#rows + 1] = row
+ by_id[row.id] = row
+ by_cell[cell_key(row.pos)] = row
 end
 
 -- A player's discovered set, decoded once per session and kept by discover,

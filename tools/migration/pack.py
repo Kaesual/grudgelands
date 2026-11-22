@@ -4,14 +4,21 @@ items in a housing claim is packed for the claim's owner, and the Claim
 Stone's remaining fuel comes back as charcoal. The game hands them out at
 the Claim Stone after the reset.
 
-What it reads (mods/PLAYER/grug_housing/registry.lua, frozen here and held
-to the file by tools/r50_ptool/test_pack.py):
-  claims    grug_housing mod storage `claim:<id>`,
-            `v2|owner|x|y|z|placed_at|activated_at|paid_until|expired_for|perms`
-            (decode_claim); a record that does not decode is skipped, as the
-            game's load drops it. Drafts and claims without fuel count too.
-  the area  x +- RADIUS, z +- RADIUS, from y = MIN_Y upward (claim_at), only
-            the blocks stored in the map.
+What it reads (mods/PLAYER/grug_housing/registry.lua; tools/r50_ptool/test_pack.py
+holds the tool to the game's files and to the frozen v2 record):
+  claims    grug_housing mod storage `claim:<id>`, in either version the
+            game wrote (Round 85 plan section 3.3); x, y, z is the stone:
+              `v2|owner|x|y|z|placed_at|activated_at|paid_until|expired_for|perms`
+                  (0.50.0 to 0.84.x, frozen here: the game reads it no
+                  more), the area x +- V2_RADIUS, z +- V2_RADIUS;
+              `v3|owner|x|y|z|placed_at|activated_at|paid_until|expired_for|perms|kind|name`
+                  (since 0.85.0), the area the map chunk that holds the
+                  stone (chunk_low);
+            both from y = MIN_Y upward. A record of another version, or one
+            that does not decode, is skipped and counted (read_claims), as
+            the game's load drops it. Drafts and claims without fuel count
+            too.
+  the area  only the blocks stored in the map.
   in it     every node whose metadata has an inventory with at least one
             list, empty ones too (ruling 13: the game turns an empty one into
             its node's item; counted in `empty` as well), and every personal
@@ -43,10 +50,20 @@ from .mapblock import BLOCK, BlockError, decode, index_offsets
 
 HOUSING = "grug_housing"
 CORE = "grug_core"
-# grug_housing/registry.lua: M.RADIUS, M.MIN_Y, M.LUMP_SECONDS.
-RADIUS = 50
+# The claim record's fields per version (registry.lua encode_claim).
+RECORD_FIELDS = {"v2": 10, "v3": 12}
+# The v2 claim's half width, registry.lua's M.RADIUS of 0.50.0 to 0.84.x.
+V2_RADIUS = 50
+# grug_housing/registry.lua: M.MIN_Y, M.LUMP_SECONDS.
 MIN_Y = -100
 LUMP_SECONDS = 26160
+# The v3 claim's map chunk: chunksize 5 blocks (r7_runtime.lua pins it), its
+# grid offset -chunksize / 2 = -2 blocks (reference_projects/luanti
+# src/emerge.cpp getContainingChunk), so chunk c spans the nodes
+# 80 c - 32 to 80 c + 47.
+CHUNK_BLOCKS = 5
+CHUNK = CHUNK_BLOCKS * BLOCK
+CHUNK_OFFSET = -(CHUNK_BLOCKS // 2) * BLOCK
 MAX_BLOCK_Y = 2047
 PACKED_ITEM = "grug_housing:packed_container"
 # grug_housing/api.lua: REFUND_ITEM; the engine's default stack size.
@@ -73,6 +90,21 @@ class Claim:
     y: int
     z: int
     paid_until: int
+    version: str = "v2"
+
+    def area(self):
+        """(min_x, max_x, min_z, max_z): the columns the claim covers."""
+        if self.version == "v2":
+            return (self.x - V2_RADIUS, self.x + V2_RADIUS,
+                    self.z - V2_RADIUS, self.z + V2_RADIUS)
+        low_x, low_z = chunk_low(self.x), chunk_low(self.z)
+        return (low_x, low_x + CHUNK - 1, low_z, low_z + CHUNK - 1)
+
+
+def chunk_low(value):
+    """The first node coordinate of the map chunk that holds `value`:
+    80 c - 32 with c = floor((floor(value / 16) + 2) / 5)."""
+    return ((value // BLOCK - CHUNK_OFFSET // BLOCK) // CHUNK_BLOCKS) * CHUNK + CHUNK_OFFSET
 
 
 @dataclass
@@ -103,25 +135,33 @@ def _number(text):
 
 
 def read_claims(store):
-    """Every claim record that decodes (registry.lua decode_claim), by id;
-    and the number of `claim:` keys that did not."""
-    claims, bad = [], 0
+    """Every claim record that decodes (registry.lua decode_claim of its
+    version), by id; and the `claim:` keys skipped, by reason:
+    `unknown_version` (a version RECORD_FIELDS does not name) and
+    `undecodable` (a known version that does not decode, or a key that is
+    no claim id)."""
+    claims = []
+    skipped = {"unknown_version": 0, "undecodable": 0}
     for key, value in data.ModStorage(_Store(store), HOUSING).items().items():
         if not key.startswith("claim:"):
             continue
         number = key[len("claim:"):]
         fields = value.split("|")
-        if not number.isdigit() or fields[0] != "v2" or len(fields) != 10 or not fields[1]:
-            bad += 1
+        size = RECORD_FIELDS.get(fields[0])
+        if number.isdigit() and size is None:
+            skipped["unknown_version"] += 1
+            continue
+        if not number.isdigit() or len(fields) != size or not fields[1]:
+            skipped["undecodable"] += 1
             continue
         values = [_number(fields[i]) for i in (2, 3, 4, 7)]
         if any(v is None for v in values) or any(_number(fields[i]) is None for i in (5, 6, 8)):
-            bad += 1
+            skipped["undecodable"] += 1
             continue
         x, y, z, paid_until = values
-        claims.append(Claim(int(number), fields[1], x, y, z, paid_until))
+        claims.append(Claim(int(number), fields[1], x, y, z, paid_until, fields[0]))
     claims.sort(key=lambda claim: claim.id)
-    return claims, bad
+    return claims, skipped
 
 
 class _Store:
@@ -144,13 +184,14 @@ def area_blocks(claim):
     """The block box of the claim's area: (low, high) block positions."""
     def block(value):
         return value // BLOCK
-    return ((block(claim.x - RADIUS), block(MIN_Y), block(claim.z - RADIUS)),
-            (block(claim.x + RADIUS), MAX_BLOCK_Y, block(claim.z + RADIUS)))
+    min_x, max_x, min_z, max_z = claim.area()
+    return ((block(min_x), block(MIN_Y), block(min_z)),
+            (block(max_x), MAX_BLOCK_Y, block(max_z)))
 
 
 def in_area(claim, x, y, z):
-    return (claim.x - RADIUS <= x <= claim.x + RADIUS and
-            claim.z - RADIUS <= z <= claim.z + RADIUS and y >= MIN_Y)
+    min_x, max_x, min_z, max_z = claim.area()
+    return min_x <= x <= max_x and min_z <= z <= max_z and y >= MIN_Y
 
 
 def _workspace_items(text):

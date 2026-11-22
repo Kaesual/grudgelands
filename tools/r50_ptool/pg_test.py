@@ -179,7 +179,9 @@ def main():
     check("shipped --map-reset: packed, exit 0, done with map_reset, the dry run's counts",
           rc == 0 and packed.get("counts", {}).get("containers") == 11
           and packed["counts"]["blocks_read"] == 763 and events[-1].get("map_reset") is True
-          and events[-1].get("applied") == [] and packed.get("counts") == dry.get("counts")
+          # The world records 0.50.0: the steps declared since (Round 53 on) are due.
+          and events[-1].get("applied") == events[-1].get("due")
+          and packed.get("counts") == dry.get("counts")
           and packed.get("nodes") == dry.get("nodes"),
           "exit %d %s" % (rc, json.dumps(packed.get("counts"))))
     rc, events = shipped(shipped_world, "--map-reset")

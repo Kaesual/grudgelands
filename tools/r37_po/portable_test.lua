@@ -27,12 +27,11 @@
 --      inventory list and the tracker line still follows kills; with one it
 --      reads them and the line follows held items as before;
 --   D  retired in Round 45 (the recipe discovery is gone);
---   C  Claim Stone (PLY-04): a placement that fails several rules shows the
---      first in the order depth, faction, one claim, overlap, settlement,
---      zone scan, cube (every combination); a held click on one spot runs
---      the 10,201-column scan once (also at another height), a new column
---      scans again, a world that is not `fixed` scans every time, and the
---      cache stays bounded.
+--   C  Claim Stone (PLY-04; Round 85 the map chunk): a placement that fails
+--      several rules shows the first in the order depth, faction, one claim,
+--      no mask, the mask's rule, a claim in the chunk, the quota, the
+--      chunk's edge, cube (every combination); a held click asks the mask
+--      once per attempt and no column.
 -- Prints "R37 PO PORTABLE PASS checks=<n>" or the failures.
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 local repo = arg[1] or "."
@@ -661,89 +660,75 @@ end
 -- ---------------------------------------------------------------------------
 -- C: Claim Stone placement (the pure registry)
 -- ---------------------------------------------------------------------------
+-- Round 85: the zone scan and its cache are gone (the claim mask judges each
+-- map chunk once per world plan, claim_mask.lua); the order and the cost of a
+-- held click are checked against the new rules.
 do
 	local store = {}
 	local storage = {get_string = function(k) return store[k] or "" end,
 		set_string = function(k, v) store[k] = v ~= "" and v or nil end,
 		keys = function() local r = {} for k in pairs(store) do r[#r + 1] = k end return r end}
-	local M = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({storage = storage,
-		now = function() return 1000 end})
-	local ZONE = {faction = "accord", territory_rule = "accord_home", level_min = 11, level_max = 20}
-	local LOW = {faction = "accord", territory_rule = "accord_home", level_min = 1, level_max = 10}
-	-- rules per test: `low` a column x >= low_from is a level 1-10 zone,
-	-- `feature` the square meets a site, `cube` the cube is blocked
+	-- rules per test: `ground` the chunk is no claim ground (a road), `quota`
+	-- a kind would exceed its half, `cube` the cube is blocked
 	local rule = {}
-	local zone_calls = 0
-	local function make_world(fixed)
-		return {fixed = fixed,
-			water_class_at = function() return "land" end,
-			zone_at = function(x)
-				zone_calls = zone_calls + 1
-				if rule.low_from and x >= rule.low_from then return LOW end
-				return ZONE
-			end,
-			territory_at = function() return "accord_home" end,
-			feature_in = function() return rule.feature end,
-			cube_clear = function() return not rule.cube end}
-	end
-	local fixed, loose = make_world(true), make_world(false)
-	local ORDER = {"too_deep", "no_faction", "already_placed", "overlap", "site", "low_level", "cube"}
+	local asked = {ground = 0, quota = 0}
+	local mask = {
+		ground = function()
+			asked.ground = asked.ground + 1
+			if rule.ground then return false, "road" end
+			return true
+		end,
+		quota_refusal = function()
+			asked.quota = asked.quota + 1
+			return rule.quota and "zone/kind" or nil
+		end,
+		add_taken = function(taken) return taken end,
+	}
+	local world = {mask = mask, cube_clear = function() return not rule.cube end}
+	local bare = {cube_clear = world.cube_clear}
+	local ORDER = {"too_deep", "no_faction", "already_placed", "no_mask", "road", "taken",
+		"quota", "edge", "cube"}
 	-- every combination of the failing rules shows the first in ORDER
 	local wrong, combos = 0, 0
-	for mask = 0, 127 do
+	for bits = 0, 2 ^ #ORDER - 1 do
 		local fails = {}
-		for i, code in ipairs(ORDER) do fails[code] = math.floor(mask / 2 ^ (i - 1)) % 2 == 1 end
-		-- a fresh registry for the one-claim and overlap rules
+		for i, code in ipairs(ORDER) do fails[code] = math.floor(bits / 2 ^ (i - 1)) % 2 == 1 end
+		-- a fresh registry for the one-claim and the chunk rules
 		for k in pairs(store) do store[k] = nil end
 		local R = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({storage = storage,
 			now = function() return 1000 end})
-		local x = 1000 + mask * 300 -- a new column each time
-		if fails.already_placed then R.create("ann", {x = x + 50000, y = 10, z = 0}) end
-		if fails.overlap then R.create("other", {x = x + 60, y = 10, z = 0}) end
-		rule = {feature = fails.site and "site" or nil, cube = fails.cube,
-			low_from = fails.low_level and x or nil}
+		local x0 = 80 * (20 + 3 * bits) - 32 -- a new chunk each time
+		if fails.already_placed then R.create("ann", {x = x0 + 50000, y = 10, z = 0}) end
+		if fails.taken then R.create("other", {x = x0 + 10, y = 10, z = 0}) end
+		rule = {ground = fails.road, quota = fails.quota, cube = fails.cube}
 		local ok, code = R.validate("ann", fails.no_faction and "none" or "accord",
-			{x = x, y = fails.too_deep and -200 or 10, z = 0}, fixed)
+			{x = fails.edge and x0 or x0 + 40, y = fails.too_deep and -200 or 10, z = 0},
+			fails.no_mask and bare or world)
 		local expect = "ok"
 		for _, c in ipairs(ORDER) do if fails[c] then expect = c; break end end
 		combos = combos + 1
 		if (ok and "ok" or code) ~= expect then wrong = wrong + 1 end
 	end
-	eq(wrong, 0, ("C every combination of failing rules shows the first in the old order (%d combinations)"):format(combos))
+	eq(wrong, 0, ("C every combination of failing rules shows the first in the order (%d combinations)"):format(combos))
+	-- a held click repeats on_place about four times a second: each attempt
+	-- asks the mask once for its chunk and its quota, and never a column
+	for k in pairs(store) do store[k] = nil end
+	local M = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({storage = storage,
+		now = function() return 1000 end})
 	rule = {cube = true}
-	zone_calls = 0
-	local ok, code = M.validate("ann", "accord", {x = 300, y = 10, z = 0}, fixed)
-	check(not ok and code == "cube", "C a passing scan with a blocked cube: the cube refusal")
-	eq(zone_calls, M.SAMPLE_COUNT, "C the first check scans every column (10,201)")
-	eq(M.SAMPLE_COUNT, 10201, "C (101 x 101 columns)")
-	zone_calls = 0
-	for _ = 1, 4 do M.validate("ann", "accord", {x = 300, y = 10, z = 0}, fixed) end
-	eq(zone_calls, 0, "C a held click on the same spot scans no more")
-	M.validate("ann", "accord", {x = 300, y = 14, z = 0}, fixed)
-	eq(zone_calls, 0, "C another height on the same column shares the scan")
+	asked = {ground = 0, quota = 0}
+	for _ = 1, 4 do
+		local ok, code = M.validate("ann", "accord", {x = 300, y = 10, z = 0}, world)
+		check(not ok and code == "cube", "C a passing chunk with a blocked cube: the cube refusal")
+	end
+	check(asked.ground == 4 and asked.quota == 4, "C four attempts: one chunk and one quota " ..
+		"question each (" .. asked.ground .. ", " .. asked.quota .. ")")
 	rule = {}
-	ok = M.validate("ann", "accord", {x = 300, y = 10, z = 0}, fixed)
-	check(ok == true and zone_calls == 0, "C the cube cleared: accepted from the kept scan")
-	M.validate("ann", "accord", {x = 301, y = 10, z = 0}, fixed)
-	eq(zone_calls, M.SAMPLE_COUNT, "C a new column scans again")
-	M.validate("ann", "throng", {x = 300, y = 10, z = 0}, fixed)
-	check(zone_calls > M.SAMPLE_COUNT, "C another faction scans again")
-	zone_calls = 0
-	for _ = 1, 3 do M.validate("ann", "accord", {x = 300, y = 10, z = 0}, loose) end
-	eq(zone_calls, 3 * M.SAMPLE_COUNT, "C a world that is not fixed scans every time")
-	-- bounded: SCAN_CACHE + 1 new columns push the first one out
-	for i = 1, M.SCAN_CACHE + 1 do M.validate("ann", "accord", {x = 5000 + i, y = 10, z = 0}, fixed) end
-	zone_calls = 0
-	M.validate("ann", "accord", {x = 5001, y = 10, z = 0}, fixed)
-	eq(zone_calls, M.SAMPLE_COUNT, "C the cache stays bounded (an old column is scanned again)")
-	-- a refusal from the scan is kept too
-	rule = {low_from = 7000}
-	zone_calls = 0
-	local _, first = M.validate("ann", "accord", {x = 7000, y = 10, z = 0}, fixed)
-	local calls = zone_calls
-	local _, again = M.validate("ann", "accord", {x = 7000, y = 10, z = 0}, fixed)
-	check(first == "low_level" and again == "low_level" and zone_calls == calls,
-		"C a scan refusal is kept and shown again")
+	check(M.validate("ann", "accord", {x = 300, y = 10, z = 0}, world) == true,
+		"C the cube cleared: accepted")
+	rule = {ground = true}
+	local _, first = M.validate("ann", "accord", {x = 300, y = 10, z = 0}, world)
+	check(first == "road", "C the mask's reason is the refusal")
 end
 
 if #failures > 0 then

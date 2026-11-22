@@ -15,8 +15,8 @@
 --    most 40, fitting squares 16 apart and 128 from the towns' squares,
 --    the kind's spacing (PvP POIs at least 120), clear of the authored
 --    lakes' bounds, the fortress side and the war camps' half, levels and
---    boat gap, the middle-road corridor, the
---    band on step 1, and no last resort on this seed.
+--    boat gap, the middle-road corridor, clear of the arena's square
+--    (Round 85), the band on step 1, and no last resort on this seed.
 -- L  the last resort: a rule no spot can meet (relief below zero) gives
 --    every clash site a dry-core place (step 7) and no error; a placed
 --    anchor of a kind without rules is refused.
@@ -81,10 +81,12 @@ do
 		authored = dofile(dir .. "/water_authored.lua")(A.terrain_data.water)}
 	local horizontal = W.horizontal_factory({source = source, schemas = A.schemas,
 		canonical = A.canonical, deterministic = A.deterministic, raw_sha256 = sha}).new(SEED)
+	-- (Round 85: the placed source carries the arena's site, whose ground
+	-- every height session levels with `breach_site.lua`)
 	local height = dofile(dir .. "/height.lua")({source = source, canonical = A.canonical,
 		deterministic = A.deterministic, raw_sha256 = sha, horizontal_session = horizontal,
 		terrain_field = A.terrain_field, water = fresh,
-		start_grounds = A.start_grounds}).new_runtime(SEED)
+		start_grounds = A.start_grounds, breach = A.breach}).new_runtime(SEED)
 	check(height.water_layout_text() == hh.water_layout_text(),
 		"N the placed source lays out the same water")
 	for _, a in ipairs(source.anchors) do
@@ -155,6 +157,11 @@ do
 				check(not (x + fit > row.min_x and x - fit < row.max_x and z + fit > row.min_z and
 					z - fit < row.max_z), "R " .. a.id .. " clear of the authored lake " .. row.id)
 			end
+			-- (Round 85) clear of the arena's levelled hull and blend
+			local site = source.breach
+			check(abs(x - site.x) >= fit + 49 + site.reach + R.ANCHOR_GAP or
+				abs(z - site.z) >= fit + 45 + site.reach + R.ANCHOR_GAP,
+				"R " .. a.id .. " clear of the arena")
 			if corridor[zone] then
 				check(abs(x) >= max(R.CORRIDOR.min, core + R.CORRIDOR.reserve),
 					"R " .. a.id .. " off the middle road's axis")

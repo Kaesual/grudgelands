@@ -10,6 +10,9 @@
 
 local modpath = core.get_modpath("grug_housing")
 local storage = core.get_mod_storage()
+-- The claim mask's pure rules (Round 85; mask.lua builds this world's mask
+-- from the same file): the column rule and the settlement margin below.
+local claim_mask = dofile(modpath .. "/claim_mask.lua")
 
 local model = dofile(modpath .. "/registry.lua")({
 	storage = {
@@ -20,15 +23,24 @@ local model = dofile(modpath .. "/registry.lua")({
 	-- Ruling 10: the wall clock. Server downtime counts.
 	now = os.time,
 })
-model.load()
+local skipped = model.load()
 -- The platform's map reset: the claims go with the map (registry.lua).
 grug_core.map_reset.clear("the housing claims", model.map_reset)
+-- A claim record of another version is not loaded (Round 85: only v3; the
+-- 0.85.0 map reset clears the v2 records, nothing converts them). Expected
+-- at the start that applies a reset, which clears them; reported otherwise.
+if #skipped > 0 and not grug_core.map_reset.pending() then
+	grug_core.severe.report("grug_housing", #skipped .. " claim record(s) of " ..
+		"another version or undecodable were not loaded; their homes are unprotected",
+		table.concat(skipped, ", "), "claim_records")
+end
 grug_housing.model = model
 -- The Claim Stone inventory's entries share this storage (recovered.lua).
 grug_housing.storage = storage
 
--- Claim size and placement bounds (rulings 1-2).
-grug_housing.RADIUS = model.RADIUS
+-- Claim size and placement bounds (rulings 1-2; Round 85 ruling 6: one map
+-- chunk of CHUNK x CHUNK nodes, claim_bounds below).
+grug_housing.CHUNK = model.CHUNK
 grug_housing.MIN_Y = model.MIN_Y
 grug_housing.LUMP_SECONDS = model.LUMP_SECONDS
 grug_housing.FUEL_MAX = model.FUEL_MAX
@@ -93,13 +105,25 @@ function grug_housing.fuel_room_seconds(claim)
 	return math.max(0, model.FUEL_CAP_SECONDS - model.remaining_seconds(claim))
 end
 
--- The claim covering pos (x/z only, y >= MIN_Y), or nil.
+-- The claim covering pos (its chunk's x/z columns, y >= MIN_Y), or nil.
 function grug_housing.claim_at(pos)
 	return model.claim_at(pos)
 end
 
+-- The claim's area (Round 85): the inclusive x/z node bounds of the map
+-- chunk that holds its stone, min_x, min_z, max_x, max_z; every y from
+-- MIN_Y upward.
+function grug_housing.claim_bounds(claim)
+	return model.claim_bounds(claim)
+end
+
+-- The claim of map chunk (cx, cz) (claim_mask.lua chunk_of), or nil.
+function grug_housing.chunk_claim(cx, cz)
+	return model.chunk_claim(cx, cz)
+end
+
 -- The minimap's claim preview (fix 0.50.2) draws every claim near the
--- player: the claims whose square meets the inclusive x/z rectangle, ordered
+-- player: the claims whose chunk meets the inclusive x/z rectangle, ordered
 -- by id, and a number that changes whenever a claim comes or goes.
 function grug_housing.claims_in(min_x, min_z, max_x, max_z)
 	return model.claims_in(min_x, min_z, max_x, max_z)
@@ -109,12 +133,28 @@ function grug_housing.claim_set_version()
 	return model.claim_set_version()
 end
 
--- The placement rule of one column (registry.lua column_problem), for the
+-- The quota's columns taken by every claim record (drafts and expired ones
+-- included) under this world's mask, {kind id -> columns}, or nil without
+-- a mask; read it, never write it. With grug_housing.mask.quota_refusal
+-- it answers the preview's per-chunk red (Round 85 ruling 6); it changes
+-- with the claim set (claim_set_version).
+function grug_housing.quota_taken()
+	local mask = grug_housing.mask
+	return mask and model.quota_taken(mask) or nil
+end
+
+-- The claim mask's column rule (claim_mask.lua column_problem: the
+-- faction's seven level 11-30 zones and its three capital zones), for the
 -- preview's overlay of forbidden ground; with the settlement distance and
--- the world queries below (placement_world) it is the whole column and
--- settlement part of validate.
-grug_housing.column_problem = model.column_problem
-grug_housing.SETTLEMENT_MARGIN = model.SETTLEMENT_MARGIN
+-- the world queries below (placement_world) it is the mask's column and
+-- settlement part. `territory` false judges the zone part alone (the
+-- territory taken as the faction's home), so a caller asks the territory
+-- only where the zone itself is eligible (fix 0.50.2).
+function grug_housing.column_problem(faction, water, zone, territory)
+	if territory == false then territory = faction .. "_home" end
+	return claim_mask.column_problem(faction, water, zone, territory)
+end
+grug_housing.SETTLEMENT_MARGIN = claim_mask.MARGIN
 
 -- True while the claim is activated and has fuel (paid_until is in the
 -- future). A draft is never active: it protects nothing, spawns and
@@ -379,11 +419,11 @@ function grug_housing.arrival_pos(claim)
 	return {x = c.x, y = c.y + 1, z = c.z}
 end
 
--- The world queries placement validation needs (registry.lua validate).
--- `fixed`: the column answers come from the world's zone layout, which
--- never changes while the server runs, so the registry keeps its scans.
+-- The world queries of the claim rules (the preview's overlay, base.lua)
+-- and what placement validation needs (registry.lua validate: the mask, the
+-- arrival cube, the quota kinds' names).
 local zone_records = {}
-local world = {fixed = true}
+local world = {}
 
 function world.water_class_at(x, z)
 	return grug_zones.water_class_at(x, z)
@@ -431,18 +471,27 @@ function world.cube_clear(pos)
 	return true
 end
 
+-- A quota kind (claim_mask.lua: "<zone>/<kind>") in the player's words: its
+-- spawn area's name (grug_mobs' recipe kind), else the id.
+function world.kind_name(id)
+	local area = grug_mobs.spawn_regions.area_by_tag(id)
+	return area and area.name or id
+end
+
 -- The world queries above, for probes that check placement without a map
 -- (replace cube_clear in a copy).
 grug_housing.placement_world = world
 
--- Rulings 2, 3, 5, 6 and 27 for a stone the player would place at pos;
--- returns true, or false, code, message. There is no placing lock (R26
--- ruling 10).
+-- Rulings 2, 5 and 6 and the claim mask with its quota (Round 85) for a
+-- stone the player would place at pos; returns true, or false, code,
+-- message. There is no placing lock (R26 ruling 10). Without a mask (its
+-- build failed, mask.lua) every placement is refused.
 function grug_housing.validate_placement(player, pos)
 	if not grug_core.zone_authority_installed() then
 		return false, "no_world", "The world is not ready yet."
 	end
 	local name = player:get_player_name()
+	world.mask = grug_housing.mask
 	return model.validate(name, grug_core.get_player_faction(name), pos, world)
 end
 

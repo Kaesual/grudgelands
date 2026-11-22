@@ -41,7 +41,10 @@ random numbers, no dependence on table order.
    between neighbouring samples), the shares of its land samples within 16
    nodes of sea water (shore) and of river or lake water (bank), within 16
    nodes of a road, village or start town / capital (the drift band of Round
-   28 ruling 2), and on protected ground; its distance to the nearest road.
+   28 ruling 2), and on protected ground; its distance to the nearest road;
+   whether it meets a reserved rectangle (Round 85: the arena Breach Road's
+   footprint and fringe, [pvp.md](pvp.md) §6.4), which no camp, leader or
+   quest place may take (steps 7 and 8; its regions stay as they are).
 2. **Progress.** Graph distances over the land cells (eight neighbours, so a
    bay is no shortcut) from the recipe's sources (`d_from`: the cells of its
    `from` anchors and its land cells bordering the `from` zones) and to the
@@ -127,7 +130,7 @@ random numbers, no dependence on table order.
    (the POI's own cell always joins; a stated belt more than one from the
    land beside it is a WARNING). Then the generated camps: candidates are
    cells of the camp's belt whose 3 × 3 block is land of the zone, outside
-   other camps, unprotected, outside the drift band, at least 48 nodes from
+   other camps, unprotected, unreserved, outside the drift band, at least 48 nodes from
    roads, mean slope ≤ 0.35, at least `apart` cells from the other camps
    (POI camps included), and whose block's neighbours lie within one belt of
    the camp's. Score: 2 for a forest edge (forest within two
@@ -144,7 +147,7 @@ random numbers, no dependence on table order.
    problem is logged and the camp is missing (its leader still stands,
    step 8).
 8. **Leaders** stand on every seed (Round 28 S2c). A camp leader stands at
-   its camp's centre. A kind leader stands on the best cell (farthest from
+   its camp's centre. A kind leader stands on the best unreserved cell (farthest from
    roads, then deepest inside its region) of the largest region of its kind;
    where the kind has no region on the seed (for a quest-named kind only
    when its belt has no room for a block, step 5), the chain goes on to the
@@ -188,7 +191,8 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
   recipe), camps, leaders and quest places by region id, the zone frame and the build's
   problems and warnings. `region_at` answers from the grid exactly as the
   built map does (a cell's region, else the nearest zone land cell among the
-  eight around it). All 38 maps take under 0.2 MiB (the full maps about
+  eight around it); `SR.each_cell` walks the grid's land cells (Round 85, the
+  claim mask). All 38 maps take under 0.2 MiB (the full maps about
   22 MiB). The full map (every cell with its fields, every region's cells)
   is `SR.full_map(zone)`, a fresh build for tools.
 - **File.** `<world>/grug_region_maps.txt` (`grug_region_maps_v2`, since the

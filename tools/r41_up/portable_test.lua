@@ -287,7 +287,9 @@ end
 do
 	local data = {
 		next_id = "5",
-		["claim:3"] = "v2|alice|100|10|100|900|950|99999|0|bob=interact",
+		-- Round 85: the game loads only the v3 record (the 0.85.0 map reset
+		-- clears v2 ones; tools/r85_reset proves the v2 path)
+		["claim:3"] = "v3|alice|100|10|100|900|950|99999|0|bob=interact||",
 		["claim:4"] = "v1|garbage",
 		["player:alice"] = "v2|placed|3",
 		["player:bob"] = "v2|carried|0",
@@ -305,7 +307,7 @@ do
 	end
 	local m = model()
 	eq(m.claim_count(), 1, "B3 the loaded world has its one claim")
-	check(m.claim_at({x = 100, y = 10, z = 100}) ~= nil, "B3 ...protecting its square")
+	check(m.claim_at({x = 100, y = 10, z = 100}) ~= nil, "B3 ...protecting its chunk")
 	m.map_reset()
 	eq(m.claim_count(), 0, "B3 no claim after the reset")
 	eq(m.claim_at({x = 100, y = 10, z = 100}), nil, "B3 ...and no protection")

@@ -70,7 +70,7 @@ end
 local placed = {}
 local function read_placement()
 	local text = grug_mapgen.wp40.placement_layout_text
-	check(type(text) == "string" and text:match("^P1 %d+\n") ~= nil, "placement text published")
+	check(type(text) == "string" and text:match("^P2 %d+\n") ~= nil, "placement text published")
 	for id, x, z in (text or ""):gmatch("(anchor_%d+) (%-?%d+) (%-?%d+) %d+\n") do
 		placed[id] = {x = tonumber(x), z = tonumber(z)}
 	end

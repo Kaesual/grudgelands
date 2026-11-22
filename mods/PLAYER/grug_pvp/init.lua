@@ -19,7 +19,8 @@
 --   grug_pvp.territory_at(pos, faction) -> "friendly" | "contested" |
 --     "enemy" | nil: the ground at pos for a player of that faction, the same
 --     rule the location flag follows (nil: deep ocean, dragon channels, no
---     faction); the zone banner's status (grug_map location.lua).
+--     faction); the zone banner's status (grug_map location.lua). Inside a
+--     hall of the arena Breach Road (Round 85) its faction's peaceful ground.
 --   grug_pvp.stats(player)   -> copy of {kills, killing_blows, deaths, guards,
 --     captains, generals, kings}
 --   grug_pvp.register_on_change(fn(player, state)): whenever `flagged`,
@@ -240,11 +241,30 @@ end
 -- Location (rulings 2 and 3)
 --
 
+-- The arena Breach Road's two hall interiors (Round 85, R.hall_at), from
+-- grug_mapgen's layout of this world; looked up at the first sample (this mod
+-- does not depend on grug_mapgen), an empty list without it.
+local halls
+local function hall_boxes()
+	if not halls then
+		halls = {}
+		local mapgen = rawget(_G, "grug_mapgen")
+		local breach = mapgen and mapgen.breach
+		for _, faction in ipairs({"accord", "throng"}) do
+			local hall = breach and breach.halls[faction]
+			if hall then
+				halls[#halls + 1] = {faction = faction, min = hall.interior.min,
+					max = hall.interior.max}
+			end
+		end
+	end
+	return halls
+end
+
 -- grug_zones' answers for a position: its PvP rule and, on peaceful ground,
--- the faction owning it.
+-- the faction owning it; a hall's interior is its faction's peaceful ground.
 local function zone_answers(zones, pos)
-	local rule = zones.pvp_rule_at(pos)
-	return rule, rule == "peaceful" and zones.faction_at(pos) or nil
+	return R.zone_answers(zones, hall_boxes(), pos)
 end
 
 function grug_pvp.territory_at(pos, faction)

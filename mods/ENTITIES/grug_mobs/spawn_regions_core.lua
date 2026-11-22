@@ -21,7 +21,10 @@
 --      samples is water. Per land cell: majority biome, mean height, slope,
 --      the shares of its land samples near sea water (shore), near river or
 --      lake water (bank), inside the 16-node road/town/village drift band
---      and on protected ground, and its distance to the nearest road.
+--      and on protected ground, and its distance to the nearest road. A
+--      cell that meets a reserved rectangle (Round 85: the arena Breach
+--      Road's footprint and fringe, ruling 13) holds no camp, leader or
+--      quest place (steps 7 and 8); its regions stay as they are.
 --   2. Progress: graph distances over the land cells (8 neighbours) from the
 --      recipe's `from` (anchors, the land border with the zones the player
 --      enters from, or both) and to its `to`; progress = d_from / (d_from +
@@ -757,6 +760,9 @@ function M.queries(env)
 		return record and record.hub
 	end
 	q.roads = env.road_polylines or {}
+	-- Round 85: the rectangles no camp, leader or quest place may touch
+	-- ({min_x, max_x, min_z, max_z}, inclusive nodes; the arena's fringe).
+	q.reserved = env.reserved or {}
 	-- The zone's anchors: {id, slot, x, z}, in source order.
 	function q.anchors(zone_id)
 		local out, numeric = {}, nil
@@ -774,6 +780,29 @@ function M.queries(env)
 		return out
 	end
 	return q
+end
+
+-- Round 85: the reserved rectangles of a world from its arena Breach Road's
+-- layout (`breach_layout.lua` world(), nil for none): its fringe, the hull's
+-- bounds grown by the blend's reach. The one derivation the game
+-- (spawn_regions.lua) and the tools share.
+function M.reserved_of(breach)
+	local f = breach and breach.fringe
+	if not f then return {} end
+	return {{min_x = f.min.x, max_x = f.max.x, min_z = f.min.z, max_z = f.max.z}}
+end
+
+-- Round 85: whether cell (i, j) meets one of the reserved rectangles.
+function M.cell_reserved(i, j, rects)
+	local x0, z0 = i * M.CELL, j * M.CELL
+	local x1, z1 = x0 + M.CELL - 1, z0 + M.CELL - 1
+	for n = 1, #(rects or {}) do
+		local r = rects[n]
+		if x0 <= r.max_x and x1 >= r.min_x and z0 <= r.max_z and z1 >= r.min_z then
+			return true
+		end
+	end
+	return false
 end
 
 --
@@ -1144,6 +1173,7 @@ function M.build(zone_id, q, recipe)
 			c.shore, c.bank = shore / n, bank / n
 			c.drift, c.prot = drift / n, prot / n
 			c.road = road
+			c.reserved = M.cell_reserved(c.i, c.j, q.reserved)
 			c.forest = M.FOREST_BIOMES[best] == true
 			-- Swamp and forest shares of the land samples (the fallback
 			-- block of a kind that forms no region scores by them).
@@ -1475,7 +1505,7 @@ function M.build(zone_id, q, recipe)
 					for a = -1, 1 do
 						for b = -1, 1 do
 							local n = cells[key(c.i + a, c.j + b)]
-							if not n or n.camp or n.prot > 0 or n.drift > 0 then
+							if not n or n.camp or n.prot > 0 or n.drift > 0 or n.reserved then
 								ok = false
 							else
 								slope_sum = slope_sum + n.slope
@@ -1996,7 +2026,8 @@ function M.build(zone_id, q, recipe)
 		return out
 	end
 	-- A region's cells, best first: farthest from roads, then deepest
-	-- (steps from the region's edge), then grid order.
+	-- (steps from the region's edge), then grid order; a reserved cell is
+	-- none of them (Round 85).
 	local function ranked_cells(r)
 		local member, edge = {}, {}
 		for _, c in ipairs(r.cells) do member[c] = true end
@@ -2011,7 +2042,9 @@ function M.build(zone_id, q, recipe)
 		end
 		local _, depth = bfs(r.cells, edge, member)
 		local out = {}
-		for i = 1, #r.cells do out[i] = r.cells[i] end
+		for i = 1, #r.cells do
+			if not r.cells[i].reserved then out[#out + 1] = r.cells[i] end
+		end
 		table.sort(out, function(a, b)
 			if math.abs(a.road - b.road) > 1e-9 then return a.road > b.road end
 			local da, db = depth[a] or 0, depth[b] or 0

@@ -20,6 +20,7 @@ eligibility and flag".
 | A faction's level-1–30 zones and its three capitals (its territory) | peaceful | own faction: clears it; the other faction: flags it ("Enemy Territory") |
 | Every level-31–60 zone (the six contested approaches, the four Battlegrounds zones, Ashenward March and Bannerbreak Mesa included) and both dragon islands | contested | flags it ("Contested Territory") |
 | Every non-ocean land column at **y = −501 and below** (depth tier T4 and deeper), under any surface zone | contested | flags it |
+| Inside a hall of the arena Breach Road (its interior box, in 3D; §6.4) | peaceful, the hall's faction | own faction: clears it; the other faction: flags it ("Enemy Territory") |
 | Deep ocean and the dragon channels | neither | keeps the last value |
 
 - **Depth (round31-plan §6 item 15):** under peaceful land the tiers T1–T3
@@ -200,7 +201,7 @@ combat may follow its target in).
   time after the General's death).
 - **Services:** three protected quest givers (Warmaster, Drillmaster,
   Outrider), one Quartermaster (the faction's general vendor), the
-  **waystone** — the faction's seventh ([world.md](world.md) §6). No
+  **waystone** — the faction's seventh of eight ([world.md](world.md) §6). No
   innkeeper: respawn stays in peaceful land. An enemy fortress's waystone is
   inert.
 - **The General's drops:** his War Trophies and, on an enemy player's kill,
@@ -272,6 +273,48 @@ combat may follow its target in).
   tents and their straw mats are set dressing, Round 69).
   The foreman of the own T4 mining camp gives the quest against it
   (`camp_site_raid`: its four guards and its captain, miners_guild.md §11).
+
+### 6.4 The arena Breach Road (Round 85)
+
+The arena on the middle road near the map's centre
+([world_zones.md](world_zones.md) §8.6: its site, ground and road;
+round85-plan.md rulings 1, 10–13, 19, 21). Every position comes from its
+layout (`grug_mapgen/wp40/breach_layout.lua`, published as
+`grug_mapgen.breach`); the site differs per seed.
+
+- **Territory:** each hall's **interior** (the closed room behind its sills,
+  from the air above its floor to the roof's underside) is its faction's
+  peaceful ground, in 3D (`grug_pvp/rules.lua` `R.hall_at`, asked before the
+  zone in `R.zone_answers`). The sills and doorways, the roofs, the courts,
+  the galleries, the field and everything outside stay what the zone says:
+  contested. The flag rules are §2's unchanged: entering the own hall clears
+  the location flag at the next sample, so a player without PvP contact in
+  the last 60 s and without a running button is unflagged at once; one who
+  comes in from a fight stays flagged for 60 s after the last contact and can
+  be attacked inside. An enemy inside a hall is in enemy territory (flagged).
+  Area effects reach through walls as everywhere. The zone banner reads
+  "Friendly Territory" or "Enemy Territory (PvP)" inside a hall.
+- **No guards, no flight rule, no mount rule** in the halls (rulings 10, 12,
+  19): an enemy may stand in a hall unharmed; whatever holds for riding and
+  flying in the Battlegrounds holds inside.
+- **Waystones:** one ordinary waystone per hall, the eighth of its faction's
+  network ([world.md](world.md) §6), discovered by visiting like every other,
+  with the Expeditions tab: **Breachward Hall** (The Accord, the east hall)
+  and **Breakfang Hall** (The Throng, the west hall). Ids
+  `breach_road_accord`, `breach_road_throng`.
+- **Protection:** the whole site (the footprint's bounds from 10 below the
+  datum to 35 above it) is a world-protection box of kind `arena`: nobody
+  digs or builds there ("Arena – protected"), and a world alteration guard
+  keeps fire, explosions, liquids and growth out of the same box
+  (`grug_core.world_alterable`).
+- **No hostile spawns, no quest content** (ruling 13): no ambient
+  non-critter mob spawns on any column of the footprint and its fringe (the
+  hull's bounds grown by the blend's reach); the spawn-region builder puts no
+  camp, leader or quest place on a cell that meets that rectangle
+  ([spawn_regions.md](spawn_regions.md)), and the POI placement keeps a
+  rare's patrol points off it. Mobs may walk in.
+- **Name:** "Breach Road" on the location line over the footprint and as a
+  marker of the map window's PvP layer (the clash sites' crossed swords).
 
 ## 7. Quests
 

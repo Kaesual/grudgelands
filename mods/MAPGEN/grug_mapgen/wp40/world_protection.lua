@@ -7,9 +7,10 @@
 --   local wp = dofile(".../world_protection.lua")
 --   local corridors = wp.road_corridors(road_module, road_layout_text)
 --   local boxes = wp.settlement_boxes(rows)
+--   boxes[#boxes + 1] = wp.arena_box(breach_world)  -- Round 85
 --   local index = wp.new(index128, {corridors = corridors, boxes = boxes})
 --   index.kind_at(x, y, z) -> "road", "bridge", "village", "camp", "fortress",
---       "war_camp", "mining_camp", "poi" or nil
+--       "war_camp", "mining_camp", "poi", "arena" or nil
 --
 -- A CORRIDOR is a polyline with a surface profile: a road today, a waypoint
 -- path later. A column is inside it when its distance to the centreline (its
@@ -158,6 +159,22 @@ function M.settlement_boxes(rows)
 		end
 	end
 	return out
+end
+
+-- The arena "Breach Road" (Round 85, round85-plan.md ruling 1): its protected
+-- box (`breach_layout.lua` world().protected: the footprint's bounds from
+-- BOX_BELOW under the datum to BOX_ABOVE over it) as one box of kind
+-- "arena", protected for every player like a POI core.
+function M.arena_box(world)
+	if type(world) ~= "table" or type(world.protected) ~= "table" or
+			type(world.protected.min) ~= "table" or type(world.protected.max) ~= "table" then
+		fail("arena layout differs")
+	end
+	local lo, hi = world.protected.min, world.protected.max
+	return {id = tostring(world.id), kind = "arena",
+		min_x = integer(lo.x, "arena min x"), max_x = integer(hi.x, "arena max x"),
+		min_y = integer(lo.y, "arena min y"), max_y = integer(hi.y, "arena max y"),
+		min_z = integer(lo.z, "arena min z"), max_z = integer(hi.z, "arena max z")}
 end
 
 function M.new(index128, definition)

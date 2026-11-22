@@ -221,6 +221,8 @@ local PROTECTION_HINTS = {
 	-- Round 58: a Miner's Guild lift room (grug_zones.hard_protection_kind_at)
 	guild_room = "Miner's Guild – protected",
 	poi = "Point of interest – protected",
+	-- Round 85: the arena Breach Road (its protected box)
+	arena = "Arena – protected",
 	accord_home = "Accord home territory – protected",
 	throng_home = "Throng home territory – protected",
 	immutable = "Open sea – protected",

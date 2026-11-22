@@ -598,6 +598,12 @@ return function(zone_field, terrain_field)
 						max_x = zone.hub.x + env.half_x + reach,
 						min_z = zone.hub.z - env.half_z - reach,
 						max_z = zone.hub.z + env.half_z + reach}
+				elseif recipe == "exclude_breach_v1" then
+					-- The arena "Breach Road" (Round 85): its levelled hull, every
+					-- purpose (no plants, pools or caves on the arena's ground).
+					shape.kind = "polygon" shape.polygon = exclusion.polygon
+					shape.expansion = 0
+					shape.bounds = polygon_bounds(exclusion.polygon)
 				elseif recipe == "exclude_coast_v1" then
 					shape.kind = "polygon" shape.polygon = record.polygon
 					shape.expansion = exclusion.projection_width

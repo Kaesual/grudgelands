@@ -406,8 +406,12 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   [housing.md](../../design/housing.md). One global `grug_housing`; each file has
   one owner lane so the lanes work in parallel:
   - `registry.lua` + `api.lua` (Lane A): the pure claim model and the
-    interface contract — registry in mod storage (format v2) plus a claim grid
-    index, placement validation, the protection check with permissions, fuel
+    interface contract — registry in mod storage (format v3 since Round 85:
+    `v3|owner|x|y|z|placed_at|activated_at|paid_until|expired_for|perms|kind|name`,
+    x, y, z the stone, `kind` and `name` empty until a later round; only v3
+    loads, `load` returns the other `claim:` keys and api.lua reports them as
+    severe unless the start applies a map reset) plus a chunk index (one
+    claim per map chunk), placement validation, the protection check with permissions, fuel
     as `paid_until`, the soulbound `grug_housing.STONE_ITEM`
     (`grug_housing:claim_stone`) and the draft node
     `grug_housing.DRAFT_STONE` (`grug_housing:claim_stone_draft`), drafts
@@ -427,14 +431,56 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,
     `activated`, `fuel`, `permission`, `picked_up`, `destroyed`, `removed`,
     `deleted` (the owner's deletion, Round 83: no "claim lost" notice),
-    `draft_expired`, `expired`. Constants `RADIUS = 50`, `MIN_Y = −100`.
-    For the minimap's claim preview (0.50.2): `claims_in(min_x, min_z,
-    max_x, max_z)` (the claims whose square meets the rectangle, by id,
-    from the claim grid), `claim_set_version()` (changes on every create
-    and remove, load and map reset), `column_problem(faction, water, zone,
-    territory)` (validate's column rule for one column; `territory` false
-    judges the zone alone), `SETTLEMENT_MARGIN` and `placement_world` (the
-    world queries validate asks).
+    `draft_expired`, `expired`. A claim is the map chunk of its stone (Round
+    85): constants `CHUNK = 80` (the registry's `chunk_of` equals
+    `claim_mask.lua`'s), `MIN_Y = −100`; `claim_bounds(claim)` (the chunk's
+    inclusive x/z bounds), `chunk_claim(cx, cz)`; `claim_at` is one lookup
+    in the chunk index. Placement (`validate_placement`, registry
+    `validate`) refuses in this order: depth, faction, one claim per
+    player, no mask (`grug_housing.mask` nil: every placement refused), the
+    mask's `ground` (its reason id, one message each in `MESSAGES`), a claim
+    record already in the chunk (`taken`), the quota (`quota`, the kind's
+    spawn-area name through `grug_mobs.spawn_regions.area_by_tag`), the
+    stone on the chunk's edge (`edge`), the arrival cube; the mask answers
+    the zones, water, settlements, roads, camps, spots and the capital rings,
+    so no column is asked at placement. The quota's taken columns are kept
+    over every claim record (drafts and expired ones included), built from
+    the records at the first question for a mask and changed by `create` and
+    `remove` with the mask's `add_taken`; nothing about them is stored
+    (`quota_taken()` for the preview, nil without a mask). For the minimap
+    (0.50.2): `claims_in(min_x, min_z, max_x, max_z)` (the claims whose
+    chunk meets the rectangle, by id), `claim_set_version()` (changes on
+    every create and remove, load and map reset), `column_problem(faction,
+    water, zone, territory)` (the claim mask's column rule for the preview's
+    overlay; `territory` false judges the zone alone), `SETTLEMENT_MARGIN`
+    and `placement_world` (the overlay's world queries). Fixture
+    `tools/r85_core/portable_test.lua` (the record, the chunk, every
+    refusal, the quota).
+  - `claim_mask.lua` (pure, Round 85 lane MASK), `claim_mask_store.lua`
+    (its two world-folder files) and `mask.lua` (the engine glue): the
+    claim mask ([housing.md](../../design/housing.md) §2): which 80 × 80
+    map chunks are claim ground for each faction, the rule that refuses the
+    others (a reason id), the capital rings, and per chunk the node columns
+    of every quest-named kind's ground for the quota. Built at mods loaded,
+    after the region maps (`SR.each_cell`, `map.leaders`, `map.places`),
+    from `grug_zones`' column answers, the placement world's settlement
+    test, every road corridor of `grug_mapgen.wp40.road_layout_text`, the
+    capitals' protected cities (`grug_mapgen.wp40.capital_protection`) and
+    the rares' routes (`grug_core.rare_route`). Only the column rule on
+    every column of a candidate chunk is costly (about 20 s on the
+    production seed): its answers are cached in `grug_claim_ground.txt`
+    under the world-layout key; the map's snapshot `grug_claim_mask.txt`
+    (the mask and per-chunk fingerprints, once per map) is the stored data
+    of ruling 7 ([format](../claim-mask-format.md)). Published as
+    `grug_housing.mask`: `ground(faction, cx, cz)` (true, or false and the
+    reason), `list(faction)`, `ground_in(faction, rect)`,
+    `kind_columns(cx, cz)`, `kinds` / `kind_by_id` (ground and limit),
+    `quota_refusal(cx, cz, taken)`, `add_taken`; `grug_housing.claim_mask`
+    is the pure module (`chunk_of`, `chunk_bounds`). Nil after a failed build
+    (reported as severe), and a recipe zone without its region map fails the
+    build; a failed snapshot is reported as severe, leaves the mask in use and
+    is tried again at the next start. Fixture `tools/r85_mask/portable_test.lua`; the
+    real seed: `tools/r85_mask/run.lua` and `compare.py`.
   - `stone.lua`, `stone_form.lua`, `protection.lua`, `soulbound.lua`: the
     stone and draft nodes with draft and fuel expiry, the stone forms, the
     `is_protected` wrapper with the arrival cube, the soulbound items. The
@@ -487,8 +533,10 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   return, respawn and waystone travel (`grug_home.travel(player, trip)`).
   `waypoints.lua` builds the registry from the mapgen's `travel_waypoint`
   sockets (six capitals, six start pads and, since Round 31, the two PvP
-  fortresses' sockets, registered after the twelve home locations; seven
-  stones per faction), discovers a stone by proximity
+  fortresses' sockets, registered after the twelve home locations), since
+  Round 85 the two halls of the arena Breach Road from
+  `grug_mapgen.breach` (after the fortresses; eight stones per faction),
+  discovers a stone by proximity
   (once a second, on the player's join slot since Round 81) or right-click,
   keeps the per-character list in player meta (decoded once per session
   and kept by `discover`, its only writer; `grug_home.known_waypoints`)
@@ -648,8 +696,11 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   wielded and a faction, adds the overlay tiles and one clipped `[fill` per
   claim to the cell texture (`minimap_view.lua` `texture(v, ox, oy, mask,
   claim)`, `claim_rect`, never a `[fill` outside the image or of zero size)
-  and shows the square (`claim_square`, `claim_square_texture`) at z 12.
-  Fixture `tools/r502_cmap/portable_test.lua`; measurements
+  and shows the square (`claim_square`, `claim_square_texture`) at z 12,
+  centred on the arrow. Since Round 85 the overlay is the mask's column rule
+  and the settlement margin only, not the chunk mask, and the square is not
+  the claim's chunk: a known defect, replaced in Round 86
+  ([housing.md](../../design/housing.md) §2 "Placement preview"). Fixture `tools/r502_cmap/portable_test.lua`; measurements
   `render_overlay.lua` (offline render and the "green, yet refused" check
   on a real world) and `bench_claim.lua`.
 

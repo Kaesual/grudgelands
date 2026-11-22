@@ -245,16 +245,17 @@ do
 	eq(started[1], "vale", "N the discovery starts with the column's zone")
 	eq(entered[1], "vale", "N ...and enters the column's zone, not the claim")
 	eq(M.text_at({x = 0, y = 10, z = 0}), "Green Vale", "N text_at stays the column's name")
-	-- the edge, to the node: the claim covers the columns -50 .. 50, each
-	-- node its column +- 0.5 (grug_housing claim_at rounds)
-	eq(at(50, 10, 0), "Your Home", "N the east edge node in")
-	eq(at(50.49, 10, 0), "Your Home", "N ...to its last part")
-	eq(at(50.5, 10, 0), "Green Vale", "N the next node out (no hysteresis)")
-	eq(at(51, 10, 0), "Green Vale", "N ...beyond")
-	eq(at(-50.5, 10, 0), "Your Home", "N the west edge node in")
-	eq(at(-50.51, 10, 0), "Green Vale", "N the next node out")
-	eq(at(0, 10, 50.4), "Your Home", "N the north edge node in")
-	eq(at(0, 10, -51), "Green Vale", "N past the south edge out")
+	-- the edge, to the node: the claim covers the columns of its chunk, -32
+	-- .. 47 (Round 85; the 101 x 101 square was -50 .. 50), each node its
+	-- column +- 0.5 (grug_housing claim_at rounds)
+	eq(at(47, 10, 0), "Your Home", "N the east edge node in")
+	eq(at(47.49, 10, 0), "Your Home", "N ...to its last part")
+	eq(at(47.5, 10, 0), "Green Vale", "N the next node out (no hysteresis)")
+	eq(at(48, 10, 0), "Green Vale", "N ...beyond")
+	eq(at(-32.5, 10, 0), "Your Home", "N the west edge node in")
+	eq(at(-32.51, 10, 0), "Green Vale", "N the next node out")
+	eq(at(0, 10, 47.4), "Your Home", "N the north edge node in")
+	eq(at(0, 10, -33), "Green Vale", "N past the south edge out")
 	-- down and up
 	eq(at(0, -100, 0), "Your Home", "N y -100 in")
 	eq(at(0, -100.4, 0), "Your Home", "N ...its whole node")
@@ -306,7 +307,8 @@ end
 -- ---------------------------------------------------------------------------
 local V = dofile(repo .. "/mods/PLAYER/grug_map/minimap_view.lua")
 local BOUNDS = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
-local R = model.RADIUS
+-- Round 85: a claim is a map chunk, 80 columns across (half side 39.5).
+local R = (model.CHUNK - 1) / 2
 do
 	local v = V.new({quality = "normal", width = 1080, height = 960, tiles = {}}, BOUNDS)
 	local ox, oy = V.origin(v, 300, 250)
@@ -346,7 +348,7 @@ do
 	end
 	check(border and not twice, "F the frame is claim_rect's border, one pixel wide, each pixel once")
 	check(list[1].color == "#00ff00cc" and list[4].color == "#00ff00cc", "F the edges carry the colour")
-	check(whole.w >= 15 and whole.w <= 17, "F a claim is about 15-17 base pixels across (" ..
+	check(whole.w >= 12 and whole.w <= 14, "F a claim is about 12-14 base pixels across (" ..
 		whole.w .. ")")
 
 	-- a sweep over claims all around and across the texture's edges: the
@@ -460,8 +462,9 @@ rawset(_G, "grug_quests", {marker_states = function() return {}, 1 end,
 rawset(_G, "grug_parties", {view = function() return nil end, register_on_change = function() end})
 rawset(_G, "grug_home", {get = function() return nil end, known_waypoints = function() return {} end,
 	claim_waypoint = function() return nil end})
-rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", RADIUS = model.RADIUS,
-	claims_in = model.claims_in, claim_set_version = model.claim_set_version})
+rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
+	claim_set_version = model.claim_set_version})
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Somewhere" end}})
 grug_map.quest_slots = function() return {} end

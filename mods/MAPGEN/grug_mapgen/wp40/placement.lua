@@ -33,7 +33,14 @@
 --     the water layout (`wet_core`, Round 34 F3) and the core's ground not
 --     below water within WATER_REACH; the fitting square clear of every
 --     authored lake's bounds (`water_authored.lua`: they shape the fitted
---     ground round their water, e.g. Moonfall's crescent).
+--     ground round their water, e.g. Moonfall's crescent);
+--   * (Round 85) the fitting square ANCHOR_GAP clear of the arena's square
+--     (its levelled hull and blend), never relaxed; a rare route's patrol
+--     points off that square too.
+-- Before the anchors, the arena "Breach Road" (Round 85, ruling 9) takes its
+-- site by its own rule on the same natural world (`breach_site.lua` search):
+-- it is no anchor, so the zone field, the terrain field and the inland water
+-- never see it, and the world source carries it as `source.breach`.
 -- The coarse tests sort the candidates (a mine by its hills, a fortress by
 -- its nearness to the Battlegrounds and the road, every other kind in an
 -- order seeded by the world and the anchor, so a POI takes no more of the
@@ -54,12 +61,16 @@ return function(wp40_directory, raw_sha256)
 		fail("construction seam differs")
 	end
 	local R = dofile(wp40_directory .. "/placement_rules.lua")
+	local breach_layout = dofile(wp40_directory .. "/breach_layout.lua")
+	local breach = dofile(wp40_directory .. "/breach_site.lua")(breach_layout)
 	local pvp = dofile(wp40_directory .. "/r31_pvp_catalog.lua")
 	local terrain_data = dofile(wp40_directory .. "/terrain_data.lua")
 	local water_module = dofile(wp40_directory .. "/water_layout.lua")(terrain_data.water)
 	local RELIEF_CAP = terrain_data.params.poi_bowl_relief
 	local floor, abs, max, min = math.floor, math.abs, math.max, math.min
-	local M = {rules = R}
+	local M = {rules = R, breach = breach}
+	-- The arena's key in a positions table (no anchor id looks like it).
+	local BREACH = "breach"
 
 	local kind_rank = {}
 	for index, kind in ipairs(R.KIND_ORDER) do kind_rank[kind] = index end
@@ -114,11 +125,24 @@ return function(wp40_directory, raw_sha256)
 			end
 		end
 		view.claim_exclusions = source.claim_exclusions_of(view.anchors)
+		local site = positions[BREACH]
+		if not site then fail("the arena's site is missing") end
+		view.breach = {x = site.x, z = site.z, y = site.y, reach = site.reach,
+			world = breach_layout.world(site)}
+		-- its levelled hull as a claim exclusion (`simple_map.lua` polygon)
+		local hull = {}
+		for index, p in ipairs(breach_layout.HULL) do
+			hull[index] = {x = site.x + p[1], z = site.z + p[2]}
+		end
+		view.claim_exclusions[#view.claim_exclusions + 1] = {id = "exclude:breach",
+			recipe_id = "exclude_breach_v1", source_id = BREACH, polygon = hull,
+			coverage = "levelled_hull"}
 		return view
 	end
 
-	-- The text: "P1 <count>" and one "<anchor id> <x> <z> <step>" line per
-	-- placed anchor in anchor order.
+	-- The text: "P2 <count>", one "<anchor id> <x> <z> <step>" line per
+	-- placed anchor in anchor order, and the arena's site line last
+	-- (`breach_layout.lua` format: "breach <x> <z> <datum> <reach>").
 	function M.serialize(source, positions)
 		local out, count = {}, 0
 		for _, a in ipairs(source.anchors) do
@@ -129,15 +153,17 @@ return function(wp40_directory, raw_sha256)
 				out[#out + 1] = ("%s %d %d %d\n"):format(a.id, p.x, p.z, p.step)
 			end
 		end
-		return ("P1 %d\n"):format(count) .. table.concat(out)
+		if not positions[BREACH] then fail("the arena's site is missing") end
+		out[#out + 1] = breach_layout.format(positions[BREACH]) .. "\n"
+		return ("P2 %d\n"):format(count) .. table.concat(out)
 	end
 
 	function M.parse(text, source)
 		if type(text) ~= "string" then fail("placement text differs") end
 		local lines = {}
 		for line in text:gmatch("[^\n]+") do lines[#lines + 1] = line end
-		local count = tonumber((lines[1] or ""):match("^P1 (%d+)$"))
-		if not count or #lines ~= count + 1 then fail("placement text header differs") end
+		local count = tonumber((lines[1] or ""):match("^P2 (%d+)$"))
+		if not count or #lines ~= count + 2 then fail("placement text header differs") end
 		local e = source.extent
 		local positions, index = {}, 1
 		for _, a in ipairs(source.anchors) do
@@ -154,6 +180,12 @@ return function(wp40_directory, raw_sha256)
 			end
 		end
 		if index ~= count + 1 then fail("placement text count differs") end
+		local site = breach_layout.parse(lines[count + 2])
+		if not site or site.x < e.min_x or site.x > e.max_x or site.z < e.min_z or
+				site.z > e.max_z then
+			fail("placement text's arena line differs")
+		end
+		positions[BREACH] = site
 		return positions
 	end
 
@@ -321,6 +353,33 @@ return function(wp40_directory, raw_sha256)
 
 		local positions = {}
 		local stats = {relaxed = {}, last_resort = {}, wet = {}}
+
+		-- The arena's site (Round 85): on the natural world, clear of the
+		-- fixed anchors' squares like any placed POI; its square (the hull's
+		-- bounds and the blend's reach) then keeps every POI off its ground.
+		local site, site_stats = breach.search({
+			natural_at = height.natural_height_at,
+			wet = wet,
+			zone_at = function(x, z)
+				local class, _, owner = horizontal.classification_values_at(x, z)
+				if class == "land" then return owner end
+				return nil
+			end,
+			zone_number = function(id) return zone_number[id] end,
+			blocked = function(x, z, half)
+				for _, q in ipairs(placed) do
+					local gap = half + q.half + (q.town and R.TOWN_GAP or R.ANCHOR_GAP)
+					if abs(q.x - x) < gap and abs(q.z - z) < gap then return true end
+				end
+				return false
+			end,
+		})
+		positions[BREACH] = site
+		stats.breach = site_stats
+		if site_stats.wet then stats.wet[#stats.wet + 1] = "breach" end
+		local breach_half_x = breach_layout.HALF_X + site.reach
+		local breach_half_z = breach_layout.HALF_Z + site.reach
+
 		for _, a in ipairs(placement_order(source)) do
 			local kind = a.template_id
 			local rule = R.KINDS[kind]
@@ -366,6 +425,20 @@ return function(wp40_directory, raw_sha256)
 					if x + fit_half > row.min_x and x - fit_half < row.max_x and
 							z + fit_half > row.min_z and z - fit_half < row.max_z then
 						return false
+					end
+				end
+				if abs(site.x - x) < fit_half + breach_half_x + R.ANCHOR_GAP and
+						abs(site.z - z) < fit_half + breach_half_z + R.ANCHOR_GAP then
+					return false
+				end
+				-- a rare's patrol points off the arena's square too (Round 85
+				-- ruling 13: no hostile spawn on its footprint and fringe)
+				if rule.patrol then
+					for _, p in ipairs(source.rare_patrol_shape) do
+						if abs(site.x - x - p.x) <= breach_half_x and
+								abs(site.z - z - p.z) <= breach_half_z then
+							return false
+						end
 					end
 				end
 				return true

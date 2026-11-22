@@ -143,6 +143,12 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	-- receives (the capital streets and connectors included) as a corridor,
 	-- and every POI, village and camp blueprint's cell bounds on its fitted
 	-- anchor as a box. Built from published data; the mapgen never reads it.
+	-- The arena "Breach Road" (Round 85) is one more box: its layout in world
+	-- nodes, from the placement text's site line, which the game's readers
+	-- (territory, waystones, spawns, names) take from the status below.
+	local breach_layout = dofile(wp40 .. "/breach_layout.lua")
+	local breach = breach_layout.world(breach_layout.from_placement(
+		runtime.placement_layout_text()))
 	local world_protection
 	do
 		local started = now()
@@ -159,9 +165,11 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 					bounds = prepared.bounds}
 			end
 		end
+		local boxes = wp.settlement_boxes(rows)
+		boxes[#boxes + 1] = wp.arena_box(breach)
 		world_protection = wp.new(dofile(wp40 .. "/index128.lua"), {
 			corridors = wp.road_corridors(runtime.road_module(), runtime.road_layout_text()),
-			boxes = wp.settlement_boxes(rows)})
+			boxes = boxes})
 		local m = world_protection.metrics
 		core_api.log("action", string.format("[grug_mapgen] world protection: %d road " ..
 			"corridors (%d segments in %d runs), %d settlement cores, %d records in %d " ..
@@ -282,6 +290,28 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			#placement_stats.relaxed > 0 and (" (anchor:step " ..
 				table.concat(placement_stats.relaxed, ", ") .. ")") or "",
 			placement_stats.seconds or 0))
+		-- the arena's site (Round 85, `breach_site.lua`; its line ends the text)
+		local breach = placement_stats.breach
+		if breach then
+			diagnose("action", string.format("[grug_mapgen] arena Breach Road: %s, searched in " ..
+				"%.2f s (%d candidates, %d measured)%s", runtime.placement_layout_text():match(
+				"(breach [^\n]+)\n?$") or "?", breach.seconds or 0, breach.candidates or 0,
+				breach.finalists or 0, breach.fallback and (", no site within the narrow " ..
+				"blend: the fallback, which needs %.0f nodes of blend"):format(breach.need or 0) or ""))
+			-- a fallback that needs more than the widest blend (WIDTH_FALLBACK):
+			-- its levelling exceeds the grade rule, a [GRUG-SEVERE] report
+			local cap = breach.cap
+			if breach.fallback and type(cap) == "number" and (breach.need or 0) > cap and
+					type(core_owner.severe) == "table" and
+					type(core_owner.severe.report) == "function" then
+				local line = core_owner.severe.report("mapgen",
+					"the arena's ground is steeper than its grade rule",
+					("breach_site.lua fallback needs %.0f nodes of blend, at most %d are built")
+						:format(breach.need, cap), "arena_blend")
+				-- kept with the diagnostics, so a cache hit logs it again
+				if type(line) == "string" then diagnostics[#diagnostics + 1] = {"error", line} end
+			end
+		end
 		if #placement_stats.last_resort > 0 then
 			diagnose("warning", "[grug_mapgen] POI placement: no place met the rules, " ..
 				"the last resort was taken for " ..
@@ -421,6 +451,20 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			diagnose("warning", ("[grug_mapgen] roads: %d network step(s) found no " ..
 				"route, the road is missing: %s"):format(st.failed,
 				table.concat(st.failed_steps or {}, ", ")))
+			-- the middle road through the arena (Round 85): a missing leg or
+			-- inner road cuts the continents apart, a [GRUG-SEVERE] report
+			local arena = {}
+			for _, label in ipairs(st.failed_steps or {}) do
+				if label:find("breach_", 1, true) then arena[#arena + 1] = label end
+			end
+			if #arena > 0 and type(core_owner.severe) == "table" and
+					type(core_owner.severe.report) == "function" then
+				local line = core_owner.severe.report("mapgen",
+					"the middle road through the arena found no route",
+					"road_layout.lua failed steps: " .. table.concat(arena, ", "), "arena_road")
+				-- kept with the diagnostics, so a cache hit logs it again
+				if type(line) == "string" then diagnostics[#diagnostics + 1] = {"error", line} end
+			end
 		end
 		road_spots = runtime.road_module().showcase(road_layout)
 	end
@@ -498,8 +542,12 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		vegetation = built.vegetation,
 		preparation_source = built.preparation_source,
 		-- The POI placement of this world (Round 46, `placement.lua` text:
-		-- one "<anchor id> <x> <z> <step>" line per placed anchor).
+		-- "P2 <count>", one "<anchor id> <x> <z> <step>" line per placed anchor and
+		-- the arena's "breach" line last, Round 85).
 		placement_layout_text = payload.placement_layout,
+		-- The arena "Breach Road" of this world (Round 85, `breach_layout.lua`
+		-- world(): footprint, halls, waystones, protected and fringe boxes).
+		breach = breach,
 		-- The inland water layout for the world map: its text (cache key) and
 		-- river centrelines (the relief grid is too coarse for rivers).
 		water_layout_text = runtime.water_layout_text(),
@@ -515,6 +563,10 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		capital_layout_text = payload.capital_layout,
 		-- The Miner's Guild rooms of this world (guild_rooms.lua's index).
 		guild_rooms = guild_rooms,
+		-- The capitals' protected cities {anchor id -> capital_protection.lua
+		-- shape}, for the claim mask's capital rings (Round 85,
+		-- grug_housing/mask.lua).
+		capital_protection = runtime.capital_protection(),
 		-- The camps under construction: {key, place()} (r69_camp_sites.lua).
 		camp_sites = camp_sites,
 		-- The world-layout cache's key parts {seed, source, settings,

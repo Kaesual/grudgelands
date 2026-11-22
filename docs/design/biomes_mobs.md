@@ -1409,8 +1409,10 @@ gate, protected surface).
 - **Protected surface (ruling 3).** No ambient non-critter spawn — ABM row
   or region — on a road corridor or bridge (half width + 1, ±5 vertical), a
   village's building core, a Round 31 PvP fortress or war camp with its
-  10-node protection margin, a start town's footprint or a capital city
-  (asked only in zones whose zone session publishes a `capital` anchor).
+  10-node protection margin, a start town's footprint, a capital city
+  (asked only in zones whose zone session publishes a `capital` anchor) or
+  (Round 85) any column of the arena Breach Road's footprint and fringe
+  ([pvp.md](pvp.md) §6.4).
   Bandit and Mirefolk camps and other POIs are not refused (their own mobs
   spawn there); critters may still appear in towns.
   An active housing claim refuses hostile spawns as before.

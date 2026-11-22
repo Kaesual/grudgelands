@@ -13,6 +13,14 @@ trim.py): two claims of grug_housing's own model, the containers the probe
 placed, and the probe's record of every placed container's lists
 (r50_ptool_probe.json.gz, ItemStack:to_string per slot) - the ground truth
 the decoder and the packed entries are held to.
+
+Round 85 (lane RESET, plan section 3.3): the claim record has two versions,
+v2 (101 x 101 around the stone, to 0.84.x) and v3 (the map chunk of 80 x 80
+that holds the stone, since 0.85.0). The v2 facts are frozen here, no longer
+read from registry.lua (FrozenTest); V3Test packs the same engine-written
+blocks for v3 records, at negative coordinates (the blocks moved by whole
+blocks: a block's data holds no position) and across chunk edges, and in a
+world that mixes both versions with records of other versions.
 """
 
 import gzip
@@ -75,6 +83,10 @@ class PassCase(unittest.TestCase):
         self.world = Path(self._tmp.name, "world")
         shutil.copytree(WORLD, self.world)
         (self.world / "r50_ptool_probe.json.gz").unlink()
+        # At the checkout's own version, so no declared step is due: these
+        # tests are about the pass (the world was built at 0.50.0; the steps
+        # declared since then would run after it; test_steps_after_pass).
+        self.set_storage("grug_core", "world_version", cli.read_checkout(None)[0])
         self.clock, cli.clock = cli.clock, lambda: NOW
 
     def tearDown(self):
@@ -113,6 +125,30 @@ class PassCase(unittest.TestCase):
     def hashes(self, world=None):
         world = Path(world or self.world)
         return {name: sha(world / name) for name in ("map.sqlite", "mod_storage.sqlite")}
+
+    def assert_entries(self, recovered, expected, owners):
+        """Every packed entry is exactly one of the `expected` probe
+        containers (their lists stack by stack), none is left over, and
+        each belongs to the owner `owners` names for its position; the
+        furnace's workspace record comes as a chest of its three stacks."""
+        unmatched = list(expected)
+        for name, text in sorted(recovered.items()):
+            stack = ItemStack.parse(text)
+            if stack.name == pack.CHARCOAL:
+                continue
+            self.assertEqual((stack.name, stack.count, stack.wear), (pack.PACKED_ITEM, 1, 0))
+            lists = codec.deserialize(stack.meta["lists"])
+            if stack.meta["node"] == "default:chest" and lists == {"main": [
+                    "default:stone 1", "default:coal_lump 2", "default:cobble 3"]}:
+                continue
+            match = [c for c in unmatched if c["node"] == stack.meta["node"] and
+                     sorted(recorded_lists(c)) == sorted(lists) and all(
+                         len(lists[n]) == len(s) and all(map(same_stack, lists[n], s))
+                         for n, s in recorded_lists(c).items())]
+            self.assertEqual(len(match), 1, name)
+            unmatched.remove(match[0])
+            self.assertEqual(name.split(":")[1], owners[key(match[0]["pos"])], name)
+        self.assertEqual(unmatched, [])
 
 
 class DecoderTest(unittest.TestCase):
@@ -195,15 +231,93 @@ class DecoderTest(unittest.TestCase):
             self.assertEqual(mapblock._integer_as_block(mapblock._block_as_integer(*pos)), pos)
 
 
+class _Store:
+    """A mod-storage backend in memory, with the engine's SQLite layout."""
+    engine = "sqlite3"
+
+    def __init__(self, rows):
+        self.conn = sqlite3.connect(":memory:")
+        self.conn.execute("CREATE TABLE entries (modname TEXT NOT NULL, key BLOB NOT NULL, "
+                          "value BLOB NOT NULL, PRIMARY KEY (modname, key))")
+        self.conn.executemany("INSERT INTO entries VALUES (?, ?, ?)", [
+            ("grug_housing", k.encode(), v.encode()) for k, v in rows])
+
+    def execute(self, *args):
+        return self.conn.execute(*args)
+
+
+def claims_of(rows):
+    return pack.read_claims(_Store(rows))
+
+
+# The v3 record exactly as Round 85 plan section 3.3 agrees it (CORE's
+# fixture pins registry.lua to the same text).
+V3_FORMAT = "v3|owner|x|y|z|placed_at|activated_at|paid_until|expired_for|perms|kind|name"
+
+
+def v3_record(**values):
+    defaults = dict(owner="alice", x=-33, y=-100, z=48, placed_at=900, activated_at=950,
+                    paid_until=99999, expired_for=0, perms="bob=interact", kind="", name="")
+    defaults.update(values)
+    return "|".join(str(defaults.get(f, f)) for f in V3_FORMAT.split("|"))
+
+
 class FrozenTest(unittest.TestCase):
+    def test_v2_frozen(self):
+        """The v2 record and its area as 0.50.0 to 0.84.x wrote and read
+        them (registry.lua M.RADIUS 50, M.MIN_Y -100, encode_claim's ten
+        fields; production's 0.83.0 the same), frozen: 0.85.0's registry.lua
+        writes v3, and the pass must still read v2 on the world it resets
+        (Round 85 plan section 3.3)."""
+        self.assertEqual((pack.V2_RADIUS, pack.MIN_Y, pack.RECORD_FIELDS["v2"]), (50, -100, 10))
+        claims, skipped = claims_of([
+            ("claim:3", "v2|alice|100|10|-100|900|950|99999|0|bob=interact")])
+        self.assertEqual(skipped, {"unknown_version": 0, "undecodable": 0})
+        self.assertEqual(claims, [pack.Claim(3, "alice", 100, 10, -100, 99999, "v2")])
+        self.assertEqual(claims[0].area(), (50, 150, -150, -50))
+        self.assertEqual(pack.area_blocks(claims[0]), ((3, -7, -10), (9, 2047, -4)))
+
+    def test_v3_format(self):
+        """The v3 record of plan section 3.3: twelve fields, the area the
+        map chunk that holds the stone; `kind` and `name`, empty in Round 85,
+        filled from the next round on, never change what is packed."""
+        self.assertEqual(pack.RECORD_FIELDS["v3"], len(V3_FORMAT.split("|")))
+        for kind, name in (("", ""), ("orc", "The Long Hearth")):
+            claims, skipped = claims_of([("claim:7", v3_record(kind=kind, name=name))])
+            self.assertEqual(skipped, {"unknown_version": 0, "undecodable": 0})
+            self.assertEqual(claims, [pack.Claim(7, "alice", -33, -100, 48, 99999, "v3")])
+            # x -33: chunk -1, nodes -112 to -33; z 48: chunk 1, nodes 48 to 127.
+            self.assertEqual(claims[0].area(), (-112, -33, 48, 127))
+            self.assertEqual(pack.area_blocks(claims[0]), ((-7, -7, 3), (-3, 2047, 7)))
+
+    def test_records_skipped(self):
+        """A record of another version is skipped and counted, never read
+        as one it is not; so is a known version that does not decode."""
+        claims, skipped = claims_of([
+            ("claim:1", v3_record()),
+            ("claim:2", "v2|bob|0|0|0|1|1|1|1|"),
+            ("claim:3", "v1|old|1|2|3"),
+            ("claim:4", "v4|" + v3_record()[3:] + "|more"),
+            ("claim:5", "V3" + v3_record()[2:]),
+            ("claim:6", v3_record() + "|"),                    # 13 fields
+            ("claim:7", v3_record()[:v3_record().rindex("|")]),  # 11 fields
+            ("claim:8", v3_record(owner="")),
+            ("claim:9", v3_record(paid_until="soon")),
+            ("claim:10", "v2|bob|0|0|0|1|1|1|1||"),            # 11 fields
+            ("claim:x", v3_record()),
+            ("player:alice", "v2|placed|1"),
+        ])
+        self.assertEqual([(c.id, c.version) for c in claims], [(1, "v3"), (2, "v2")])
+        self.assertEqual(skipped, {"unknown_version": 3, "undecodable": 6})
+
     def test_game_facts(self):
-        """The constants pack.py freezes, held to the game's files."""
+        """The game facts the pass shares with this checkout's game, for
+        every record version: the claim's floor, the fuel's lump, the map
+        reset that clears every `claim:` key whatever its version, the
+        charcoal, the workspace record."""
         registry = (REPO / "mods/PLAYER/grug_housing/registry.lua").read_text()
-        for name, value in (("RADIUS", pack.RADIUS), ("MIN_Y", pack.MIN_Y),
-                            ("LUMP_SECONDS", pack.LUMP_SECONDS)):
+        for name, value in (("MIN_Y", pack.MIN_Y), ("LUMP_SECONDS", pack.LUMP_SECONDS)):
             self.assertRegex(registry, r"\n\tM\.%s = %d\b" % (name, value))
-        self.assertIn('return table.concat({"v2", claim.owner, c.x, c.y, c.z, claim.placed_at,'
-                      '\n\t\t\tclaim.activated_at, claim.paid_until, claim.expired_for,', registry)
         self.assertIn('if keys[index]:match("^claim:") then storage.set_string(keys[index], "")',
                       registry)
         api = (REPO / "mods/PLAYER/grug_housing/api.lua").read_text()
@@ -212,6 +326,9 @@ class FrozenTest(unittest.TestCase):
         workspaces = (REPO / "mods/PLAYER/grug_jobs/workspaces.lua").read_text()
         self.assertIn('local PREFIX = "%s"' % pack.WORKSPACE_PREFIX, workspaces)
         self.assertIn("local record = {lists = {}, process = ctx.process}", workspaces)
+        # The map chunk: chunksize 5 is pinned by the mapgen runtime.
+        runtime = (REPO / "mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua").read_text()
+        self.assertIn('exact_integer_setting("chunksize", %d)' % pack.CHUNK_BLOCKS, runtime)
 
 
 class PackTest(PassCase):
@@ -239,6 +356,7 @@ class PackTest(PassCase):
             "default:bookshelf": 1, "default:chest": 6, "default:chest_locked": 1,
             "default:furnace_active": 1, "vessels:shelf": 1, "workspace record": 1})
         self.assertEqual(packed["empty"], {"default:chest": 1})
+        self.assertEqual(packed["skipped"], {"unknown_version": 0, "undecodable": 0})
         self.assertEqual(done["map_reset"], True)
         self.assertEqual((done["mode"], done["target"], done["applied"], done["pack_seq"]),
                          ("migrate", cli.read_checkout(None)[0], [], 1))
@@ -285,6 +403,19 @@ class PackTest(PassCase):
             self.assertTrue(abs(x - claim["center"]["x"]) <= 50 and
                             abs(z - claim["center"]["z"]) <= 50 and y >= -100)
         self.assertEqual(unmatched, [])
+
+    def test_v2_as_before(self):
+        """The v2 pass writes byte for byte what the tool before Round 85
+        wrote on this world (0c5e547f: the 13 entries, pack_seq and the
+        marker, as key and value; tools/r85_reset receipt)."""
+        before = self.storage()
+        self.assertEqual(self.run_tool("--map-reset")[0], 0)
+        added = sorted((m, k, v) for (m, k), v in self.storage().items()
+                       if before.get((m, k)) != v)
+        self.assertEqual(len(added), 15)
+        text = "".join("%s\t%s\t%s\n" % row for row in added)
+        self.assertEqual(hashlib.sha256(text.encode()).hexdigest(),
+                         "f786e4e30c99bb08480f4d4a24ee4caaa631ddd41ef8da3c263adbca0e4e2753")
 
     def test_largest_entry(self):
         """The 32-slot chest of written books (10000 characters each)."""
@@ -370,8 +501,13 @@ class PackTest(PassCase):
                                      "pack_baseline")
 
     def test_steps_after_pass(self):
-        """--map-reset packs first and then runs the due steps, in one run."""
+        """--map-reset packs first and then runs the due steps, in one run:
+        the test step and every step declared after 0.48.1 (since Round 53
+        the declaration has some; this test expected none until Round 85)."""
         self.set_storage("grug_core", "world_version", "0.48.1")
+        declared = [v for v, _ in cli.read_checkout(None)[1]
+                    if cli.parse_version(v) > (0, 48, 1)]
+        due = sorted(["0.49.5"] + declared, key=cli.parse_version)
         seen = []
 
         class Step:
@@ -384,10 +520,11 @@ class PackTest(PassCase):
         code, events, err = self.run_tool("--map-reset", steps={"0.49.5": Step})
         self.assertEqual(code, 0, err)
         self.assertEqual([e["event"] for e in events],
-                         ["start", "pack_start", "pack_done", "step_start", "step_done", "done"])
-        self.assertEqual(events[-1]["applied"], ["0.49.5"])
+                         ["start", "pack_start", "pack_done"] +
+                         ["step_start", "step_done"] * len(due) + ["done"])
+        self.assertEqual(events[-1]["applied"], due)
         self.assertEqual(len(seen[0]), 13, "the step sees the committed pass")
-        self.assertEqual(self.storage()[("grug_core", "world_version")], "0.49.5")
+        self.assertEqual(self.storage()[("grug_core", "world_version")], due[-1])
 
     def test_check(self):
         hashes = self.hashes()
@@ -492,16 +629,18 @@ class PackTest(PassCase):
         self.assertEqual(events[2]["counts"]["claims"], 0)
 
     def test_claim_records(self):
-        """A draft without fuel counts, a record that does not decode is
-        skipped (the game drops it), a claim away from any block packs
-        nothing."""
+        """A draft without fuel counts, a record of an unknown version or
+        one that does not decode is skipped and counted (the game drops
+        it), a claim away from any block packs nothing."""
         self.set_storage("grug_housing", "claim:3",
                          "v2|drafter|5000|20|5000|%d|0|%d|%d|" % (NOW - 60, NOW - 60, NOW - 60))
         self.set_storage("grug_housing", "claim:4", "v1|old|1|2|3")
         self.set_storage("grug_housing", "claim:x", "v2|bad|1|2|3|4|5|6|7|")
         code, events, err = self.run_tool("--map-reset")
         self.assertEqual(code, 0, err)
-        self.assertIn("2 claim record(s) do not decode", err)
+        self.assertIn("claim records skipped, as the game drops them: 1 of an unknown "
+                      "version, 1 that do not decode", err)
+        self.assertEqual(events[2]["skipped"], {"unknown_version": 1, "undecodable": 1})
         counts = events[2]["counts"]
         self.assertEqual((counts["claims"], counts["players"], counts["charcoal"]), (3, 2, 27))
         self.assertFalse(any(k.startswith("recovered:drafter:") for k in self.recovered()))
@@ -567,7 +706,163 @@ class PackTest(PassCase):
         self.assertEqual((code, events[-1]["reason"]), (2, "lock"))
 
 
+class V3Test(PassCase):
+    """The pass on v3 claims (Round 85): the map chunk that holds the stone,
+    on the engine-written blocks of world/, as built and moved by whole
+    blocks to negative coordinates (a block's data holds no position:
+    reference_projects/luanti src/mapblock.cpp MapBlock::serialize; node
+    metadata is indexed within the block)."""
+
+    # The probe's containers by their position as built (RECORD), all at
+    # z 1000: builder's row x 1002 to 1007 (1004 also holds the workspace
+    # record), an empty chest at 1008 (the next block, x 1008 to 1023), the
+    # border chests at 1050 and 1051, the MIN_Y chests at (1010, -100) and
+    # (1010, -101), and neighbor's chest at 1302.
+    ROW = [(x, 150, 1000) for x in range(1002, 1008)]
+    NEXT = [(1008, 150, 1000), (1010, -100, 1000), (1050, 150, 1000), (1051, 150, 1000)]
+
+    def move(self, dx, dz):
+        """Moves every map block by (dx, dz) blocks."""
+        conn = sqlite3.connect(self.world / "map.sqlite")
+        with conn:
+            rows = conn.execute("SELECT x, y, z, data FROM blocks").fetchall()
+            conn.execute("DELETE FROM blocks")
+            conn.executemany("INSERT INTO blocks VALUES (?, ?, ?, ?)",
+                             [(x + dx, y, z + dz, d) for x, y, z, d in rows])
+        conn.close()
+
+    def claim(self, number, owner, x, z, version="v3"):
+        """claim:<number> for `owner`'s stone at (x, 150, z), with the
+        times of the probe's claim of the same owner."""
+        built = next(c for c in RECORD["claims"] if c["owner"] == owner)
+        stored = self.storage()[("grug_housing", "claim:%d" % built["id"])].split("|")
+        times = dict(placed_at=stored[5], activated_at=stored[6], paid_until=stored[7],
+                     expired_for=stored[8])
+        if version == "v3":
+            text = v3_record(owner=owner, x=x, y=150, z=z, perms="", **times)
+        else:
+            text = "|".join(["v2", owner, str(x), "150", str(z)] + stored[5:9] + [""])
+        self.set_storage("grug_housing", "claim:%d" % number, text)
+
+    def scanned(self):
+        """Per owner the positions the pass packs, and the blocks it read."""
+        backends = cli.worldmod.open_world(str(self.world))
+        reader = mapblock.open_map(self.world, {"backend": "sqlite3"})
+        try:
+            claims, _ = pack.read_claims(backends["mod_storage"])
+            scans = [pack.scan_claim(reader, claim) for claim in claims]
+        finally:
+            reader.close()
+            cli.worldmod.close_world(backends)
+        return ({s.claim.owner: sorted(c.pos for c in s.containers) for s in scans},
+                {s.claim.owner: s.blocks for s in scans})
+
+    def stored_blocks(self, bx, bz):
+        """The stored blocks of the chunk whose first block is (bx, bz),
+        y from MIN_Y's block up, counted straight from the map."""
+        conn = sqlite3.connect(self.world / "map.sqlite")
+        try:
+            return conn.execute(
+                "SELECT COUNT(*) FROM blocks WHERE x BETWEEN ? AND ? AND z BETWEEN ? AND ? "
+                "AND y >= -7", (bx, bx + 4, bz, bz + 4)).fetchone()[0]
+        finally:
+            conn.close()
+
+    def check_chunk(self, blocks):
+        """builder's stone at (1000, z 1000) lies in chunk 12 (nodes 928 to
+        1007): its row is packed up to the chunk's last column, 1007, the
+        chest at 1008 is not. A second claim's stone at 1040 lies in chunk
+        13 (1008 to 1087): from its first column, 1008, both border chests
+        and the chest at y = MIN_Y, not the one below. Moved by -80 blocks
+        (-1280 nodes) the same holds in chunks -4 (-352 to -273) and -3
+        (-272 to -193), stones at -280 and -240."""
+        d = blocks * 16
+        self.move(blocks, blocks)
+        self.claim(1, "builder", 1000 + d, 1000 + d)
+        self.claim(2, "neighbor", 1040 + d, 1000 + d)
+        positions, read = self.scanned()
+        moved = lambda ps: [(x + d, y, z + d) for x, y, z in ps]
+        # The furnace at 1004 twice: its node and its workspace record.
+        self.assertEqual(positions, {
+            "builder": sorted(moved(self.ROW + [(1004, 150, 1000)])),
+            "neighbor": sorted(moved(self.NEXT))})
+        c = (12 if blocks == 0 else -4) * 5 - 2
+        self.assertEqual(read, {"builder": self.stored_blocks(c, c),
+                                "neighbor": self.stored_blocks(c + 5, c)})
+        self.assertGreater(read["builder"], 100)
+
+        code, events, err = self.run_tool("--map-reset")
+        self.assertEqual(code, 0, err)
+        done = events[2]
+        self.assertEqual(done["counts"]["containers"], 11)
+        self.assertEqual(done["counts"]["blocks_read"], sum(read.values()))
+        self.assertEqual(done["empty"], {"default:chest": 1})
+        built = {key(c["pos"]): c for c in RECORD["containers"]}
+        owners = dict([(p, "builder") for p in self.ROW] +
+                      [(p, "neighbor") for p in self.NEXT])
+        self.assert_entries(self.recovered(), [built[p] for p in owners], owners)
+        recovered = self.recovered()
+        self.assertEqual(sorted(k for k in recovered if k.startswith("recovered:builder:")),
+                         sorted("recovered:builder:1:%d" % n for n in range(1, 9)))
+        self.assertEqual(recovered["recovered:builder:1:8"], "grug_smelting:charcoal 22")
+        self.assertEqual(recovered["recovered:neighbor:1:5"], "grug_smelting:charcoal 5")
+
+    def test_chunk(self):
+        self.check_chunk(0)
+
+    def test_chunk_negative(self):
+        self.check_chunk(-80)
+
+    def test_mixed(self):
+        """v3 and v2 claims in one world, with records of other versions:
+        each read with its own area, the others skipped and counted."""
+        self.claim(1, "builder", 1000, 1000)                   # v3: chunk 12
+        self.claim(2, "neighbor", 1300, 1000, version="v2")    # v2: 1250 to 1350
+        self.set_storage("grug_housing", "claim:5", "v4|future|1010|150|1000|1|1|1|1||||")
+        self.set_storage("grug_housing", "claim:6", "v1|old|1010|-100|1000")
+        self.set_storage("grug_housing", "claim:7", v3_record(owner="short")[:-2])
+        code, events, err = self.run_tool("--map-reset")
+        self.assertEqual(code, 0, err)
+        done = events[2]
+        self.assertEqual(done["skipped"], {"unknown_version": 2, "undecodable": 1})
+        self.assertIn("2 of an unknown version, 1 that do not decode", err)
+        self.assertEqual((done["counts"]["claims"], done["counts"]["players"],
+                          done["counts"]["containers"], done["counts"]["charcoal"]),
+                         (2, 2, 8, 27))
+        built = {key(c["pos"]): c for c in RECORD["containers"]}
+        owners = dict([(p, "builder") for p in self.ROW] + [((1302, 150, 1000), "neighbor")])
+        self.assert_entries(self.recovered(), [built[p] for p in owners], owners)
+        # The dry run reports the same.
+        self.set_storage("grug_core", "map_reset_pack:1", None)
+        code, events, _ = self.run_tool("--check", "--map-reset")
+        self.assertEqual((code, events[-1]["pack"]["skipped"]),
+                         (0, {"unknown_version": 2, "undecodable": 1}))
+
+
 class EntryTest(unittest.TestCase):
+    def test_chunk_arithmetic(self):
+        """Plan section 3.3's chunk: c = floor((floor(x / 16) + 2) / 5), nodes
+        80 c - 32 to 80 c + 47, at every x of a stretch across zero; and a
+        v3 claim's area at the chunk edges, from MIN_Y upward."""
+        for x in range(-1000, 1000):
+            c = math.floor((math.floor(x / 16) + 2) / 5)
+            self.assertEqual(pack.chunk_low(x), 80 * c - 32, x)
+        for x, low in ((-113, -192), (-112, -112), (-33, -112), (-32, -32), (0, -32),
+                       (47, -32), (48, 48), (127, 48), (128, 128)):
+            self.assertEqual(pack.chunk_low(x), low, x)
+        claim = pack.Claim(1, "a", -33, 5, 47, 0, "v3")
+        self.assertEqual(claim.area(), (-112, -33, -32, 47))
+        for (x, y, z), inside in ((( -112, 5, -32), True), ((-33, 5, 47), True),
+                                  ((-113, 5, 0), False), ((-32, 5, 0), False),
+                                  ((-50, 5, -33), False), ((-50, 5, 48), False),
+                                  ((-50, -100, 0), True), ((-50, -101, 0), False),
+                                  ((-50, 30000, 0), True)):
+            self.assertEqual(pack.in_area(claim, x, y, z), inside, (x, y, z))
+        # v2 at the same stone: x +- 50, z +- 50.
+        old = pack.Claim(1, "a", -33, 5, 47, 0)
+        self.assertEqual(old.area(), (-83, 17, -3, 97))
+        self.assertTrue(pack.in_area(old, 17, -100, 97) and not pack.in_area(old, 18, 0, 0))
+
     def test_charcoal(self):
         claim = pack.Claim(1, "a", 0, 0, 0, 1000)
         L = pack.LUMP_SECONDS

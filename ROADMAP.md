@@ -23,10 +23,13 @@ next step.
   [concept](docs/planning/accounts-concept.md)): characters linked to an
   account on the realm's website, with account rewards that reach every
   linked character: the Cheer emote for every account, the Supporter and
-  donor cloaks. Next: the end-to-end test
-  on the rehearsal realm; more Supporter content, account bans, characters
-  created through a bridge command, character deletion and the shared
-  Claim Stone are later phases.
+  donor cloaks; a character can be deleted from the website. Next: the
+  account Claim Stone shared by an account's characters, home names and the
+  Account page on the website, built together with the new claim preview
+  ([housing concept](docs/planning/housing-rework-concept.md) Part B), and
+  the end-to-end test on the rehearsal realm; more Supporter content,
+  account bans and characters created through a bridge command are later
+  phases.
 - **Classes, talents and character progression:** make leveling bring more
   meaningful customization. Start with fewer skills and let talent choices
   decide more of which abilities a character gains or leaves out. Build
@@ -116,9 +119,11 @@ available in the game. Detailed follow-up scope:
   anywhere, camps included.
 - **Housing lives in the open world** ([housing.md](docs/design/housing.md)).
   From level 20 each player gets one free, soulbound Claim Stone from a
-  capital's Housing Steward. It claims a 101 × 101 column from y = −100 up
-  in the player's own level-11–30 home zones, protects it while coal or
-  charcoal burns, grants Interact or Everything to named players and can be
+  capital's Housing Steward. It claims the map chunk of 80 × 80 nodes it
+  stands in, from y = −100 up, in the player's own level-11–30 and capital
+  zones, where the whole chunk holds no road, settlement, camp or quest
+  content and quest creatures keep half their ground; it protects it while
+  coal or charcoal burns, grants Interact or Everything to named players and can be
   the travel-home target. There are no tiers, and private housing islands
   do not exist.
 - **One six-tier material spine serves every race.** Bronze, Iron, Steel,

@@ -935,3 +935,19 @@ register("rift_pulse_windup", {rift_burst(15, 1, 1.5), rift_burst(15, 1, 1.5, 1)
 register("rift_pulse", {rift_burst(40, 0.4, 6)})
 -- The boss rising from the rift: 1.5 s as a 1 s and a 0.5 s piece.
 register("rift_rise", {rift_burst(40, 1, 2), rift_burst(20, 0.5, 2, 1)})
+
+-- The arena "Breach Road"'s two cold hearths (Round 85 lane BUILD; the
+-- draft's recipe, tools/r84_arena_draft/smoke.py): one 1 s spawner per
+-- hearth every second (grug_mapgen/breach_smoke.lua), caster = the puffs'
+-- origin. The draft's tint and 64 % start opacity, on the white mote with
+-- the plain blend (the game's smoke look, the user 2026-10-21; the draft
+-- drew it on the shipped smoke puff); its drift east and a little north. Three puffs a second that live 3 s (the
+-- helper's longest; the draft's 5.5 s at two a second) keep at most 9 live
+-- per hearth, 18 for the pair, inside the draft's 22; the faster rise
+-- (2.6-3.2 instead of 2.2 nodes/s) still carries them past the piers. The
+-- sizes are random within the draft's growth (0.9 -> 3.4 nodes), not tweened.
+register("breach_hearth_smoke", {
+	spawner(3, 1, plain({color = "#b9b4ae^[opacity:163",
+		shape = {"box", {-0.13, 0, -0.13}, {0.13, 0, 0.13}},
+		vel = {{0.46, 2.6, 0.06}, {0.64, 3.2, 0.24}}, exp = {3, 3}, size = {9, 24}})),
+})

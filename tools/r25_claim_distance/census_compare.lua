@@ -9,7 +9,8 @@
 local repo, mode = arg[1], arg[2]
 local W = dofile(repo .. "/tools/r25_road_poi/world.lua")(repo, "4242424242")
 local Z = W.session
-local registry = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")
+-- Round 85: the old 101 x 101 rule, frozen (the game's claim is a map chunk)
+local registry = dofile(repo .. "/tools/r85_claimcap/registry_084.lua")
 local data = {}
 local M = registry({storage = {get_string = function(k) return data[k] or "" end,
 	set_string = function(k, v) data[k] = v end,

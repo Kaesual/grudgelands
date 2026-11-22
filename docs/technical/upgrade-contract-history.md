@@ -1,7 +1,7 @@
 # Upgrade contract: the declared releases
 
 The per-release case history of the [upgrade contract](upgrade-contract.md) §2 (the
-declaration): why each release from 0.41.0 to 0.82.0 declared its map reset, step or
+declaration): why each release from 0.41.0 to 0.85.0 declared its map reset, step or
 neither. Section numbers (§) refer to the upgrade contract. The rules are in the
 contract; this file only records the cases.
 
@@ -149,8 +149,8 @@ contract; this file only records the cases.
   Lethariel and Kezamba. Item, node and socket ids stay. `map_reset_pass`
   stays 0.50.0. The production world moves from 0.65.0 to 0.70.0 across one
   reset and runs the steps 0.67.0 and 0.69.0.
-- 0.71.0 to 0.73.0, 0.74.0, 0.75.4, 0.76.0 to 0.76.2 and 0.78.0 to 0.82.0
-  are compatible: no map reset, no step. The stores they add are not
+- 0.71.0 to 0.73.0, 0.74.0, 0.75.4, 0.76.0 to 0.76.2, 0.78.0 to 0.83.0, 0.84.0
+  and 0.84.1 are compatible: no map reset, no step. The stores they add are not
   map-bound and stay at a map reset: the clans (0.76.0) and the website
   accounts (0.79.0), §3.2. 0.82.0 (Round 82, faster world generation with
   byte-identical output) changes 16 files of the preparation digest, so a
@@ -168,3 +168,8 @@ contract; this file only records the cases.
   Registrar outside the great hall's door (0.75.3) and the towns' new
   structural frames (0.75.5) change what world generation builds. Item and
   node ids stay; no step. `map_reset_pass` stays 0.50.0.
+- 0.85.0 (Round 85, the arena and grid claims) needs the twentieth map
+  reset: the arena joins world generation and a claim becomes one map chunk
+  (record v3). Nothing converts a v2 claim: the pass packs its containers
+  from its 101 × 101 square and the reset clears it. No step;
+  `map_reset_pass` stays 0.50.0.

@@ -8,7 +8,8 @@
 --    prints which registered mobs a claim refuses (the hostile role) and
 --    which it never refuses (neutral prey, passive critters, fish, NPCs).
 -- 2. grug_mobs.claim_refuses_spawn on fake claims: an active and an expired
---    claim, no claim, the ±50 edge, the corner, the y floor, no housing mod;
+--    claim, no claim, the chunk's edges, the corners, the y floor, no
+--    housing mod;
 --    exactly one claim_at call per hostile attempt and none otherwise.
 -- 3. The three real call sites, cut verbatim out of their files and run on
 --    stubs: init.lua mobs:spawn_abm_check (policy first, then the claim; the
@@ -38,8 +39,11 @@ check(#roster.failed == 0, "every mob file loads: " .. table.concat(roster.faile
 local gm = roster.grug_mobs
 check(type(gm.claim_refuses_spawn) == "function", "claim_refuses_spawn exported")
 
--- Fake claim core. Claims are 101 x 101 columns (±50) from MIN_Y upward.
-local RADIUS, MIN_Y = 50, -100
+-- Fake claim core. Round 85: a claim is the map chunk of its stone, 80 x 80
+-- columns (x and z 80 c - 32 .. 80 c + 47) from MIN_Y upward (the old fake
+-- was the 101 x 101 square).
+local MIN_Y = -100
+local function chunk_lo(v) return 80 * math.floor((v + 32) / 80) - 32 end
 local NOW = 1000000
 local CLAIMS = {
 	{id = 1, owner = "alice", center = {x = 1000, y = 20, z = 1000},
@@ -50,13 +54,13 @@ local CLAIMS = {
 local claim_at_calls = 0
 local function fake_housing()
 	return {
-		RADIUS = RADIUS, MIN_Y = MIN_Y,
+		MIN_Y = MIN_Y,
 		claim_at = function(pos)
 			claim_at_calls = claim_at_calls + 1
 			if pos.y < MIN_Y then return nil end
 			for i = 1, #CLAIMS do
 				local c = CLAIMS[i].center
-				if math.abs(pos.x - c.x) <= RADIUS and math.abs(pos.z - c.z) <= RADIUS then
+				if chunk_lo(pos.x) == chunk_lo(c.x) and chunk_lo(pos.z) == chunk_lo(c.z) then
 					return CLAIMS[i]
 				end
 			end
@@ -126,22 +130,23 @@ check(not gm.claim_refuses_spawn(PASSIVE, ACTIVE), "active claim: passive spawns
 check(not gm.claim_refuses_spawn(HOSTILE, EXPIRED), "expired claim: hostile spawns")
 check(not gm.claim_refuses_spawn(PASSIVE, EXPIRED), "expired claim: passive spawns")
 check(not gm.claim_refuses_spawn(HOSTILE, FREE), "no claim: hostile spawns")
-for _, d in ipairs({50, -50}) do
+-- ACTIVE's chunk is x and z 928 .. 1007: its edges lie at -72 and +7.
+for _, d in ipairs({7, -72}) do
 	check(gm.claim_refuses_spawn(HOSTILE, at(d, 0)), "edge x " .. d .. " inside")
 	check(gm.claim_refuses_spawn(HOSTILE, at(0, d)), "edge z " .. d .. " inside")
 	local out = d > 0 and d + 1 or d - 1
 	check(not gm.claim_refuses_spawn(HOSTILE, at(out, 0)), "x " .. out .. " outside")
 	check(not gm.claim_refuses_spawn(HOSTILE, at(0, out)), "z " .. out .. " outside")
 end
-check(gm.claim_refuses_spawn(HOSTILE, at(50, 50)), "corner (50, 50) inside")
-check(gm.claim_refuses_spawn(HOSTILE, at(-50, -50)), "corner (-50, -50) inside")
-check(not gm.claim_refuses_spawn(HOSTILE, at(51, 50)), "corner (51, 50) outside")
-check(not gm.claim_refuses_spawn(HOSTILE, at(50, -51)), "corner (50, -51) outside")
-check(gm.claim_refuses_spawn(HOSTILE, at(10, 10, 300)), "high above the stone: inside")
-check(gm.claim_refuses_spawn(HOSTILE, at(10, 10, -60)), "cave at y -60: inside")
-check(gm.claim_refuses_spawn(HOSTILE, at(10, 10, MIN_Y)), "y = MIN_Y: inside")
-check(not gm.claim_refuses_spawn(HOSTILE, at(10, 10, MIN_Y - 1)), "y = MIN_Y - 1: outside")
-check(not gm.claim_refuses_spawn(HOSTILE, at(49, 0, nil, EXPIRED)), "expired edge: spawns")
+check(gm.claim_refuses_spawn(HOSTILE, at(7, 7)), "corner (7, 7) inside")
+check(gm.claim_refuses_spawn(HOSTILE, at(-72, -72)), "corner (-72, -72) inside")
+check(not gm.claim_refuses_spawn(HOSTILE, at(8, 7)), "corner (8, 7) outside")
+check(not gm.claim_refuses_spawn(HOSTILE, at(7, -73)), "corner (7, -73) outside")
+check(gm.claim_refuses_spawn(HOSTILE, at(5, 5, 300)), "high above the stone: inside")
+check(gm.claim_refuses_spawn(HOSTILE, at(5, 5, -60)), "cave at y -60: inside")
+check(gm.claim_refuses_spawn(HOSTILE, at(5, 5, MIN_Y)), "y = MIN_Y: inside")
+check(not gm.claim_refuses_spawn(HOSTILE, at(5, 5, MIN_Y - 1)), "y = MIN_Y - 1: outside")
+check(not gm.claim_refuses_spawn(HOSTILE, at(47, 0, nil, EXPIRED)), "expired edge: spawns")
 _G.grug_housing = nil
 local before = claim_at_calls
 check(not gm.claim_refuses_spawn(HOSTILE, ACTIVE), "no housing mod: nothing refused")
@@ -162,7 +167,7 @@ do
 	model.load()
 	_G.grug_housing = {claim_at = model.claim_at, is_active = model.is_active}
 	local claim = model.create("carol", {x = 5000, y = 20, z = 5000})
-	local spot = {x = 5020, y = 21, z = 4980}
+	local spot = {x = 5005, y = 21, z = 4980} -- the chunk is x and z 4928 .. 5007
 	check(model.is_draft(claim) and not gm.claim_refuses_spawn(HOSTILE, spot),
 		"R26: a draft refuses no hostile spawn")
 	model.activate(claim, 5)
@@ -214,9 +219,9 @@ blocked, lookups = abm(HOSTILE, {x = EXPIRED.x, y = EXPIRED.y - 1, z = EXPIRED.z
 check(not blocked and lookups == 1, "abm: hostile in expired claim spawns")
 blocked, lookups = abm(HOSTILE, {x = FREE.x, y = FREE.y - 1, z = FREE.z})
 check(not blocked and lookups == 1, "abm: hostile outside claims spawns")
-blocked, lookups = abm(HOSTILE, {x = ACTIVE.x + 51, y = 20, z = ACTIVE.z})
+blocked, lookups = abm(HOSTILE, {x = ACTIVE.x + 8, y = 20, z = ACTIVE.z})
 check(not blocked and lookups == 1, "abm: hostile one column past the edge spawns")
-blocked = abm(HOSTILE, {x = ACTIVE.x - 50, y = 20, z = ACTIVE.z + 50})
+blocked = abm(HOSTILE, {x = ACTIVE.x - 72, y = 20, z = ACTIVE.z + 7})
 check(blocked, "abm: hostile on the edge corner blocked")
 -- Stand position = matched node + 1: a node at MIN_Y - 1 puts the mob at MIN_Y.
 check(abm(HOSTILE, {x = ACTIVE.x, y = MIN_Y - 1, z = ACTIVE.z}), "abm: stand y = MIN_Y blocked")
@@ -248,7 +253,7 @@ check(spawn_one(camp_pos, {}, bandit_cfg, 0) == false and #added == 0,
 	"camp: bandit slot in an active claim not served")
 check(spawn_one(camp_pos, {}, guard_cfg, 1) == true and #added == 1,
 	"camp: guard slot in an active claim served")
-spot_next = {x = ACTIVE.x + 51, y = 21, z = ACTIVE.z}
+spot_next = {x = ACTIVE.x + 8, y = 21, z = ACTIVE.z}
 check(spawn_one(camp_pos, {}, bandit_cfg, 0) == true and #added == 2,
 	"camp: bandit slot beyond the edge served")
 spot_next = {x = EXPIRED.x, y = 21, z = EXPIRED.z}

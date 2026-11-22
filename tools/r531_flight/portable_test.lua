@@ -301,12 +301,14 @@ do
 		settlement_socket_settlements = function() return {} end,
 		start_identities = function() return {} end})
 	rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
-	local registry = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")
-	local storage = {get_string = function() return "" end, set_string = noop,
-		keys = function() return {} end}
-	local model = registry({storage = storage, now = function() return 0 end})
-	rawset(_G, "grug_housing", {column_problem = model.column_problem,
-		SETTLEMENT_MARGIN = model.SETTLEMENT_MARGIN,
+	-- Round 85: the column rule and the margin are the claim mask's, as
+	-- api.lua publishes them (territory false judges the zone alone).
+	local claim_mask = dofile(repo .. "/mods/PLAYER/grug_housing/claim_mask.lua")
+	rawset(_G, "grug_housing", {column_problem = function(faction, water, zone, territory)
+			if territory == false then territory = faction .. "_home" end
+			return claim_mask.column_problem(faction, water, zone, territory)
+		end,
+		SETTLEMENT_MARGIN = claim_mask.MARGIN,
 		placement_world = {territory_at = function(x, z)
 			return RECORDS[owner(x, z)].territory_rule
 		end, feature_in = function() return nil end}})
@@ -404,8 +406,9 @@ local model = registry({storage = {get_string = function(k) return data[k] or ""
 	set_string = function(k, v) data[k] = v ~= "" and v or nil end,
 	keys = function() return {} end}, now = function() return 1800000000 end})
 model.load()
-rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", RADIUS = model.RADIUS,
-	claims_in = model.claims_in, claim_set_version = model.claim_set_version})
+rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
+	claim_set_version = model.claim_set_version})
 rawset(_G, "grug_map", {quest_slots = function() return {} end, atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Somewhere" end}})
 grug_map.base = B
