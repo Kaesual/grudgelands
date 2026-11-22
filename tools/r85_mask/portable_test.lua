@@ -711,7 +711,8 @@ do
 	m = boot()
 	missing_map = nil
 	check(m == nil and #severe == 1 and severe[1].key == "claim_mask" and
-		severe[1].text:find("acc_cap", 1, true) ~= nil and files[SNAP] == nil,
+		severe[1].text:find("acc_cap", 1, true) ~= nil and files[SNAP] == nil and
+		files["/fakeworld/grug_road_chunks.txt"] ~= nil,
 		"glue: a missing region map fails the mask closed (" ..
 		tostring(severe[1] and severe[1].text) .. ")")
 
@@ -737,6 +738,26 @@ do
 		if line:find("is kept", 1, true) then kept = true end
 	end
 	check(m ~= nil and kept and files[SNAP] == written, "glue: a later start keeps it")
+
+	-- A failed atomic replacement preserves the last map until a retry succeeds.
+	local road_file = "/fakeworld/grug_road_chunks.txt"
+	local original = assert(files[road_file])
+	local write = env.core.safe_file_write
+	env.core.safe_file_write = function(path, bytes)
+		if path == road_file then return false end
+		return write(path, bytes)
+	end
+	env.grug_core.map_reset.applied = 1
+	m = boot()
+	check(m and #severe == 1 and severe[1].key == "road_chunk_snapshot" and
+		files[road_file] == original, "road capture failure preserves the old map and housing")
+	env.core.safe_file_write = write
+	m = boot()
+	local ref = dofile(repo .. "/mods/PLAYER/grug_housing/road_reference.lua")(CM)
+	local record = assert(ref.decode(files[road_file], sha256))
+	check(m and #severe == 0 and record.map_reset == 1 and record.previous_reset == 0,
+		"road reference retries the reset after a write failure")
+
 end
 
 print(("r85_mask: %d checks, %d failures"):format(checks, failures))

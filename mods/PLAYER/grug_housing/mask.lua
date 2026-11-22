@@ -40,9 +40,29 @@ local BUILDER_FILES = {
 	{"grug_core", "zone_authority.lua"},
 }
 
+-- Capture from the same finished map on either a layout cache hit or miss.
+local ROAD_REF = dofile(modpath .. "/road_reference.lua")(CM)
+local function road_snapshot(world, world_dir)
+	local path = world_dir .. "/" .. ROAD_REF.FILE
+	local previous, why = ROAD_REF.decode(read_file(path), core.sha256)
+	if not previous and why ~= "missing" then
+		core.log("warning", "[grug_housing] rebuilding road reference (" .. why .. ")")
+	end
+	local t0 = core.get_us_time()
+	local record = ROAD_REF.advance(core.get_mapgen_setting("seed"), grug_core.map_reset.applied,
+		previous, function() return ROAD_REF.capture(world) end)
+	if record then
+		if not core.safe_file_write(path, ROAD_REF.encode(record, core.sha256)) then
+			error("cannot write " .. path, 0)
+		end
+		core.log("action", ("[grug_housing] road chunk reference stored for map %d in %.2f s"):
+			format(record.map_reset, (core.get_us_time() - t0) / 1e6))
+	end
+end
+
 -- The claim mask's world (claim_mask.lua `world`) from what grug_zones,
 -- grug_core, grug_mapgen and grug_mobs publish.
-local function build_world()
+local function build_world(world_dir)
 	local wp40 = core.get_modpath("grug_mapgen") .. "/wp40"
 	local source = dofile(wp40 .. "/source/simple_map.lua")
 	local world = {bounds = source.world_bounds, zones = {}}
@@ -77,6 +97,11 @@ local function build_world()
 			grug_mapgen.wp40.road_layout_text)) do
 		world.roads[#world.roads + 1] = {id = c.id, X = c.X, Z = c.Z, R = c.R,
 			reach = c.half_width + c.side}
+	end
+	local road_ok, road_err = pcall(road_snapshot, world, world_dir)
+	if not road_ok then
+		grug_core.severe.report("grug_housing", "could not capture road chunks for this map",
+			tostring(road_err), "road_chunk_snapshot")
 	end
 	world.cities = {}
 	local shapes = grug_mapgen.wp40.capital_protection
@@ -169,7 +194,7 @@ end
 local function start()
 	local t0 = core.get_us_time()
 	local world_dir = core.get_worldpath()
-	local world = build_world()
+	local world = build_world(world_dir)
 	local t_world = core.get_us_time()
 	local key, why = cache_key()
 	local scans, cache_state, damaged

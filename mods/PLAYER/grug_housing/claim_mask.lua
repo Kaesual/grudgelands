@@ -262,24 +262,45 @@ local HALF_DIAGONAL = sqrt(0.5)
 -- segment a-b: the road corridor's x/z rule (world_protection.lua kind_at
 -- without its vertical band). Exact: every point of the rectangle is within
 -- sqrt(0.5) of one of its columns, so only a near miss scans columns.
-local function segment_hits_columns(ax, az, bx, bz, reach, x0, z0, x1, z1)
+local function segment_hits_columns(ax, az, bx, bz, reach, x0, z0, x1, z1, accepts)
 	local d2 = segment_rect_d2(ax, az, bx, bz, x0, z0, x1, z1)
 	local r2 = reach * reach
 	if d2 > r2 then return false end
 	local d = sqrt(d2)
-	if d + HALF_DIAGONAL <= reach then return true end
+	if not accepts and d + HALF_DIAGONAL <= reach then return true end
 	local xa = max(x0, floor(min(ax, bx) - reach))
 	local xb = min(x1, floor(max(ax, bx) + reach) + 1)
 	local za = max(z0, floor(min(az, bz) - reach))
 	local zb = min(z1, floor(max(az, bz) + reach) + 1)
 	for z = za, zb do
 		for x = xa, xb do
-			if point_segment_d2(x, z, ax, az, bx, bz) <= r2 then return true end
+			if point_segment_d2(x, z, ax, az, bx, bz) <= r2 and
+					(not accepts or accepts(x, z)) then return true end
 		end
 	end
 	return false
 end
 M.segment_hits_columns = segment_hits_columns
+
+-- Add the distinct chunks touched by this corridor. Housing placement accepts
+-- every protected column. The road history restricts the same test to its zones.
+function M.mark_road_chunks(road, marked, key_for, accepts, already)
+	local X, Z, reach = road.X, road.Z, road.reach
+	for i = 1, #X - 1 do
+		local ax, az, bx, bz = X[i], Z[i], X[i + 1], Z[i + 1]
+		for cz = M.chunk_of(floor(min(az, bz) - reach)), M.chunk_of(floor(max(az, bz) + reach) + 1) do
+			for cx = M.chunk_of(floor(min(ax, bx) - reach)), M.chunk_of(floor(max(ax, bx) + reach) + 1) do
+				local key = key_for(cx, cz)
+				if not marked[key] and not (already and already[key]) then
+					local x0, z0, x1, z1 = M.chunk_bounds(cx, cz)
+					if segment_hits_columns(ax, az, bx, bz, reach, x0, z0, x1, z1, accepts) then
+						marked[key] = true
+					end
+				end
+			end
+		end
+	end
+end
 
 --
 -- The build
@@ -400,21 +421,7 @@ function M.build(world, scans)
 	-- Rule 3: the chunks a road corridor holds a column of (x/z).
 	local road_chunks = {}
 	for _, road in ipairs(world.roads) do
-		local X, Z, reach = road.X, road.Z, road.reach
-		for i = 1, #X - 1 do
-			local ax, az, bx, bz = X[i], Z[i], X[i + 1], Z[i + 1]
-			for cz = M.chunk_of(floor(min(az, bz) - reach)), M.chunk_of(floor(max(az, bz) + reach) + 1) do
-				for cx = M.chunk_of(floor(min(ax, bx) - reach)), M.chunk_of(floor(max(ax, bx) + reach) + 1) do
-					local key = key_of(cx, cz)
-					if not road_chunks[key] then
-						local x0, z0, x1, z1 = M.chunk_bounds(cx, cz)
-						if segment_hits_columns(ax, az, bx, bz, reach, x0, z0, x1, z1) then
-							road_chunks[key] = true
-						end
-					end
-				end
-			end
-		end
+		M.mark_road_chunks(road, road_chunks, key_of)
 	end
 
 	-- Rule 4: camp cells, and the points with their SPOT square.

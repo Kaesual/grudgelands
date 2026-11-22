@@ -234,6 +234,9 @@ Not planned yet.
 
 ### Other world work
 
+- Use frozen occupied home chunks to guide roads in a later map-reset release
+  ([Round 87](docs/planning/round87-plan.md#carry-overs)).
+
 - **Road faces on steep hillsides:** a road's cut now meets the ground at its side zone's
   edge, but on steep hills its outer part is a rock face as steep as the hill or, beside
   deep cuts, steeper (up to about 12–13 per node), and the foot of a deep cut can steepen

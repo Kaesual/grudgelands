@@ -4,13 +4,13 @@ Round 85 (lane MASK; plan rulings 6, 7, 14–16 and 20). The claim mask says
 which 80 × 80 map chunks are claim ground for each faction
 ([housing.md](../design/housing.md) §2); `grug_housing` builds it at every
 start from the world plan (`mods/PLAYER/grug_housing/claim_mask.lua`, the
-engine glue `mask.lua`) and keeps two plain-text files in the world folder.
-`claim_mask_store.lua` writes and reads them in the game; this page is the
+engine glue `mask.lua`) and keeps the claim snapshot and scan cache in the world folder. Round 87
+also records the roads in housing areas. This page is the
 format for every other reader, a Python tool in particular (the later soft
 map reset, [housing rework concept](../planning/housing-rework-concept.md)
 Part C).
 
-Both files are text lines ending in `\n`, ASCII, and end in one trailer
+The files are text lines ending in `\n`, ASCII, and end in one trailer
 line `end <sha256>`: the lowercase hex SHA-256 of every byte before that
 line. A file whose trailer is missing or whose hash differs is damaged and
 is not read.
@@ -116,6 +116,26 @@ column problem the scan met (`shelf`, `sea`, `enemy`, `low_level`,
 `high_level`, `not_home`, `town`, `deep_water`); `cap` is `1` when the chunk
 holds a capital-zone column (the capital ring's condition), else `0`. Rows
 are sorted by their `cx cz faction` text.
+
+## grug_road_chunks.txt
+
+Round 87 adds a separate road reference. On the first start of a map, housing
+records every 80 × 80 chunk where a protected road corridor covers at least one
+node column in either faction's housing zones. Zone membership comes from the
+same faction and level rules as housing. Other claim exclusions and actual
+player occupancy have no effect. The snapshot includes capital streets and trails.
+Column tests use the finished polylines, with half width plus the protection margin.
+
+The body starts with `grug_road_chunks_v1`, then `grid 80 -32`, `seed <full seed>`,
+`reset <applied reset counter>` and `from <previous counter or ->` on separate
+lines. Two sections, `previous <count>` and `current <count>`, each have that
+many unique `cx cz` lines in lexical order. The file ends in the same SHA-256
+trailer as the claim snapshot. A single atomic write installs both sets.
+A restart of the same map reuses that file. At the next reset of the same world
+and seed, the old current set becomes the previous set. A missing, damaged or
+different-seed reference starts a new history. A failed write is reported and
+retried next start. Round 87 ships ordinary live routing and uses the stored
+occupancy in the offline road study.
 
 ## Sizes and cost
 

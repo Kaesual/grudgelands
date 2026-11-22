@@ -13,6 +13,13 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.87.0 — Recording roads in housing areas (2026-11-22)
+
+Compatible upgrade from 0.86.1. The world records which housing-area chunks its
+roads already occupy. An offline study checks how future roads could spare chunks
+where players placed homes. The first map after the scheduled full reset uses the usual
+roads and claims.
+
 ## 0.86.1 — the Account page names the website's way to a link code (2026-11-22)
 
 Compatible: no map reset, no new world, nothing for the host to do. A world

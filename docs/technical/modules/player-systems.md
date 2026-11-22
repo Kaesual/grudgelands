@@ -524,6 +524,10 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     `expire`) counts it, so a home that bears a place's name still shows.
     Fixture `tools/r86_names/portable_test.lua`; pictures
     `tools/r86_names/capture.sh`.
+  - Round 87 captures `grug_road_chunks.txt` from the finished road corridors
+    before the spawn-region and claim checks. It records the geographic housing
+    zones, including capital streets, with separate old and current chunk sets.
+    [World file format](../claim-mask-format.md#grug_road_chunkstxt).
   - `claim_mask.lua` (pure, Round 85 lane MASK), `claim_mask_store.lua`
     (its two world-folder files) and `mask.lua` (the engine glue): the
     claim mask ([housing.md](../../design/housing.md) §2): which 80 × 80
