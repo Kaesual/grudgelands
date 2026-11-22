@@ -8,8 +8,9 @@ at the top of the table, drops the oldest row and replaces the lines that change
 ## Now
 
 - **Game:** 0.85.0 (`game.conf`): Round 85 (the arena Breach Road, claims by map chunk;
-  **map reset**), squash commit and tag set after the squash. Round 84 (`78b787a6`, tag
-  `round-84`) and 0.84.1 (`b4540eba`, `round-84.1`) not pushed (only the user pushes).
+  **map reset**) as the squash commit `6dec5010`, tag `round-85`, synced to the user's
+  game. Not pushed, like Round 84 (`78b787a6`, `round-84`) and 0.84.1 (`b4540eba`,
+  `round-84.1`): `git push origin main round-84 round-84.1 round-85` (only the user pushes).
 - **Production:** 0.83.0 (the user, 2026-11-22); upgraded only after Round 86 (ruling 23).
 - **Last change besides rounds:** the read-only code audit of 2026-11
   ([audit](audit-2026-11/README.md)), whose findings Rounds 81 and 82 fixed or left as
