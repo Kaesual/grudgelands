@@ -253,9 +253,10 @@ def boot_main(bridge):
     check(first["protocol"] == 1, "request: protocol", first)
     check(re.fullmatch(r"[0-9a-f]{16}", first["boot"]), "request: boot", first["boot"])
     check(first["game_version"] == VERSION, "request: the game's version", first["game_version"])
-    # Round 83 adds characters.delete.
-    check(len(first["capabilities"]) == 13 and "accounts" in first["capabilities"] and
-          "accounts.password" in first["capabilities"], "request: capabilities", first["capabilities"])
+    # Round 83 adds characters.delete, Round 86 rewards.defaults.
+    check(len(first["capabilities"]) == 14 and "accounts" in first["capabilities"] and
+          "accounts.password" in first["capabilities"] and
+          first["capabilities"][-1] == "rewards.defaults", "request: capabilities", first["capabilities"])
     check(first.get("accounts_version") == 0, "request: no account list yet", first.get("accounts_version"))
     check("reward_catalog" in first, "request: the reward catalogue in the first request")
     check(first["banlist_version"] == 0, "request: no list yet")

@@ -338,6 +338,8 @@ function H.stone(repo)
 	_G.core = {
 		register_node = function() end,
 		register_on_mods_loaded = function() end,
+		-- Round 86 ART: stone.lua reads its look from stone_art.lua.
+		get_modpath = function(name) return repo .. "/mods/PLAYER/" .. name end,
 		register_globalstep = function(fn) W.steps[#W.steps + 1] = fn end,
 		get_node_or_nil = function(pos)
 			counted(counters, "get_node")
@@ -361,6 +363,13 @@ function H.stone(repo)
 		STONE_NODES = {["grug_housing:claim_stone"] = true,
 			["grug_housing:claim_stone_empty"] = true,
 			["grug_housing:claim_stone_draft"] = true},
+		-- Round 86: the stone items and the nodes per kind (api.lua), which
+		-- stone.lua reads for the Account Claim Stone's copies.
+		STONE_ITEMS = {["grug_housing:claim_stone"] = "", ["grug_housing:account_stone"] = "account"},
+		STONE_KINDS = {[""] = {item = "grug_housing:claim_stone",
+			empty = "grug_housing:claim_stone_empty", draft = "grug_housing:claim_stone_draft"},
+			account = {item = "grug_housing:account_stone",
+			empty = "grug_housing:account_stone_empty", draft = "grug_housing:account_stone_draft"}},
 		sync_stone_node = function(claim)
 			counted(counters, "sync")
 			core.get_node_or_nil(claim.center)

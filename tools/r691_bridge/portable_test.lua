@@ -1184,9 +1184,11 @@ do
 	world.after[1][2]()
 	local sent = decode(fetches[1].request.data)
 	local capabilities = table.concat(sent.capabilities, ",")
-	-- Round 83 adds characters.delete at the end (section I).
-	check(capabilities:find(",accounts,accounts.password,characters.delete$"), "H the capabilities")
-	eq(#sent.capabilities, 13, "H thirteen capabilities")
+	-- Round 83 adds characters.delete (section I), Round 86 rewards.defaults
+	-- at the end (web-accounts.md §5).
+	check(capabilities:find(",accounts,accounts.password,characters.delete,rewards.defaults$"),
+		"H the capabilities")
+	eq(#sent.capabilities, 14, "H fourteen capabilities")
 	eq(sent.accounts_version, 0, "H no list yet")
 	eq(sent.reward_catalog[1].id, "cloak:supporter", "H the registered catalogue")
 	eq(grug_accounts.enabled(), false, "H the bridge alone does not enable accounts")
@@ -1425,7 +1427,8 @@ do
 	end
 
 	-- The capability and the arguments.
-	eq(C.CAPABILITIES[#C.CAPABILITIES], "characters.delete", "I the capability")
+	-- Round 86 added rewards.defaults after it.
+	eq(C.CAPABILITIES[#C.CAPABILITIES - 1], "characters.delete", "I the capability")
 	eq(code_of({admin = "jan"}), "invalid_args", "I no name")
 	eq(code_of({name = "Ro wan", admin = "jan"}), "invalid_args", "I a name with a blank")
 	eq(code_of({name = ("x"):rep(21), admin = "jan"}), "invalid_args", "I a name over 20")

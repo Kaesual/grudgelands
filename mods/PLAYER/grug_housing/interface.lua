@@ -70,7 +70,16 @@ end
 -- nil, or {text = ..., color = nil or ui.RED}.
 function grug_housing.character_status(name)
 	local claim, state = grug_housing.player_claim(name)
-	if state == "placed" and claim then
+	-- Round 86: a member without a standing claim or draft.
+	if state == "member" and not claim then
+		local player = core.get_player_by_name(name)
+		if player and grug_housing.holds_stone(player) then
+			return {text = "Your Account Claim Stone is in your inventory, not placed yet"}
+		end
+		return {text = "Your account's home stands nowhere; a Housing Steward gives you " ..
+			"an Account Claim Stone"}
+	end
+	if (state == "placed" or state == "member") and claim then
 		if grug_housing.is_draft(claim) then
 			-- R26 ruling 8: the draft crumbles unless activated in time.
 			return {text = "Your Claim Stone is not active yet: activate it within " ..
@@ -162,6 +171,10 @@ dofile(path .. "/manager.lua")(ui)
 
 grug_housing.register_on_claim_changed(function(claim, event)
 	ui.stone_claim_changed(claim, event)
-	local owner = claim and claim.owner and core.get_player_by_name(claim.owner)
-	if owner then ui.refresh_character(owner) end
+	-- Round 86: every member of an account claim.
+	if not (claim and claim.owner) then return end
+	for _, name in ipairs(grug_housing.owner_names(claim)) do
+		local owner = core.get_player_by_name(name)
+		if owner then ui.refresh_character(owner) end
+	end
 end)

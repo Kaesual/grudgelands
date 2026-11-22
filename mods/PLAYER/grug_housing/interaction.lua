@@ -26,9 +26,12 @@ grug_housing.INTERACTION_EXCEPTIONS = {
 	["grug_signs:waypost"] = "reading a sign",
 	["grug_signs:notice_board"] = "reading a sign",
 	["grug_signs:notice_board_part"] = "reading a sign",
-	-- The stone's owner-only interface is guarded by Lanes A and C.
-	[grug_housing.STONE_ITEM] = "Claim Stone (owner-only interface)",
 }
+-- The stone's owner-only interface is guarded by Lanes A and C: every
+-- fuelled stone (each stone item is its kind's fuelled node, api.lua).
+for item in pairs(grug_housing.STONE_ITEMS) do
+	grug_housing.INTERACTION_EXCEPTIONS[item] = "Claim Stone (owner-only interface)"
+end
 
 -- True when `name` may not interact at `pos`: an active claim without at
 -- least "interact" permission for that name. The protection_bypass privilege
@@ -44,12 +47,14 @@ grug_core.register_interaction_guard(grug_housing.interaction_refused)
 -- The claim reason for the protection hint. It answers only where the claim
 -- itself refuses edits: an active claim and neither the owner nor an
 -- "everything" permission. The world reason wins over it (grug_core).
+-- Round 86 ruling 9: the home's name with the house icon, not the owner
+-- (who stands on the stone's form): "<name> – protected".
 function grug_housing.protection_reason(pos, name)
 	local claim = grug_housing.claim_at(pos)
 	if not claim or not grug_housing.is_active(claim) then return nil end
 	local level = grug_housing.permission(claim, name)
 	if level == "owner" or level == "everything" then return nil end
-	return "claim", "Home of " .. tostring(claim.owner) .. " – protected"
+	return "claim", grug_housing.home_name(claim) .. " – protected", grug_housing.HOME_ICON
 end
 
 grug_core.register_protection_reason(grug_housing.protection_reason)

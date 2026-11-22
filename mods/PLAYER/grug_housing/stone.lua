@@ -12,6 +12,18 @@
 -- cap. Digging it destroys the claim and drops nothing. A periodic check
 -- removes expired drafts, keeps every loaded stone on the variant its claim
 -- asks for and reports expiry.
+--
+-- Round 86 (ruling 10): the Account Claim Stone grug_housing:account_stone
+-- with grug_housing:account_stone_empty and _draft, the same three nodes in
+-- their own look, placing a claim of kind "account" (account.lua,
+-- registry.lua).
+--
+-- Round 86 lane ART (ruling 19, "Under One Roof"): every stone is a small
+-- house inside its node, a node box drawn by stone_art.lua: one terracotta
+-- gable with a chimney (personal), two slate gables (account); the empty
+-- stone's windows are shuttered, the draft is the fuelled house washed pale
+-- and half-transparent. The door faces the placer ("4dir"; a stone placed
+-- before 0.86.0 has param2 0 and faces -Z).
 
 local model = grug_housing.model
 local STONE = grug_housing.STONE_ITEM
@@ -34,6 +46,11 @@ local function claim_of_stone(pos)
 		return claim
 	end
 	return nil
+end
+
+-- Round 86: the claim kind the item places (STONE_ITEMS).
+local function kind_of(itemstack)
+	return grug_housing.STONE_ITEMS[itemstack:get_name()] or ""
 end
 
 local function on_place(itemstack, placer, pointed_thing)
@@ -59,16 +76,25 @@ local function on_place(itemstack, placer, pointed_thing)
 		return itemstack
 	end
 	pos = {x = pos.x, y = pos.y, z = pos.z}
-	local ok, _, message = grug_housing.validate_placement(placer, pos)
+	local kind = kind_of(itemstack)
+	-- Round 86: an account stone's placer is checked against its binding first.
+	if kind == model.ACCOUNT then grug_housing.reconcile_player(placer) end
+	local ok, code, message = grug_housing.validate_placement(placer, pos, kind)
 	if not ok then
+		-- Ruling 16: a leftover account stone vanishes at the attempt.
+		if code == "not_member" or code == "account_stands" then itemstack:take_item(1) end
 		tell(placer, message)
 		return itemstack
 	end
+	local draft = grug_housing.stone_nodes(kind).draft
 	-- Round 72: the placement rules (grug_core: in combat, a live body's cell).
-	if grug_core.placement_refused(placer, DRAFT, {pos}) then return itemstack end
+	if grug_core.placement_refused(placer, draft, {pos}) then return itemstack end
 	-- A new claim is a draft until the owner activates it (R26 ruling 8).
-	core.set_node(pos, {name = DRAFT})
-	local claim = model.create(name, pos)
+	-- The door faces the placer, as the engine turns a placed furnace.
+	local from = placer:get_pos()
+	core.set_node(pos, {name = draft, param2 = core.dir_to_fourdir(
+		{x = pos.x - from.x, y = 0, z = pos.z - from.z})})
+	local claim = model.create(name, pos, kind)
 	itemstack:take_item(1)
 	grug_housing.notify_claim_changed(claim, "placed")
 	tell(placer, ("Claim Stone placed as a draft. Open it and activate it " ..
@@ -83,20 +109,33 @@ local function on_rightclick(pos, node, clicker, itemstack)
 	if not clicker or not clicker:is_player() then return itemstack end
 	local claim = claim_of_stone(pos)
 	if not claim then return itemstack end
-	if claim.owner == clicker:get_player_name() then
+	if grug_housing.is_owner(claim, clicker:get_player_name()) then
 		grug_housing.open_stone_interface(clicker, claim)
+	elseif model.parse_owner_text(claim.owner) then
+		-- Round 86: an account claim names its home (lane NAMES' name), never
+		-- its owner text.
+		core.chat_send_player(clicker:get_player_name(),
+			"Account Claim Stone of " .. grug_housing.home_name(claim) .. ".")
 	else
 		core.chat_send_player(clicker:get_player_name(),
-			(model.is_draft(claim) and "Unfinished Claim Stone of " or
-				"Claim Stone of ") .. claim.owner .. ".")
+			(model.is_draft(claim) and "Unfinished " or "") ..
+			(claim.kind == model.ACCOUNT and "Account Claim Stone of " or "Claim Stone of ") ..
+			claim.owner .. ".")
 	end
 	return itemstack
 end
 
--- Ruling 8: dropping the stone destroys it.
+-- Ruling 8: dropping the stone destroys it. Round 86: an Account Claim
+-- Stone changes no record (its member may get one again while the
+-- account's claim does not stand).
 local function on_drop(itemstack, dropper)
 	if dropper and dropper:is_player() then
 		local name = dropper:get_player_name()
+		if kind_of(itemstack) == model.ACCOUNT then
+			tell(dropper, "Your Account Claim Stone crumbles to dust. While your account's " ..
+				"home does not stand, a Housing Steward gives you a new one.")
+			return ItemStack("")
+		end
 		model.stone_lost(name)
 		tell(dropper, "Your Claim Stone crumbles to dust. A Housing Steward " ..
 			"in one of your faction's capitals gives you a new one.")
@@ -105,22 +144,56 @@ local function on_drop(itemstack, dropper)
 end
 
 local sounds = rawget(_G, "default") and default.node_sound_stone_defaults() or nil
-local TEXTURE = "default_obsidian_block.png^[colorize:#7a5cc0:70"
--- The fuelled stone's look is also its waypoint marker on the map and the
--- minimap (Round 45 PT9, grug_home.claim_waypoint).
-grug_housing.STONE_TEXTURE = TEXTURE
-local EMPTY_TEXTURE = "default_obsidian_block.png^[colorize:#3a3a3a:120"
--- R26 ruling 8: the draft looks unfinished, half-transparent like water.
-local DRAFT_TEXTURE = TEXTURE .. "^[opacity:150"
+-- The look per kind and state (lane ART's data: boxes, six tiles each).
+local ART = dofile(core.get_modpath("grug_housing") .. "/stone_art.lua")
+-- The fuelled stone's flat front (its door) names the stone in the claim's
+-- waypoint row (Round 45 PT9, grug_home.claim_waypoint); the map and the
+-- minimap draw their own claim icon there (grug_map/providers.lua).
+grug_housing.STONE_TEXTURE = ART[""].marker_texture
+grug_housing.ACCOUNT_STONE_TEXTURE = ART.account.marker_texture
+local STATE_OF = {item = "active", empty = "empty", draft = "draft"}
+-- One box around all of a house's boxes (Round 86 ART fix 1): what is
+-- pointed at, so the outline is a plain box and a ray past the stepped roof
+-- still hits the stone. What is stood on stays the house as drawn.
+local function bounds(shape)
+	local box = {0.5, 0.5, 0.5, -0.5, -0.5, -0.5}
+	for _, part in ipairs(shape.fixed) do
+		for axis = 1, 3 do
+			box[axis] = math.min(box[axis], part[axis])
+			box[axis + 3] = math.max(box[axis + 3], part[axis + 3])
+		end
+	end
+	return {type = "fixed", fixed = box}
+end
+-- Sets the look of `variant` (item, empty, draft) of `kind` on def: the
+-- house's boxes, which are also what is stood on, the box around them,
+-- which is pointed at, and its tiles; the item carries its own flat picture
+-- for the hand and the inventory.
+local function look(def, kind, variant)
+	local art = ART[kind][STATE_OF[variant]]
+	def.drawtype = "nodebox"
+	def.node_box, def.selection_box, def.collision_box =
+		art.node_box, bounds(art.selection_box), art.collision_box
+	def.tiles = art.tiles
+	if variant == "item" then
+		def.inventory_image, def.wield_image = ART[kind].inventory_image, ART[kind].wield_image
+	end
+	return def
+end
 
-core.register_node(STONE, {
-	description = "Claim Stone\nPlace it in your faction's home land (level " ..
-		"11-30 and capital zones) and activate it with 5 coal within 5 minutes " ..
-		"to claim the 80 x 80 square it stands in as your home.\nSoulbound: " ..
+-- The three nodes' definitions per kind (Round 86: the account stone's
+-- are copies, below).
+local DEFS = {}
+DEFS.item = {
+	description = "Claim Stone\nClaims the map square (80 x 80) it stands in " ..
+		"as your home once you activate it with 5 coal within 5 minutes.\nHold " ..
+		"it to see on the minimap which squares you can claim.\nSoulbound: " ..
 		"dropping it destroys it.",
-	tiles = {TEXTURE},
+	use_texture_alpha = "opaque",
 	paramtype = "light",
-	light_source = 4,
+	paramtype2 = "4dir",
+	-- Ruling 20: only the fuelled stone gives light.
+	light_source = 8,
 	stack_max = 1,
 	-- No dig group: nobody digs a fuelled stone (ruling 12).
 	groups = {not_in_creative_inventory = 1, grug_soulbound = 1,
@@ -134,12 +207,14 @@ core.register_node(STONE, {
 	on_rightclick = on_rightclick,
 	can_dig = function() return false end,
 	on_blast = function() end,
-})
+}
+core.register_node(STONE, look(DEFS.item, "", "item"))
 
-core.register_node(EMPTY, {
+DEFS.empty = {
 	description = "Claim Stone (no fuel)",
-	tiles = {EMPTY_TEXTURE},
+	use_texture_alpha = "opaque",
 	paramtype = "light",
+	paramtype2 = "4dir",
 	groups = {not_in_creative_inventory = 1, grug_claim_stone = 1,
 		grug_claim_stone_node = 1},
 	drop = "",
@@ -162,24 +237,26 @@ core.register_node(EMPTY, {
 		if not claim then return end
 		model.remove(claim, "destroyed")
 		grug_housing.notify_claim_changed(claim, "destroyed")
-		local owner = core.get_player_by_name(claim.owner)
-		if owner then tell(owner, "Your Claim Stone has been destroyed.") end
+		for _, name in ipairs(model.owner_names(claim)) do
+			local owner = core.get_player_by_name(name)
+			if owner then tell(owner, "Your Claim Stone has been destroyed.") end
+		end
 		core.log("action", ("[grug_housing] Claim Stone %d of %s destroyed by %s"):format(
 			claim.id, claim.owner, digger and digger:get_player_name() or "?"))
 	end,
 	on_blast = function() end,
-})
+}
+core.register_node(EMPTY, look(DEFS.empty, "", "empty"))
 
 -- The draft (R26 ruling 8): nobody digs it, not even the owner, who picks it
--- up through the form at any time. Glasslike, so the ground behind it shows.
-core.register_node(DRAFT, {
+-- up through the form at any time. Half-transparent ("blend" over the tiles'
+-- own opacity), so the ground behind it shows.
+DEFS.draft = {
 	description = "Claim Stone (draft)",
-	drawtype = "glasslike",
-	tiles = {DRAFT_TEXTURE},
 	use_texture_alpha = "blend",
 	paramtype = "light",
+	paramtype2 = "4dir",
 	sunlight_propagates = true,
-	light_source = 2,
 	groups = {not_in_creative_inventory = 1, grug_claim_stone_node = 1},
 	drop = "",
 	sounds = sounds,
@@ -189,7 +266,36 @@ core.register_node(DRAFT, {
 	on_rightclick = on_rightclick,
 	can_dig = function() return false end,
 	on_blast = function() end,
-})
+}
+core.register_node(DRAFT, look(DEFS.draft, "", "draft"))
+
+-- Round 86 ruling 10: the Account Claim Stone's three nodes, copies of the
+-- personal ones in the account's look.
+local COPIED = {"use_texture_alpha", "paramtype", "paramtype2", "sunlight_propagates",
+	"light_source", "stack_max", "groups", "drop", "sounds", "node_placement_prediction",
+	"on_place", "on_drop", "on_rightclick", "can_dig", "after_dig_node", "on_blast"}
+local function account_node(variant, description)
+	local source = DEFS[variant]
+	local def = look({description = description}, model.ACCOUNT, variant)
+	for _, field in ipairs(COPIED) do
+		local value = rawget(source, field)
+		if type(value) == "table" then
+			local copy = {}
+			for key, entry in pairs(value) do copy[key] = entry end
+			value = copy
+		end
+		def[field] = value
+	end
+	core.register_node(grug_housing.STONE_KINDS[model.ACCOUNT][variant], def)
+end
+-- The item text: the personal stone's placement lines (lane PREVIEW's),
+-- with the account's line.
+account_node("item", "Account Claim Stone\n" ..
+	DEFS.item.description:gsub("^[^\n]*\n", "")
+		:gsub("\nSoulbound", "\nShared: every character of your account in this " ..
+			"faction that chose it owns it fully; only one can be activated.\nSoulbound"))
+account_node("empty", "Account Claim Stone (no fuel)")
+account_node("draft", "Account Claim Stone (draft)")
 
 -- Every pick digs an empty stone in its tier's time (ruling 12). Added once
 -- all tools exist; per-stack capabilities (grug_quality) copy the definition

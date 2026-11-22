@@ -1537,10 +1537,23 @@ graph requirement may shape a zone, and nothing may require a graph to be
   (running alongside, a level crossing, a connector beside the road it
   continues, a road's own legs), the later road meets the earlier one's
   level, so the ½-node rule also holds across the contact.
-- **Cross-section (Round 22, D44, D67).** Uphill the terrain is cut to road
-  level with a slope back of about 1:1 (steeper rock beyond 6 nodes); the cut
-  slope keeps the terrain's own surface (grass, dirt, rock), and a low
-  retaining wall stands only at the foot of deep cuts. Downhill up to about
+- **Cross-section (Round 22, D44, D67; Round 86).** Uphill the terrain is cut
+  to road level with a slope back of about 1:1 (rock at 2:1 beyond 6 nodes)
+  within the side zone, 24 nodes from the road's edge; the cut slope keeps the
+  terrain's own surface (grass, dirt, rock), and a low retaining wall stands
+  only at the foot of deep cuts. The cut meets the ground at the side zone's
+  edge instead of ending in a wall there (Round 86): a cut is never deeper
+  than its distance to that edge, except where the lift bound below is
+  lower. On a hillside steeper than the cut slope the cut's outer part is
+  therefore a steep face, not a bank: about as steep as the hillside plus
+  up to 1 per node where only the distance rule applies, and where the road
+  lies deep below the ground (a deep cut) the face may be lifted at most
+  0.25 e² above the old slope (e: distance from the road's edge), so it
+  rises up to about 0.5 e + 2 per node, for example 12 to 13 per node 12 to
+  14 nodes out where the hillside itself rises 1 to 2. On such deep cuts the
+  first 6 nodes, a 1:1 soil slope a player could climb before, can steepen
+  to 3 to 6 per node. Only another route can give a gentle bank there.
+  Downhill up to about
   2 nodes is a natural embankment, never a vertical wall; beyond that the road
   is a deck on pillars (no railing, D74). On steep side slopes a half gallery
   (a shallow uphill cut, the downhill half on pillars) is preferred to a deep

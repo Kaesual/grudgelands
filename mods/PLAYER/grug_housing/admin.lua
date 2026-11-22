@@ -9,6 +9,9 @@
 --   /claim_remove orphans    every Claim Stone node without a claim within
 --                            ORPHAN_RADIUS nodes of the admin
 --
+-- `<player>` may name a member of an account claim (Round 86, plan §2.3):
+-- the account's claim, or the member's own draft, is removed.
+--
 -- A removed claim ends like a destroyed one, with its own wording: the
 -- owner's state becomes "removed" ("Your Claim Stone was removed by an admin"
 -- on the Character page; a new stone from a Housing Steward at once, no
@@ -27,10 +30,12 @@ local function remove_claim(claim, admin)
 	local had_node = grug_housing.remove_stone_node(claim)
 	model.remove(claim, "removed")
 	grug_housing.notify_claim_changed(claim, "removed")
-	local owner = core.get_player_by_name(claim.owner)
-	if owner then
-		core.chat_send_player(claim.owner, "Your Claim Stone was removed by an " ..
-			"admin. A Housing Steward gives you a new one.")
+	-- Round 86: every member of an account claim hears it.
+	for _, name in ipairs(model.owner_names(claim)) do
+		if core.get_player_by_name(name) then
+			core.chat_send_player(name, "Your Claim Stone was removed by an " ..
+				"admin. A Housing Steward gives you a new one.")
+		end
 	end
 	core.log("action", ("[grug_housing] %s removed Claim Stone %d of %s at %s%s"):format(
 		admin, claim.id, claim.owner, core.pos_to_string(claim.center),
@@ -89,8 +94,15 @@ core.register_chatcommand("claim_remove", {
 
 -- The deletion's clear (grug_core/character_delete.lua): every claim the name
 -- owns, not only its record's (an orphan from a crash goes as well), and its
--- rights in the others.
+-- rights in the others. Round 86: deliberately the claims stored under the
+-- name itself, not is_owner: an account claim (owner text
+-- `account:<id>:<faction>`) never matches, so a member's deletion leaves it
+-- (its membership: lane STONE).
 function grug_housing.forget_character(name)
+	-- Round 86: a member's membership ends by its own record (grug_accounts
+	-- forgot the binding first); the last member's account claim ends with
+	-- the event "deleted" (account.lua).
+	grug_housing.end_account_membership(name, "deleted")
 	for _, claim in ipairs(model.all_claims()) do
 		if claim.owner == name then
 			grug_housing.remove_stone_node(claim)

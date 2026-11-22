@@ -8,9 +8,9 @@
 --     camps and POIs keep the zone's name; on the arena Breach Road's
 --     footprint (grug_mapgen.breach, Round 85) "Breach Road"; inside a Claim
 --     Stone's claim (grug_housing.claim_at, exact in 3D, every claim state;
---     fix 0.50.2)
---     "Your Home" for its owner and "<owner>'s Home" for everybody else,
---     in place of the zone's name only;
+--     fix 0.50.2) the home's name (grug_housing.home_name, Round 86: for
+--     everybody, the owner too) with the house icon before it, in place of
+--     the zone's name only;
 --   * inside a box of a live Expedition (grug_expeditions.run_at, arithmetic;
 --     Round 71) that Expedition's name, not "Open sea";
 --   * the Map tab's location line shows the same text (window.lua);
@@ -117,13 +117,14 @@ local function now_seconds()
 	return core.get_us_time() / 1000000
 end
 
--- The player's current location text ("" before the first sample) and the
--- colour of its territory status (the minimap line).
+-- The player's current location text ("" before the first sample), the
+-- colour of its territory status (the minimap line) and whether it is a
+-- home's name (Round 86: shown with the house icon).
 function M.text_of(player)
 	local name = type(player) == "string" and player or player:get_player_name()
 	local rec = players[name]
-	if not rec then return "", COLOR end
-	return rec.text, L.color(rec.status, COLOR)
+	if not rec then return "", COLOR, false end
+	return rec.text, L.color(rec.status, COLOR), rec.home == true
 end
 
 -- The territory status at `pos` for the player: "friendly", "contested",
@@ -166,11 +167,13 @@ local function discover(player, rec, zone, pos)
 	discovery.enter(player, zone)
 end
 
--- Returns the location text (nil for none) and the territory status.
+-- Returns the location text (nil for none), the territory status and
+-- whether the text is a home's name.
 local function sample(player, rec)
 	local started = core.get_us_time()
 	local pos = player:get_pos()
 	local text, town, here, zone = "", false, nil, nil
+	local home = false
 	if resolve then
 		text, town, here, zone = resolve(pos.x, pos.z)
 		rec.capital = L.capital_at(town_at, rec.capital, pos.x, pos.z, here)
@@ -180,26 +183,90 @@ local function sample(player, rec)
 	-- Inside a claim its name instead (ruling H1, no hysteresis: H2); the
 	-- zone handed to the discovery stays the column's.
 	local claim = housing and housing.claim_at(pos)
-	if claim then text = L.home_text(claim.owner, player:get_player_name()) end
+	if claim then text, home = housing.home_name(claim), true end
 	-- grug_expeditions does not depend on this mod (nor this one on it).
 	local expeditions = rawget(_G, "grug_expeditions")
 	local run = expeditions and expeditions.run_at(pos)
-	if run then text = expeditions.definition(run.expedition).name end
+	if run then text, home = expeditions.definition(run.expedition).name, false end
 	local status = territory(player, pos)
 	M.stats.samples = M.stats.samples + 1
 	M.stats.us = M.stats.us + (core.get_us_time() - started)
-	rec.text, rec.status, rec.town = text, status, town == true
+	rec.text, rec.status, rec.town, rec.home = text, status, town == true, home
 	discover(player, rec, zone, pos)
-	return text ~= "" and text or nil, status
+	return text ~= "" and text or nil, status, home
+end
+
+-- The house icon before a home's name in the banner (Round 86): the
+-- banner's and the icon's offset x and the icon's scale for `text` in the
+-- window (hud_layout.icon_before_offsets: the banner's bold font at
+-- banner_size below) and that size, or nil for no icon. The icon's element
+-- is added at the first home a player enters.
+local ICON_PX = 32 -- grug_housing.HOME_ICON's side
+-- A home's name wider than BANNER_SHARE of the window (with its icon) is
+-- drawn smaller than ZONE_BANNER_SIZE until it fits: 24 wide letters at a
+-- GUI scaling of 1.5 would otherwise run under the minimap.
+local BANNER_SHARE = 0.6
+local function banner_size(text, window)
+	local size = layout.ZONE_BANNER_SIZE
+	local width = window and window.size and tonumber(window.size.x)
+	if not width then return size end
+	local g = layout.icon_before(text, layout.font_px(size, window), true)
+	if g.width <= BANNER_SHARE * width then return size end
+	return math.max(1, size * BANNER_SHARE * width / g.width)
+end
+
+local function banner_icon(player, rec, text, window)
+	if not rec.home or text == "" then return nil end
+	if not rec.icon then
+		local anchor = layout.anchors.zone_banner
+		rec.icon = player:hud_add({type = "image",
+			position = {x = anchor.position.x, y = anchor.position.y},
+			offset = {x = 0, y = rec.offset_y}, alignment = {x = 0, y = 0},
+			scale = {x = 1, y = 1}, text = "", z_index = 2})
+		rec.icon_text, rec.icon_x, rec.icon_y, rec.icon_scale = "", 0, rec.offset_y, 1
+	end
+	local size = banner_size(text, window)
+	local icon = layout.icon_before_offsets(text, size, true, window, ICON_PX)
+	icon.size = size
+	return icon
+end
+
+-- The banner's offset x, its size and its icon; only what changed is sent.
+local function place_icon(player, rec, icon)
+	local size = icon and icon.size or layout.ZONE_BANNER_SIZE
+	if (rec.banner_size or layout.ZONE_BANNER_SIZE) ~= size then
+		rec.banner_size = size
+		player:hud_change(rec.banner, "size", {x = size, y = 0})
+	end
+	local x = icon and icon.text_x or 0
+	if rec.offset_x ~= x then
+		rec.offset_x = x
+		player:hud_change(rec.banner, "offset", {x = x, y = rec.offset_y})
+	end
+	if not rec.icon then return end
+	local texture = icon and housing.HOME_ICON or ""
+	if icon and (rec.icon_x ~= icon.icon_x or rec.icon_y ~= rec.offset_y) then
+		rec.icon_x, rec.icon_y = icon.icon_x, rec.offset_y
+		player:hud_change(rec.icon, "offset", {x = icon.icon_x, y = rec.offset_y})
+	end
+	if icon and rec.icon_scale ~= icon.scale then
+		rec.icon_scale = icon.scale
+		player:hud_change(rec.icon, "scale", {x = icon.scale, y = icon.scale})
+	end
+	if rec.icon_text ~= texture then
+		rec.icon_text = texture
+		player:hud_change(rec.icon, "text", texture)
+	end
 end
 
 -- Name, territory line and their colour; only what changed is sent. "" hides
--- both lines.
+-- both lines (and the icon).
 local function show(player, rec, text, status)
 	if text ~= rec.shown_text then
 		rec.shown_text = text
 		player:hud_change(rec.banner, "text", text)
 	end
+	if text == "" then place_icon(player, rec, nil) end
 	local line = text ~= "" and L.line(status) or ""
 	if line ~= rec.shown_line then
 		rec.shown_line = line
@@ -219,9 +286,11 @@ local function display(player, rec, text)
 	local offset = layout.zone_banner_offset(window)
 	if rec.offset_y ~= offset.y then
 		rec.offset_y = offset.y
-		player:hud_change(rec.banner, "offset", offset)
+		player:hud_change(rec.banner, "offset", {x = rec.offset_x, y = offset.y})
 		player:hud_change(rec.line, "offset", layout.zone_subtitle_offset(window))
 	end
+	-- The text shown is always this sample's, so rec.home tells its icon.
+	place_icon(player, rec, banner_icon(player, rec, text, window))
 	show(player, rec, text, rec.state.shown_status)
 	busy[name] = true
 end
@@ -234,7 +303,8 @@ core.register_on_joinplayer(function(player)
 	local anchor = layout.anchors.zone_banner
 	players[player:get_player_name()] = {state = L.new_state(), text = "",
 		next_sample = now_seconds() + (joined * JOIN_PHASE) % L.SAMPLE,
-		offset_y = anchor.offset.y, shown_text = "", shown_line = "", shown_color = COLOR,
+		offset_x = 0, offset_y = anchor.offset.y, shown_text = "", shown_line = "",
+		shown_color = COLOR,
 		banner = player:hud_add(layout.text_element("zone_banner", {number = COLOR,
 			text = "", size = {x = layout.ZONE_BANNER_SIZE, y = 0}, style = 1, z_index = 2})),
 		line = player:hud_add(layout.text_element("zone_subtitle",
@@ -264,8 +334,8 @@ core.register_globalstep(function(dtime)
 			-- A late step does not make up for missed samples.
 			local next_sample = rec.next_sample + L.SAMPLE
 			rec.next_sample = next_sample > now and next_sample or now + L.SAMPLE
-			local text, status = sample(player, rec)
-			text = L.sample(rec.state, text, now, status)
+			local text, status, home = sample(player, rec)
+			text = L.sample(rec.state, text, now, status, home)
 			if text then display(player, rec, text) end
 		end
 	end
@@ -276,8 +346,8 @@ core.register_globalstep(function(dtime)
 			busy[name] = nil
 		elseif now >= rec.state.busy_until then
 			-- A fresh sample decides: the player may have come back already.
-			local text, status = sample(player, rec)
-			local result = L.expire(rec.state, text, now, status)
+			local text, status, home = sample(player, rec)
+			local result = L.expire(rec.state, text, now, status, home)
 			if result then
 				display(player, rec, result)
 			else

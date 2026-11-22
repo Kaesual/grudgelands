@@ -331,8 +331,9 @@ nothing and logs one line, so local and browser worlds play as without it.
 - **The ledger** of command ids stays in memory on purpose ([contract](../web-bridge.md#commands)).
 - **Commands** treat their arguments as untrusted and return result codes; a grant
   goes through the same paths as `/money`, `/xp` and a letter's attachments.
-- **Website accounts** (Round 79, capabilities `accounts` and `accounts.password`,
-  [contract](../web-accounts.md)): `link.lua` adds `accounts_version` to every request,
+- **Website accounts** (Round 79, capabilities `accounts` and `accounts.password`;
+  Round 86 `rewards.defaults`, [contract](../web-accounts.md)): `link.lua` adds
+  `accounts_version` (`grug_accounts.accounts_version()`, the reported one) to every request,
   the reward catalogue to a boot's first request and every one until a 200 answers it
   (and again on `resync: ["reward_catalog"]`), and `character_id`/`account_id` to the
   online rows; it hands the response's `accounts` list to `grug_accounts.apply_list`
@@ -391,20 +392,37 @@ the mod keeps the website's list and never writes a binding.
   `tools/r79_acc` runs the shipped files. No globalstep: an open request waits on a `core.after`
   timer that re-arms for its current state.
 - **The API** (other mods): `enabled()` (the bridge attached and a list held,
-  `accounts_version` > 0; the Account tab's `is_in_nav`), `character_id(player)`,
+  the held version > 0; the Account tab's `is_in_nav`), `character_id(player)`,
   `account_of(name)` → nil or `{id, name}` (the counting binding, for offline names
   through the index), `in_creation(player)` (no class or faction yet, or still waiting
   for the arrival: `grug_classes:arriving` is read directly, there is no accessor),
   `can_link(player)` → ok, reason, `has_reward(name, id)`, `rewards_of(name)` → list of
   `{id, kind, name}` in catalogue order, `register_reward(id, {kind, name, icon, hint,
   description?})` (load time only; `catalog()` lists them, only `id`, `kind` and `name`
-  go to the website), `register_on_change(fn(names))` after a list was applied, and the
+  go to the website), `default_rewards()` (Round 86: the first `DEFAULTS_SHOWN` = 4 ids
+  of the list's `default_rewards` the catalogue knows, in the order sent, as catalogue
+  entries; display only), `register_on_change(fn(names))` after a list was applied,
+  `register_on_defaults(fn())` after an applied list changed the default rewards (its own
+  signal: a defaults-only change names no character, and grug_bridge resends the
+  online list on `register_on_change`), and the
   link flow `link_state(player)` → `{state, account_name?, message?, expires_at?}`
   (`idle`, `checking`, `offer`, `confirming`, `linked` as the one-off success line,
   `refused`; the page's own refusals appear as `refused` with a message), `request_link`,
   `confirm_link`, `cancel_link`, `register_on_link_state(fn(player))`. `WEBSITE` is the
-  one address the page names. The bridge alone calls `attach(push_event)`,
+  one address the page names (`WEBSITE_URL` the one its buttons open), `CODE_BUTTON`
+  the website's label of the button that creates a link code ("Create Character", Round
+  86 ruling 3). The bridge alone calls `attach(push_event)`,
   `apply_list(list)`, `link_answer(args)`, `catalog_rows()` and `accounts_version()`.
+- **The list's version** (Round 86, [contract](../web-accounts.md) §5.1): `model.lua`
+  keeps `default_rewards` (well-formed ids, each once, in the order sent; an unknown id
+  stays stored) and stores it with every list it applies, as an empty list when the
+  website sent none. A stored list without the field was applied before the game
+  reported `rewards.defaults`: `accounts_version()` then reports 0 while the game keeps
+  applying and showing the held list (`enabled()` reads the held version), and the next
+  list is applied whatever its version, the held one too; from then on the real version
+  is reported, also when that list had no field. A list whose version equals the held
+  one changes nothing once reported. `forget` rewrites the stored list with its fields,
+  the mark included.
 - **Linked or not** is `account_of`, from the list only; the flow's `linked` state is
   only the success line. `apply_list` ends the open request of a character the list
   binds, reports the notices of online characters and then runs the change callbacks.
@@ -413,12 +431,19 @@ the mod keeps the website's list and never writes a binding.
   `in_creation` holds; rewards are read live and never copied into player meta.
 - **The Account page** (`page.lua`, an sfinv page; its caption row is in
   `grug_inventory/navigation.lua`) is a view: it shows `account_of`, `link_state`,
-  the `can_link` reason and `rewards_of` with the catalogue's icon and hint, and
-  re-sends itself on `register_on_link_state`, `register_on_change` and the arrival,
-  only while it is shown and once per click. The typed code and the offered account's
+  the `can_link` reason, `default_rewards` before linking and `rewards_of` after it,
+  with the catalogue's icon and hint, in the layout "The Charter" (the mock-up
+  builder's coordinates and text sizes, `tools/r84_account_mock/layouts.py`, times the
+  text scale; centred lines are flat buttons without a background, a text that would
+  not fit shrinks or wraps by a rough width per character). It re-sends itself on
+  `register_on_link_state`, `register_on_change` (the named characters),
+  `register_on_defaults` (every open Account page) and the arrival, only while it is
+  shown and once per action; a click on a centred text, an inert button or Open
+  website (`button_url`, the client opens it) re-sends nothing. The typed code and the offered account's
   name live in the sfinv context (never stored or logged). During creation it shows
   only the `can_link` line (the user, 2026-11-15).
-- **Saved keys:** mod storage `list` (the applied list, serialized) and
+- **Saved keys:** mod storage `list` (the applied list, serialized; since 0.86.0 with
+  `default_rewards`) and
   `id:<lower-case name>` (the character id or `tombstone`, written by
   `grug_accounts.forget_character` at a deletion, Round 83);
   player meta `grug_accounts:character_id` ([external
@@ -430,4 +455,7 @@ the mod keeps the website's list and never writes a binding.
 - **Logs:** link requests, confirmations, bindings and password changes at `action`
   with the name and the account id; never a code or a password entry.
 - **Tests:** `tools/r79_acc` (the model and the flow), `tools/r79_page` (the page and the
-  account cloak), `tools/r691_bridge` (the bridge side and the engine scenario).
+  account cloak), `tools/r80_rewards` (the linked page holding every reward),
+  `tools/r86_account` (the default rewards, the reported version, the redraw, the page's
+  states; `capture.sh` shoots the page at 1366 x 768 and 1920 x 1080),
+  `tools/r691_bridge` (the bridge side and the engine scenario).

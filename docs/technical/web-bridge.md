@@ -383,3 +383,17 @@ Game 0.83.0 (Round 83). The website erases a character on a player's request
   Deleted rows may survive in database free pages until a vacuum.
 - **A new character of the name** gets a new character id and adopts nothing:
   no binding counts for it ([web-accounts.md](web-accounts.md) §2).
+
+## Amendment 2026-11-22: rewards.defaults
+
+Game 0.86.0 (Round 86). Protocol stays `1`; everything above holds. The contract is
+[web-accounts.md](web-accounts.md) §5.
+
+- **Capability** `rewards.defaults`, at the end of `capabilities`.
+- The response's `accounts` object may carry **`default_rewards`**, a list of reward
+  ids sorted by id, for a game that reports the capability. The game only displays
+  them.
+- A game that reports the capability sends `accounts_version: 0` while the list it
+  holds was stored by a game version before 0.86.0, so the list arrives after the
+  upgrade (at least once).
+- No new event, command or `resync` value.

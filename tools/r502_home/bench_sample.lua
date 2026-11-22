@@ -64,7 +64,8 @@ local function run(with_housing, seconds)
 		hard_footprint_in = function() return nil end})
 	rawset(_G, "grug_factions", {get_faction = function() return "accord" end})
 	rawset(_G, "grug_pvp", {territory_at = function() return "friendly" end})
-	rawset(_G, "grug_housing", with_housing and {claim_at = model.claim_at} or nil)
+	rawset(_G, "grug_housing", with_housing and {claim_at = model.claim_at,
+		is_owner = model.is_owner, home_name = model.home_name} or nil)
 	rawset(_G, "grug_map", {})
 	dofile(repo .. "/mods/PLAYER/grug_map/location.lua")
 	local M = grug_map.location

@@ -451,11 +451,79 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     (0.50.2): `claims_in(min_x, min_z, max_x, max_z)` (the claims whose
     chunk meets the rectangle, by id), `claim_set_version()` (changes on
     every create and remove, load and map reset), `column_problem(faction,
-    water, zone, territory)` (the claim mask's column rule for the preview's
-    overlay; `territory` false judges the zone alone), `SETTLEMENT_MARGIN`
-    and `placement_world` (the overlay's world queries). Fixture
+    water, zone, territory)` (the claim mask's column rule; `territory`
+    false judges the zone alone), `SETTLEMENT_MARGIN` and `placement_world`
+    (validate's world queries). Since Round 86 (lane PREVIEW) the
+    preview's per-chunk answer is **`chunk_refusal(faction, cx, cz)`** (nil,
+    or the refusal code and for `quota` the kind id: validate's steps that
+    depend on the chunk alone, in its order, from the pure
+    `preview.lua`), **`claim_hint(code, kind)`** the line for the player's
+    chunk, `CHUNK_ORIGIN` the first node of chunk 0. Fixture
     `tools/r85_core/portable_test.lua` (the record, the chunk, every
     refusal, the quota).
+  - **Seams (Round 86, lane BASE)**, each with today's behaviour, for the
+    account Claim Stone, home names and the belongings of an account
+    claim: **`is_owner(claim, name)`** (registry `is_owner`) is the one
+    question "is this character an owner of this claim": `permission`
+    answers `"owner"` through it, and nothing else compares `claim.owner`
+    with a name (deliberate exceptions: `forget_character` and the
+    registry's `remove` act on the records stored under a name, notices and
+    log lines address or print the owner text). It is `name == claim.owner`
+    or the character's **`account_owner_of(name)`** (the owner text of the
+    account claim it is a member of, an in-memory read of its record) equal to
+    the owner. **`home_name(claim)`** is the name every display reads
+    (the stored name, else the default; home names below).
+    **`STONE_ITEMS`** (item → the claim `kind` it places, `""` the personal
+    stone), **`is_stone_item(name)`**, **`STONE_KINDS`** and
+    **`stone_nodes(kind)`** (`{item, empty, draft}`, the item being the
+    fuelled node; an unknown kind draws as the personal stone);
+    `STONE_NODES` is their union. Readers: `holds_stone`, `sync_stone_node`,
+    `pick_up`'s returned item, the interaction guard's exceptions, the
+    minimap's claim mode. Registry **`create(name, pos, kind)`** (`kind`
+    optional, `""` by default) stores the name **`placement_name(name,
+    kind)`** returns. In `stone_form.lua`
+    **`rename_row(fs, claim, player, session, y)`** below the fuel section
+    returns the height it uses, by which the rest of the tab and the
+    station height move down, and **`rename_fields(player, session, claim,
+    fields)`** runs before the form's field chain. In
+    `recovered.lua` **`R.holder(name)`** (whose entries a character's
+    Belongings tab, the Steward's line and the join notice show: the
+    account's owner text for a member, `account_owner_of`, else its own
+    name; `entries` and `count` take the character and ask it) and
+    **`R.move_to_account(name, owner_text)`** (lane PACK: the character's
+    entries move to the account's, the count returned; STONE calls it at a
+    join, and the join hook at every login of a member with entries of its
+    own).
+    Help's Basics page has the heading "Housing" for the claim lanes' lines.
+  - **Home names (Round 86 lane NAMES,
+    [housing.md](../../design/housing.md) §1a):** the record's `name`.
+    Registry: `NAME_MAX` (24), `valid_name(text)` (ruling 8: ASCII letters,
+    digits, space, `'`, `-`, 1–24, no edge space; so never `|`, a newline,
+    a formspec or HUD escape), `placement_name` ("<name>'s Home", stored by
+    `create`; an activation keeps it), `default_name(claim)` (for an
+    owner text the first member by name, `members(owner)[1]`, "Home" with
+    none: never the owner text), `home_name` (the stored name, else the
+    default: a 0.85.0 record), `set_name` (checks the rule itself) and
+    `reset_name`. `names.lua`: `grug_housing.rename(claim, name, text)`
+    (asks `is_owner`, so every member of an account claim; an unchanged
+    name is kept with "Your home keeps its name."; else `set_name`, event
+    `renamed`, which redraws open stone forms of the claim), `reset_name`, `valid_name`, `NAME_MAX` and the chat command
+    `/claim_name_reset <player> | here` (`server`). `HOME_ICON` (api.lua,
+    the map's `grug_map_home.png`, the user's pick) stands before
+    the name: in the stone form's rename row; in `grug_map`'s banner
+    (`location.lua`, an image element added at a player's first home) and
+    minimap line (`minimap.lua`), both placed by
+    `grug_core.hud_layout.icon_before` from the text's width estimated with
+    the client's default font's glyph widths (Arimo regular and bold,
+    `GLYPH_EM`); in the Map tab's line as a hypertext `<img>`
+    (`window.lua`); and in the protection hint, which `interaction.lua`'s
+    reason provider returns with the icon as a third value, carried by
+    `grug_core.protection_hint` and `grug_materials.emit_hint` to
+    `grug_core.flash`. `location.text_of(player)` returns the home flag as a
+    third value, and the banner rule (`location_view.lua` `sample`,
+    `expire`) counts it, so a home that bears a place's name still shows.
+    Fixture `tools/r86_names/portable_test.lua`; pictures
+    `tools/r86_names/capture.sh`.
   - `claim_mask.lua` (pure, Round 85 lane MASK), `claim_mask_store.lua`
     (its two world-folder files) and `mask.lua` (the engine glue): the
     claim mask ([housing.md](../../design/housing.md) §2): which 80 × 80
@@ -484,12 +552,52 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   - `stone.lua`, `stone_form.lua`, `protection.lua`, `soulbound.lua`: the
     stone and draft nodes with draft and fuel expiry, the stone forms, the
     `is_protected` wrapper with the arrival cube, the soulbound items. The
+    nodes' look (Round 86 ART) is the data table `stone_art.lua`
+    (`art[kind][state]`: node box, selection and collision box as drawn, six
+    tiles; `stone.lua` points at the one box around them;
+    the items' flat pictures; `marker_texture`, which becomes
+    `STONE_TEXTURE`); `paramtype2 = "4dir"`, set toward the placer, and
+    `sync_stone_node` keeps the param2. The
     5 s pass (Round 81, audit P4-02) starts each cycle with the draft and
     expiry scans, which the registry answers from its draft set and the
     next possible expiry without walking every claim, and checks the stones
     in eight slices of the id-ordered claims (copied again only after a
     claim came or went); each claim is checked once per cycle, a new one
     from the next cycle on.
+  - **The account Claim Stone (Round 86, lane STONE;
+    [housing.md](../../design/housing.md) §3b):** the registry's member
+    state `player:<name>` = `v2|member|<owner text>` (the owner text
+    `account:<account id>:<faction>`, `owner_text`/`parse_owner_text`);
+    an account draft (kind `account`) is owned by its placer's name, and
+    `activate` turns it into the account claim (owner = the owner text,
+    indexed by it: `account_claim(owner)`), refused while one stands
+    (`activation_refusal`; `validate`'s `not_member`, `account_stands` and
+    `own_draft`); `member_drafts` lists the drafts `account_activated`
+    removes. `remove` and `map_reset` change no member record. In memory:
+    the member index (`members(owner)`, `all_members`), `own_draft`,
+    `player_claim` → the account's claim or the own draft with state
+    `member`; `owner_names(claim)` is whom a claim's notices reach (the
+    members of an account claim, else its owner). Transitions:
+    `can_join`/`join`, `can_issue_account`, `can_leave`, `end_membership`
+    (returns the left owner text, the own draft and an orphaned claim for
+    the caller to remove). `account.lua` is the engine side:
+    `binding_owner(name, faction)` from `grug_accounts.account_of`, the
+    Steward's `account_offer`/`choose_account` (calls PACK's
+    `recovered.move_to_account(name, owner_text)` at every join)/
+    `leave_account`/`can_leave_account`, `reconcile_member(name,
+    faction)` and `reconcile_all` (at load on the first step, on
+    `grug_accounts.register_on_change`, at a join, before placing or
+    activating an account stone; `grug_factions.register_on_faction_chosen`
+    for the faction change), `end_account_membership` (also from
+    `forget_character`), and `grug_home.claim_lost(name, claim, event)` for
+    a member that leaves. Ruling 18 (2026-11-22): a claim whose last
+    member goes through the list (reason `unlinked`) stands ownerless
+    (`is_ownerless`: an account claim without member records, derived,
+    nothing stored), fuelled or empty, like any unfuelled claim; a non-member
+    whose binding names it hears of it at its join; no binding is checked
+    while `grug_accounts.held_version()` is 0 (no list held). Without `grug_accounts` nobody can choose the
+    account stone and nothing is reconciled. Fixture
+    `tools/r86_stone/portable_test.lua` (the state table).
   - `admin.lua` (Round 26): `/claim_remove <player> | here | orphans`
     (`server` privilege); since Round 83 also `forget_character`, the
     deletion's clear (every claim the name owns released with its stone and
@@ -510,10 +618,20 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
     moved to `packed:<player>:<seq>:<n>[.<k>]`, empty containers as their
     nodes' items stacked under `<seq>:0.<k>`, descriptions and images),
     plus the join notice. The stone form shows the entries as the active stone's
-    Belongings tab. Fixture `tools/r50_pgame/portable_test.lua`.
+    Belongings tab. Since Round 86 (lane PACK) an account claim's entries
+    and contents are held by its owner text under the same shapes,
+    `recovered:account:<id>:<faction>:<seq>:<n>[.<k>]` and
+    `packed:account:<id>:<faction>:...` (`parse_key` reads both forms;
+    `R.is_account`); every member sees and takes them, a take redraws every
+    member's open Belongings tab; `R.move_to_account` gives each moved entry
+    the account's next free number in its pass and moves a packed item's
+    contents and reference with it; `R.forget(name)` deletes only keys that
+    read as the name's; `R.notice(name)` is the member's or the player's
+    line. Fixtures `tools/r50_pgame/portable_test.lua`,
+    `tools/r86_pack/portable_test.lua`.
   - `interaction.lua` (Lane B): the generic right-click and node-inventory
-    guard installed at `register_on_mods_loaded`, and the "Home of <owner> –
-    protected" reason for `grug_core.protection_hint`.
+    guard installed at `register_on_mods_loaded`, and the "<home name> –
+    protected" reason with the house icon for `grug_core.protection_hint`.
   - `interface.lua`, `manager.lua` (Lane C): the stone formspec (set as
     `grug_housing.open_stone_interface`), the Housing Steward (internal socket
     role id `housing_manager`) and the character-page status.
@@ -688,21 +806,29 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
 
 ### Claim mode
 
-  **Claim mode** (0.50.2): `base.lua` `claim_overlay` renders one
-  transparent overlay per faction at the minimap base's size from pass 1's
-  arrays with grug_housing's `column_problem` and `placement_world`
-  (`grug_map_claim_<faction>_*` tiles, cached with the base; the rules
-  enter the cache key); `minimap.lua` switches on with the Claim Stone
-  wielded and a faction, adds the overlay tiles and one clipped `[fill` per
-  claim to the cell texture (`minimap_view.lua` `texture(v, ox, oy, mask,
-  claim)`, `claim_rect`, never a `[fill` outside the image or of zero size)
-  and shows the square (`claim_square`, `claim_square_texture`) at z 12,
-  centred on the arrow. Since Round 85 the overlay is the mask's column rule
-  and the settlement margin only, not the chunk mask, and the square is not
-  the claim's chunk: a known defect, replaced in Round 86
-  ([housing.md](../../design/housing.md) §2 "Placement preview"). Fixture `tools/r502_cmap/portable_test.lua`; measurements
-  `render_overlay.lua` (offline render and the "green, yet refused" check
-  on a real world) and `bench_claim.lua`.
+  **Claim mode** (0.50.2; per map chunk since Round 86 lane PREVIEW,
+  [housing.md](../../design/housing.md) §2 "Placement preview"):
+  `minimap.lua` switches on with any item of `grug_housing.STONE_ITEMS`
+  wielded and a faction. `claim_layer` asks `grug_housing.chunk_refusal`
+  for every chunk of the cell texture (`minimap_view.lua` `chunk_cells`:
+  the chunk grid in texture pixels, edges rounded to the nearest pixel so
+  neighbours share them, clipped) and draws, as clipped `[fill`s of the
+  cell texture (`texture(v, ox, oy, mask, claim)`): the refused chunks red
+  (a row's run in one fill, grown over the next rows while they hold the
+  same run), a grid line on every chunk edge, the claims' frames
+  (`cell_frame`), the player's chunk framed green and filled green when
+  free. The line left of the bezel (a right-aligned text element, z of the
+  bezel) is `claim_hint` for the player's chunk, on a dark `[fill` box one
+  z below (`hint_box`: the width estimated from the HUD font's glyph
+  advances, `text_width`; fix round 1). The texture and the line
+  are rebuilt on a cell change, a mode change, a claim-set version change
+  and a change of the player's chunk (two divisions per step in claim
+  mode); about 50 `chunk_refusal` calls a rebuild. Nothing is baked into
+  the base any more (`base.lua` makes no `grug_map_claim_*` tiles; old ones
+  go as stale tiles). Fixtures `tools/r86_preview/portable_test.lua` (the
+  preview against placement per chunk, the texture pixel for pixel) and
+  `tools/r502_cmap/portable_test.lua` (the grid's geometry, the runtime);
+  measurement `tools/r502_cmap/bench_claim.lua` (run it on both trees).
 
 ### Side elements
 

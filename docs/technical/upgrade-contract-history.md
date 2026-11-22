@@ -1,7 +1,7 @@
 # Upgrade contract: the declared releases
 
 The per-release case history of the [upgrade contract](upgrade-contract.md) §2 (the
-declaration): why each release from 0.41.0 to 0.85.0 declared its map reset, step or
+declaration): why each release from 0.41.0 to 0.86.0 declared its map reset, step or
 neither. Section numbers (§) refer to the upgrade contract. The rules are in the
 contract; this file only records the cases.
 
@@ -173,3 +173,16 @@ contract; this file only records the cases.
   (record v3). Nothing converts a v2 claim: the pass packs its containers
   from its 101 × 101 square and the reset clears it. No step;
   `map_reset_pass` stays 0.50.0.
+- 0.86.0 (Round 86, the account Claim Stone, home names, the claim
+  preview, the Account page, road cuts) needs the twenty-first map reset:
+  a road's cut into a hill now fades to the ground at the side zone's edge,
+  which changes generated terrain beside roads. The housing and account
+  changes alone would be compatible: the claim record stays v3 (its `kind`
+  and `name` now in use), a member of an account claim is a new state of
+  the player record (`v2|member|<owner text>`, kept at a map reset), an
+  account claim's belongings take keys of their own
+  (`recovered:account:…`, `packed:account:…`) and the stored website list
+  gains `default_rewards`. The pre-reset pass also packs an account claim's
+  containers for its account and faction. No step; `map_reset_pass` stays
+  0.50.0. The production world moves from 0.83.0 to 0.86.0 across one
+  reset, which covers 0.85.0's.

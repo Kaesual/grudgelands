@@ -509,7 +509,7 @@ and the refusal goes to the message feed. A rider is dismounted by the teleport 
   and the open sea; bays, lakes and the belt in front of the own and
   contested land stay clear. It is drawn from the same rule, so overlay and
   dismount agree on every pixel, rendered once per world and faction and
-  cached like the Claim Stone overlay (`world_map.md`, "Flight mode"). On
+  cached with the world map's base (`world_map.md`, "Flight mode"). On
   foot, on a ground mount or a boat it is not shown; a minimap the player
   switched off stays off (the HUD warning covers the approach). With a
   Claim Stone held on a flyer both overlays show.

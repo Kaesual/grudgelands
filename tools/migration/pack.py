@@ -37,11 +37,17 @@ What it writes, only mod storage, only new keys (plan section 3):
   grug_housing `pack_seq`                       the pass number, seq;
   grug_core `map_reset_pack:<seq>`              the world marker for the
       game's next load (removed items, plan D6, the descriptions).
+<owner> is the claim's owner verbatim: a player's name or, for an account
+claim (Round 86), its owner text `account:<id>:<faction>` (a draft of the
+account stone is its placer's); a pass with any other owner is refused
+(owner_problem), as the game could not hand out its entries. The count
+`players` counts the owners of both kinds.
 n counts from 1 per owner and pass: the owner's containers in claim id and
 position (x, y, z) order, then that claim's charcoal.
 """
 
 import math
+import re
 from dataclasses import dataclass, field
 
 from . import codec, data
@@ -75,6 +81,11 @@ WORKSPACE_LIST = "main"
 SEQ_KEY = "pack_seq"
 MARKER_PREFIX = "map_reset_pack:"
 ENTRY = "recovered:%s:%d:%d"
+# The owners the game reads entries of (recovered.lua parse_key): a player
+# name (grug_accounts/model.lua valid_name, the engine's charset) and an
+# account claim's owner text (Round 86 plan section 3.1).
+PLAYER_OWNER = re.compile(r"[A-Za-z0-9_-]+")
+ACCOUNT_OWNER = re.compile(r"account:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+")
 COUNT_KEYS = ("claims", "players", "containers", "items", "charcoal", "blocks_read")
 
 
@@ -99,6 +110,18 @@ class Claim:
                     self.z - V2_RADIUS, self.z + V2_RADIUS)
         low_x, low_z = chunk_low(self.x), chunk_low(self.z)
         return (low_x, low_x + CHUNK - 1, low_z, low_z + CHUNK - 1)
+
+
+def owner_problem(claims):
+    """A text naming the first claim whose owner the game cannot hold
+    entries for (neither a player name nor an account owner text), or
+    None."""
+    for claim in claims:
+        if not (PLAYER_OWNER.fullmatch(claim.owner) or ACCOUNT_OWNER.fullmatch(claim.owner)):
+            return ("claim %d: its owner %r is neither a player name nor an account's "
+                    "owner text (account:<id>:<faction>), so the game could not hand out "
+                    "its belongings" % (claim.id, claim.owner))
+    return None
 
 
 def chunk_low(value):

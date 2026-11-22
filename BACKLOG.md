@@ -68,10 +68,10 @@ for these checks by Round 22 D1/D5 and the decisions above.
 
 ### Accounts and the website
 
-- **The account Claim Stone, home names and the Account page** with the website's
-  `default_rewards` (Round 86; the web-accounts contract amendment first;
-  [housing concept](docs/planning/housing-rework-concept.md) Part B,
-  [Round 85](docs/planning/round85-plan.md#carry-overs)).
+- **The website's `default_rewards`:** the Account page's strip shows only once the website
+  sends the field to realms reporting `rewards.defaults`
+  ([contract](docs/technical/web-accounts.md) §5.2;
+  [Round 86](docs/planning/round86-plan.md#carry-overs)).
 - **The end-to-end test on the rehearsal realm** once the platform side is ready
   ([web-accounts.md](docs/technical/web-accounts.md) §9).
 - **Account tombstones:** a tombstone in the id index is overwritten by the next new id at
@@ -234,9 +234,12 @@ Not planned yet.
 
 ### Other world work
 
-- **Road cut walls:** a road's cut slope ends 24 nodes from the road, so on steep hills the
-  cut ends in a wall of 10–31 nodes; no check sees it
-  ([Round 85](docs/planning/round85-plan.md#carry-overs)).
+- **Road faces on steep hillsides:** a road's cut now meets the ground at its side zone's
+  edge, but on steep hills its outer part is a rock face as steep as the hill or, beside
+  deep cuts, steeper (up to about 12–13 per node), and the foot of a deep cut can steepen
+  to 3–6 per node; only another route helps, so it waits for the
+  user's road-planning rework, in which a local change stays local
+  ([Round 86](docs/planning/round86-plan.md#carry-overs)).
 - **Capital wall follow-ups** (deferred by the user 2026-09-30): river V-dips where a whole
   run of rays sits on the far bank; streets on the wall line in 6 of 1,200 capital plans
   (let the wall win over avenue columns beside a gatehouse, or make the wall leave the box
@@ -262,7 +265,7 @@ Not planned yet.
 - **The soft map reset** that keeps homes (housing concept Part C), when the first one is
   needed; the stored claim mask is its input
   ([concept](docs/planning/housing-rework-concept.md) §4,
-  [Round 85](docs/planning/round85-plan.md#carry-overs)).
+  [Round 86](docs/planning/round86-plan.md#carry-overs)).
 - **M3-01, with a later map reset** (not the 0.85.0 one, Round 85 ruling 17): the
   surface-skin opening reads the VoxelManip shell, so a border column's result depends on emerge order; hygiene with no player-visible gain
   ([M3](docs/audit-2026-11/findings/M3.md), Round 82 ruling 2, [Round 82](docs/planning/round82-plan.md#carry-overs)).
@@ -383,10 +386,9 @@ Rules: [expeditions.md](docs/design/expeditions.md).
 
 ## UI, map and HUD
 
-- **The Claim Stone's placement preview by map chunks** (CLAIMUI, Round 85 ruling 23; Round
-  86): today's minimap preview is the old per-column one with a square centred on the
-  player; also the stone's texts and Help
-  ([Round 85](docs/planning/round85-plan.md#carry-overs)).
+- **`box[]` colours without alpha** are drawn at alpha 140 (an engine default): the
+  Account page writes its alpha now, the other pages and `UI.input_background` do not
+  ([Round 86](docs/planning/round86-plan.md#carry-overs)).
 - **Quickbar hint at GUI scale 2:** "Click to use; the window closes." reaches the
   window's right edge ([Round 80](docs/planning/round80-plan.md#carry-overs)).
 
@@ -649,7 +651,7 @@ since 2026-11-16), CMB-10 and MGS-08 (Round 81 rulings 2 and 3,
 
 The residual notes of each round live in its plan, in a section "Carry-overs" after
 "Completion": `docs/planning/round<NN>-plan.md#carry-overs` for Rounds 29–37, 40–49, 51–62,
-65–74, 76 and 78–85 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
+65–74, 76 and 78–86 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
 the plans with longer names for
 [24](docs/planning/round24-mining-underground-mobs-plan.md#carry-overs),
 [25](docs/planning/round25-housing-plan.md#carry-overs),

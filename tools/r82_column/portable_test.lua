@@ -122,6 +122,9 @@ local function reference_sampler(layout)
 				local cap = ry + wh + min(ee, P.CUT_SOIL) * P.CUT_SLOPE +
 					max(0, ee - P.CUT_SOIL) * P.CUT_ROCK +
 					min(e, 1) * (1 - wh / P.WALL_H) * P.CUT_SLOPE
+				-- Round 86 ROADS: the cut meets the ground at the side zone's
+				-- edge (CUT_FADE), a rule of the answer, not of the walk
+				cap = max(cap, min(t - P.CUT_FADE * (SIDE - e), cap + P.CUT_FADE_LIFT * e * e))
 				local walled = wh > 0 and e <= 1.5
 				if cap < cut_cap then
 					cut_cap, wall_at = cap, walled

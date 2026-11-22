@@ -1,0 +1,193 @@
+{
+  "box_units": "signed sixteenths from the node centre (divide by 16)",
+  "face_order": [
+    "top",
+    "bottom",
+    "right",
+    "left",
+    "back",
+    "front"
+  ],
+  "drawtype": "nodebox",
+  "collision_and_selection": "use the state's fixed boxes",
+  "variants": {
+    "personal": {
+      "active": {
+        "boxes": [
+          [-4, -8, -4, 4, -6, -3],
+          [-5, -8, -3, 5, -6, 3],
+          [-4, -8, 3, 4, -6, 4],
+          [-5, -6, -5, 5, -4, -4],
+          [-6, -6, -4, 6, -4, 4],
+          [-5, -6, 4, 5, -4, 5],
+          [-5, -4, -6, 5, -2, -4],
+          [-7, -4, -4, 7, -2, 4],
+          [-5, -4, 4, 5, -2, 6],
+          [-1, -2, -1, 2, 1, 2],
+          [-2, 1, -1, 1, 5, 2],
+          [1, 2, 0, 4, 3, 2],
+          [-5, 5, -4, 4, 6, -2],
+          [-7, 5, -2, 6, 6, 2],
+          [-5, 5, 2, 4, 6, 4],
+          [-5, 6, -3, 4, 7, -2],
+          [-6, 6, -2, 5, 7, 2],
+          [-5, 6, 2, 4, 7, 3],
+          [-5, 7, -2, 4, 8, 2],
+          [1, 3, -1, 6, 5, 2],
+          [-7, 4, 0, -2, 5, 3],
+          [-2, 3, -4, 0, 5, -2],
+          [-3, 1, -5, 1, 3, -2],
+          [-2, 0, -4, 0, 1, -2]
+        ],
+        "tiles": [
+          "pear_personal_active_top.png",
+          "pear_personal_active_bottom.png",
+          "pear_personal_active_right.png",
+          "pear_personal_active_left.png",
+          "pear_personal_active_back.png",
+          "pear_personal_active_front.png"
+        ],
+        "light_source": 4,
+        "use_texture_alpha": "opaque",
+        "inventory_image": "pear_personal_item.png",
+        "wield_image": "pear_personal_item.png"
+      },
+      "empty": {
+        "boxes": [
+          [-4, -8, -4, 4, -6, -3],
+          [-5, -8, -3, 5, -6, 3],
+          [-4, -8, 3, 4, -6, 4],
+          [-5, -6, -5, 5, -4, -4],
+          [-6, -6, -4, 6, -4, 4],
+          [-5, -6, 4, 5, -4, 5],
+          [-5, -4, -6, 5, -2, -4],
+          [-7, -4, -4, 7, -2, 4],
+          [-5, -4, 4, 5, -2, 6],
+          [-1, -2, -1, 2, 1, 2],
+          [-2, 1, -1, 1, 5, 2],
+          [1, 2, 0, 4, 3, 2],
+          [-1, 5, 0, 1, 7, 2],
+          [-3, 5, 0, -1, 6, 1],
+          [-3, 6, 0, -2, 7, 1]
+        ],
+        "tiles": [
+          "pear_personal_empty_top.png",
+          "pear_personal_active_bottom.png",
+          "pear_personal_empty_right.png",
+          "pear_personal_empty_left.png",
+          "pear_personal_empty_back.png",
+          "pear_personal_empty_front.png"
+        ],
+        "light_source": 0,
+        "use_texture_alpha": "opaque"
+      },
+      "draft": {
+        "geometry_and_tiles": "active",
+        "colorize": "#b6b7a8",
+        "colorize_strength": 92,
+        "opacity": 150,
+        "light_source": 2,
+        "use_texture_alpha": "blend"
+      }
+    },
+    "account": {
+      "active": {
+        "boxes": [
+          [-4, -8, -4, 4, -6, -3],
+          [-5, -8, -3, 5, -6, 3],
+          [-4, -8, 3, 4, -6, 4],
+          [-5, -6, -5, 5, -4, -4],
+          [-6, -6, -4, 6, -4, 4],
+          [-5, -6, 4, 5, -4, 5],
+          [-5, -4, -6, 5, -2, -4],
+          [-7, -4, -4, 7, -2, 4],
+          [-5, -4, 4, 5, -2, 6],
+          [-1, -2, -1, 2, 1, 2],
+          [-4, 0, -1, -1, 2, 2],
+          [-5, 2, -1, -3, 5, 1],
+          [2, 0, -1, 5, 2, 2],
+          [4, 2, -1, 6, 4, 1],
+          [-6, 5, -5, -3, 6, -3],
+          [-8, 5, -3, -1, 6, 1],
+          [-6, 5, 1, -3, 6, 3],
+          [-6, 6, -4, -3, 7, -3],
+          [-7, 6, -3, -2, 7, 1],
+          [-6, 6, 1, -3, 7, 2],
+          [-6, 7, -3, -3, 8, 1],
+          [-3, 3, -2, -1, 5, 1],
+          [-8, 4, -1, -6, 5, 2],
+          [-6, 3, -5, -4, 5, -3],
+          [-7, 1, -6, -3, 3, -3],
+          [-6, 0, -5, -4, 1, -3],
+          [3, 4, -4, 6, 5, -2],
+          [1, 4, -2, 8, 5, 2],
+          [3, 4, 2, 6, 5, 4],
+          [3, 5, -3, 6, 6, -2],
+          [2, 5, -2, 7, 6, 2],
+          [3, 5, 2, 6, 6, 3],
+          [3, 6, -2, 6, 7, 2],
+          [6, 2, -1, 8, 4, 2],
+          [1, 3, 0, 3, 4, 3],
+          [3, 2, -4, 5, 4, -2],
+          [2, 0, -5, 6, 2, -2],
+          [3, -1, -4, 5, 0, -2]
+        ],
+        "tiles": [
+          "pear_account_active_top.png",
+          "pear_account_active_bottom.png",
+          "pear_account_active_right.png",
+          "pear_account_active_left.png",
+          "pear_account_active_back.png",
+          "pear_account_active_front.png"
+        ],
+        "light_source": 4,
+        "use_texture_alpha": "opaque",
+        "inventory_image": "pear_account_item.png",
+        "wield_image": "pear_account_item.png"
+      },
+      "empty": {
+        "boxes": [
+          [-4, -8, -4, 4, -6, -3],
+          [-5, -8, -3, 5, -6, 3],
+          [-4, -8, 3, 4, -6, 4],
+          [-5, -6, -5, 5, -4, -4],
+          [-6, -6, -4, 6, -4, 4],
+          [-5, -6, 4, 5, -4, 5],
+          [-5, -4, -6, 5, -2, -4],
+          [-7, -4, -4, 7, -2, 4],
+          [-5, -4, 4, 5, -2, 6],
+          [-1, -2, -1, 2, 1, 2],
+          [-4, 0, -1, -1, 2, 2],
+          [-5, 2, -1, -3, 5, 1],
+          [2, 0, -1, 5, 2, 2],
+          [4, 2, -1, 6, 4, 1],
+          [-5, 5, -1, -3, 7, 1],
+          [-7, 5, -1, -5, 6, 0],
+          [-7, 6, -1, -6, 7, 0],
+          [4, 4, 0, 6, 6, 2],
+          [2, 4, 0, 4, 5, 1],
+          [2, 5, 0, 3, 6, 1]
+        ],
+        "tiles": [
+          "pear_account_empty_top.png",
+          "pear_account_empty_bottom.png",
+          "pear_account_empty_right.png",
+          "pear_account_empty_left.png",
+          "pear_account_empty_back.png",
+          "pear_account_empty_front.png"
+        ],
+        "light_source": 0,
+        "use_texture_alpha": "opaque"
+      },
+      "draft": {
+        "geometry_and_tiles": "active",
+        "colorize": "#b6b7a8",
+        "colorize_strength": 92,
+        "opacity": 150,
+        "light_source": 2,
+        "use_texture_alpha": "blend"
+      }
+    }
+  },
+  "stone_texture": "pear_personal_active_front.png"
+}

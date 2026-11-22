@@ -119,6 +119,33 @@ into the game.
     rework of how roads are planned (local changes staying local); a wall that only a
     different route could remove is reported and waits for that rework.
 
+18. **A list change never removes a home at once** (the user, 2026-11-22; from STONE's
+    review). The game learns of an unlink or a deleted account only through the website's
+    list, so one faulty list (a malformed account row, an empty list, a restored backup)
+    would end account claims with their stone and fuel for good. An account claim that
+    loses its last member **through a list change** therefore stays, ownerless, and is
+    treated like any claim whose owner stopped fuelling (the user, 2026-11-22, from
+    GUARD's review): a list change never removes it, fuelled or empty; it protects while
+    its fuel lasts and then becomes the empty stone, which anyone with a pick may dig as
+    today; a character of that account and faction that is linked again may join it and
+    refuel it. This narrows
+    ruling 13 to the paths the game is told directly: a character deleted by command and
+    the last member's own choice end the claim as before.
+19. **The pictures** (the user, 2026-11-22): the Claim Stone becomes the artist's design
+    "Under One Roof"; the Account page is accepted as built (no line for "no rewards");
+    the preview's line gets a dark box and stays left of the minimap; the home-name icon
+    is the shipped cottage (`grug_map_home.png`), not a new one; STONE's pictures are
+    accepted. ROADS builds the fading cut (ruling 17 holds: the route is not touched).
+20. **The stone in the game** (the user, 2026-11-22, on the in-game pictures): accepted
+    as built (a house of half a node's height that turns its door to the placer). The
+    map's marker stays the shipped claim icon. **Only the fuelled stone gives light,
+    level 8**; an empty stone and a draft give none.
+21. **The road cut as built** (the user, 2026-11-22): the cut fades to the natural ground
+    at the side zone's edge, and its face rises at most a quarter of the squared distance
+    from the road's edge above the old slope, so a deep cut gets no ledge beside the road
+    (the lane's own bound, confirmed). What it leaves, a rock face as steep as the
+    hillside, waits for the road-planning rework (ruling 17).
+
 ### 2.3 Coordinator defaults on smaller points (the user may overrule)
 
 - Smaller defaults: an admin's faction change of a member counts as leaving; the default
@@ -129,7 +156,8 @@ into the game.
 
 ### 2.4 During the round
 
-(empty)
+Rulings 13–17 came with the user's go at the start, rulings 18–21 during the round
+(all 2026-11-22, §2.2).
 
 ## 3. Shared conventions
 
@@ -176,8 +204,12 @@ into the game.
     text, the stone form's explanatory texts, its Help paragraph).
   - ART: the stone's art files and the node's drawing, after STONE's merge. Technical rules
     for Astra: the six node names stay, everything fits inside one node (the arrival cube),
-    16 px textures, the flat `STONE_TEXTURE` stays for icons and the minimap, the draft
-    stays half-transparent; the house icon of NAMES comes from the same Astra run. If ART
+    16 px textures, the draft stays half-transparent *(corrected at the round's end: the
+    earlier text said the flat `STONE_TEXTURE` stays for icons and the minimap; the map and
+    the minimap draw their own claim icon `grug_map_claim.png`, ruling 20, and
+    `STONE_TEXTURE` is the fuelled stone's front tile, which only names the stone in the
+    claim's waypoint row)*; the house icon of NAMES comes from the same Astra run (by
+    ruling 19 the shipped cottage instead). If ART
     is not accepted in time, the round ships the tinted stone and ART follows as 0.86.x.
 - Merge order: BASE; then STONE, PACK, NAMES, PREVIEW, ACCOUNT, ART, ROADS; the round
   branch is merged into each later lane before its review where a shared file changed.
@@ -345,3 +377,280 @@ the rehearsal realm, with the website's list set and empty.
 - **Compaction checkpoints:** C0 before the start (after this plan and its review); C1 when
   wave 1's lanes have reported and the pictures are with the user; C2 before D and the
   round-end run.
+
+## Completion (2026-11-22)
+
+Eleven lanes in three waves, each independently reviewed or, for display-only fix deltas,
+checked by the coordinator: CONTRACT (the coordinator, Opus review), BASE, PREVIEW, STONE,
+PACK, NAMES, ACCOUNT, ROADS (Opus each), ART (GPT-6.2 Astra's design and art, Opus wiring),
+and two lanes added during the round, GUARD (ruling 18) and FORMFIX (the stone form at GUI
+scaling 1.5), then lane D. Release **0.86.0**, a **map reset** (the twenty-first;
+`tools/web_data/upgrade.json`, no step, `map_reset_pass` stays 0.50.0), because ROADS
+changes world generation; every other lane is compatible with a 0.85.0 world. Production
+(0.83.0) goes to 0.86.0 in one step with one map reset, which covers 0.85.0's (ruling 5).
+Merge order into `round86`: CONTRACT, BASE, ACCOUNT, PACK, STONE, PREVIEW, NAMES, GUARD,
+ART, FORMFIX, ROADS, then lane D.
+
+**Saved keys** (the upgrade contract's map-reset table has a line for each):
+`grug_housing` `claim:<id>` stays v3, with `kind` (`account` for an account claim, whose
+owner is `account:<account id>:<faction>`) and `name` (the home's name, written at
+placement) in use; `player:<name>` gains the member state `v2|member|<owner text>`, kept at
+a map reset (ruling 14); an account claim's belongings are stored under
+`recovered:account:<id>:<faction>:<seq>:<n>[.<k>]` and `packed:account:…`, which the
+player-key pattern cannot read; `grug_home` `claim_lost:<name>` is written per member, with
+the new events `left`, `unlinked` and `faction`; `grug_accounts`' stored `list` gains
+`default_rewards` (the game reports `accounts_version` 0 until a list was stored under the
+capability `rewards.defaults`); the item meta `ref` of a packed container moves with a
+joining member's belongings; new item and node names `grug_housing:account_stone`,
+`_empty` and `_draft`; the six stone nodes are node boxes with `paramtype2 = "4dir"`.
+
+**What shipped:**
+
+- **CONTRACT:** the amendment to [web-accounts.md](../technical/web-accounts.md) (§5, §5.1,
+  §5.2, §8, §9 step 8): `default_rewards` inside the `sync` response's `accounts` object,
+  only for a realm reporting `rewards.defaults`; display only; an empty list, `null` and a
+  missing field alike; unknown ids kept but not shown; the first four known ids in the
+  order sent; the resend after the upgrade (the game reports 0 and then applies the next
+  list whatever its version). Sent to the website through the user.
+- **BASE:** the seams the parallel lanes built on, with no change a player sees: one owner
+  question `is_owner(claim, name)` (9 direct owner comparisons in 7 files moved; the
+  review's 35 places in 13 files were mostly record lookups, notices and logs, each listed
+  as moved or deliberately left), `account_owner_of`, `home_name`, the stone item and node
+  sets `STONE_ITEMS`/`STONE_KINDS`, the rename slot in the stone form, `create(…, kind)`
+  with `placement_name`, the belongings seam `recovered.holder`/`move_to_account`, and
+  Help's "Housing" heading ([module guide](../technical/modules/player-systems.md#housing)
+  "Seams"). Twelve fixtures green, one pin rewritten where the owner comparison it pinned
+  had moved.
+- **PREVIEW:** the placement preview by map chunk (the known defect of 0.85.0): the minimap
+  in claim mode draws every chunk that placement refuses for the chunk's own sake in red, a
+  faint grid, the claims' frames and the player's chunk in green; a line left of the
+  minimap on a dark box (58 % of the "Now playing" grey, after two fix rounds) names the
+  reason for the chunk the player stands in; the quota's red per chunk; a failed mask shows
+  every chunk red. One pure function (`grug_housing/preview.lua`) answers both the preview
+  and placement's chunk steps, which the fixture `tools/r86_preview` compares on 13 × 13
+  chunks for both factions at the start, after placements, at full quota and after a
+  removal. The per-column overlay baked into the map base is gone (about 26 KB less
+  download, no 5 MB overlay decode on the client). Cost, `bench_claim.lua` with a
+  worst-case stand-in mask: packets per second unchanged, bytes in claim mode about doubled
+  (328 → 702 bytes/s walking, 1027 → 2158 flying; texture string 168 → 911 characters on
+  average), per-step time within the noise; on the production seed 554–768 characters.
+  The item text, the Steward, the draft form and Help describe the chunk rule. Five
+  capture boots on the production seed.
+- **STONE:** the account Claim Stone (concept §3.1 rulings 1–10, plan rulings 10, 13, 14,
+  16): the Steward's two columns, one account claim per account and faction, members with
+  full owner rights, drafts per member with exclusive activation, joining with no item,
+  leaving only at the Steward and never as the last member, the reconcile against the
+  website's list at load, at every list change, at a join, at the Steward and before
+  placing or activating, a faction change by an admin as leaving, notices to every member,
+  "Set as home" per member. New `grug_housing/account.lua`; fixture `tools/r86_stone` (the
+  state table, 165 checks after fix round 1, 200 after GUARD). Three capture boots.
+- **GUARD** (ruling 18): an account claim whose last member goes through the website's
+  list stands ownerless (derived from the records, nothing stored), fuelled or empty, as
+  any unfuelled claim: it protects while its fuel lasts, nobody can refuel it, then it is
+  the empty stone any pick digs; a relinked character of that account and faction joins
+  it and may refuel it, and hears of it at its login when it could join; no binding is
+  checked while the game holds no list at all (`grug_accounts.held_version`). The paths
+  the game is told directly (a deletion, an admin's faction change, a pick-up,
+  `/claim_remove`) end it at once.
+- **PACK:** the belongings of an account claim: the key forms above; a joining member's
+  own belongings move to the account's, one way, contents and the carried item's `ref`
+  with them, at the join and at every login of a member with entries of its own (the
+  map-reset pass packs an account stone's draft under its placer); every member's
+  Belongings tab shows and takes from the account's, a take by one redraws the others'; a
+  deletion takes only the character's own keys; the map-reset pass packs an account
+  claim's containers under its owner text and refuses, before any write, a claim whose
+  owner is neither form. v2 and personal v3 output byte-identical
+  (`tools/r85_reset/diff_v2.py`, 7 runs), `test_pack.py` 38 OK, the trixie container test
+  OK. Fixture `tools/r86_pack`.
+- **NAMES:** home names for every claim (concept ruling 11, plan rulings 8, 9, 12, 15): the
+  default "<character>'s Home" stored at placement, the rename row on the stone form
+  (1–24 ASCII letters, digits, space, apostrophe, hyphen; checked again on storing), the
+  name with the house icon in the banner, the line under the minimap, the Map tab's line
+  and the protection hint ("<home name> – protected"), "Your Home" gone, an account
+  claim's default from its first member by name and never its owner text,
+  `/claim_name_reset <player> | here`. The icon is the shipped cottage
+  `grug_map_home.png` (ruling 19), placed beside the HUD text from a width estimated with
+  the client font's glyph widths (`grug_core.hud_layout`); icon 1.2 em with a 0.4 em gap,
+  a banner wider than 0.6 of the window drawn smaller. Fixture
+  `tools/r86_names` (109 checks after fix round 1). Three capture boots.
+- **ACCOUNT:** the Account page "The Charter" (ruling 3, the mock-up of Round 84): the
+  framed panel with the crest and "Every linked account gets" with up to four rewards of
+  the website's `default_rewards` (`DEFAULTS_SHOWN`), the three steps with "Create
+  Character" (one constant, `grug_accounts.CODE_BUTTON`), the code field, the offer page,
+  the linked page with "Your rewards" (up to 18 fit, the catalogue has 8); the capability
+  `rewards.defaults`; a change of the defaults redraws every open page; the fake bridge
+  `tools/r691_bridge` plays the field. Help's website-account paragraph no longer says
+  every account gets Cheer (ruling 4). Fixture `tools/r86_account` (126 checks). Two capture boots.
+- **ART:** the Claim Stone's new look, the artist's design "Under One Roof" (ruling 19,
+  picked from three drafts): a small house in a node box (`grug_housing/stone_art.lua`),
+  one terracotta gable with a chimney for the personal stone, two slate gables for the
+  account stone, shuttered windows when empty, the draft pale and half-transparent; the
+  door turns toward the placer (`4dir`); one selection box around the house; only the
+  fuelled stone gives light, level 8 (ruling 20; before 4, the draft 2); the map's marker
+  stays the claim icon. Fixture `tools/r86_art` (382 checks); three capture boots.
+- **FORMFIX:** at GUI scaling 1.5 on 1600 × 900 the fuel panel scrolled and "Home name" ran
+  under the icon (the client shrinks the form's units, not its fonts); the panel's texts
+  now use `grug_core.ui.text_scale`. Two capture boots; display only, checked by the
+  coordinator.
+- **ROADS:** road cuts fade to the natural ground (rulings 7, 17, 21). The census of the
+  304 fleet seeds under the old rule: 301 seeds with cut walls, 2,331 walls (1,257 of 10
+  nodes or more, 249 of 30 or more, the highest 134), production's seed four (33, 18, 11,
+  10). Built: the cut meets the ground at the side zone's edge (a cut is never deeper
+  than its distance to that edge, `CUT_FADE = 1`, except where the lift bound is lower:
+  the face rises at most 0.25 e² above the old slope, `CUT_FADE_LIFT`, e the distance
+  from the road's edge), so a deep cut keeps no ledge beside the road; on the 48-seed
+  sample the largest step beside the road is 6, and where the lift bound binds the face
+  rises up to about 0.5 e + 2 per node (12–13 per node 12–14 nodes out on
+  5664044364126834037). The seed fleet
+  fails a seed whose cut adds more than 2 to the step at a side zone's edge (`road_cut`,
+  capitals' protected cities exempt) and reports `road_face` (report only). Production:
+  of 3,432,875 columns 682 rise, by up to 32, none goes down, 663 of them within 48 nodes
+  of the four walls; no point of interest, village, camp, leader or quest place moved, the
+  claim mask identical (366 / 373); five spawn cells change their mean height (up to 2.5),
+  26 decorations move up with the ground and 3 new ones stand on the uncovered face. The
+  sampler's walk +1–5 %. Seed fleet `full`: **304 of 304 seeds on the final rule**
+  (38 min 7 s; `road_cut` 2 on 301 seeds, 1 on 3); nothing under world generation changed
+  after it. Two engine boots (production, before and after). Fixture `tools/r86_roads`.
+- **Lane D:** version, changelog, upgrade declaration and its history entry, the contract's
+  map-reset table, this section, STATUS, README, ROADMAP and BACKLOG lines, the concept's
+  Part B and preview marked as built, and the texts the lanes left stale (the account
+  draft's node, a member's travel home and waypoint, the contract's shared-stone lines,
+  the Account page's Check code, the minimap layer order, §3.2's sentence on
+  `STONE_TEXTURE`).
+
+**Reviews:** plan review APPROVE AFTER FIXES (four High, five Medium, worked in). CONTRACT
+MERGE AFTER FIXES (F1 the resend loop, F2 the reported version apart from the held one,
+F3–F5 wording; fixed in the text). BASE MERGE AFTER FIXES (four seam shapes: the rename
+row's height, the rename hook, `create`'s kind with the default-name function,
+`move_to_account`'s owner text; fix round 1 checked by the coordinator: identical output).
+ACCOUNT MERGE (one Low, the clipped status line; fixed, display only, checked by the
+coordinator). PACK MERGE AFTER FIXES (Critical: a join could reuse the number of a carried
+packed item's content row and overwrite it; fix round 1, delta review MERGE). STONE MERGE
+(no exploit found; Low: the minimap frames after a join, a silent faction change, a
+member's old permission entry, owner-text leaks in texts, the fuel lines' overlap; fix
+round 1, delta review MERGE). PREVIEW MERGE (L1 the probe's receipts, L2 the taken line's
+wording; fix rounds 1 and 2, display and text only, checked by the coordinator). NAMES
+MERGE (Low 1 an unchanged default refused, Low 2 a literal "<" in Help; fix rounds 1 and 2,
+delta review MERGE). GUARD MERGE AFTER FIXES (Medium: an empty account claim was still
+removed at once by a faulty list; fix round 1, delta review MERGE AFTER ONE SMALL FIX, the
+login notice only when the join is allowed, applied as written). ART MERGE (the selection
+box, two stale texts; fix round 1 checked by the coordinator). FORMFIX: display only,
+checked by the coordinator on its pictures. ROADS MERGE (three Low: the edge-only check,
+the docs overstating the bank, the exemption's reach; fix round 1, no world-generation
+change).
+
+**The user's choices during the round:** the four open questions answered at the start
+(rulings 13–15: the claim ends when the last member unlinks or the account is deleted, its
+belongings staying the account's; membership survives a map reset; "Your Home" is gone);
+only one account stone can be activated, drafts per member (ruling 16); ROADS changes only
+the cut's cross-section, never the route (ruling 17); a list change never removes a home,
+an ownerless account claim behaves as any unfuelled claim (ruling 18, with the
+coordinator's empty-stone reading confirmed); the pictures: "Under One Roof", the Account
+page as built without a "no rewards" line, the preview's line on a dark box left of the
+minimap, the shipped cottage as the home icon, STONE's pictures (ruling 19); the stone in
+the game as built, the map's marker unchanged, light 8 only when fuelled (ruling 20); the
+fading cut with the lift bound 0.25 e² (ruling 21); the go on every UI lane's pictures,
+FORMFIX's "as it is" included.
+
+**Deviations from the plan:**
+
+- Two lanes not in §1: GUARD (ruling 18, from STONE's review) and FORMFIX (the fuel panel at
+  GUI scaling 1.5, seen in ART's pictures).
+- ART was built by Astra (design, textures, `stone_art.lua`) and wired by an Opus step after
+  STONE's merge; Astra's own home-name icon was dropped for the shipped cottage (ruling 19).
+- The account stone's colour (ruling 10) comes from ART's two designs; STONE's interim tint
+  was replaced.
+- ROADS built the fade plus a lift bound of its own (pure fade left steps of up to 54 beside
+  deep cuts), confirmed as ruling 21; the seed fleet `full` ran three times, twice on rules
+  later superseded (the pure fade stopped, a linear bound failed 7 seeds).
+- Engine boots above the briefs' numbers: STONE 3 (stated 1), NAMES 3 (1 planned),
+  ACCOUNT 2 (1), PREVIEW 5 over three rounds; each extra boot retook pictures after a
+  visible defect or a fix round.
+- PACK's join hook moves a member's own entries at every login, beyond its brief (the pass
+  packs an account stone's draft under its placer); kept.
+- §3.2's sentence that the flat `STONE_TEXTURE` stays for icons and the minimap was wrong
+  when written (the map already drew its own claim icon `grug_map_claim.png`); corrected
+  in place.
+
+**Round-end gates** (on `round86`, 2026-11-22): the full `tools/run_fixtures.sh` once after
+lane D: 393 passed, 1 failed (`r25_claim_core`: a check of Round 85 still expected a new
+claim's name to be empty; NAMES stores the default "<character>'s Home" at placement, so
+the check was brought in line and the fixture rerun alone: PASS). Seed fleet `full`: 304 of
+304 on ROADS' final rule, not repeated, since nothing under `mods/MAPGEN`, `mods/WORLD` or
+`mods/ENTITIES/grug_mobs` changed after that run. `check_fresh_server` PASS; `check_upgrade`
+PASS (0.86.0, map reset declared; compared with `origin/main` at 0.83.0);
+`r28_design/validate.py --game` 0 errors, 18 warnings; `r29_e4/income.py --check` PASS; the
+building templates' gate PASS (286 templates, 0 errors); the bat mesh `--check` PASS; the
+migration tool's tests in the `debian:trixie` container PASS (38 tests, 2 skipped); a
+headless boot on the production seed PASS.
+
+**Human tests (offers):** two linked characters of one account choose the account stone,
+both place it, one activates it (the other's draft vanishes), the other fuels it and sets
+it as home; a third character with a personal stone tries to open a chest there; rename a
+home and walk in and out with a second character, at your own GUI scaling, and dig in
+someone else's active claim; hold the stone across chunk edges near a road, a camp and a
+capital ring, at a full quota, and place a stone in a free chunk and on its edge; place both
+stones from all four sides, walk onto the roof, travel home to it, look at it at night
+fuelled and empty; open the Account page unlinked and linked on the rehearsal realm with
+the website's list set, empty and changed while the page is open, and press Open website;
+on a fresh world of production's seed stand on the road at −1276, −884 (looking
+south-west) and at −2039, −293 (looking north), where a 20–38-node wall stood; on the
+rehearsal realm after a reset, two members open the account stone's Belongings and one
+takes.
+
+## Carry-overs
+
+Each line names where it came from. The first four are wanted work and have BACKLOG lines.
+
+**Wanted work:**
+
+- **Road faces on steep hillsides** (ROADS, rulings 17 and 21): the cut now meets the
+  ground at the side zone's edge, but on steep hills its outer part is a rock face as
+  steep as the hill or, beside deep cuts, steeper: up to about 0.5 e + 2 per node where
+  the lift bound binds (12–13 per node 12–14 nodes out on 5664044364126834037). On the
+  48-seed sample the largest step beside the road is 6; `road_face` on single seeds is 4
+  (production), 3 (5664044364126834037) and 5 (6410640627505506314). The 1:1 soil foot of
+  a deep cut can steepen to 3–6 per node. Only another route gives a bank
+  there: the user's road-planning rework, in which a local change stays local (working
+  number from the census: keep nature within about 43 nodes above the road at 24 nodes from
+  its edge; at the edge nature stands a median 52 above the road). `road_face` on the fleet
+  line is report-only; the engine before/after road pictures were taken from different view
+  angles.
+- **The housing concept's Part C**, the soft map reset that keeps homes
+  ([concept](housing-rework-concept.md) §4), when the first one is needed.
+- **For the website** (CONTRACT, ACCOUNT): the amendment in
+  [web-accounts.md](../technical/web-accounts.md) (`default_rewards`, `rewards.defaults`);
+  the website must send the field for the Account page's strip to show (the user forwards
+  the note `r86/website-message.md`); the end-to-end account test on the rehearsal realm
+  stays open.
+- **`box[]` colours without alpha** are drawn at alpha 140 (an engine default, found by
+  ACCOUNT in its first capture): the Account page writes `ff` itself; the other pages and
+  `UI.input_background` (the half-transparent code and name fields) were not touched.
+
+**Notes:**
+
+- **FORMFIX:** at GUI scaling 1.5 on 1600 × 900 the stone form's fuel panel text is smaller
+  than the rest of the form (a 25 % larger variant computed to fit, not built); 1920 × 1080
+  was not captured; "Interact" and "Everything" are tight.
+- **NAMES / PREVIEW:** two tables of the HUD font's glyph widths (PREVIEW's
+  `minimap_view.lua` `V.text_width`, NAMES' `grug_core.hud_layout.GLYPH_EM`) could become
+  one; both assume the default font. The Map tab's icon and the minimap line's icon at
+  scale 1 are small; very long names at a large GUI may meet the quest box (not seen).
+- **PREVIEW:** claim mode's bytes per second about double (reported, not gated); red over
+  water turns purple, the free chunk's green fill is faint on light map colours; the old
+  probe `grug_probe_r502_cmap` still checks the removed overlay.
+- **PACK:** the content rows of an account's packed items carried by a member who is then
+  deleted stay behind (`forget` cannot tell they are carried; a small leak); an account's
+  entries outlive a deleted account (ruling 13 keeps them).
+- **ACCOUNT / CONTRACT:** a website list sent with version 0 would keep housing's binding
+  checks off (`held_version()` 0 reads as "no list held"). At 1920 × 1080 the page's text is
+  relatively smaller than in the mock-up; the inventory window and the code field are
+  half-transparent.
+- **STONE / GUARD:** an offline placer whose draft was removed by another member's
+  activation learns it only from the Character page; an offline last member learns that
+  the claim stands ownerless only from its home's fallback at its next login.
+- **BASE:** Help's heading "Riding, home and death" keeps its word "home" (respawn).
+- **ACCOUNT:** Help's quickbar line (`grug_inventory/help.lua`, Basics) still says "Cheer
+  with a website account", which reads as every account's; Cheer is an account reward
+  (`emote:cheer`) the website grants. A game text for a later lane.
+- **ART:** the hand shows the large extruded flat picture.

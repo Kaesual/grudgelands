@@ -7,17 +7,21 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.85.0 (`game.conf`): Round 85 (the arena Breach Road, claims by map chunk;
-  **map reset**) as the squash commit `6dec5010`, tag `round-85`, synced to the user's
-  game. Not pushed, like Round 84 (`78b787a6`, `round-84`) and 0.84.1 (`b4540eba`,
-  `round-84.1`): `git push origin main round-84 round-84.1 round-85` (only the user pushes).
-- **Production:** 0.83.0 (the user, 2026-11-22); upgraded only after Round 86 (ruling 23).
+- **Game:** 0.86.0 (`game.conf`): Round 86 (the account Claim Stone, home names, the
+  claim preview by map chunk, the Account page "The Charter", road cuts that fade into the
+  hillside; **map reset**); squash commit and tag `round-86`: set after the squash. Not
+  pushed, like Round 84 (`78b787a6`, `round-84`), 0.84.1 (`b4540eba`, `round-84.1`) and
+  Round 85 (`6dec5010`, `round-85`): `git push origin main round-84 round-84.1 round-85
+  round-86` (only the user pushes).
+- **Production:** 0.83.0; to be upgraded to 0.86.0 in one step with one map reset, which
+  covers 0.85.0's (Round 86 ruling 5).
 - **Last change besides rounds:** the read-only code audit of 2026-11
   ([audit](audit-2026-11/README.md)), whose findings Rounds 81 and 82 fixed or left as
   carry-overs.
-- **Next:** Round 86: the claim preview by chunks, the account Claim Stone, home names and
-  the Account page ([concept](planning/housing-rework-concept.md) Part B); the platform's
-  side of Rounds 80, 80.1 and 83 as listed in their Completions.
+- **Next:** not yet planned; open goals in [ROADMAP](../ROADMAP.md) and the round's
+  [carry-overs](planning/round86-plan.md#carry-overs), among them the road-planning
+  rework the user prepares and the soft map reset when one is needed; the platform's side of Rounds
+  80, 80.1 and 83 as listed in their Completions.
 - **Other branches:** `town-viewer` (kept on
   purpose: the three.js town viewer); `study-dwarf-architecture` and
   `study-website-screenshots` (unmerged studies of 2026-11-11).
@@ -26,10 +30,8 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Open for the user
 
-- **Known defect in 0.85.0:** the Claim Stone's minimap preview still shows the old
-  per-column red and a square centred on the player, not the chunk rule; placement decides
-  correctly; Round 86 fixes it ([carry-overs](planning/round85-plan.md#carry-overs)).
-- The Round 86 plan, and the platform's note for 0.85.0 (an ordinary map reset).
+- The production upgrade to 0.86.0 with the platform's note for it, and the website's note
+  on `default_rewards` (both to forward).
 - The end-to-end account test on the rehearsal realm once the platform side is ready
   (Round 79; [contract §9](technical/web-accounts.md#9-testing)).
 
@@ -37,11 +39,11 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
+| 86 | 0.86.0 | map reset | no | [Round 86](planning/round86-plan.md#completion-2026-11-22) |
 | 85 | 0.85.0 | map reset | no | [Round 85](planning/round85-plan.md#completion-2026-11-22) |
 | 84 | 0.84.0–0.84.1 | compatible | no | [Round 84](planning/round84-plan.md#completion-2026-11-21), [84.1](planning/round84-plan.md#follow-up-0841-2026-11-21) |
 | 83 | 0.83.0 | compatible | yes | [Round 83](planning/round83-plan.md#completion-2026-11-18) |
 | 82 | 0.82.0 | compatible | yes | [Round 82](planning/round82-plan.md#completion-2026-11-18) |
-| 81 | 0.81.0 | compatible | yes | [Round 81](planning/round81-plan.md#completion-2026-11-17) |
 
 Round 77 (a keep-claims map reset) was discarded; the number is not reused. The upgrade
 kinds come from `tools/web_data/upgrade.json` and the

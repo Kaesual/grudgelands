@@ -145,7 +145,9 @@ check(validate("alice", "accord", -300, 10, 0, {cube_clear = world.cube_clear}) 
 out("-- claims")
 local a = M.create("alice", {x = -300, y = 10, z = 0})
 check(M.player_state("alice") == "placed", "alice placed")
-check(a.kind == "" and a.name == "", "a new claim's kind and name are empty")
+-- Round 86 NAMES: a claim is created with its default name (placement_name).
+check(a.kind == "" and a.name == "alice's Home",
+	"a new claim's kind is empty, its name the placer's default")
 check(validate("alice", "accord", 300, 10, 0) == "already_placed", "one claim per player")
 check(validate("bob", "accord", -280, 10, 20) == "taken", "a second stone in the chunk refused")
 check(validate("bob", "accord", -260, 10, 0) == "ok", "the next chunk east accepted")
@@ -177,6 +179,8 @@ local function install_core()
 			["default:snow"] = {buildable_to = true}},
 		register_on_mods_loaded = function(fn) core_loaded[#core_loaded + 1] = fn end,
 		register_on_leaveplayer = function() end,
+		-- Round 86 ART: stone.lua reads its look from stone_art.lua.
+		get_modpath = function(name) return repo .. "/mods/PLAYER/" .. name end,
 		after = function(_, fn) core_after[#core_after + 1] = fn end,
 		log = function() end,
 		get_node_or_nil = function(pos)
@@ -201,7 +205,14 @@ local function install_core()
 		DRAFT_STONE = "grug_housing:claim_stone_draft",
 		STONE_NODES = {["grug_housing:claim_stone"] = true,
 			["grug_housing:claim_stone_empty"] = true,
-			["grug_housing:claim_stone_draft"] = true}}
+			["grug_housing:claim_stone_draft"] = true},
+		-- Round 86: the stone items and the nodes per kind (api.lua), which
+		-- stone.lua reads for the Account Claim Stone's copies.
+		STONE_ITEMS = {["grug_housing:claim_stone"] = "", ["grug_housing:account_stone"] = "account"},
+		STONE_KINDS = {[""] = {item = "grug_housing:claim_stone",
+			empty = "grug_housing:claim_stone_empty", draft = "grug_housing:claim_stone_draft"},
+			account = {item = "grug_housing:account_stone",
+			empty = "grug_housing:account_stone_empty", draft = "grug_housing:account_stone_draft"}}}
 end
 install_core()
 dofile(housing_dir .. "/protection.lua")

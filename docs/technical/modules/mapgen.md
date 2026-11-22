@@ -489,6 +489,32 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   Fixture `tools/r85_territory/portable_test.lua`; `tools/r85_territory/run.sh`
   checks the eleven study seeds, `engine.sh` the engine.
 
+### Road cuts
+
+  **Round 86 lane ROADS** (design: `world_zones.md` §9 cross-section): the
+  road sampler (`road_layout.lua` `sampler`) makes a cut meet the ground at
+  `SIDE_MAX` instead of ending in a wall: a side column's cut is never deeper
+  than its distance to the side zone's edge (`CUT_FADE`), except where the
+  lift bound below is lower (before it, 301 of the 304 fleet
+  seeds had walls of 3 to 134 nodes, production's seed four of 10 to 33);
+  the face is lifted above the old slope by at most `CUT_FADE_LIFT` (0.25)
+  times the square of its distance e to the road's edge, so a deep cut keeps
+  no ledge beside the road (one `max` and one `min` per segment in reach;
+  reach, buckets and the nearest-segment rule unchanged). The result is a
+  steep face, not a bank: where only the fade applies, as steep as the
+  hillside plus up to 1 per node; where the lift bound applies, up to about
+  0.5 e + 2 per node (12 to 13 per node 12 to 14 nodes out on
+  5664044364126834037 at 93,52, where nature rises 1 to 2), and on deep cuts
+  the 1:1 soil foot of the first 6 nodes can steepen to 3 to 6 per node,
+  worse than before. The seed fleet checks every seed (`road_cut` on its
+  line: the step a cut adds over the ground beside it at the edge, at most
+  2; columns in a capital's protected city exempt, its wall line + 21, wider
+  than the civic cores where the census found such steps) and reports
+  `road_face` (the largest step a cut adds within 6 nodes of the road's
+  edge, sampled every sixth node; report only, the rule is guarded by
+  `tools/r86_roads/portable_test.lua`); `tools/r86_roads` holds the measure,
+  the census, the pictures and the fixture.
+
 ### Mining camps
 
   **Round 58 camps** (the Miner's Guild): anchors 119–144 of

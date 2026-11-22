@@ -8,6 +8,9 @@
 --
 -- The target is stored as the claim id, never as a position; it is valid only
 -- while grug_housing reports that very claim as the player's placed claim.
+-- Round 86: a member of an account claim reads its account's claim (state
+-- "member"), per character: each member sets it as home, travels and
+-- respawns there, and every member hears of its loss.
 local housing = rawget(_G, "grug_housing")
 local CLAIM_KEY = "grug_home:claim"
 local LOST_PREFIX = "claim_lost:"
@@ -16,8 +19,8 @@ local storage = core.get_mod_storage()
 local function placed_claim(name)
  if not housing then return nil end
  local claim, state = housing.player_claim(name)
- if state == "placed" and type(claim) == "table" and claim.id ~= nil and
-   claim.owner == name and type(claim.center) == "table" then
+ if (state == "placed" or state == "member") and type(claim) == "table" and claim.id ~= nil and
+   housing.is_owner(claim, name) and type(claim.center) == "table" then
   return claim
  end
 end
@@ -54,7 +57,11 @@ function grug_home.claim_waypoint(player)
  local claim = placed_claim(player:get_player_name())
  if not claim or (housing.is_draft and housing.is_draft(claim)) then return nil end
  local row = claim_row(player, claim)
- if row then row.label, row.texture = "Your Claim Stone", housing.STONE_TEXTURE end
+ if row then
+  row.label = "Your Claim Stone"
+  -- Round 86: the account stone's own look.
+  row.texture = claim.kind == "account" and housing.ACCOUNT_STONE_TEXTURE or housing.STONE_TEXTURE
+ end
  return row
 end
 
@@ -92,7 +99,11 @@ function grug_home.clear_home_claim(player)
 end
 
 local LOST = {picked_up="was picked up", destroyed="has been destroyed",
- removed="was removed by an admin"}
+ removed="was removed by an admin",
+ -- Round 86: a member left its account's home (or lost the link).
+ left="is no longer yours: you left your account's home",
+ unlinked="is no longer yours: your character is no longer linked to its account",
+ faction="is no longer yours: your faction changed"}
 local function fall_back(player, event)
  grug_home.clear_home_claim(player)
  local inn = grug_home.innkeeper(player)
@@ -119,13 +130,22 @@ local function deliver(player)
  end
 end
 
+-- Records the loss of `claim` for `name` and delivers it when online
+-- (Round 86: also called by grug_housing when a member leaves).
+function grug_home.claim_lost(name, claim, event)
+ storage:set_string(LOST_PREFIX .. name, event .. " " .. tostring(claim.id))
+ local player = core.get_player_by_name(name)
+ if player then deliver(player) end
+end
+
 if housing then
  housing.register_on_claim_changed(function(claim, event)
   if not LOST[event] or type(claim) ~= "table" or
     type(claim.owner) ~= "string" or claim.id == nil then return end
-  storage:set_string(LOST_PREFIX .. claim.owner, event .. " " .. tostring(claim.id))
-  local player = core.get_player_by_name(claim.owner)
-  if player then deliver(player) end
+  -- Round 86: every member of an account claim.
+  for _, name in ipairs(housing.owner_names(claim)) do
+   grug_home.claim_lost(name, claim, event)
+  end
  end)
 end
 core.register_on_joinplayer(deliver)

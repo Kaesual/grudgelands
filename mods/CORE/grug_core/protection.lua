@@ -174,7 +174,8 @@ function grug_core.interaction_protected(pos, name)
 end
 
 -- Reasons for protection that is not the world's own (Round 25: claims). A
--- provider is fn(pos, name) -> key, hint text; nil when it does not apply.
+-- provider is fn(pos, name) -> key, hint text (and, Round 86, an icon
+-- texture for the hint); nil when it does not apply.
 -- The first provider that answers wins, and the world reason wins over every
 -- provider.
 local reason_providers = {}
@@ -263,14 +264,16 @@ function grug_core.protection_reason(pos, name)
 		return "protected"
 	end
 	for index = 1, #reason_providers do
-		local key, text = reason_providers[index](pos, name)
-		if key then return key, text end
+		local key, text, icon = reason_providers[index](pos, name)
+		if key then return key, text, icon end
 	end
 	return "protected"
 end
 
+-- The hint line, and the icon a provider puts before it (Round 86: a home's
+-- house icon; grug_core.flash draws it) or nil.
 function grug_core.protection_hint(pos, name)
-	local reason, text = grug_core.protection_reason(pos, name)
+	local reason, text, icon = grug_core.protection_reason(pos, name)
 	if not reason then return nil end
-	return text or PROTECTION_HINTS[reason] or "Protected"
+	return text or PROTECTION_HINTS[reason] or "Protected", icon
 end

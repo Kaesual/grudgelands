@@ -4,7 +4,9 @@
 -- A claim is a table { id, owner, center = {x, y, z}, placed_at, paid_until }
 -- (seconds of os.time()), plus `activated_at` (0 while the stone is a draft,
 -- Round 26), `expired_for` and `permissions` (name -> "everything" |
--- "interact"). Read it, never write it: every change goes through the
+-- "interact"), `kind` and `name` (Round 85). Whether a character owns it is
+-- asked through is_owner (Round 86), never by comparing `owner` with a
+-- name. Read it, never write it: every change goes through the
 -- functions here, which persist it. The model itself lives in registry.lua
 -- (pure, shared with tools/r25_claim_core/fixture.lua).
 
@@ -58,11 +60,38 @@ grug_housing.PICKUP_LOCK_SECONDS = model.PICKUP_LOCK_SECONDS
 grug_housing.STONE_ITEM = "grug_housing:claim_stone"
 grug_housing.EMPTY_STONE = "grug_housing:claim_stone_empty"
 grug_housing.DRAFT_STONE = "grug_housing:claim_stone_draft"
-grug_housing.STONE_NODES = {
-	[grug_housing.STONE_ITEM] = true,
-	[grug_housing.EMPTY_STONE] = true,
-	[grug_housing.DRAFT_STONE] = true,
+-- Round 86: every Claim Stone item with the claim `kind` it places (the
+-- record's field; "" the personal stone), and per kind its three nodes:
+-- the fuelled stone (the item itself), the empty and the draft. Readers ask
+-- these (is_stone_item, stone_nodes), never one item name; the account
+-- stone (lane STONE) adds its rows here.
+-- The Account Claim Stone (Round 86 ruling 10, lane STONE): its own item
+-- and three nodes, kind "account" (registry.lua).
+grug_housing.ACCOUNT_ITEM = "grug_housing:account_stone"
+grug_housing.STONE_ITEMS = {[grug_housing.STONE_ITEM] = "",
+	[grug_housing.ACCOUNT_ITEM] = model.ACCOUNT}
+grug_housing.STONE_KINDS = {
+	[""] = {item = grug_housing.STONE_ITEM, empty = grug_housing.EMPTY_STONE,
+		draft = grug_housing.DRAFT_STONE},
+	[model.ACCOUNT] = {item = grug_housing.ACCOUNT_ITEM,
+		empty = "grug_housing:account_stone_empty",
+		draft = "grug_housing:account_stone_draft"},
 }
+-- Every stone node of every kind.
+grug_housing.STONE_NODES = {}
+for _, nodes in pairs(grug_housing.STONE_KINDS) do
+	for _, node in pairs(nodes) do grug_housing.STONE_NODES[node] = true end
+end
+
+function grug_housing.is_stone_item(itemname)
+	return grug_housing.STONE_ITEMS[itemname] ~= nil
+end
+
+-- The three nodes of a claim kind (an unknown kind draws as the personal
+-- stone).
+function grug_housing.stone_nodes(kind)
+	return grug_housing.STONE_KINDS[kind] or grug_housing.STONE_KINDS[""]
+end
 
 -- Ruling 10: coal lumps and charcoal burn alike; coal blocks are refused.
 -- Seconds of fuel per piece. Round 47 ruling 12: Anthracite counts 1.5
@@ -189,17 +218,58 @@ function grug_housing.permission(claim, name)
 	return model.permission(claim, name)
 end
 
+-- Round 86: whether the character `name` is an owner of the claim, the one
+-- owner question (registry.lua is_owner; account members: lane STONE).
+function grug_housing.is_owner(claim, name)
+	return model.is_owner(claim, name)
+end
+
+-- The owner text of the account claim the character is a member of, or
+-- nil (always nil before lane STONE).
+function grug_housing.account_owner_of(name)
+	return model.account_owner_of(name)
+end
+
+-- Round 86: the members of an account claim's owner text (sorted names),
+-- its activated claim (or nil), and the characters a claim's notices go to
+-- (the members of an account claim, else its owner).
+function grug_housing.members(owner)
+	return model.members(owner)
+end
+
+function grug_housing.account_claim(owner)
+	return model.account_claim(owner)
+end
+
+function grug_housing.owner_names(claim)
+	return model.owner_names(claim)
+end
+
+-- The home's name every display of a claim reads (the location line, the
+-- banner, the Map tab, the protection hint): the stored name, else the
+-- default "<owner>'s Home" (names.lua renames and resets it).
+function grug_housing.home_name(claim)
+	return model.home_name(claim)
+end
+
+-- The house icon that stands with a home's name wherever it shows (Round
+-- 86; the map's home marker, the user's pick).
+grug_housing.HOME_ICON = "grug_map_home.png"
+
 -- The player's claim (or nil) and a state: "never", "carried", "placed",
 -- "destroyed", "removed" or "needs_stone". A standing stone, draft, fuelled
 -- or empty, is "placed" with its claim. An expired draft leaves
--- "needs_stone", an admin removal "removed".
+-- "needs_stone", an admin removal "removed". Round 86: "member" for a
+-- character that chose the Account Claim Stone, with its account's claim,
+-- else its own account draft, else nil.
 function grug_housing.player_claim(name)
 	return model.player_claim(name)
 end
 
 -- fn(claim, event) runs after every change; event is one of "placed",
--- "activated", "fuel", "permission", "picked_up", "destroyed", "removed",
--- "deleted", "draft_expired", "expired". "picked_up", "destroyed", "removed"
+-- "activated", "fuel", "permission", "renamed" (Round 86, names.lua),
+-- "picked_up", "destroyed", "removed", "deleted", "draft_expired",
+-- "expired". "picked_up", "destroyed", "removed"
 -- (an admin, admin.lua), "deleted" (the owner's deletion, Round 83; not a
 -- loss the owner hears of) and "draft_expired" pass the removed claim table.
 -- "expired" and "draft_expired" come from a periodic check every few seconds
@@ -217,12 +287,15 @@ function grug_housing.notify_claim_changed(claim, event)
 	end
 end
 
--- Whether the Claim Stone item is anywhere in the player's inventory.
+-- Whether a Claim Stone item (any of STONE_ITEMS) is anywhere in the
+-- player's inventory.
 function grug_housing.holds_stone(player)
 	local inv = player and player:get_inventory()
 	if not inv then return false end
 	for listname in pairs(inv:get_lists()) do
-		if inv:contains_item(listname, grug_housing.STONE_ITEM) then return true end
+		for item in pairs(grug_housing.STONE_ITEMS) do
+			if inv:contains_item(listname, item) then return true end
+		end
 	end
 	return false
 end
@@ -263,18 +336,20 @@ end
 
 -- Makes the node at the stone match its claim: the draft stone while it is
 -- a draft, the fuelled stone while the claim is active, the empty stone
--- otherwise. Only a loaded stone changes.
+-- otherwise, each of the claim's kind. Only a loaded stone changes.
 function grug_housing.sync_stone_node(claim)
 	local node = core.get_node_or_nil(claim.center)
 	if not node then return end
-	local wanted = grug_housing.EMPTY_STONE
+	local nodes = grug_housing.stone_nodes(claim.kind)
+	local wanted = nodes.empty
 	if model.is_draft(claim) then
-		wanted = grug_housing.DRAFT_STONE
+		wanted = nodes.draft
 	elseif model.is_active(claim) then
-		wanted = grug_housing.STONE_ITEM
+		wanted = nodes.item
 	end
 	if grug_housing.STONE_NODES[node.name] and node.name ~= wanted then
-		core.swap_node(claim.center, {name = wanted})
+		-- Round 86 ART: the stone keeps its facing.
+		core.swap_node(claim.center, {name = wanted, param2 = node.param2})
 	end
 end
 
@@ -312,9 +387,18 @@ function grug_housing.activate(player)
 	local name = player:get_player_name()
 	local claim = model.player_claim(name)
 	if not claim then return false, "You have no placed Claim Stone." end
+	-- Round 86: an account draft's placer is checked against its binding first.
+	if claim.kind == "account" and grug_housing.reconcile_player then
+		grug_housing.reconcile_player(player)
+		claim = model.player_claim(name)
+		if not claim then return false, "You have no placed Claim Stone." end
+	end
 	if not model.is_draft(claim) then
 		return false, "Your Claim Stone is already activated."
 	end
+	-- Round 86 ruling 16: one account claim per account and faction.
+	local refusal = model.activation_refusal and model.activation_refusal(claim)
+	if refusal then return false, model.MESSAGES[refusal] end
 	local need = model.ACTIVATION_LUMPS
 	local inv = player:get_inventory()
 	local have = fuel_carried(inv)
@@ -353,6 +437,8 @@ function grug_housing.activate(player)
 	grug_housing.notify_claim_changed(claim, "activated")
 	core.log("action", ("[grug_housing] %s activated Claim Stone %d with %d lumps"):format(
 		name, claim.id, burnt))
+	-- Round 86 ruling 16: the account's other drafts go at once (account.lua).
+	if claim.kind == "account" then grug_housing.account_activated(claim) end
 	return true, ("Claim Stone activated: your home is protected. It stays " ..
 		"in place for %d hours."):format(model.PICKUP_LOCK_SECONDS / 3600)
 end
@@ -384,7 +470,7 @@ function grug_housing.pick_up(player)
 		return false, "Your Claim Stone stays in place for another " ..
 			model.wait_text(wait) .. "."
 	end
-	local stone = ItemStack(grug_housing.STONE_ITEM)
+	local stone = ItemStack(grug_housing.stone_nodes(claim.kind).item)
 	if not grug_inventory.fits(player, {stone}) then
 		return false, "Make room in your inventory for the Claim Stone."
 	end
@@ -482,17 +568,32 @@ end
 -- (replace cube_clear in a copy).
 grug_housing.placement_world = world
 
+-- The placement preview per map chunk (Round 86 lane PREVIEW, preview.lua):
+-- the minimap's claim mode asks every chunk on its cell texture. nil when
+-- a stone of `faction` may stand in chunk (cx, cz) as far as the chunk goes
+-- (validate's mask, claim and quota steps, in its order), else the refusal
+-- code and, for "quota", the kind id. claim_hint is the line for the chunk
+-- the player stands in; CHUNK_ORIGIN the first node of chunk 0.
+local preview = dofile(modpath .. "/preview.lua")
+grug_housing.CHUNK_ORIGIN = model.CHUNK_ORIGIN
+function grug_housing.chunk_refusal(faction, cx, cz)
+	return preview.chunk_refusal(model, grug_housing.mask, faction, cx, cz)
+end
+function grug_housing.claim_hint(code, kind)
+	return preview.hint(code, kind and world.kind_name(kind))
+end
+
 -- Rulings 2, 5 and 6 and the claim mask with its quota (Round 85) for a
 -- stone the player would place at pos; returns true, or false, code,
 -- message. There is no placing lock (R26 ruling 10). Without a mask (its
 -- build failed, mask.lua) every placement is refused.
-function grug_housing.validate_placement(player, pos)
+function grug_housing.validate_placement(player, pos, kind)
 	if not grug_core.zone_authority_installed() then
 		return false, "no_world", "The world is not ready yet."
 	end
 	local name = player:get_player_name()
 	world.mask = grug_housing.mask
-	return model.validate(name, grug_core.get_player_faction(name), pos, world)
+	return model.validate(name, grug_core.get_player_faction(name), pos, world, kind)
 end
 
 -- Set by Lane C: opens the owner's stone formspec. Lane A's stone node calls

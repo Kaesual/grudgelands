@@ -731,18 +731,20 @@ class V3Test(PassCase):
                              [(x + dx, y, z + dz, d) for x, y, z, d in rows])
         conn.close()
 
-    def claim(self, number, owner, x, z, version="v3"):
+    def claim(self, number, owner, x, z, version="v3", owner_text=None, kind="", world=None):
         """claim:<number> for `owner`'s stone at (x, 150, z), with the
-        times of the probe's claim of the same owner."""
+        times of the probe's claim of the same owner; a v3 record may name
+        another owner (`owner_text`) and a `kind`."""
         built = next(c for c in RECORD["claims"] if c["owner"] == owner)
-        stored = self.storage()[("grug_housing", "claim:%d" % built["id"])].split("|")
+        stored = self.storage(world)[("grug_housing", "claim:%d" % built["id"])].split("|")
         times = dict(placed_at=stored[5], activated_at=stored[6], paid_until=stored[7],
                      expired_for=stored[8])
         if version == "v3":
-            text = v3_record(owner=owner, x=x, y=150, z=z, perms="", **times)
+            text = v3_record(owner=owner_text or owner, x=x, y=150, z=z, perms="", kind=kind,
+                             **times)
         else:
             text = "|".join(["v2", owner, str(x), "150", str(z)] + stored[5:9] + [""])
-        self.set_storage("grug_housing", "claim:%d" % number, text)
+        self.set_storage("grug_housing", "claim:%d" % number, text, world)
 
     def scanned(self):
         """Per owner the positions the pass packs, and the blocks it read."""
@@ -837,6 +839,67 @@ class V3Test(PassCase):
         code, events, _ = self.run_tool("--check", "--map-reset")
         self.assertEqual((code, events[-1]["pack"]["skipped"]),
                          (0, {"unknown_version": 2, "undecodable": 1}))
+
+
+    ACCOUNT = "account:a_1842:accord"
+    # recovered.lua R.parse_key: the player's and the account's key patterns.
+    PLAYER_KEY = r"^recovered:([%w_%-]+):(%d+):(%d+)%.?(%d*)$"
+    ACCOUNT_KEY = r"^recovered:(account:[%w_%-]+:[%w_%-]+):(%d+):(%d+)%.?(%d*)$"
+
+    def test_account_claim(self):
+        """Round 86 (lane PACK): an account claim (kind `account`, its owner
+        text `account:<id>:<faction>`) is packed under that owner text,
+        exactly the entries a personal claim at the same stone gets; the
+        game's player pattern cannot read those keys, its account pattern
+        reads them. A draft of the account stone (kind `account`, its
+        placer's name) is packed for the placer."""
+        recovered_lua = (REPO / "mods/PLAYER/grug_housing/recovered.lua").read_text()
+        for pattern in (self.PLAYER_KEY, self.ACCOUNT_KEY):
+            self.assertIn('"%s"' % pattern, recovered_lua)
+        to_re = lambda lua: re.compile(lua.replace("%w", "A-Za-z0-9").replace("%-", "-")
+                                       .replace("%d", r"\d").replace("%.", r"\."))
+        player_key, account_key = to_re(self.PLAYER_KEY), to_re(self.ACCOUNT_KEY)
+        twin = Path(self._tmp.name, "twin")
+        shutil.copytree(self.world, twin)
+        results = []
+        for world, owner in ((self.world, self.ACCOUNT), (twin, "builder")):
+            self.claim(1, "builder", 1000, 1000, owner_text=owner, kind="account", world=world)
+            self.claim(2, "neighbor", 1040, 1000, kind="account", world=world)  # a draft
+            code, events, err = self.run_tool("--map-reset", world=world)
+            self.assertEqual(code, 0, err)
+            self.assertEqual((events[2]["counts"]["claims"], events[2]["counts"]["players"],
+                              events[2]["counts"]["containers"]), (2, 2, 11))
+            results.append(self.recovered(world))
+        account, personal = results
+        self.assertEqual(account, {k.replace("recovered:builder:", "recovered:%s:" % self.ACCOUNT):
+                                   v for k, v in personal.items()})
+        self.assertEqual(sorted(k for k in account if k.startswith("recovered:account:")),
+                         sorted("recovered:%s:1:%d" % (self.ACCOUNT, n) for n in range(1, 9)))
+        self.assertEqual(account["recovered:%s:1:8" % self.ACCOUNT], "grug_smelting:charcoal 22")
+        self.assertEqual(account["recovered:neighbor:1:5"], "grug_smelting:charcoal 5")
+        for name in account:
+            if name.startswith("recovered:account:"):
+                self.assertIsNone(player_key.match(name), name)
+                self.assertEqual(account_key.match(name).group(1), self.ACCOUNT)
+            else:
+                self.assertEqual(player_key.match(name).group(1), "neighbor")
+                self.assertIsNone(account_key.match(name), name)
+        # A name that equals the account id is a player's key, never the account's.
+        self.assertEqual(player_key.match("recovered:a_1842:1:1").group(1), "a_1842")
+        self.assertEqual(player_key.match("recovered:account:1:1").group(1), "account")
+        self.assertIsNone(account_key.match("recovered:account:1:1"))
+
+    def test_owner_refused(self):
+        """An owner the game cannot hold entries for is refused before any
+        write, the dry run too."""
+        for owner in ("account:a_1842", "account:a 1:accord", "two words", "a:b"):
+            self.claim(1, "builder", 1000, 1000, owner_text=owner)
+            before = self.hashes()
+            for args in (("--map-reset",), ("--check", "--map-reset")):
+                code, events, _ = self.run_tool(*args)
+                self.assertEqual((code, events[-1]["reason"]), (2, "internal"), (owner, args))
+                self.assertIn("claim 1: its owner %r" % owner, events[-1]["message"])
+            self.assertEqual(self.hashes(), before, owner)
 
 
 class EntryTest(unittest.TestCase):

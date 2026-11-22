@@ -520,9 +520,12 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
     depth limit per pick and no dig-without-drop path. A
     `register_on_punchnode` handler and a `register_on_protection_violation`
     handler (online players only) show one rate-limited hint in the shared
-    screen flash line (`grug_core.flash(player, message, color)`, which
-    `grug_abilities.flash` forwards to in error red): the protection reason
-    (`grug_core.protection_hint`) for any wield, "Requires a T<N> pick" or the
+    screen flash line (`grug_core.flash(player, message, color, icon)`,
+    which `grug_abilities.flash` forwards to in error red; `icon`, Round 86,
+    a texture drawn before the line, centred with it by
+    `hud_layout.icon_before_offsets`): the protection reason
+    (`grug_core.protection_hint`, which returns the line and a reason
+    provider's icon: a home's house icon) for any wield, "Requires a T<N> pick" or the
     broken-pick line (never with a selected skill). Code that refuses an edit
     on protected ground calls `core.record_protection_violation` so the player
     sees the reason. `max_drop_level` is a separate ordinary drop

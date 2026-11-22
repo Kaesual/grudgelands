@@ -104,12 +104,13 @@ end
 -- disc by `mask` (made at the texture's own size). Parts outside the base
 -- stay transparent.
 --
--- `claim` (fix 0.50.2; nil: none) is the claim layer: in claim mode (the
--- Claim Stone preview) the faction's overlay tiles (`claim.tiles`, base.lua
--- claim_overlay) after the map's, which `[combine` blends by their alpha;
--- in both modes one `[fill` per rectangle of `claim.rects` (V.claim_rect,
--- V.claim_frame: inside the combined texture, never empty) in its own
--- `color` or else `claim.color`, before any resize and the mask.
+-- `claim` (fix 0.50.2; nil: none) is the claim layer: optional tiles
+-- (`claim.tiles`) after the map's, which `[combine` blends by their alpha,
+-- and one `[fill` per rectangle of `claim.rects` (V.claim_rect,
+-- V.claim_frame, V.chunk_cells: inside the combined texture, never empty)
+-- in its own `color` or else `claim.color`, in list order, before any
+-- resize and the mask. Since Round 86 the claim mode's chunk fills, its
+-- grid and the frames are all rectangles (minimap.lua claim_layer).
 -- `flight` (fix 0.53.1; nil: none) are the no-fly overlay's tiles (base.lua
 -- flight_overlay), added after the map's and before the claim layer.
 function V.texture(v, ox, oy, mask, claim, flight)
@@ -139,16 +140,16 @@ function V.texture(v, ox, oy, mask, claim, flight)
 	return table.concat(parts, ":") .. fills .. resize .. "^[mask:" .. mask
 end
 
--- The Claim Stone preview's geometry (fix 0.50.2; docs/design/world_map.md
--- "Minimap"). A claim covers the columns cx - radius .. cx + radius (and the
--- same in z), each node its column +- 0.5.
+-- The claims' geometry on the cell texture (fix 0.50.2; docs/design/
+-- world_map.md "Minimap"). A claim covers the columns cx - radius .. cx +
+-- radius (and the same in z), each node its column +- 0.5.
 --
--- Its pixel rectangle {x, y, w, h} in the combined texture of the cell
--- whose top-left base pixel is ox/oy: rounded outward, clipped to the
--- texture; nil when nothing of it lies on the texture. The engine refuses a
--- `[fill` whose x or y lies outside the image or whose width or height is
--- 0, and leaves the part out with an error line per build (imagesource.cpp
--- `[fill`, CHECK_DIM), so no other rectangle may reach a recipe.
+-- Every rectangle is in pixels of the combined texture of the cell whose
+-- top-left base pixel is ox/oy, clipped to the texture, and left out when
+-- nothing of it lies on the texture. The engine refuses a `[fill` whose x
+-- or y lies outside the image or whose width or height is 0, and leaves the
+-- part out with an error line per build (imagesource.cpp `[fill`,
+-- CHECK_DIM), so no other rectangle may reach a recipe.
 -- The claim's box rounded outward, in pixels of that texture and not yet
 -- clipped: left, top, right, bottom (right and bottom exclusive).
 local function claim_box(v, ox, oy, cx, cz, radius)
@@ -167,19 +168,18 @@ local function clip(size, x0, y0, x1, y1)
 	return {x = x0, y = y0, w = x1 - x0, h = y1 - y0}
 end
 
+-- The claim's outward-rounded box clipped (the rectangle claim_frame
+-- borders): {x, y, w, h}, or nil.
 function V.claim_rect(v, ox, oy, cx, cz, radius)
 	return clip(v.combined, claim_box(v, ox, oy, cx, cz, radius))
 end
 
--- The claims outside claim mode (fix 0.50.2 ruling H4): a frame one base
--- pixel wide just inside the claim's outward-rounded box (claim_rect's),
--- no fill. Appends its edges in `color` to `list` as rectangles {x, y, w,
--- h, color}, each clipped as claim_rect's (top and bottom the box's whole
--- width, left and right between them, so no pixel is drawn twice); an
--- edge with nothing on the texture is left out. Returns `list`.
-function V.claim_frame(v, ox, oy, cx, cz, radius, color, list)
-	local size = v.combined
-	local x0, y0, x1, y1 = claim_box(v, ox, oy, cx, cz, radius)
+-- A frame one pixel wide just inside the unclipped box x0 .. x1 - 1, y0 ..
+-- y1 - 1 of a `size` texture, appended to `list` in `color` as rectangles
+-- {x, y, w, h, color}, each clipped (top and bottom the box's whole width,
+-- left and right between them, so no pixel is drawn twice); an edge with
+-- nothing on the texture is left out. Returns `list`.
+local function frame_edges(size, x0, y0, x1, y1, color, list)
 	local edges = {clip(size, x0, y0, x1, y0 + 1), clip(size, x0, y1 - 1, x1, y1),
 		clip(size, x0, y0 + 1, x0 + 1, y1 - 1), clip(size, x1 - 1, y0 + 1, x1, y1 - 1)}
 	for index = 1, 4 do
@@ -192,6 +192,13 @@ function V.claim_frame(v, ox, oy, cx, cz, radius, color, list)
 	return list
 end
 
+-- The claims outside claim mode (fix 0.50.2 ruling H4): a frame one base
+-- pixel wide just inside the claim's outward-rounded box, no fill.
+function V.claim_frame(v, ox, oy, cx, cz, radius, color, list)
+	local x0, y0, x1, y1 = claim_box(v, ox, oy, cx, cz, radius)
+	return frame_edges(v.combined, x0, y0, x1, y1, color, list)
+end
+
 -- The world rectangle (inclusive columns) the combined texture of the cell
 -- at ox/oy shows, one column more on each side: the claims to ask for.
 function V.texture_area(v, ox, oy)
@@ -200,27 +207,42 @@ function V.texture_area(v, ox, oy)
 		math.ceil(v.min_x + (ox + size) * v.npp) + 1, math.ceil(v.max_z - oy * v.npp) + 1
 end
 
--- The player's own square: `radius` nodes each way of the player's
--- position at the frame's scale, centred on the arrow (the map glides under
--- it, so it changes only with the window). {x, y, size, line}: the top-left
--- screen pixel, the side and the frame's width (one HUD pixel, at least
--- one pixel), in real screen pixels.
-function V.claim_square(v, frame, radius)
-	local line = math.max(1, math.floor(frame.hud + 0.5))
-	local size = math.max(2 * line + 1, math.floor((2 * radius + 1) / v.npp * frame.f + 0.5))
-	return {x = math.floor(frame.arrow_x - size / 2 + 0.5),
-		y = math.floor(frame.arrow_y - size / 2 + 0.5), size = size, line = line}
+-- The claim preview's chunk grid (Round 86 lane PREVIEW;
+-- docs/design/world_map.md "Minimap", claim mode): the map chunks (`chunk`
+-- nodes a side, chunk 0 starting at node `origin`) that meet the combined
+-- texture of the cell at ox/oy, as pixel ranges of that texture. A chunk
+-- edge (a node edge, half a node outside its first or last column) is
+-- rounded to the nearest pixel, one formula for both chunks beside it, so
+-- the grid tiles the texture without gap or overlap. Returns `cols`
+-- {{c, x0, x1, a, b}, ...} west to east and `rows` {{c, y0, y1, a, b}, ...}
+-- north to south: c the chunk index, x0 .. x1 - 1 (y0 .. y1 - 1) its pixels
+-- clipped to the texture (a chunk with none is left out), a .. b - 1 the
+-- same unclipped (a: its west or north edge, on the texture when a >= 0).
+function V.chunk_cells(v, ox, oy, chunk, origin)
+	local size, floor = v.combined, math.floor
+	local min_x, min_z, max_x, max_z = V.texture_area(v, ox, oy)
+	local function west(c) return floor((origin + chunk * c - 0.5 - v.min_x) / v.npp + 0.5) - ox end
+	local function north(c)
+		return floor((v.max_z - (origin + chunk * (c + 1) - 0.5)) / v.npp + 0.5) - oy
+	end
+	local function add(list, c, a, b)
+		local x0, x1 = math.max(0, a), math.min(size, b)
+		if x1 > x0 then list[#list + 1] = {c, x0, x1, a, b} end
+	end
+	local cols, rows = {}, {}
+	for c = floor((min_x - origin) / chunk), floor((max_x - origin) / chunk) do
+		add(cols, c, west(c), west(c + 1))
+	end
+	for c = floor((max_z - origin) / chunk), floor((min_z - origin) / chunk), -1 do
+		add(rows, c, north(c), north(c - 1))
+	end
+	return cols, rows
 end
 
--- Its texture, made at the size it is drawn so the frame stays exactly
--- `line` pixels: a `fill` square with an `edge` frame (colour strings).
-function V.claim_square_texture(square, fill, edge)
-	local s, l = square.size, square.line
-	return ("[fill:%dx%d:%s"):format(s, s, fill) ..
-		("^[fill:%dx%d:0,0:%s"):format(s, l, edge) ..
-		("^[fill:%dx%d:0,%d:%s"):format(s, l, s - l, edge) ..
-		("^[fill:%dx%d:0,%d:%s"):format(l, s - 2 * l, l, edge) ..
-		("^[fill:%dx%d:%d,%d:%s"):format(l, s - 2 * l, s - l, l, edge)
+-- A frame one pixel wide just inside the chunk of cell `col` x `row`
+-- (V.chunk_cells), clipped as claim_frame's.
+function V.cell_frame(v, col, row, color, list)
+	return frame_edges(v.combined, col[4], row[4], col[5], row[5], color, list)
 end
 
 -- The drawing frame for a minimap `box` (grug_core.hud_layout.minimap_box):
@@ -325,6 +347,56 @@ function V.now_playing_corner(box, right, top, title, artist)
 	return playing_box(box.gui or 1, title, artist, function(w)
 		return math.floor(right - w + 0.5), top
 	end)
+end
+
+-- Claim mode's line and its box (Round 86 lane PREVIEW, fix round 1): the
+-- line left of the bezel stands on the "Now playing" box's dark fill, so it
+-- reads against a bright sky. HUD text cannot be measured, so its width is
+-- estimated from the glyph advances of the HUD font (Arimo has Arial's
+-- metrics: thousandths of the em, an unknown character as a digit); on the
+-- shipped hints the estimate lies 1-3 % above the drawn text (measured in
+-- Round 86's screenshots, tools/r86_preview pins them). Text is sized by GUI
+-- scaling: `font` GUI px a line's em, `line_em` ems a line, `pad` GUI px
+-- around the text.
+V.HINT = {font = 16, line_em = 1.15, pad = 4}
+local ADVANCE = {[" "] = 278, ["'"] = 191, [":"] = 278, ["."] = 278, [","] = 278,
+	["-"] = 333, ["+"] = 584, ["("] = 333, [")"] = 333}
+do
+	local lower = {556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556,
+		556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500}
+	local upper = {667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722,
+		778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611}
+	for i = 1, 26 do
+		ADVANCE[string.char(96 + i)] = lower[i]
+		ADVANCE[string.char(64 + i)] = upper[i]
+	end
+end
+
+-- The widest line of `text` in px at a font of `font` px, and its lines.
+function V.text_width(text, font)
+	local widest, lines = 0, 0
+	for line in (text .. "\n"):gmatch("([^\n]*)\n") do
+		local sum = 0
+		for i = 1, #line do sum = sum + (ADVANCE[line:sub(i, i)] or 556) end
+		widest, lines = math.max(widest, sum), lines + 1
+	end
+	return widest * font / 1000, lines
+end
+
+-- The box for claim mode's line `text`: its right edge `gap` HUD px left of
+-- the bezel, its bottom on the bezel's bottom. {x, y, w, h} (the box's
+-- top-left, size) and text_x, text_y (the right-aligned text's right edge
+-- and bottom), in real screen pixels.
+function V.hint_box(frame, text, gap)
+	local H, gui = V.HINT, frame.gui
+	local pad = math.floor(H.pad * gui + 0.5)
+	local width, lines = V.text_width(text, H.font * gui)
+	local w = math.ceil(width) + 2 * pad
+	local h = math.ceil(lines * H.line_em * H.font * gui) + 2 * pad
+	local right = math.floor(frame.center_x - frame.diameter / 2 - gap * frame.hud + 0.5)
+	local bottom = math.floor(frame.center_y + frame.diameter / 2 + 0.5)
+	return {x = right - w, y = bottom - h, w = w, h = h, text_x = right - pad,
+		text_y = bottom - pad}
 end
 
 -- The minimap's side elements (Round 48 lane HUD; docs/design/world_map.md

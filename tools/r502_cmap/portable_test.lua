@@ -3,42 +3,36 @@
 --
 --   luajit tools/r502_cmap/portable_test.lua [repo]
 --
--- Loads the REAL grug_housing registry.lua, grug_core hud_layout.lua and
--- grug_map atlas.lua, base.lua (its render exposed as render_base.lua does),
--- minimap_view.lua and minimap.lua on a fake engine. Checks:
---   G  geometry: a claim's rectangle in a cell texture is rounded outward
---      (it holds every pixel the claim's columns touch, and no more than one
---      pixel beyond on each side) and clipped: partly outside at each edge,
---      fully outside, exactly on an edge and with zero size; every `[fill`
---      a recipe holds passes the engine's checks (x and y inside the image,
---      width and height at least 1: imagesource.cpp `[fill`, CHECK_DIM);
---      the player's square is 80 nodes (a map chunk, Round 85) at the
---      frame's scale on the arrow and its texture's fills are valid at every
---      window;
+-- Loads the REAL grug_housing registry.lua and preview.lua, grug_core
+-- hud_layout.lua and grug_map atlas.lua, base.lua (its render exposed as
+-- render_base.lua does), minimap_view.lua and minimap.lua on a fake engine.
+-- Round 86 (lane PREVIEW) replaced the per-column overlay baked into the
+-- base by a preview per map chunk drawn by the minimap
+-- (tools/r86_preview checks it against placement); the checks of the old
+-- overlay (its render, its install, the claims' red rectangles, the
+-- player's square on the arrow) went with it. Checks:
+--   G  geometry: the chunk grid of a cell texture (V.chunk_cells) tiles it
+--      without gap or overlap, each chunk 80 nodes at the base's scale with
+--      its edges rounded to the nearest pixel, clipped at every edge of the
+--      texture; every `[fill` a recipe holds passes the engine's checks (x
+--      and y inside the image, width and height at least 1: imagesource.cpp
+--      `[fill`, CHECK_DIM); the claims' area covers the texture;
 --   V  registry: the claim-set version changes on create, remove (not on a
 --      second remove), load and map reset and nowhere else (activation,
 --      fuel, permissions); claims_in equals a scan of every claim's chunk;
 --      the column rule (claim_mask.lua's since Round 85) with territory
 --      false judges the zone alone;
---   O  overlays (the real render on a small synthetic world, normal size
---      and a 10:3 "high" render reduced to it): every pixel whose centre
---      column the rule refuses is red, with its eight neighbours; every
---      pixel within the margin of a settlement core is red; no 80 x 80
---      square that touches no red breaks the column rule on a column or
---      meets a settlement within the margin ("Conservative red"); a few
---      that touch red pass;
---   I  install on that world at the game's size: the overlays announced
---      and handed to the minimap; a failing overlay render keeps the base and
---      the minimap's copy, without claim mode, overlay media or their key;
+--   I  install: the base announces no Claim Stone overlay and hands the
+--      minimap none; the overlay tiles an older version left in the world
+--      folder are removed as stale tiles;
 --   M  minimap runtime: claim mode only with the stone held and a faction;
---      the cell texture adds the faction's overlay tiles and one fill per
---      claim on the texture; the same claims give the same string, a claim
---      elsewhere changes nothing and sends nothing; a draft placed by
---      another player shows without re-selecting the stone and goes with its
---      removal; another item restores the normal texture; the square is
---      shown in claim mode only; a switched-off minimap appears for claim
---      mode and goes after it, its side row moving beside the bezel and
---      back.
+--      the cell texture draws the chunk preview; the same claims give the
+--      same string, a claim elsewhere changes nothing and sends nothing; a
+--      draft placed by another player shows without re-selecting the stone
+--      and goes with its removal; another item restores the normal
+--      texture; the line beside the bezel shows in claim mode only; a
+--      switched-off minimap appears for claim mode and goes after it, its
+--      side row moving beside the bezel and back.
 -- Prints "R502 CMAP PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -119,94 +113,65 @@ local CM = dofile(repo .. "/mods/PLAYER/grug_housing/claim_mask.lua")
 local BOUNDS = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
 local base = {quality = "normal", width = 1080, height = 960, tiles = {}}
 local v = V.new(base, BOUNDS)
-local R = 39.5
 do
-	local ox, oy = V.origin(v, 300, 250)
 	local size = v.combined
-	-- the world point of base pixel (px, py)
-	local function world(px, py) return v.min_x + px * v.npp, v.max_z - py * v.npp end
-	-- a claim whose west edge lies exactly on the texture's west edge
-	local wx = world(ox, oy)
-	local cx = wx + R + 0.5
-	local _, cz = world(ox + size / 2, oy + size / 2)
-	cz = math.floor(cz)
-	local function rect(x, z) return V.claim_rect(v, ox, oy, x, z, R) end
-	local inside = rect(math.floor(cx + 30), cz)
-	check(inside and inside.x > 0 and inside.x + inside.w < size, "G a claim inside the texture")
-	-- outward rounding: the rectangle holds every pixel the columns touch,
-	-- and at most one pixel more on each side
-	for _, x in ipairs({cx + 30, cx + 31.3, cx + 33, cx + 37}) do
-		x = math.floor(x)
-		local r = rect(x, cz)
-		local left = (x - R - 0.5 - v.min_x) / v.npp - ox
-		local right = (x + R + 0.5 - v.min_x) / v.npp - ox
-		check(r and r.x <= left and r.x + r.w >= right and r.x > left - 1 and
-			r.x + r.w < right + 1, "G outward rounding at x " .. x)
-	end
-	-- partly outside at each edge: clipped to the texture
-	local half = size * v.npp / 2
-	local _, mid_z = world(ox + size / 2, oy + size / 2)
-	local mid_x = world(ox + size / 2, oy)
-	local cases = {
-		west = rect(math.floor(mid_x - half), math.floor(mid_z)),
-		east = rect(math.floor(mid_x + half), math.floor(mid_z)),
-		north = rect(math.floor(mid_x), math.floor(mid_z + half)),
-		south = rect(math.floor(mid_x), math.floor(mid_z - half)),
-	}
-	check(cases.west and cases.west.x == 0 and cases.west.w < size, "G clipped at the west edge")
-	check(cases.east and cases.east.x + cases.east.w == size and cases.east.x > 0,
-		"G clipped at the east edge")
-	check(cases.north and cases.north.y == 0, "G clipped at the north edge")
-	check(cases.south and cases.south.y + cases.south.h == size and cases.south.y > 0,
-		"G clipped at the south edge")
-	-- fully outside, and exactly on an edge: nothing (the last pixel column
-	-- of the texture is size - 1; a claim ending on the edge has zero width
-	-- inside)
-	check(rect(math.floor(mid_x + half + 2 * R + 30), math.floor(mid_z)) == nil,
-		"G fully outside: no rectangle")
-	local east_edge = world(ox + size, oy)
-	check(rect(math.floor(east_edge + R + 0.5 + v.npp), math.floor(mid_z)) == nil,
-		"G a claim just beyond the east edge: no rectangle")
-	local west_edge = world(ox, oy)
-	local touching = rect(math.ceil(west_edge - R - 0.5) + 1, math.floor(mid_z))
-	check(touching == nil or (touching.x == 0 and touching.w >= 1),
-		"G a claim on the west edge: nothing or at least one pixel")
-	check(V.claim_rect(v, ox, oy, mid_x, mid_z, -1) == nil, "G zero size: no rectangle")
-	-- every fill of a recipe is valid, for claims all around and across the
-	-- texture's edges
-	local rects, all_ok = {}, true
-	for dz = -half - 2 * R, half + 2 * R, 7 do
-		for dx = -half - 2 * R, half + 2 * R, 7 do
-			local r = rect(math.floor(mid_x + dx), math.floor(mid_z + dz))
-			if r then rects[#rects + 1] = r end
+	local tiled, scale, nearest, clipped, cells = true, true, true, true, 0
+	local rects = {}
+	for _, cell in ipairs({{300, 250}, {0, 0}, {-3, 7}, {511, 440}, {17, 1}}) do
+		local ox, oy = V.origin(v, cell[1], cell[2])
+		local cols, rows = V.chunk_cells(v, ox, oy, CM.CHUNK, CM.ORIGIN)
+		for index, list in ipairs({cols, rows}) do
+			local dir = index == 1 and 1 or -1
+			tiled = tiled and list[1][2] == 0 and list[#list][3] == size
+			for i = 2, #list do
+				tiled = tiled and list[i][2] == list[i - 1][3] and list[i][4] == list[i - 1][5] and
+					list[i][1] == list[i - 1][1] + dir
+			end
+			for _, c in ipairs(list) do
+				scale = scale and math.abs((c[5] - c[4]) - CM.CHUNK / v.npp) <= 1
+				clipped = clipped and c[2] == math.max(0, c[4]) and c[3] == math.min(size, c[5]) and
+					c[3] > c[2]
+			end
+		end
+		-- a chunk's west (north) edge is half a node outside its first
+		-- (last) column, rounded to the nearest pixel
+		for _, c in ipairs(cols) do
+			local x0 = CM.chunk_bounds(c[1], 0)
+			nearest = nearest and c[4] == math.floor(V.base_pixel(v, x0 - 0.5, 0) + 0.5) - ox
+		end
+		for _, r in ipairs(rows) do
+			local _, _, _, z1 = CM.chunk_bounds(0, r[1])
+			local _, py = V.base_pixel(v, 0, z1 + 0.5)
+			nearest = nearest and r[4] == math.floor(py + 0.5) - oy
+		end
+		cells = cells + #cols * #rows
+		if cell[1] == 300 then
+			for _, col in ipairs(cols) do
+				for _, row in ipairs(rows) do V.cell_frame(v, col, row, "#ffffffcc", rects) end
+			end
 		end
 	end
-	local texture = V.texture(v, ox, oy, "m.png", {tiles = {}, rects = rects, color = "#dc282873"})
+	check(tiled, "G the chunk grid tiles the texture without gap or overlap")
+	check(scale, "G every chunk is 80 nodes at the base's scale (within a pixel)")
+	check(nearest, "G every chunk edge rounded to the nearest pixel")
+	check(clipped and cells > 100, "G every chunk clipped to the texture (" .. cells .. " chunks)")
+	-- every fill of a recipe is valid: the frames of every chunk, clipped
+	-- at the texture's edges, and the claims' frames all around and across
+	-- them (outside claim mode)
+	local ox, oy = V.origin(v, 300, 250)
+	local function world(px, py) return v.min_x + px * v.npp, v.max_z - py * v.npp end
+	local mid_x, mid_z = world(ox + size / 2, oy + size / 2)
+	local half = size * v.npp / 2
+	for dz = -half - 80, half + 80, 7 do
+		for dx = -half - 80, half + 80, 7 do
+			V.claim_frame(v, ox, oy, math.floor(mid_x + dx), math.floor(mid_z + dz), 39.5,
+				"#f0d040cc", rects)
+		end
+	end
+	local texture = V.texture(v, ox, oy, "m.png", {rects = rects})
 	local valid, count = fills_valid(texture, size, size)
 	check(valid and count == #rects and count > 100, "G every fill of a recipe is valid (" ..
 		count .. " fills)")
-	all_ok = all_ok and valid
-	-- the square at every usual window
-	local layout_ok, scale_ok = true, true
-	rawset(_G, "grug_core", {})
-	dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
-	for _, w in ipairs({{1280, 720, 1, 1}, {1920, 1080, 1, 1}, {1920, 1080, 1.5, 1.5},
-			{2560, 1440, 1, 1}, {3840, 2160, 2, 2}, {1024, 600, 1, 1}}) do
-		local box = grug_core.hud_layout.minimap_box({size = {x = w[1], y = w[2]},
-			real_hud_scaling = w[3], real_gui_scaling = w[4]})
-		local frame = V.frame(v, box)
-		local square = V.claim_square(v, frame, R)
-		local wanted = (2 * R + 1) / v.npp * frame.f
-		scale_ok = scale_ok and math.abs(square.size - wanted) <= 0.5 and
-			math.abs(square.x + square.size / 2 - frame.arrow_x) <= 0.5 and
-			math.abs(square.y + square.size / 2 - frame.arrow_y) <= 0.5 and
-			square.size / 2 < frame.hole
-		local ok, n = fills_valid(V.claim_square_texture(square, "#40d04a4d", "#40d04acc"),
-			square.size, square.size)
-		layout_ok = layout_ok and ok and n == 5
-	end
-	check(scale_ok, "G the square is 80 nodes at the frame's scale, on the arrow, in the hole")
-	check(layout_ok, "G the square's texture is valid at every window")
 	-- the area the claims are asked for covers the texture
 	local min_x, min_z, max_x, max_z = V.texture_area(v, ox, oy)
 	local wx0, wz1 = world(ox, oy)
@@ -314,212 +279,53 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- O  overlays on a synthetic world
+-- I  install (base.lua prepare) on a small synthetic world at the game's
+-- size: no Claim Stone overlay announced or handed to the minimap (Round 86
+-- removed the bake, which this section checked before), and the overlay
+-- tiles an older version wrote are removed as stale tiles.
 -- ---------------------------------------------------------------------------
-local text = assert(io.open(repo .. "/mods/PLAYER/grug_map/base.lua", "rb")):read("*a")
-text = text:gsub("\nreturn M%s*$", "\nM._render = render\nreturn M\n")
-local B = assert(loadstring(text, "@base.lua"))()
+local B = dofile(repo .. "/mods/PLAYER/grug_map/base.lua")
 do
-	-- 400 x 400 nodes; at 60 x 60 px a pixel is 6.67 nodes, as the game's.
-	local view = {min_x = -200, max_x = 200, min_z = -200, max_z = 200}
-	local Z = {
-		home = {id = "home", numeric_id = 1, faction = "accord", territory_rule = "accord_home",
-			level_min = 11, level_max = 20, race_region = "human"},
-		enemy = {id = "enemy", numeric_id = 2, faction = "throng",
-			territory_rule = "throng_home", level_min = 11, level_max = 20, race_region = "orc"},
-		low = {id = "low", numeric_id = 3, faction = "accord", territory_rule = "accord_home",
-			level_min = 1, level_max = 10, race_region = "human"},
-	}
-	local function id_at(x, z)
-		if (x + 60) * (x + 60) + (z - 90) * (z - 90) <= 30 * 30 then return "low" end
-		return x < 70 and "home" or "enemy"
-	end
-	local function water_at(x, z)
-		if z < -170 then return "deep_ocean" end
-		if z < -150 then return "coastal_shelf" end
-		if x > -20 and x < 0 and z > -60 and z < 20 then return "planned_water" end
-		return "land"
-	end
+	local Z = {home = {id = "home", numeric_id = 1, faction = "accord",
+		territory_rule = "accord_home", level_min = 11, level_max = 20, race_region = "human"}}
 	local zones = {
-		water_class_at = water_at,
-		id_at = function(x, z) return water_at(x, z) ~= "deep_ocean" and id_at(x, z) or nil end,
+		water_class_at = function(_, z) return z < -150 and "coastal_shelf" or "land" end,
+		id_at = function() return "home" end,
 		get = function(id) return Z[id] end,
 		terrain_height_at = function() return 20 end,
-		-- Round 51 (lane MAP): the render asks it for planned water (a lake here)
 		water_query_at = function() return "lake" end,
 	}
-	-- a town (hard footprint, territory hard_protected) and a village core
-	local function town(x, z) return x >= -150 and x <= -110 and z >= -40 and z <= 0 end
-	local function territory_at(x, z)
-		if town(x, z) then return "hard_protected" end
-		local zone = Z[id_at(x, z)]
-		return zone.territory_rule
-	end
-	local core_box = {min_x = 20, max_x = 34, min_z = 60, max_z = 75}
-	local function feature_in(min_x, min_z, max_x, max_z, margin)
-		if core_box.min_x - margin <= max_x and core_box.max_x + margin >= min_x and
-				core_box.min_z - margin <= max_z and core_box.max_z + margin >= min_z then
-			return "site"
-		end
-		for z = math.max(min_z - margin, -40), math.min(max_z + margin, 0) do
-			for x = math.max(min_x - margin, -150), math.min(max_x + margin, -110) do
-				if town(x, z) then return "town" end
-			end
-		end
-		return nil
-	end
-	-- the overlay's rule as base.lua asks it (Round 85: the claim mask's
-	-- column rule; territory false judges the zone alone)
-	local function problem(faction, water, zone, territory)
-		if territory == false then territory = faction .. "_home" end
-		return CM.column_problem(faction, water, zone, territory)
-	end
-	local claim = {factions = {"accord", "throng"}, problem = problem,
-		territory_at = territory_at, feature_in = feature_in, margin = CM.MARGIN}
-	local world = {water_class_at = water_at, territory_at = territory_at, feature_in = feature_in,
-		zone_at = function(x, z) return zones.id_at(x, z) and Z[id_at(x, z)] or nil end}
-	-- Round 85: a square's column and settlement rules (claim_mask.lua rules
-	-- 1, 2 and 5) checked column by column, as validate's zone scan did.
-	local function square_ok(faction, x0, z0)
-		if feature_in(x0, z0, x0 + 79, z0 + 79, CM.MARGIN) then return false end
-		for z = z0, z0 + 79 do
-			for x = x0, x0 + 79 do
-				local zone = world.zone_at(x, z)
-				if CM.column_problem(faction, water_at(x, z), zone,
-						zone and territory_at(x, z) or nil) then
-					return false
-				end
-			end
-		end
-		return true
-	end
-	local W, H = 60, 60
-	for _, render_size in ipairs({60, 200}) do
-		local label = render_size == 60 and "O normal" or "O high"
-		local spec = {quality = "normal", width = render_size, height = render_size,
-			relief_step = 8, relief = B.RELIEF, minimap = {quality = "normal", width = W, height = H}}
-		local _, _, overlays = B._render(zones, view, spec, nil, claim)
-		local npp = 400 / W
-		for _, faction in ipairs(claim.factions) do
-			local tiles = overlays[faction]
-			check(tiles and #tiles == 1 and #tiles[1].png == W * H * 4,
-				label .. " " .. faction .. ": one tile at the minimap's size")
-			local data = tiles[1].png
-			local function red(i, j)
-				if i < 0 or j < 0 or i >= W or j >= H then return true end
-				return data:byte((j * W + i) * 4 + 4) ~= 0
-			end
-			-- every render pixel whose centre column is refused makes its
-			-- minimap pixel and the eight around it red
-			local covered = true
-			local scale = 400 / render_size
-			for j = 0, render_size - 1 do
-				local z = math.floor(view.max_z - (j + 0.5) * scale)
-				for i = 0, render_size - 1 do
-					local x = math.floor(view.min_x + (i + 0.5) * scale)
-					local zone = world.zone_at(x, z)
-					if CM.column_problem(faction, water_at(x, z), zone,
-							zone and territory_at(x, z) or nil) then
-						local ti = math.floor((i + 0.5) * W / render_size)
-						local tj = math.floor((j + 0.5) * H / render_size)
-						for dj = -1, 1 do
-							for di = -1, 1 do covered = covered and red(ti + di, tj + dj) end
-						end
-					end
-				end
-			end
-			check(covered, label .. " " .. faction .. ": refused pixel centres red, widened")
-			-- every pixel within the margin of the village core is red
-			local near = true
-			for j = 0, H - 1 do
-				for i = 0, W - 1 do
-					local x0, x1 = view.min_x + i * npp, view.min_x + (i + 1) * npp
-					local z1, z0 = view.max_z - j * npp, view.max_z - (j + 1) * npp
-					if x1 + 0.5 > core_box.min_x - 16 and x0 - 0.5 < core_box.max_x + 16 and
-							z1 + 0.5 > core_box.min_z - 16 and z0 - 0.5 < core_box.max_z + 16 then
-						near = near and red(i, j)
-					end
-				end
-			end
-			check(near, label .. " " .. faction .. ": the village core's margin red")
-			-- no clear square is refused; some squares touching red pass
-			local refused, clear, passed_red = 0, 0, 0
-			-- the 80 x 80 square of columns x0 .. x0 + 79, z0 .. z0 + 79
-			for z0 = -180, 100, 6 do
-				for x0 = -180, 100, 6 do
-					local i0 = math.floor((x0 - 0.5 - view.min_x) / npp)
-					local i1 = math.ceil((x0 + 79.5 - view.min_x) / npp) - 1
-					local j0 = math.floor((view.max_z - z0 - 79.5) / npp)
-					local j1 = math.ceil((view.max_z - z0 + 0.5) / npp) - 1
-					local touches = false
-					for j = j0, j1 do
-						for i = i0, i1 do touches = touches or red(i, j) end
-					end
-					local ok = square_ok(faction, x0, z0)
-					if not touches then
-						clear = clear + 1
-						if not ok then refused = refused + 1 end
-					elseif ok then
-						passed_red = passed_red + 1
-					end
-				end
-			end
-			check(refused == 0, ("%s %s: no clear square refused (%d of %d)"):format(label,
-				faction, refused, clear))
-			check(clear > 0 or faction == "throng", label .. " " .. faction .. ": clear squares exist")
-			check(passed_red >= 0, label .. " " .. faction .. ": squares touching red counted")
-		end
-	end
-
-	-- I  install (base.lua prepare) on this world at the game's size: the
-	-- overlays are announced and handed to the minimap; a failing overlay
-	-- render leaves the base and the minimap's copy, without claim mode,
-	-- with no overlay tile announced and the key of the base alone.
-	local announced, written, logged = {}, {}, {}
+	local announced, removed = {}, {}
 	core.sha256 = function(text) return "#" .. #text .. ":" .. text:sub(1, 64) end
 	core.get_mapgen_setting = function() return "42" end
-	core.safe_file_write = function(path, data) written[path] = data; return true end
+	core.safe_file_write = function() return true end
 	core.dynamic_add_media = function(def) announced[#announced + 1] = def.filename; return true end
-	core.log = function(level, text) logged[#logged + 1] = level .. ": " .. text end
+	core.get_dir_list = function()
+		return {"grug_map_claim_accord_0_0.png", "grug_map_claim_throng_2_1.png",
+			"grug_map_mini_0_0.png", "notes.txt"}
+	end
+	local real_remove = os.remove
+	os.remove = function(path) removed[#removed + 1] = path:match("[^/]+$"); return true end
 	rawset(_G, "grug_core", {faction_ids = {"accord", "throng"},
 		zone_authority_installed = function() return true end,
 		settlement_socket_settlements = function() return {} end,
 		start_identities = function() return {} end})
 	rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 	rawset(_G, "grug_zones", zones)
-	local function install(fail)
-		announced, written, logged = {}, {}, {}
-		rawset(_G, "grug_housing", {column_problem = problem,
-			SETTLEMENT_MARGIN = CM.MARGIN,
-			placement_world = {territory_at = territory_at, feature_in = fail and function()
-				error("forced overlay failure")
-			end or feature_in}})
-		local result = B.install({min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200})
-		local claims = 0
-		for _, name in ipairs(announced) do
-			if name:find("^grug_map_claim_") then claims = claims + 1 end
-		end
-		local errors = 0
-		for _, line in ipairs(logged) do
-			if line:find("^error: %[grug_map%] Claim Stone overlays not rendered") then
-				errors = errors + 1
-			end
-		end
-		return result, claims, errors, written["/nonexistent-world/grug_map_base.key"]
+	local result = B.install({min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200})
+	os.remove = real_remove
+	local claims = 0
+	for _, name in ipairs(announced) do
+		if name:find("^grug_map_claim_") then claims = claims + 1 end
 	end
-	local good, good_claims, _, good_key = install(false)
-	-- Round 51 (lane MAP): the game's normal size is 1215 x 1080, 3 x 3 tiles
-	check(good.tiles and #good.tiles == 9 and good.minimap and good.minimap.claim and
-		good.minimap.claim.accord and good.minimap.claim.throng and good_claims == 18,
-		"I install: the base, the minimap's copy and both overlays announced")
-	local bad, bad_claims, bad_errors, bad_key = install(true)
-	check(bad.tiles and #bad.tiles == 9 and bad.texture:find("^%[combine") and
-		bad.minimap and bad.minimap.tiles and #bad.minimap.tiles == 9,
-		"I a failing overlay: the base and the minimap's copy stay")
-	check(bad.minimap and bad.minimap.claim == nil and bad_claims == 0 and bad_errors == 1,
-		"I a failing overlay: no claim mode, no overlay announced, one error line")
-	check(bad_key and good_key and bad_key ~= good_key, "I a failing overlay: the key without them")
-	rawset(_G, "grug_housing", nil)
+	check(result.tiles and #result.tiles == 9 and result.minimap and result.minimap.tiles and
+		#result.minimap.tiles == 9, "I install: the base and the minimap's copy")
+	check(result.minimap.claim == nil and claims == 0,
+		"I install: no Claim Stone overlay announced or handed to the minimap")
+	table.sort(removed)
+	eq(table.concat(removed, " "), "grug_map_claim_accord_0_0.png grug_map_claim_throng_2_1.png",
+		"I the old overlay tiles go as stale tiles, nothing else")
+	core.get_dir_list = nil
 end
 
 -- ---------------------------------------------------------------------------
@@ -575,16 +381,33 @@ rawset(_G, "grug_quests", {marker_states = function() return {}, 1 end,
 rawset(_G, "grug_parties", {view = function() return nil end, register_on_change = function() end})
 rawset(_G, "grug_home", {get = function() return nil end, known_waypoints = function() return {} end,
 	claim_waypoint = function() return nil end})
+-- Round 86: the chunk preview through the real preview.lua on a striped
+-- mask (every other chunk claim ground, the Throng's the others; no quota)
+local preview = dofile(repo .. "/mods/PLAYER/grug_housing/preview.lua")
+local stripes = {
+	ground = function(faction, cx, cz)
+		if (cx + cz) % 2 == (faction == "accord" and 0 or 1) then return true end
+		return false, "sea"
+	end,
+	quota_refusal = function() return nil end,
+	add_taken = function(taken) return taken end,
+}
 rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	CHUNK_ORIGIN = model.CHUNK_ORIGIN,
 	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
-	claim_set_version = model.claim_set_version})
+	claim_set_version = model.claim_set_version,
+	-- Round 86: the owner question and the stone item set (grug_housing api.lua)
+	is_owner = model.is_owner,
+	is_stone_item = function(name) return name == "grug_housing:claim_stone" end,
+	chunk_refusal = function(faction, cx, cz)
+		return preview.chunk_refusal(model, stripes, faction, cx, cz)
+	end,
+	claim_hint = function(code) return preview.hint(code) end})
 rawset(_G, "grug_map", {quest_slots = function() return {} end, atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Somewhere" end}})
 grug_map.base = B
 local mini = {quality = "normal", width = 1080, height = 960,
-	tiles = B.tiles(1080, 960, B.MINI_PREFIX),
-	claim = {accord = B.tiles(1080, 960, B.CLAIM_PREFIX .. "_accord"),
-		throng = B.tiles(1080, 960, B.CLAIM_PREFIX .. "_throng")}}
+	tiles = B.tiles(1080, 960, B.MINI_PREFIX)}
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 local minimap = grug_map.minimap
 minimap.install({minimap = mini})
@@ -604,6 +427,13 @@ local function hud_of(z)
 		if def.z_index == z then return def end
 	end
 end
+-- claim mode's line beside the bezel (right-aligned text)
+local function hint_of()
+	for _, def in pairs(me.huds) do
+		if def.type == "text" and def.alignment and def.alignment.x == -1 then return def end
+	end
+end
+local RED = ("#%02x%02x%02x%02x"):format(unpack(B.CLAIM_RED))
 local function count(textstr, pattern)
 	local n = 0
 	for _ in textstr:gmatch(pattern) do n = n + 1 end
@@ -613,19 +443,17 @@ step(6)
 local normal = minimap.texture_of(me)
 check(normal and not normal:find("grug_map_claim") and not normal:find("%[fill"),
 	"M no stone: the normal texture")
-eq(hud_of(12) and hud_of(12).text or "?", "", "M no stone: no square")
+eq(hint_of() and hint_of().text or "?", "", "M no stone: no line")
 -- with the stone
 me.wield = "grug_housing:claim_stone"
 step()
 local held = minimap.texture_of(me)
 eq(minimap.claim_of(me), "accord", "M the stone held: claim mode for the faction")
-check(held:find("grug_map_claim_accord_", 1, true) and not held:find("throng", 1, true),
-	"M the cell texture holds the faction's overlay tiles")
-check(held:find("grug_map_mini_", 1, true) < held:find("grug_map_claim_accord_", 1, true),
-	"M the overlay tiles after the map's")
-eq(count(held, "%[fill"), 0, "M no claim near: no fill")
-local square = hud_of(12)
-check(square and square.text:find("^%[fill") ~= nil, "M the square is shown")
+check(held:find(RED, 1, true) and not held:find("grug_map_claim_", 1, true),
+	"M the cell texture draws the refused chunks red, no overlay tiles")
+check(held:find("grug_map_mini_", 1, true) < held:find("^[fill", 1, true),
+	"M the preview after the map's tiles")
+check(hint_of() and hint_of().text:find("^This square: ") ~= nil, "M the line is shown")
 eq(hud_of(11).text, held, "M the map shows the claim texture")
 -- a draft placed by another player near the cell shows at once
 sent = 0
@@ -634,9 +462,10 @@ eq(sent, 0, "M a still player in claim mode sends nothing")
 local draft = model.create("other", {x = 150, y = 10, z = -230})
 step()
 local with_draft = minimap.texture_of(me)
-eq(count(with_draft, "%[fill"), 1, "M a draft nearby: one fill")
+check(with_draft ~= held and count(with_draft, "#f0d040cc") == 4,
+	"M a draft nearby: its chunk framed")
 local valid = fills_valid(with_draft, minimap.geometry().combined, minimap.geometry().combined)
-check(valid, "M the fill is valid")
+check(valid, "M the fills are valid")
 eq(hud_of(11).text, with_draft, "M the draft shows without re-selecting the stone")
 -- a claim elsewhere changes nothing and sends nothing
 sent = 0
@@ -651,7 +480,7 @@ eq(minimap.texture_of(me), with_draft, "M the same claims: the same string")
 -- the draft's removal (pick-up or crumbling) takes it away
 model.remove(draft, "draft_expired")
 step()
-eq(minimap.texture_of(me), held, "M the draft gone: its fill gone")
+eq(minimap.texture_of(me), held, "M the draft gone: its frame gone")
 -- no faction: no claim mode
 factions.me = nil
 step()
@@ -659,13 +488,13 @@ eq(minimap.claim_of(me), nil, "M no faction: no claim mode")
 eq(minimap.texture_of(me), normal, "M no faction: the normal texture")
 factions.me = "throng"
 step()
-check(minimap.texture_of(me):find("grug_map_claim_throng_", 1, true) ~= nil,
-	"M the other faction's overlay")
+check(minimap.claim_of(me) == "throng" and minimap.texture_of(me) ~= held,
+	"M the other faction's preview")
 -- another item: back to normal
 me.wield = "default:dirt"
 step()
 eq(minimap.texture_of(me), normal, "M another item: the normal texture")
-eq(hud_of(12).text, "", "M another item: no square")
+eq(hint_of().text, "", "M another item: no line")
 -- Round 81: a stone put into the held slot itself (no slot switch) shows
 -- within the minimap's 0.5 s window check
 me.slot, me.wield = 3, "grug_housing:claim_stone"
@@ -689,14 +518,14 @@ end
 local corner = band_x()
 me.wield = "grug_housing:claim_stone"
 step(6)
-check(hud_of(11) ~= nil and hud_of(11).text:find("grug_map_claim_throng_", 1, true),
+check(hud_of(11) ~= nil and hud_of(11).text:find(RED, 1, true),
 	"M switched off: the minimap appears in claim mode")
-check(hud_of(12) and hud_of(12).text ~= "", "M switched off: the square appears")
+check(hint_of() and hint_of().text ~= "", "M switched off: the line appears")
 local beside = band_x()
 check(corner and beside and beside < corner, "M the side row moves beside the bezel")
 me.wield = ""
 step(6)
-check(hud_of(11) == nil and hud_of(12) == nil, "M switched off: the minimap goes after claim mode")
+check(hud_of(11) == nil and hint_of() == nil, "M switched off: the minimap goes after claim mode")
 eq(band_x(), corner, "M the side row back in the corner")
 
 if #failures > 0 then

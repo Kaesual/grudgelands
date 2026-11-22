@@ -22,14 +22,12 @@ next step.
 - **Website accounts** ([rules](docs/design/accounts.md),
   [concept](docs/planning/accounts-concept.md)): characters linked to an
   account on the realm's website, with account rewards that reach every
-  linked character: the Cheer emote for every account, the Supporter and
-  donor cloaks; a character can be deleted from the website. Next: the
-  account Claim Stone shared by an account's characters, home names and the
-  Account page on the website, built together with the new claim preview
-  ([housing concept](docs/planning/housing-rework-concept.md) Part B), and
-  the end-to-end test on the rehearsal realm; more Supporter content,
-  account bans and characters created through a bridge command are later
-  phases.
+  linked character, such as the Cheer emote and the Supporter and donor
+  cloaks; a character can be deleted from the website; the Account page
+  shows what linking gives, and an account's characters of one faction can
+  share one home, the Account Claim Stone. Next: the end-to-end test on the
+  rehearsal realm; more Supporter content, account bans and characters
+  created through a bridge command are later phases.
 - **Classes, talents and character progression:** make leveling bring more
   meaningful customization. Start with fewer skills and let talent choices
   decide more of which abilities a character gains or leaves out. Build
@@ -124,8 +122,12 @@ available in the game. Detailed follow-up scope:
   zones, where the whole chunk holds no road, settlement, camp or quest
   content and quest creatures keep half their ground; it protects it while
   coal or charcoal burns, grants Interact or Everything to named players and can be
-  the travel-home target. There are no tiers, and private housing islands
-  do not exist.
+  the travel-home target. A linked account's characters may share one such
+  home per faction, and every home carries the name its owners give it.
+  There are no tiers, and private housing islands do not exist. Next: a map
+  reset that keeps homes where their ground did not change (the housing
+  concept's [Part C](docs/planning/housing-rework-concept.md)), when the first
+  one is needed.
 - **One six-tier material spine serves every race.** Bronze, Iron, Steel,
   Silversteel, Embersteel and Abyssal Steel picks dig the six tier rocks:
   stone down to −100, then ever harder rock below −100/−300/−500/−700/−1000.

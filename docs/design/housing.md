@@ -11,8 +11,10 @@ decay; git history keeps the old text). Implementation: WP24, mod
 ([module guide](../technical/module-guide.md)).
 
 A player places one fuelled **Claim Stone** and owns the map chunk it stands
-in for as long as the stone burns. There are no private islands, royal land grants
-or guild land.
+in for as long as the stone burns. Since 0.86.0 a character may choose the
+**Account Claim Stone** instead: one home per website account and faction,
+owned in full by every character of that account that chose it (§3b). There
+are no private islands, royal land grants or guild land.
 
 Household furnishings, functional displays and their reset packing are specified
 in [decorations.md](decorations.md).
@@ -26,11 +28,15 @@ in [decorations.md](decorations.md).
 - It is a pure 2D column: it covers every y from **−100 upward without an
   upper limit**, whatever the stone's own height. Below y = −100 the ordinary
   rules of the column apply.
-- One claim per player: each player owns at most one Claim Stone (§3).
+- One claim per character: each character owns at most one Claim Stone (§3),
+  its own or, as a member, its account's (§3b).
 - Each claim is one record in the claim registry (mod storage) with its id,
   owner, the stone's position, placement time, activation time and "paid
-  until" timestamp (§4), and two fields a later round fills (the owner's
-  kind, the home's name; empty since Round 85). The storage format is
+  until" timestamp (§4), the owner's kind (empty for a personal claim,
+  `account` for an Account Claim Stone's, §3b) and the home's name (§1a;
+  empty in a record of 0.85.0). An account claim's owner is the text
+  `account:<account id>:<faction>`, which no character name can be. The
+  storage format is
   version 3 (Round 85); the game reads no other version: the 0.85.0 map
   reset clears the version 2 records of the old square (§3).
 - **One claim per chunk.** A chunk that holds a claim record, a draft (§2a)
@@ -40,14 +46,52 @@ in [decorations.md](decorations.md).
 - **Seeing a claim** (fix 0.50.2 lane HOME, rulings H1–H4): inside a claim,
   exactly where §1 places it (to the node, from y −100 upwards), the
   location line under the minimap, the entry banner and the map window name
-  it: "Your Home" for its owner, "<owner>'s Home" for everybody else, in
-  every state (draft, active, expired); the territory line stays
+  it by the home's name with the house icon (§1a), for everybody, the owner
+  too, in every state (draft, active, expired); the territory line stays
   ([world_map.md](world_map.md) "Zone and town names"). Without the Claim
   Stone in hand the minimap frames the player's own claim in green and every
   other claim in yellow, one minimap pixel wide (about 7 nodes, rounded
-  outward like the preview's red), no fill; with the stone in hand the
-  placement preview (§2) shows instead. The map window draws no claims; it
+  outward), no fill; with the stone in hand the placement preview (§2)
+  shows, the claims framed there too. The map window draws no claims; it
   shows only the activated stone's waypoint (§8).
+
+## 1a. Home names
+
+Round 86 (the user's rulings 8, 9, 12, 15 of the Round 86 plan; housing
+concept ruling 11):
+
+- **Every claim has a name.** The default is **"<character>'s Home"**
+  (always `'s`) with the character that placed the stone, stored at
+  placement, so it stays when that character later leaves; for an account
+  claim too (the activation, which makes the account its owner, keeps it).
+  A claim of 0.85.0, whose name field is empty, reads its owner's default;
+  an account claim with an empty name reads "<first member by name>'s
+  Home", "Home" with no member: never the account's owner text.
+- **Renaming:** an owner of the claim (for an account claim every member)
+  types a new name in the stone's form (§7.1), Rename or Enter. A name has
+  **1–24 characters**: ASCII letters A–Z and a–z, digits, space,
+  apostrophe and hyphen, no leading or trailing space (the form trims what
+  was typed; the rule is checked again when the name is stored, whatever a
+  client sends). A refused name is said in one line and stays in the field.
+  Rename with the name unchanged changes nothing and says so ("Your home
+  keeps its name."), also for a default the rule would refuse.
+  No word filter exists; a name may equal a place's or another home's name.
+  A default may be longer than 24 characters and hold "_" (a player name's
+  characters).
+- **Where it shows:** the entry banner, the line under the minimap, the Map
+  tab's "Current:" line (§1 "Seeing a claim") and the protection hint
+  (§6.3), each time with the **house icon** before it, so a home is never
+  mistaken for a place of the world. Everybody reads the same name; "Your
+  Home" is gone (ruling 15). A visitor's right-click on a personal stone
+  names its owner ("Claim Stone of <owner>"); on an account claim's stone
+  the home ("Account Claim Stone of <home name>", §3b). The world map
+  draws no claim names.
+- **A rename** shows to everybody inside at their next location sample
+  (about a second); the banner shows the new name again.
+- **Admin reset:** `/claim_name_reset <player> | here` (`server`
+  privilege) gives the player's claim, or the claim one stands in, its
+  default name again; for an account claim "<first member by name>'s
+  Home" (coordinator default, Round 86 plan §2.3).
 
 ## 2. Placement
 
@@ -130,32 +174,35 @@ in [decorations.md](decorations.md).
   ground would take the claimed part above half);
   the stone on the chunk's edge; the arrival cube not empty.
 - Placing makes a **draft** (§2a). There is no placing limit.
-- **Placement preview** (fix 0.50.2; **known to be wrong since 0.85.0**,
-  [Round 85 plan](../planning/round85-plan.md) ruling 23): while a player
-  with a faction holds the Claim Stone, the minimap shows in
-  semi-transparent red the ground the mask's column rule (rules 1 and 5)
-  refuses for that faction (the other faction, level 1–10 and 31+ zones,
-  land that is not the faction's home, the coastal belt, protected water and
-  the sea, town and landmark columns) and the settlement cores and hard
-  footprints widened by the 16 nodes (rule 2), the column part judged per
-  minimap pixel (about 6.7 nodes) and widened by one pixel, the settlements
-  rounded outward; every claim (drafts, active and expired) as its whole
-  chunk in the same red; and an
-  80 × 80 green square **centred on the player** on the arrow; a switched-off
-  minimap appears meanwhile ([world_map.md](world_map.md) "Minimap", claim
-  mode). **It does not follow the chunk rule:** roads (rule 3), camps,
-  leaders' spots, quest places and rares' route points (rule 4), the
-  capital ring (rule 6) and the quota do not show, and the green square is
-  not the chunk the stone would claim: it moves with the player, while the
-  claim is the grid's chunk that holds the stone. So ground without red can
-  still be refused. The placement check above alone
-  decides, with its messages. Round 86 replaces the preview with one by
-  whole chunks ([Round 85 plan](../planning/round85-plan.md#carry-overs)).
+- **Placement preview** (Round 86, [Round 86 plan](../planning/round86-plan.md)
+  §4 PREVIEW; ruling 2 there, Round 85 rulings 6 and 16): while a player
+  with a faction holds a Claim Stone (either kind: the preview is the same),
+  the minimap shows the chunk grid ([world_map.md](world_map.md) "Minimap",
+  claim mode): every chunk the placement check refuses **for the chunk's
+  own sake** in semi-transparent red, a faint line on every chunk edge, the
+  claims framed as without the stone, and the chunk the player stands in
+  framed in green, green inside too when it is free. The chunk's own sake
+  is the refusal steps above that depend on the chunk alone, in their
+  order: no claim mask (then every chunk is red), the mask's rules 1–6, a
+  claim already in the chunk, the quota. The quota's red is **per chunk**:
+  a chunk turns red when its own columns of a kind would take the claimed
+  part of that kind above half, so a chunk with a small share can stay
+  free after a larger one is not. Both answers come from one function
+  (`grug_housing/preview.lua`), so **a chunk shown free is never refused
+  for the chunk**; inside it a stone can still be refused for the spot or
+  the player (the chunk's outermost row, the arrival cube, below y −100,
+  the player's stone already placed), with the refusal's line. A line left
+  of the minimap, on a dark box, names the chunk the player stands in:
+  "This square: free to claim", or why not ("This square: a road runs through it"; one short
+  line per refusal, the quota with the kind's area), and without a mask
+  that no stone can be placed. The preview follows every placement and
+  removal by anyone at once. A switched-off minimap appears meanwhile.
 
 ## 2a. Draft and activation
 
 - **The draft** (Round 26 ruling 8): a placed stone first stands as the
-  half-transparent node `grug_housing:claim_stone_draft`. It holds its
+  half-transparent node `grug_housing:claim_stone_draft` (an Account Claim
+  Stone's: `grug_housing:account_stone_draft`, §3b). It holds its
   chunk: no other stone may be placed there, and it counts for the quota
   until it crumbles or is picked up (§2). It protects nothing: no claim
   protection, no interaction guard, no spawn guard, and natural renewal runs.
@@ -194,11 +241,96 @@ in [decorations.md](decorations.md).
   chunk (§1), ends the old 101 × 101 claims the same way: none is
   converted or moved, their containers are packed from the old square, and
   every owner places the new stone under the new rules.
-- It is placed like any block from a hotbar slot.
+- It is placed like any block from a hotbar slot; its door turns toward the
+  player who places it.
+- **The look** (Round 86, ruling 19, "Under One Roof"): the stone is a small
+  house inside its node, a node box (`grug_housing/stone_art.lua`): one
+  terracotta gable with a chimney for the personal stone, two slate gables
+  for the account stone (§3b). Fuelled, it gives light (level 8, ruling 20);
+  empty, its windows are shuttered and it gives none; the draft is the
+  fuelled house washed pale and half-transparent and gives none either.
+  What is stood on is the house itself, what is pointed at the box around
+  it; the arrival cube above it (§2) is unchanged. In the hand and
+  the inventory each item shows its flat house picture. A stone placed
+  before 0.86.0 keeps its place and turns into the house with its door
+  toward −Z.
 - **One lock only** (Round 26 ruling 10): for **12 hours (43 200 s)** after
   activation the stone cannot be picked up. There is no placing lock and no
   daily limit: after a pick-up or destruction the player may place and
   activate again at once. The former once-a-day limits are gone.
+
+## 3b. The Account Claim Stone
+
+Round 86 ([housing rework concept](../planning/housing-rework-concept.md)
+§3.1 rulings 1–10, [Round 86 plan](../planning/round86-plan.md) rulings 10,
+13, 14 and 16).
+
+- **The choice** (rulings 1, 3): at the Housing Steward every character from
+  level 20 sees both stones with a line each: the personal Claim Stone (§3)
+  or the **Account Claim Stone** (`grug_housing:account_stone`, its own
+  item, the house with two slate gables, ruling 10). The account stone needs the character
+  linked to an account on the website ([accounts.md](accounts.md)); without
+  one the Steward says so in its place. Only a character without a placed
+  stone may choose: a character with a placed personal stone picks it up
+  first, and a carried personal stone vanishes when the character chooses
+  the account (the Steward asks once).
+- **One account claim per account and faction** (ruling 2). A character
+  that chose it is a **member** of its account's home in its faction; the
+  membership is the character's own and outlives the claim (rulings 13, 14).
+- **Its stones** (rulings 5 and 16): while no account claim stands, the
+  Steward gives every member without a stone an Account Claim Stone. Every
+  member may place its stone as a draft (§2a); the draft belongs to the
+  character that placed it, protects nothing and crumbles after 5 minutes as
+  every draft does. Activating one makes it the account claim: at that
+  moment every other draft of that account and faction is removed (its
+  block loaded for it) and its placer told, and an account stone still in a
+  member's inventory vanishes when the member tries to place it, with the
+  line "Your account's home already stands: this Account Claim Stone
+  crumbles." Both refusals live in the claim registry. Joining a home that
+  stands gives no stone.
+- **Rights** (ruling 4): every member has full owner rights on the account
+  claim (open the stone, fuel, permissions, pick-up, "Set as home"). A
+  character of the same account with a personal stone has none, unless the
+  permission list names it; a member's name is refused in the list as the
+  owner's is. No character name can be an owner text, so a character named
+  like an account id has no rights.
+- **Leaving** (ruling 6) only at the Steward, never with the member's own
+  draft standing, and never for the last member of a standing claim: the
+  last member picks the stone up instead. A member that leaves is
+  "personal, no stone" and may take a personal stone; its carried account
+  stones vanish, and a home on the account claim falls back (§8).
+- **The claim ends** as a personal one does (fuel out and dug as empty,
+  picked up by any member, an admin removal): every member stays a member
+  and may get an account stone again. A pick-up returns the account stone
+  and the lumps to the member that picks it up.
+- **Losing the link** (ruling 8, plan ruling 13): a member whose character
+  is unlinked, whose account leaves the website's list, whose binding stops
+  counting, whose faction an admin changes (plan §2.3) or that is deleted
+  leaves as above; the game checks the memberships against its stored copy
+  of the list at every start, at every list change, at a join, at the
+  Housing Steward and before an Account Claim Stone is placed or activated.
+  When the last member goes through the website's list (an unlink, the
+  account gone from the list, a binding that stops counting; ruling 18 of
+  2026-11-22: one faulty list must not end a home), the claim **stands
+  ownerless**, fuelled or empty, like any claim whose owner stopped
+  fuelling it: it protects while its fuel lasts, against its former
+  members too; nobody can open or refuel it; then it is the empty stone
+  (§5), which holds its chunk and its quota share and which any pick may
+  dig, ending it. A list change never removes it. A character of that
+  account and faction joins it at the Steward ("Join your account's
+  home", no item), owns it again and may refuel it; such a character hears
+  at its next join that its account's home stands without an owner. The
+  game checks no binding while it holds no list at all (none received, or
+  the stored one unreadable at the start). The last member's end the game
+  is told directly ends the claim at once, as `/claim_remove` does: its
+  deletion, an admin's faction change or its pick-up. Either way the
+  claim's belongings stay the account's (§3a).
+- **Map reset** (ruling 14): the account claim goes with the map; the
+  members stay members and get stones at the Steward.
+- `/claim_remove <member>` removes the account claim (or the member's own
+  draft).
+- **Travel** (ruling 9): "Set as home" per member, as for a personal claim
+  (§8).
 
 ## 3a. Packed containers and the Claim Stone inventory
 
@@ -209,14 +341,28 @@ Round 50 (rulings 4–8 and 13–15, D5–D8 of the [Round 50 plan](../planning/
   shelves, every node that holds items, empty ones too) in every claim's
   area from y −100 upward (§1; a claim placed before 0.85.0 in its old
   101 × 101 square) with its contents and fuel. Every container
-  belongs to the claim's owner, whoever placed it. The stone's unburnt fuel comes back as
+  belongs to the claim's owner, whoever placed it: for an account claim
+  (Round 86) the account and faction, for a draft of the account stone the
+  character that placed it. The stone's unburnt fuel comes back as
   charcoal of the same burn time, rounded up.
 - **The Claim Stone inventory:** one per player, holding what was packed
-  for that player. It shows as the **Belongings (N)** tab of the owner's
-  stone form (§7.1) once the stone is activated, never while it is a draft.
-  It is take-only (nothing goes in, nothing moves inside it), scrollable,
+  for that player, and one per account and faction for its account claim
+  (Round 86, concept ruling 7, plan ruling 13). It shows as the
+  **Belongings (N)** tab of the owner's stone form (§7.1) once the stone is
+  activated, never while it is a draft; every member of an account claim
+  sees the account's and may take from it, a take by one shows to the
+  others at once and the same item is never handed out twice. It is
+  take-only (nothing goes in, nothing moves inside it), scrollable,
   and waits indefinitely. Picking the stone up or losing it keeps it; a
-  later map reset adds to it.
+  later map reset adds to it. The account's stays when its claim ends,
+  also when the last member leaves or the account is deleted, and shows
+  again in the next account claim of that account and faction.
+- **Joining an account claim** moves the character's own waiting
+  belongings into the account's, one way: they stay the account's when the
+  character leaves. A packed container already taken out stays the
+  character's and still unpacks. Whatever a later map reset packs under a
+  member's own name (its account stone's draft) moves there at its next
+  login. The deletion of a member deletes only what is still its own.
 - **Packed container:** one item, `grug_housing:packed_container`. Its
   tooltip names the container and its stack count ("Packed Chest, 14
   stacks"), up to eight of its stacks and how many more; it shows the
@@ -243,7 +389,8 @@ Round 50 (rulings 4–8 and 13–15, D5–D8 of the [Round 50 plan](../planning/
   is lost; such a container that still exists (a station such as the Dual
   Furnace) also comes back as its plain item, like an empty one. A charcoal stack above its stack size is split.
 - **Notices:** a player with waiting belongings is told at every join:
-  "Belongings from the old map wait in your Claim Stone." The Housing
+  "Belongings from the old map wait in your Claim Stone." (a member of an
+  account claim: "... in your account's Claim Stone."). The Housing
   Steward says the same (§7.2).
 
 ## 4. Fuel and upkeep
@@ -302,7 +449,8 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
   The hand and the skill hand cannot destroy it. A destroyed stone drops
   nothing (ruling 21); the claim ends and the player may fetch a new stone
   from the Housing Steward. A draft cannot be destroyed (§2a).
-- **Pick-up** is owner-only and only through the stone's own interface (§7);
+- **Pick-up** is owner-only (every member of an account claim, §3b) and only
+  through the stone's own interface (§7);
   it ends the claim and returns the stone and the whole unburnt lumps (§4). A
   draft can be picked up at any time; an activated stone not within 12 hours
   of its activation (§3).
@@ -310,7 +458,8 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
   `/claim_remove here` (the claim the admin stands in) or
   `/claim_remove orphans` (stone nodes within 16 nodes of the admin that have
   no registry row; registered claim centres are skipped), with the `server`
-  privilege. An online owner gets the chat message "Your Claim Stone was
+  privilege. An online owner (every member of an account claim) gets the
+  chat message "Your Claim Stone was
   removed by an admin…"; an offline owner sees it on the Character page and
   gets the travel-home fallback message at the next login (§8). The travel
   home falls back to the innkeeper, and nothing is refunded.
@@ -319,7 +468,8 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
 
 ### 6.1 Permission levels
 
-The owner keeps a permission list of player names on the stone (ruling 13).
+The owner (every member of an account claim, §3b) keeps a permission list
+of player names on the stone (ruling 13).
 Each name has one of two levels:
 
 | Level | Allows |
@@ -353,8 +503,9 @@ only when digging and placing; §6.3 covers the rest.
   building check, as writing a sign does: the owner and Everything may, a
   draft or inactive claim protects nothing. A locked chest answers only its
   owner, inside a claim or not.
-- The protection hint shows the claim reason: **"Home of <owner> –
-  protected"**.
+- The protection hint shows the claim reason: the home's name with the
+  house icon, **"<home name> – protected"** (Round 86 ruling 9; the owner's
+  name stands on the stone).
 - Claim protection covers digging, placing and interaction only. Protection
   against explosions and fire, liquid inflow beyond the arrival cube and
   boundary outlines are not part of V1.
@@ -392,6 +543,12 @@ only when digging and placing; §6.3 covers the rest.
 
 ### 7.1 The stone interface (owner only)
 
+An account claim's form (§3b) opens for every member; it is headed "Your
+account's Claim Stone" with its owners on the heading's row, and its
+pick-up asks with "The protection ends at once for every owner". An
+account draft's form is headed "Your Account Claim Stone (draft, not
+active)" and says that its other drafts crumble at the activation.
+
 - **Draft form:** a live countdown to crumbling (redrawn every second), the
   Activate button (§2a), Pick up and Close. No permission list and no fuel
   until activated.
@@ -400,6 +557,8 @@ Once activated:
 
 - The fuel slot (§4).
 - The remaining time to the minute, counting the current fuel stack.
+- The home's name below the fuel (Round 86): the house icon, a field with
+  the name and Rename (§1a).
 - The permission list (§6.1).
 - "Set as home": makes the claim the travel-home target (§8).
 - Pick-up (§5).
@@ -423,7 +582,13 @@ capital's faction, hands out the stone (§3), and its dialog briefly explains
 the upkeep, the 5-minute activation with 5 lumps and the 12-hour lock. The
 map shows it with the Steward icon ([world_map.md](world_map.md)).
 
-The dialog shows **Receive Claim Stone** only when the player can receive
+Below the explanation the dialog has the choice of §3b in two columns,
+**Personal Claim Stone** and **Account Claim Stone**, each with a line and
+its button or, in its place, the reason. The account column offers "Choose
+the Account Claim Stone" (a stone comes), "Join your account's home" (it
+stands; no stone) or, for a member, "Receive Account Claim Stone"; a
+member's personal column offers "Leave your account's home" or why not.
+The personal column shows **Receive Claim Stone** only when the player can receive
 one (Round 49 ruling 4); otherwise the reason stands in its place: "You
 need level 20 to receive a Claim Stone.", "Your Claim Stone is already
 placed." or "You already carry a Claim Stone." (in any list, a bag
@@ -432,7 +597,8 @@ included). A full inventory keeps the button: the click then refuses with
 hand-out the dialog shows the green line and "You already carry a Claim
 Stone." in place of the button. While belongings from an old map wait
 (§3a), the dialog adds the line "Belongings from the old map wait in your
-Claim Stone."
+Claim Stone." (a member of an account claim: "... in your account's Claim
+Stone.").
 
 ### 7.3 Character page status
 
@@ -450,11 +616,16 @@ minute); only the draft form (§7.1) counts seconds.
 - removed by an admin: "Your Claim Stone was removed by an admin";
 - carried: "Your Claim Stone is in your inventory, not placed yet";
 - none (dropped, or the draft crumbled): "You have no Claim Stone; ask a
-  Housing Steward for a new one".
+  Housing Steward for a new one";
+- a member (§3b): the lines above for its account's claim or its own draft;
+  with neither, "Your Account Claim Stone is in your inventory, not placed
+  yet" or "Your account's home stands nowhere; a Housing Steward gives you
+  an Account Claim Stone".
 
 ## 8. Home-stone travel
 
-- The player's own Claim Stone can be the "travel home" target of
+- The player's own Claim Stone (for a member, its account's, §3b; each
+  member sets it for itself) can be the "travel home" target of
   [innkeeper home travel](home_travel.md), with the usual 30-minute cooldown
   (ruling 14). The owner sets it with "Set as home" in the stone interface;
   the map marks a claim home with the home icon at the stone ([home_travel.md](home_travel.md)). An expired claim still works as a
@@ -462,7 +633,9 @@ minute); only the draft form (§7.1) counts seconds.
 - The arrival is the arrival cube (§2). If the cube is blocked, that one trip
   goes to the bound innkeeper instead, with a message, and the cooldown is
   charged.
-- When the stone is picked up, destroyed or removed by an admin, the target
+- When the stone is picked up, destroyed or removed by an admin (for an
+  account claim: for every member whose home it was), or the member leaves
+  its account's home, the target
   falls back to the
   player's bound innkeeper (the starting-town innkeeper when none is bound),
   with a message; an offline player gets it at the next login (ruling 26).
@@ -494,5 +667,5 @@ wins everywhere, for the claim owner too (ruling 17).
 - Hard-protected capitals, start towns and landmarks can never lie inside a
   claim; a claim keeps 16 nodes from their footprints too (§2).
 - Protection hints name the protecting layer: "Road – protected", "Village –
-  protected" and similar for world content, "Home of <owner> – protected" for
-  a claim (`items_crafting.md` §3.0.4).
+  protected" and similar for world content, "<home name> – protected" with
+  the house icon for a claim (`items_crafting.md` §3.0.4).

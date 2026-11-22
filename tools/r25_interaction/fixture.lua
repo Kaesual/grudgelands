@@ -340,7 +340,8 @@ end
 local ACTIONS = {"chest_rightclick", "door", "chest_put", "chest_take",
 	"chest_move", "stone_take", "furnace_put", "furnace_move", "furnace_fields",
 	"spawner_fields", "furnace_rightclick"}
-local HOME = "Home of olaf – protected"
+-- Round 86 ruling 9: the home's name (here the default) instead of the owner.
+local HOME = "olaf's Home – protected"
 local TERRITORY = "Accord home territory – protected"
 local cases = {
 	{IN_ACTIVE, "olaf", "allow"}, {IN_ACTIVE, "eve", "allow"},
@@ -401,9 +402,12 @@ local reasons = {
 for _, row in ipairs(reasons) do
 	local pos, name = row[1], row[2]
 	local reason = grug_core.protection_reason(pos, name)
-	local hint = grug_core.protection_hint(pos, name)
+	local hint, icon = grug_core.protection_hint(pos, name)
 	check(reason == row[3], ("reason %s at %d,%d: %s"):format(name, pos.x, pos.z, tostring(reason)))
 	check(hint == row[4], ("hint %s at %d,%d: %s"):format(name, pos.x, pos.z, tostring(hint)))
+	-- Round 86 ruling 9: only the claim's hint carries the house icon.
+	check(icon == (reason == "claim" and "grug_map_home.png" or nil),
+		("icon %s at %d,%d: %s"):format(name, pos.x, pos.z, tostring(icon)))
 end
 
 -- ---------------------------------------------------------------------------
@@ -469,7 +473,12 @@ do
 	check(model.activate(claim, 5) == 5 and grug_housing.interaction_refused(spot, "stranger"),
 		"R26: the activated claim guards interaction")
 	check(select(2, grug_housing.protection_reason(spot, "stranger")) ==
-		"Home of olaf – protected", "R26: the activated claim gives the claim hint")
+		"olaf's Home – protected", "R26: the activated claim gives the claim hint")
+	-- Round 86 ruling 9: a renamed home names itself, with the house icon.
+	check(model.set_name(claim, "Olaf's Rest"), "R86: the home renamed")
+	local _, hint, icon = grug_housing.protection_reason(spot, "stranger")
+	check(hint == "Olaf's Rest – protected" and icon == grug_housing.HOME_ICON and
+		icon == "grug_map_home.png", "R86: the hint is the home's name with the house icon")
 	grug_housing.claim_at, grug_housing.is_active, grug_housing.permission =
 		saved[1], saved[2], saved[3]
 end

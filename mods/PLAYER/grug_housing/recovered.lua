@@ -20,6 +20,20 @@
 -- the stone up, losing it or a later map reset (registry.lua M.map_reset
 -- clears only the claim records) leaves them. They show, take-only, in the active stone's
 -- form (stone_form.lua); taking an item deletes its entry or keeps the rest.
+--
+-- Round 86 (lane PACK, plan §3.1, rulings 7 and 13): an account claim's
+-- belongings are held by the claim's owner text, `account:<id>:<faction>`,
+-- under the same key shapes:
+--   recovered:account:<id>:<faction>:<seq>:<n>[.<k>]
+--   packed:account:<id>:<faction>:<seq>:<n>[.<k>]
+-- (the pass writes the claim's owner verbatim). The holder field of a
+-- player key holds no colon, so its pattern can never read an account key
+-- and the reverse (five fields after `recovered:` against three). Every
+-- member sees and takes them (R.holder); they stay when the claim ends or
+-- the last member goes and show again in the next account claim of that
+-- account and faction. A character's own entries move to them when it
+-- joins (R.move_to_account), one way; a packed item already taken out
+-- stays its holder's and keeps its content key.
 
 local R = {}
 grug_housing.recovered = R
@@ -29,11 +43,21 @@ local packed = grug_housing.packed
 local PREFIX = "recovered:"
 R.PREFIX = PREFIX
 
--- player, seq, n, k (k 0 for a tool key) of an entry key, else nil.
+-- Whether `text` is an account claim's owner text, `account:<id>:<faction>`.
+function R.is_account(text)
+	return type(text) == "string" and text:find("^account:[%w_%-]+:[%w_%-]+$") ~= nil
+end
+
+-- holder, seq, n, k (k 0 for a tool key) of an entry key, else nil; the
+-- holder is a player's name or an account's owner text.
 function R.parse_key(key)
-	local player, seq, n, k = key:match("^recovered:([%w_%-]+):(%d+):(%d+)%.?(%d*)$")
-	if not player then return nil end
-	return player, tonumber(seq), tonumber(n), tonumber(k) or 0
+	local holder, seq, n, k = key:match("^recovered:([%w_%-]+):(%d+):(%d+)%.?(%d*)$")
+	if not holder then
+		holder, seq, n, k = key:match(
+			"^recovered:(account:[%w_%-]+:[%w_%-]+):(%d+):(%d+)%.?(%d*)$")
+	end
+	if not holder then return nil end
+	return holder, tonumber(seq), tonumber(n), tonumber(k) or 0
 end
 
 local function key_before(a, b)
@@ -67,17 +91,88 @@ local function keys_of(name)
 	return index[name] or {}
 end
 
--- The player's entries in slot order: {key = ..., stack = ItemStack}.
+-- Round 86: whose entries the character `name` sees in its stone's
+-- Belongings tab (and the Steward's line and the join notice): the holder
+-- the keys name, `recovered:<holder>:...`. A member of an account claim
+-- (grug_housing.account_owner_of) sees the account's, whether or not its
+-- claim stands; every other character its own.
+function R.holder(name)
+	local account = grug_housing.account_owner_of and grug_housing.account_owner_of(name)
+	if R.is_account(account) then return account end
+	return name
+end
+
+-- Round 86: moves the character's own waiting entries, with their packed
+-- contents, to those of the account claim whose owner text is `owner_text`
+-- (`account:<id>:<faction>`), one way (concept ruling 7); returns how many
+-- moved. Each keeps its pass and takes the next free number of the
+-- account's in it, `recovered:<owner_text>:<seq>:<m>` (above every stored
+-- entry, and never one whose content key a carried item still refers to:
+-- Round 86 fix round 1); a packed item's
+-- contents move to that key's content key and the item's reference with
+-- them. Every write happens in this one call, and the engine commits mod
+-- storage only between server steps (reference_projects/luanti
+-- src/server.cpp AsyncRunStep, endSave/beginSave), so a crash leaves all
+-- the old keys or all the new ones, never a mix.
+function R.move_to_account(name, owner_text)
+	if not R.is_account(owner_text) or R.is_account(name) then return 0 end
+	local own = keys_of(name)
+	if #own == 0 then return 0 end
+	local moving = {}
+	for i, key in ipairs(own) do moving[i] = key end
+	local next_n, target = {}, keys_of(owner_text)
+	for _, key in ipairs(target) do
+		local _, seq, n = R.parse_key(key)
+		if n >= (next_n[seq] or 1) then next_n[seq] = n + 1 end
+	end
+	for _, key in ipairs(moving) do
+		local _, seq = R.parse_key(key)
+		-- A number is free only when neither its entry nor its content key
+		-- holds anything: an item a member took out has no entry any more,
+		-- but its contents wait under its content key until it is unpacked.
+		local n, new_key = next_n[seq] or 1, nil
+		while true do
+			new_key = ("%s%s:%d:%d"):format(PREFIX, owner_text, seq, n)
+			if storage:get_string(new_key) == "" and
+					storage:get_string(packed.content_key(new_key)) == "" then
+				break
+			end
+			n = n + 1
+		end
+		next_n[seq] = n + 1
+		local value = storage:get_string(key)
+		local stack = ItemStack(value)
+		local ref = stack:get_name() == packed.ITEM and stack:get_meta():get_string("ref") or ""
+		if ref ~= "" then
+			local new_ref = packed.content_key(new_key)
+			storage:set_string(new_ref, storage:get_string(ref))
+			stack:get_meta():set_string("ref", new_ref)
+			value = stack:to_string()
+		end
+		storage:set_string(new_key, value)
+		storage:set_string(key, "")
+		if ref ~= "" then storage:set_string(ref, "") end
+		target[#target + 1] = new_key
+	end
+	table.sort(target, key_before)
+	index[owner_text], index[name] = target, nil
+	core.log("action", ("[grug_housing] %d belongings of %s moved to %s"):format(
+		#moving, name, owner_text))
+	return #moving
+end
+
+-- The entries the character's stone shows (its holder's), in slot order:
+-- {key = ..., stack = ItemStack}.
 function R.entries(name)
 	local result = {}
-	for _, key in ipairs(keys_of(name)) do
+	for _, key in ipairs(keys_of(R.holder(name))) do
 		result[#result + 1] = {key = key, stack = ItemStack(storage:get_string(key))}
 	end
 	return result
 end
 
 function R.count(name)
-	return #keys_of(name)
+	return #keys_of(R.holder(name))
 end
 
 -- What entry `key` holds now, "" when it is gone.
@@ -109,11 +204,21 @@ end
 -- The deletion of a character (Round 83): every entry and packed content of
 -- `name` goes. A packed item is soulbound, so it can only be in the owner's
 -- carried lists, which go with the engine's player record.
+-- Round 86: a key under the name's prefix that reads as another holder's
+-- (an account's, `recovered:account:...` for a character named "account")
+-- stays; so do the account's entries of a member (ruling 13).
 function R.forget(name)
 	local entry, content = PREFIX .. name .. ":", "packed:" .. name .. ":"
 	for _, key in ipairs(storage:get_keys()) do
-		if key:sub(1, #entry) == entry or key:sub(1, #content) == content then
-			storage:set_string(key, "")
+		local rest
+		if key:sub(1, #entry) == entry then
+			rest = key:sub(#PREFIX + 1)
+		elseif key:sub(1, #content) == content then
+			rest = key:sub(#"packed:" + 1)
+		end
+		if rest then
+			local holder = R.parse_key(PREFIX .. rest)
+			if holder == nil or holder == name then storage:set_string(key, "") end
 		end
 	end
 	if index then index[name] = nil end
@@ -344,12 +449,23 @@ grug_core.world_version.register_pack_handler(R.clean_pass)
 
 -- D8: one notice at every join while belongings wait.
 R.NOTICE = "Belongings from the old map wait in your Claim Stone."
+R.ACCOUNT_NOTICE = "Belongings from the old map wait in your account's Claim Stone."
 
+-- The notice for the character `name`: a member's belongings are the account's.
+function R.notice(name)
+	return R.holder(name) ~= name and R.ACCOUNT_NOTICE or R.NOTICE
+end
+
+-- Round 86: a member's own entries (a pass packed its account stone's draft
+-- under its name, or a join left some) move to the account's at its join,
+-- before the notice counts them.
 core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
+	local holder = R.holder(name)
+	if holder ~= name and #keys_of(name) > 0 then R.move_to_account(name, holder) end
 	if R.count(name) == 0 then return end
 	core.after(0, function()
 		local online = core.get_player_by_name(name)
-		if online then grug_core.feed(online, "notice", R.NOTICE, "grug_housing_recovered") end
+		if online then grug_core.feed(online, "notice", R.notice(name), "grug_housing_recovered") end
 	end)
 end)

@@ -298,6 +298,9 @@ def read_pass(backends, map_reader, out, dry=False):
         raise Refusal("internal", "grug_housing pack_seq %r is no number" % text)
     seq = int(text or 0) + 1
     claims, skipped = pack.read_claims(store)
+    problem = pack.owner_problem(claims)
+    if problem:
+        raise Refusal("internal", problem)
     if any(skipped.values()):
         out.say("claim records skipped, as the game drops them: %d of an unknown version, "
                 "%d that do not decode" % (skipped["unknown_version"], skipped["undecodable"]))

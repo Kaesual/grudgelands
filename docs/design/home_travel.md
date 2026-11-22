@@ -92,14 +92,16 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
 
 Full rules: [housing.md](housing.md) §8.
 
-- The owner makes the own Claim Stone the travel-home target with the stone
-  form's "Set as home" button (`grug_home.set_home_claim`). Binding an
+- The owner (each member of an account claim for itself, Round 86) makes
+  the own Claim Stone the travel-home target with the stone form's "Set as
+  home" button (`grug_home.set_home_claim`). Binding an
   innkeeper later replaces the claim home.
 - Return uses the Character page's **Return home** and the same 30-minute
   cooldown. Arrival is the stone's arrival cube. If the cube is blocked, that
   one trip goes to the bound innkeeper instead, with a message, and the
   cooldown is charged. An expired (unfuelled) claim still works as a target.
-- When the stone is picked up or destroyed, the target falls back to the
+- When the stone is picked up, destroyed or removed by an admin, or a member
+  leaves its account claim, the target falls back to the
   player's bound innkeeper (the starting-town innkeeper when none is bound),
   with a message; an offline player gets the message at the next login.
 - The map marks a claim home with the home icon at the stone

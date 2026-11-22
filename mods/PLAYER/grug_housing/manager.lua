@@ -72,7 +72,7 @@ end
 
 local LINES = {
 	"From level 20 you get one Claim Stone for free.",
-	"Place it in your faction's lands of level 11 to 30.",
+	"It claims one map square; hold it to see the free ones.",
 	("Activate it within %d minutes with %d coal, charcoal or anthracite,"):format(
 		grug_housing.DRAFT_SECONDS / 60, grug_housing.ACTIVATION_LUMPS),
 	"or it crumbles and I give you a new one.",
@@ -83,6 +83,61 @@ local LINES = {
 		grug_housing.PICKUP_LOCK_SECONDS / 3600),
 }
 
+-- Round 86 (concept §3.1 rulings 1-6): the choice of the two stones below
+-- the explanation, each column with its line and its button or, in the
+-- button's place, the reason (account.lua account_offer for the account
+-- column). A member's personal column offers leaving instead. Choosing the
+-- account while carrying a personal stone asks once (the stone vanishes).
+local CHOICE_Y, CHOICE_H = 7.15, 3.1
+-- A column: its line (two lines at most) below the heading, then the button
+-- or the reason (three lines at most), then the warning (two at most).
+local LINE_DY, LINE_H, BUTTON_DY, REASON_DY, REASON_H, WARN_DY, WARN_H =
+	0.25, 0.85, 1.2, 1.15, 1.45, 1.85, 0.85
+
+local function personal_column(fs, player, x, y, g, UI)
+	local name = player:get_player_name()
+	local _, state = grug_housing.player_claim(name)
+	fs[#fs + 1] = UI.heading(x, y, "Personal Claim Stone", g)
+	if state == "member" then
+		fs[#fs + 1] = UI.prose(x, y + LINE_DY, 4.9, LINE_H, "Leave your account's home " ..
+			"first; its stone stays with the others.", false, g)
+		local ok, reason = grug_housing.can_leave_account(name)
+		if ok then
+			fs[#fs + 1] = ("button[%g,%g;4.6,0.6;leave;Leave your account's home]"):format(x,
+				y + BUTTON_DY)
+		else
+			fs[#fs + 1] = UI.prose(x, y + REASON_DY, 4.9, REASON_H, reason, true, g)
+		end
+		return
+	end
+	fs[#fs + 1] = UI.prose(x, y + LINE_DY, 4.9, LINE_H, "A home of your own: only you " ..
+		"own it.", false, g)
+	local ok, reason = grug_housing.can_receive_stone(player)
+	if ok then
+		fs[#fs + 1] = ("button[%g,%g;4.6,0.6;receive;Receive Claim Stone]"):format(x, y + BUTTON_DY)
+	else
+		fs[#fs + 1] = UI.prose(x, y + REASON_DY, 4.9, REASON_H, reason, true, g)
+	end
+end
+
+local function account_column(fs, session, player, x, y, g, UI)
+	local offer = grug_housing.account_offer(player)
+	session.offer = offer
+	fs[#fs + 1] = UI.heading(x, y, "Account Claim Stone", g)
+	fs[#fs + 1] = UI.prose(x, y + LINE_DY, 4.9, LINE_H, offer.text, false, g)
+	if offer.button then
+		local label = offer.button
+		if session.confirm_account and offer.confirm then label = "Confirm: " .. label end
+		fs[#fs + 1] = ("button[%g,%g;4.6,0.6;account;%s]"):format(x, y + BUTTON_DY,
+			core.formspec_escape(label))
+		if offer.confirm then
+			fs[#fs + 1] = UI.prose(x, y + WARN_DY, 4.9, WARN_H, offer.confirm, true, g)
+		end
+	else
+		fs[#fs + 1] = UI.prose(x, y + REASON_DY, 4.9, REASON_H, offer.reason or "", true, g)
+	end
+end
+
 -- The button only when the player can receive a stone (Round 49 ruling 4),
 -- else the reason in its place: below level 20, a stone placed or carried.
 -- A full inventory keeps the button; the click then says so in red. While
@@ -92,12 +147,13 @@ local function formspec(session, player)
 	if grug_housing.recovered.count(player:get_player_name()) > 0 then
 		lines = {}
 		for index, line in ipairs(LINES) do lines[index] = line end
-		lines[#lines + 1] = grug_housing.recovered.NOTICE
+		lines[#lines + 1] = grug_housing.recovered.notice(player:get_player_name())
 	end
 	local shift = #lines > #LINES and 0.6 or 0
 	local UI = grug_core.ui
-	local g = UI.text_growth(player, 11.5, 8.6 + shift)
-	local fs = {UI.frame(11.5, 8.6 + shift, nil, nil, player), "set_focus[close;true]",
+	local height = 8.6 + CHOICE_H + shift
+	local g = UI.text_growth(player, 11.5, height)
+	local fs = {UI.frame(11.5, height, nil, nil, player), "set_focus[close;true]",
 		UI.service_header(11.5, "Housing Steward", "Your place in the world", nil, g),
 		UI.panel(0.4, 1.6, 10.7, 5.4),
 		UI.heading(0.65, 1.95, "01 · RECEIVE YOUR CLAIM STONE", g),
@@ -107,16 +163,15 @@ local function formspec(session, player)
 		UI.heading(0.65, 4.75, "03 · KEEP IT FUELLED", g),
 		UI.prose(0.65, 5.0, 10.2, 1.65, table.concat(LINES, "\n", 5, #LINES), false, g)}
 	if shift > 0 then fs[#fs + 1] = UI.prose(0.5, 7.1, 10.5, 0.6, lines[#lines], false, g) end
+	local y = CHOICE_Y + shift
+	fs[#fs + 1] = UI.panel(0.4, y, 10.7, CHOICE_H - 0.1)
+	personal_column(fs, player, 0.65, y + 0.3, g, UI)
+	account_column(fs, session, player, 6.0, y + 0.3, g, UI)
 	if session.message then
-		fs[#fs + 1] = UI.prose(0.4, 7.05 + shift, 10.6, 0.6, core.colorize(session.message_color or ui.GREEN, session.message), false, g)
+		fs[#fs + 1] = UI.prose(0.4, 7.05 + CHOICE_H + shift, 10.6, 0.6,
+			core.colorize(session.message_color or ui.GREEN, session.message), false, g)
 	end
-	local ok, reason = grug_housing.can_receive_stone(player)
-	if ok then
-		fs[#fs + 1] = ("button[7.7,%g;3.4,0.6;receive;Receive Claim Stone]"):format(7.7 + shift)
-	else
-		fs[#fs + 1] = UI.prose(3.0, 7.7 + shift, 8.1, 0.65, reason, true, g)
-	end
-	fs[#fs + 1] = ("button_exit[0.4,%g;1.7,0.6;close;Close]"):format(7.7 + shift)
+	fs[#fs + 1] = ("button_exit[0.4,%g;1.7,0.6;close;Close]"):format(7.7 + CHOICE_H + shift)
 	return table.concat(fs)
 end
 
@@ -140,14 +195,31 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		if not fields.quit then core.close_formspec(name, FORMNAME) end
 		return true
 	end
+	local ok, message
 	if fields.receive then
-		local ok, message = grug_housing.issue_stone(player)
-		session.message = message or (ok and "Here is your Claim Stone." or
+		ok, message = grug_housing.issue_stone(player)
+		message = message or (ok and "Here is your Claim Stone." or
 			"You cannot receive a Claim Stone now.")
-		session.message_color = ok and ui.GREEN or ui.RED
-		core.show_formspec(name, FORMNAME, formspec(session, player))
-		ui.refresh_character(player)
+	elseif fields.account then
+		-- Round 86: a carried personal stone vanishes, so the first click asks.
+		local offer = session.offer
+		if offer and offer.confirm and not session.confirm_account then
+			session.confirm_account = true
+			session.message = nil
+			core.show_formspec(name, FORMNAME, formspec(session, player))
+			return true
+		end
+		ok, message = grug_housing.choose_account(player)
+	elseif fields.leave then
+		ok, message = grug_housing.leave_account(player)
+	else
+		return true
 	end
+	session.confirm_account = nil
+	session.message = message
+	session.message_color = ok and ui.GREEN or ui.RED
+	core.show_formspec(name, FORMNAME, formspec(session, player))
+	ui.refresh_character(player)
 	return true
 end)
 

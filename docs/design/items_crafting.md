@@ -557,8 +557,8 @@ every 0.25 s):
   capital's protected city or a start town), "Landmark – protected" (a
   protected functional column: outpost or bandit camp), "Road –
   protected" (a road corridor), "Village – protected" and similar for the
-  other POI boxes (`world.md` §2 R1b), "Home of <owner> – protected" (an
-  active Claim Stone claim, `housing.md` §6), "Accord home territory –
+  other POI boxes (`world.md` §2 R1b), "<home name> – protected" with the
+  house icon (an active Claim Stone claim, `housing.md` §1a, §6), "Accord home territory –
   protected", "Throng home territory – protected", "Open sea – protected"; a
   player without a faction reads "Protected – choose a faction first";
 - rock or resource too hard for the wielded tool: "Requires a T<N> pick"

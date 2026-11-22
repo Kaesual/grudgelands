@@ -32,7 +32,7 @@ end
 -- into a carried list. Node and detached inventories refuse it through
 -- grug_inventory's bound-item seam (grug_inventory/bound.lua), a move inside
 -- a detached inventory included. This mod does not depend on grug_inventory
--- (which loads after it), so the rule registers once every mod has loaded,
+-- (nothing promises it loads first), so the rule registers once every mod has loaded,
 -- before any player can act.
 local function player_action(player, action, inventory, info)
 	if action == "move" then

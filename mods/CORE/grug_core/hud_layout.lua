@@ -590,3 +590,85 @@ function layout.quest_boxes(window, count, playing)
 	end
 	return out
 end
+
+-- A house icon before a home's name in a centred HUD text (Round 86 lane
+-- NAMES: the entry banner, the line under the minimap, the protection
+-- hint's flash line). The engine draws no image inside HUD text and the
+-- server cannot measure text, so the line's width is estimated from the
+-- advance widths of the client's default fonts (Luanti's
+-- fonts/Arimo-Regular.ttf and Arimo-Bold.ttf, whatever the client uses
+-- unless a player sets another font), in thousandths of an em, for the
+-- characters a home's name and its hint use; any other character counts
+-- WIDE_EM. Each glyph rounds to whole pixels, as hinted advances do. The
+-- icon and the text are centred together: the text moves right by half the
+-- icon and its gap, the icon sits left of it. An estimate that is off by a
+-- few pixels changes the gap by half of that.
+local GLYPHS = " '-_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+local GLYPH_MILLI = {
+	regular = {278, 191, 333, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556,
+		667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667,
+		778, 722, 667, 611, 722, 667, 944, 667, 667, 611,
+		556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556,
+		556, 333, 500, 278, 556, 500, 722, 500, 500, 500},
+	bold = {278, 238, 333, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556,
+		722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667,
+		778, 722, 667, 611, 722, 667, 944, 667, 667, 611,
+		556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611,
+		611, 389, 556, 333, 611, 556, 778, 556, 556, 500},
+}
+layout.GLYPH_EM = {}
+for style, milli in pairs(GLYPH_MILLI) do
+	local widths = {["–"] = 0.556} -- the en dash of "<name> – protected"
+	for index = 1, #GLYPHS do widths[GLYPHS:sub(index, index)] = milli[index] / 1000 end
+	layout.GLYPH_EM[style] = widths
+end
+layout.WIDE_EM = 0.95
+-- The client's default font_size; a HUD text of size s is floor(16 s) of it.
+layout.FONT_PX = 16
+-- The icon's side and its gap to the text, in ems of the line's font (the
+-- gap 0.4 since Round 86 fix round 2: at 0.3 the estimate's few pixels
+-- nearly closed it at a GUI scaling of 1.5).
+layout.HOME_ICON_EM = 1.2
+layout.HOME_ICON_GAP_EM = 0.4
+
+-- The estimated width in screen pixels of `text` at `font_px`.
+function layout.text_px(text, font_px, bold)
+	local widths = layout.GLYPH_EM[bold and "bold" or "regular"]
+	local px = 0
+	for char in text:gmatch("[%z\1-\127\194-\244][\128-\191]*") do
+		px = px + math.floor((widths[char] or layout.WIDE_EM) * font_px + 0.5)
+	end
+	return px
+end
+
+-- The pixel size of a HUD text of `size` (nil or 0: the default) in the
+-- window: the client takes floor(font_size x size.x) and scales it by the
+-- real GUI scaling (hud.cpp HUD_ELEM_TEXT, fontengine.cpp).
+function layout.font_px(size, window)
+	local _, gui = scales(window)
+	local base = layout.FONT_PX
+	if size and size > 0 then base = math.floor(base * size) end
+	return math.floor(base * gui)
+end
+
+-- The icon before `text` at `font_px`, in screen pixels from the centre
+-- the text had alone: {size, icon_x (the icon's centre), text_x (the
+-- text's new centre), width (icon, gap and text)}.
+function layout.icon_before(text, font_px, bold)
+	local width = layout.text_px(text, font_px, bold)
+	local size = math.floor(layout.HOME_ICON_EM * font_px + 0.5)
+	local gap = math.floor(layout.HOME_ICON_GAP_EM * font_px + 0.5)
+	return {size = size, icon_x = -(width + gap) / 2, text_x = (size + gap) / 2,
+		width = size + gap + width}
+end
+
+-- The same for a text element on an anchor, in HUD units: the text's and
+-- the icon's offset x from the anchor's and the scale that draws a
+-- `texture_px` icon `size` pixels high (the client truncates, so a quarter
+-- pixel more keeps the whole pixel).
+function layout.icon_before_offsets(text, size, bold, window, texture_px)
+	local hud = scales(window)
+	local g = layout.icon_before(text, layout.font_px(size, window), bold)
+	return {text_x = g.text_x / hud, icon_x = g.icon_x / hud,
+		scale = (g.size + 0.25) / (texture_px * hud)}
+end

@@ -146,17 +146,17 @@ written in `register_on_mods_loaded`, after every clear.
 |---|---|---|
 | `grug_core` `world_preparation` (`starts_preload.lua`) | the plan and its progress: total, cursor, order, geometry, reach, authority digest, selection | `mode` (starts or full): the selected plan starts again |
 | `grug_mobs` (`map_reset.lua`) | every record of the world's authored actors: `startnpc:` and `startnpcdue:` (settlement NPC markers and respawn times), `rare_alive:` and `rare_next:`, `boss:dragon:<id>:alive/due/warned`, `leader_next:`, `rift_crack:` and `rift_boss_due:`, `live_pos:` and `live_absent:` | `live_gen:<key>`, the liveness generations (monotonic: a copy of an older generation never returns) |
-| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`, whatever its record version (`v2` until 0.84.x, `v3` since 0.85.0, §3.5), so also a record the running version cannot read; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>` and `recovered:<player>:<seq>:0.<k>`, until their items are taken), the packed containers' contents `packed:<player>:<seq>:<n>[.<k>]` (until the container is placed) and `pack_seq` (§3.5) |
+| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`, whatever its record version (`v2` until 0.84.x, `v3` since 0.85.0, §3.5), so also a record the running version cannot read, personal and account claims (kind `account`, 0.86.0) alike, with their home names; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried; a member of an account claim, `v2\|member\|<owner text>` since 0.86.0, stays a member: Round 86 ruling 14), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>` and `recovered:<player>:<seq>:0.<k>`, until their items are taken; since 0.86.0 also an account claim's, `recovered:account:<account id>:<faction>:<seq>:<n>[.<k>]`, which stay when the claim ends: Round 86 ruling 13), the packed containers' contents `packed:<player>:<seq>:<n>[.<k>]` and `packed:account:<account id>:<faction>:<seq>:<n>[.<k>]` (until the container is placed) and `pack_seq` (§3.5) |
 | `grug_housing`'s world-folder file `grug_claim_mask.txt` (Round 85, `mask.lua`; not mod storage) | the claim mask's snapshot of the map (the mask and its per-chunk fingerprints): the first start after the reset writes it anew for the new map (its header names the seed and the map-reset record, [format](claim-mask-format.md)) | — |
 | `grug_mapgen` (Round 69, `camp_rewrite.lua`) | `camp_rewrite`, the pending box rewrite (§5.9): a new map generates the new blueprint | — |
 | `grug_core` `map_reset_pack:<seq>` (§3.5) | — | the pass's marker until the game's handler has run at the next load |
 | `grug_core` `reset_world` | — | the world record itself |
-| `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up or destruction |
+| `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up, destruction or admin removal (since 0.86.0 one per member of an account claim, and a member's own leaving: `left`, `unlinked`, `faction`) |
 | `grug_parties` `parties`, `grug_repair` `item_serial` | — | not map-bound; the serial is a monotonic counter |
 | `grug_mail` (Round 48): `box:<name>`, `sent:<name>` (Round 66), `tickets`, `broadcasts`, `factions`, `next_id` | — | not map-bound: letters, attachments, sent copies, tickets and announcements survive a map reset; `next_id` is a monotonic counter |
 | `grug_clans` (Round 76): `clans` (and `clans_unreadable`, an unreadable save kept aside) | — | not map-bound: clans and their members |
 | `grug_achievements` `queue:<name>` | — | not map-bound: queued manual awards for a character |
-| `grug_accounts` (Round 79): `list`, `id:<name>` | — | not map-bound: account bindings and their index |
+| `grug_accounts` (Round 79): `list`, `id:<name>` | — | not map-bound: account bindings and their index; since 0.86.0 the list also holds the website's `default_rewards` |
 | `grug_bridge` `banlist` | — | not map-bound: the hosting platform's bans |
 
 The world-folder caches (world layouts, region maps, the claim mask's column
@@ -261,8 +261,14 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
     for an empty one, each exactly as the map stores it) and `seq`; or
     charcoal (`grug_smelting:charcoal`, stacks of at most 99): the claim's
     remaining paid time (`paid_until` minus the pass's wall-clock time)
-    divided by `LUMP_SECONDS`, rounded up. `n` counts from 1 per owner and
-    pass: containers in claim id and position order, then the charcoal;
+    divided by `LUMP_SECONDS`, rounded up. `<owner>` is the record's owner
+    verbatim: a player's name, or for an account claim (since 0.86.0) its
+    owner text `account:<account id>:<faction>`, giving
+    `recovered:account:<id>:<faction>:<seq>:<n>`, a key the game's player
+    pattern cannot read (a name holds no colon) and its account pattern
+    does; a draft of the account stone is its placer's. `n` counts from 1
+    per owner and pass: containers in claim id and position order, then the
+    charcoal;
   - `pack_seq`, the pass number (`seq`), one above the last;
   - `grug_core` `map_reset_pack:<seq>`, the marker the game's next load
     handles (it drops items the running version does not register, keeps
@@ -284,9 +290,10 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
 - **Later passes append:** earlier entries stay until their items are
   taken; the pass number grows. Every existing `recovered:` key is opaque
   to the pass (the game's first-start clean-up adds
-  `recovered:<player>:<seq>:<n>.<k>` keys of its own, plan D6): never
-  parsed, renumbered or deleted; a pass only adds keys under its new
-  `seq`. A pass on a restored backup writes the same rows (only the
+  `recovered:<player>:<seq>:<n>.<k>` keys of its own, plan D6, and since
+  0.86.0 moves a joining member's entries to its account's under their own
+  `seq`): never parsed, renumbered or deleted; a pass only adds keys under
+  its new `seq`. A pass on a restored backup writes the same rows (only the
   charcoal follows the clock). Waiting entries are long-lived player-owned
   item storage: the game cleans each pass only once, at the next load, so
   a later step that removes or transforms an item must also cover the
@@ -294,7 +301,9 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   `packed:*` content keys (the clean-up moves them there out of the
   items) and those nested in the `lists` of a pass not cleaned yet
   (§5.2).
-- **Refused before any write** (exit 2): a world below 0.48.0
+- **Refused before any write** (exit 2): a claim whose owner is neither a
+  player name nor an account owner text (`internal`: the game could not
+  hand out its entries, Round 86); a world below 0.48.0
   (`pack_baseline`, Round 50 ruling 9: the production version 0.48.1, with
   the floor at 0.48.0 because a world moved compatibly to 0.48.1 and never
   started still records 0.48.0, and 0.48.1 changed no saved state the pass

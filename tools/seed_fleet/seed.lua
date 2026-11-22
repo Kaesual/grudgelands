@@ -42,6 +42,19 @@
 -- ground under every footprint column, only air above each column's highest
 -- cell up to the reach (arena_blocks below).
 --
+-- Road cut walls (Round 86 lane ROADS, road_cuts below): at every road's
+-- side zone edge the cut adds at most ROAD_CUT_LIMIT to the step between a
+-- cut column and its neighbour off the roads (`tools/r86_roads/walls.lua`:
+-- the cut meets the ground there, `road_layout.lua` CUT_FADE); columns in a
+-- capital's protected city are exempt (the capital core keeps its ground,
+-- a step at the core's edge is the town guard's; the exemption reaches the
+-- whole protected city, its wall line + 21, wider than the civic cores where
+-- such steps stand). Report only: road_face, the largest step a cut adds
+-- over nature between neighbouring columns from a road's last column to 6
+-- nodes beyond its edge (the slope's foot, its low wall included; sampled
+-- every sixth node; the lift bound, CUT_FADE_LIFT, keeps it low, guarded by
+-- tools/r86_roads/portable_test.lua).
+--
 -- Digest mode (Round 82, tools/r82_gen; opt-in, the printed line stays the
 -- same): with a third argument the seed also writes a digest file there, one
 -- line per item in a fixed order -- the roster, the tree roll-up, the world
@@ -62,7 +75,9 @@
 -- chunk_seconds=<s> trees=<the generated tree templates' roll-up, 16 hex>
 -- places=<recipe quest places checked> place_seconds=<s> wayposts=<stacks>
 -- arena_cells=<the arena's cells checked> arena_added=<the largest rise
--- the levelling adds over 4 nodes>/4[,fallback]" or
+-- the levelling adds over 4 nodes>/4[,fallback] road_cut=<the largest step a
+-- road cut adds at its side zone's edge> road_cut_seconds=<s> road_face=<the
+-- largest step a cut adds within 6 nodes of a road's edge>@<x>,<z>" or
 -- "FAIL <seed> <seconds> <error>" and then raises (a non-zero exit). A failure
 -- in the per-chunk path names the chunk.
 local repo, seed, digest_file = arg[1], arg[2], arg[3]
@@ -801,7 +816,43 @@ local function wayposts()
 	end
 	return rows
 end
+-- Road cut walls (header): the largest step a cut adds at a side zone's
+-- edge, raising above ROAD_CUT_LIMIT (2: the cut's own rock face per node;
+-- a cut that meets the ground adds 1 or 2 where its face is floored).
+local ROAD_CUT_LIMIT = 2
+local function road_cuts()
+	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local W = dofile(repo .. "/tools/r86_roads/walls.lua")
+	local RL = dofile(wp40 .. "/road_layout.lua")
+	local q, zones = R.planner_source, R.built.zones_session
+	local height
+	for index = 1, 255 do
+		local name, value = debug.getupvalue(q.road_column_at, index)
+		if name == nil then break end
+		if name == "height" then height = value end
+	end
+	assert(height and height.fitted_values_at, "the planner source's height session is not reachable")
+	local capitals = R.main.capital_protection()
+	local function exempt(x, z)
+		for _, shape in pairs(capitals) do
+			if shape.member(x, z) then return true end
+		end
+		return false
+	end
+	local function query(x, z)
+		return zones.terrain_height_at(x, z), (height.fitted_values_at(x, z)), (q.road_column_at(x, z))
+	end
+	local step, at = W.largest(RL.deserialize(R.main.road_layout_text()), RL.P.SIDE_MAX, query,
+		exempt)
+	if step > ROAD_CUT_LIMIT then
+		error(("a road cut ends in a wall of %d at %d,%d (the step it adds over the ground " ..
+			"beside it; bound %d)"):format(step, at[2], at[3], ROAD_CUT_LIMIT), 0)
+	end
+	local face, fx, fz = W.face(RL.deserialize(R.main.road_layout_text()), -1, 6, query, exempt)
+	return step, ("%d@%s,%s"):format(face, tostring(fx), tostring(fz))
+end
 local posts = 0
+local road_cut, road_cut_seconds, road_face = 0, 0, "-"
 local chunks, chunk_seconds = 0, 0
 local arena_site, arena_cells = nil, 0
 if ok then
@@ -828,6 +879,12 @@ if ok then
 		else
 			err = rows
 		end
+	end
+	if ok then
+		local c0 = os.clock()
+		ok, road_cut, road_face = pcall(road_cuts)
+		if not ok then err = road_cut end
+		road_cut_seconds = os.clock() - c0
 	end
 	if ok and dense then
 		local extra
@@ -895,7 +952,9 @@ if ok then
 		("chunk_seconds=%.1f"):format(chunk_seconds), "trees=" .. trees:sub(1, 16),
 		"places=" .. places, ("place_seconds=%.1f"):format(place_seconds),
 		"wayposts=" .. posts, "arena_cells=" .. arena_cells,
-		("arena_added=%d/4%s"):format(arena_added, arena_fallback and ",fallback" or ""))
+		("arena_added=%d/4%s"):format(arena_added, arena_fallback and ",fallback" or ""),
+		"road_cut=" .. road_cut, ("road_cut_seconds=%.1f"):format(road_cut_seconds),
+		"road_face=" .. road_face)
 else
 	print("FAIL", seed, seconds, (tostring(err):gsub("[\t\n]", " ")))
 	error("seed " .. seed .. " failed", 0)

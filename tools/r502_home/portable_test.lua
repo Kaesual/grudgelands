@@ -7,9 +7,12 @@
 -- Loads the REAL grug_housing registry.lua, grug_core hud_layout.lua and
 -- grug_map location_view.lua, location.lua, atlas.lua, base.lua,
 -- minimap_view.lua and minimap.lua on a fake engine. Checks:
---   N  names (H1, H2) through the real location.lua: "Your Home" for the
---      owner, "<owner>'s Home" for everybody else (a permission holder too,
---      a name ending in s too); every claim state (draft, active,
+--   N  names (H1, H2) through the real location.lua: the home's name for
+--      everybody, the owner too (Round 86 ruling 15: "Your Home" is gone),
+--      by default "<owner>'s Home" (a permission holder too, a name ending
+--      in s too), with the house icon before it in the banner and the home
+--      flag in text_of; a rename shows at the next sample; every claim
+--      state (draft, active,
 --      expired); y -100 in and -101 out, no top; the edge node in and the
 --      next one out, to the node; elsewhere the zone's name; the territory
 --      line and colour unchanged; the zone handed to the discovery is the
@@ -26,7 +29,8 @@
 --      others yellow, every claim state, the same claims give the same
 --      string, a claim elsewhere changes nothing and sends nothing, a
 --      claim's removal takes its frame, the frames sit before the mask,
---      and claim mode stays CMAP's (red fills only).
+--      and claim mode draws its own chunk preview (Round 86,
+--      tools/r86_preview), the claims framed there the same way.
 -- Prints "R502 HOME PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -164,18 +168,28 @@ do
 	local s = L.new_state()
 	eq(L.sample(s, "Green Vale", 0, "friendly"), "Green Vale", "B the first sample shows")
 	eq(L.sample(s, "Green Vale", 1, "friendly"), nil, "B unchanged: nothing")
-	eq(L.sample(s, "Your Home", 2, "friendly"), "Your Home", "B a change replaces the display at once")
+	eq(L.sample(s, "ann's Home", 2, "friendly", true), "ann's Home", "B a change replaces the display at once")
 	eq(s.busy_until, 2 + D, "B ...and restarts its time")
-	eq(L.expire(s, "Your Home", D, "friendly"), nil, "B the first display's end: nothing")
+	eq(L.expire(s, "ann's Home", D, "friendly", true), nil, "B the first display's end: nothing")
 	eq(L.sample(s, "Green Vale", 3, "friendly"), "Green Vale", "B back out: at once again")
 	eq(L.sample(s, "Green Vale", 3 + D - 1, "friendly"), nil, "B the last display runs on")
 	eq(L.expire(s, "Green Vale", 3 + D - 0.5, "friendly"), nil, "B ...until its full time")
 	eq(L.expire(s, "Green Vale", 3 + D, "friendly"), false, "B ...then hides")
 	eq(L.sample(s, "Green Vale", 3 + D, "contested"), "Green Vale", "B a status change shows too")
 	eq(L.sample(s, "Green Vale", 4 + D, "friendly"), "Green Vale", "B ...and its undoing at once")
-	eq(L.home_text("ann", "ann"), "Your Home", "B the owner's text")
-	eq(L.home_text("ann", "bob"), "ann's Home", "B another player's text")
-	eq(L.home_text("Jens", "bob"), "Jens's Home", "B a name ending in s: always 's")
+	-- Round 86 ruling 15: "Your Home" (L.home_text) is gone, everybody reads
+	-- the home's name (grug_housing.home_name; the N checks below read it
+	-- through location.lua). A home that bears a place's name still shows.
+	eq(registry({storage = new_storage(), now = function() return 0 end}).home_name(
+		{owner = "Jens"}), "Jens's Home", "B a name ending in s: always 's")
+	check(L.home_text == nil and L.OWN_HOME == nil, "B no owner's text any more")
+	local t = L.new_state()
+	eq(L.sample(t, "Green Vale", 0, "friendly"), "Green Vale", "B a zone")
+	eq(L.sample(t, "Green Vale", 1, "friendly", true), "Green Vale",
+		"B a home of the zone's name: shown")
+	eq(L.sample(t, "Green Vale", 2, "friendly", true), nil, "B ...once")
+	eq(L.expire(t, "Green Vale", 1 + D, "friendly", false), "Green Vale",
+		"B ...and the zone again after it")
 end
 
 -- ---------------------------------------------------------------------------
@@ -201,7 +215,9 @@ do
 		if not own then return nil end
 		return pos.y <= -501 and "contested" or "friendly"
 	end})
-	rawset(_G, "grug_housing", {claim_at = model.claim_at})
+	-- Round 86: the owner question and the home's name (grug_housing api.lua)
+	rawset(_G, "grug_housing", {claim_at = model.claim_at, is_owner = model.is_owner,
+		home_name = model.home_name, HOME_ICON = "grug_map_home.png"})
 	rawset(_G, "grug_map", {})
 	dofile(repo .. "/mods/PLAYER/grug_map/location.lua")
 	local M = grug_map.location
@@ -233,13 +249,30 @@ do
 			if def.size then banner = ann.huds[id] else line = ann.huds[id] end
 		end
 	end
+	local elements = 0
+	for _ in pairs(ann.huds) do elements = elements + 1 end
 	local function at(x, y, z)
 		ann.pos = {x = x, y = y, z = z}
 		step(1.0)
 		return (M.text_of(ann))
 	end
-	eq(at(0.3, 10, 0.2), "Your Home", "N the owner in her draft: Your Home")
-	eq(banner.text, "Your Home", "N ...as banner")
+	local function icon()
+		for _, def in pairs(ann.huds) do
+			if def.type == "image" and def.position and def.position.y == 0 then return def end
+		end
+	end
+	eq(at(0.3, 10, 0.2), "ann's Home", "N the owner in her draft: her home's name")
+	eq(banner.text, "ann's Home", "N ...as banner")
+	eq(select(3, M.text_of(ann)), true, "N ...flagged as a home")
+	local mark = icon()
+	eq(mark and mark.text, "grug_map_home.png", "N ...with the house icon in the banner")
+	check(mark and banner.offset.x > 0 and mark.offset.x < 0 and
+		mark.offset.y == banner.offset.y and mark.scale.x > 1,
+		"N ...left of the name, the name moved right, the icon about an em high")
+	local layout = grug_core.hud_layout
+	local g = layout.icon_before("ann's Home", 40, true)
+	check(mark and math.abs(banner.offset.x - g.text_x) < 1e-9 and
+		math.abs(mark.offset.x - g.icon_x) < 1e-9, "N ...placed by icon_before at 40 px bold")
 	eq(line.text, "Friendly Territory", "N the territory line stays")
 	eq(select(2, M.text_of(ann)), 0x55ff55, "N ...and its colour")
 	eq(started[1], "vale", "N the discovery starts with the column's zone")
@@ -248,29 +281,50 @@ do
 	-- the edge, to the node: the claim covers the columns of its chunk, -32
 	-- .. 47 (Round 85; the 101 x 101 square was -50 .. 50), each node its
 	-- column +- 0.5 (grug_housing claim_at rounds)
-	eq(at(47, 10, 0), "Your Home", "N the east edge node in")
-	eq(at(47.49, 10, 0), "Your Home", "N ...to its last part")
+	eq(at(47, 10, 0), "ann's Home", "N the east edge node in")
+	eq(at(47.49, 10, 0), "ann's Home", "N ...to its last part")
 	eq(at(47.5, 10, 0), "Green Vale", "N the next node out (no hysteresis)")
 	eq(at(48, 10, 0), "Green Vale", "N ...beyond")
-	eq(at(-32.5, 10, 0), "Your Home", "N the west edge node in")
+	eq(at(-32.5, 10, 0), "ann's Home", "N the west edge node in")
 	eq(at(-32.51, 10, 0), "Green Vale", "N the next node out")
-	eq(at(0, 10, 47.4), "Your Home", "N the north edge node in")
+	eq(at(0, 10, 47.4), "ann's Home", "N the north edge node in")
 	eq(at(0, 10, -33), "Green Vale", "N past the south edge out")
 	-- down and up
-	eq(at(0, -100, 0), "Your Home", "N y -100 in")
-	eq(at(0, -100.4, 0), "Your Home", "N ...its whole node")
+	eq(at(0, -100, 0), "ann's Home", "N y -100 in")
+	eq(at(0, -100.4, 0), "ann's Home", "N ...its whole node")
 	eq(at(0, -101, 0), "Green Vale", "N y -101 out")
 	eq(at(0, -100.6, 0), "Green Vale", "N ...the node below -100")
-	eq(at(0, 3000, 0), "Your Home", "N no top")
+	eq(at(0, 3000, 0), "ann's Home", "N no top")
 	-- other claims: the permission holder, a name ending in s
 	eq(at(300, 10, 0), "bob's Home", "N bob's active claim, ann holds a permission: bob's Home")
 	eq(at(600, 10, 10), "Jens's Home", "N an expired claim, a name ending in s: Jens's Home")
 	eq(at(700, 10, 0), "Green Vale", "N between claims: the zone")
+	eq(select(3, M.text_of(ann)), false, "N ...not a home")
+	eq(icon().text, "", "N ...the icon gone with the zone's banner")
+	eq(banner.offset.x, 0, "N ...and the banner centred again")
 	local bob = join(new_player("bob", {x = 310, y = 10, z = 5}))
 	step(1.0)
-	eq((M.text_of(bob)), "Your Home", "N bob in his own claim: Your Home")
+	eq((M.text_of(bob)), "bob's Home", "N bob in his own claim: his home's name")
+	check(model.set_name(bobs, "Rook's Rest"), "N bob renames his home")
+	step(1.0)
+	eq((M.text_of(bob)), "Rook's Rest", "N ...shown at the next sample")
+	model.set_name(bobs, "bob's Home")
 	for _, fn in ipairs(leaves) do fn(bob) end
 	players.bob = nil
+	-- Round 86: the longest name at GUI 1.5 is drawn smaller, to fit 0.6 of
+	-- the window with its icon; a zone's banner is full size again
+	local long = ("W"):rep(24)
+	check(model.set_name(own, long), "N ann's longest name")
+	windows.ann = {size = {x = 1920, y = 1080}, real_gui_scaling = 1.5, real_hud_scaling = 1.5}
+	eq(at(0.3, 10, 0.2), long, "N ...in her claim")
+	local size = banner.size.x
+	local g = layout.icon_before(long, layout.font_px(size, windows.ann), true)
+	check(size < layout.ZONE_BANNER_SIZE and g.width <= 0.6 * 1920 and g.width > 0.5 * 1920,
+		"N ...the banner smaller, the line 0.5-0.6 of the window (" .. size .. ")")
+	eq(at(700, 10, 0), "Green Vale", "N out again")
+	eq(banner.size.x, layout.ZONE_BANNER_SIZE, "N ...the zone's banner full size")
+	model.set_name(own, "ann's Home")
+	windows.ann = nil
 	-- the claim's zone never reaches the discovery: one zone all along
 	local others = 0
 	for _, zone in ipairs(entered) do if zone ~= "vale" then others = others + 1 end end
@@ -282,15 +336,20 @@ do
 	step(L.DISPLAY + 1)
 	eq(banner.text, "", "B idle before the zigzag")
 	at(45, 10, 0)
-	eq(banner.text, "Your Home", "B in: the banner")
+	eq(banner.text, "ann's Home", "B in: the banner")
 	at(55, 10, 0)
 	eq(banner.text, "Green Vale", "B out within the display: replaced at the next sample")
 	at(45, 10, 0)
-	eq(banner.text, "Your Home", "B in again: replaced again")
+	eq(banner.text, "ann's Home", "B in again: replaced again")
 	step(L.DISPLAY - 1.1)
-	eq(banner.text, "Your Home", "B the last banner still shows after DISPLAY - 0.1 s")
+	eq(banner.text, "ann's Home", "B the last banner still shows after DISPLAY - 0.1 s")
+	eq(icon().text, "grug_map_home.png", "B ...with its icon")
 	step(1.3)
 	eq(banner.text, "", "B ...and hides after its full time")
+	eq(icon().text, "", "B ...the icon too")
+	local now_elements = 0
+	for _ in pairs(ann.huds) do now_elements = now_elements + 1 end
+	eq(now_elements, elements + 1, "B one icon element, added at the first home")
 	-- cost: the claim lookup adds no zone query
 	local before, samples = queries, M.stats.samples
 	step(5)
@@ -463,8 +522,16 @@ rawset(_G, "grug_parties", {view = function() return nil end, register_on_change
 rawset(_G, "grug_home", {get = function() return nil end, known_waypoints = function() return {} end,
 	claim_waypoint = function() return nil end})
 rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	CHUNK_ORIGIN = model.CHUNK_ORIGIN,
 	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
-	claim_set_version = model.claim_set_version})
+	claim_set_version = model.claim_set_version,
+	-- Round 86: the owner question and the stone item set (grug_housing api.lua)
+	is_owner = model.is_owner,
+	is_stone_item = function(name) return name == "grug_housing:claim_stone" end,
+	HOME_ICON = "grug_map_home.png",
+	-- Round 86: the chunk preview (here every chunk refused, as without a mask)
+	chunk_refusal = function() return "no_mask" end,
+	claim_hint = function() return "No Claim Stone can be placed" end})
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Somewhere" end}})
 grug_map.quest_slots = function() return {} end
@@ -472,9 +539,7 @@ grug_map.base = B
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 local minimap = grug_map.minimap
 minimap.install({minimap = {quality = "normal", width = 1080, height = 960,
-	tiles = B.tiles(1080, 960, B.MINI_PREFIX),
-	claim = {accord = B.tiles(1080, 960, B.CLAIM_PREFIX .. "_accord"),
-		throng = B.tiles(1080, 960, B.CLAIM_PREFIX .. "_throng")}}})
+	tiles = B.tiles(1080, 960, B.MINI_PREFIX)}})
 check(minimap.available(), "F the minimap is available")
 do
 	local OWN, OTHER = "#40d04acc", "#f0d040cc"
@@ -549,13 +614,14 @@ do
 		"F the other player: their own green, mine yellow")
 	for _, fn in ipairs(leaves) do fn(them) end
 	players.other = nil
-	-- claim mode stays CMAP's: all claims red, no frame
+	-- claim mode (Round 86): the chunk preview, the claims framed as here
+	-- (the own one in green, the other's in yellow; the player's own chunk
+	-- adds its green frame), on red chunks
 	me.wield = "grug_housing:claim_stone"
 	step(0.1)
 	local held = minimap.texture_of(me)
-	check(held:find("grug_map_claim_accord_", 1, true) and count(held, "%[fill") == 2 and
-		count(held, RED) == 2 and not held:find(OWN, 1, true) and not held:find(OTHER, 1, true),
-		"F claim mode: the overlay and one red fill per claim, no frame")
+	check(held ~= with_own and count(held, RED) > 0 and count(held, OTHER) == 4 and
+		count(held, OWN) >= 4, "F claim mode: the chunk preview with the claims framed")
 	me.wield = ""
 	step(0.1)
 	eq(minimap.texture_of(me), with_own, "F the stone put away: the frames again")
@@ -568,6 +634,42 @@ do
 	model.remove(mine, "picked_up")
 	step(0.1)
 	eq(minimap.texture_of(me), plain, "F no claim left: the plain map again")
+	-- Round 86: a home's name under the minimap has the house icon before
+	-- it, both centred under the bezel together (hud_layout.icon_before at
+	-- the default 16 px font); a zone's name has none.
+	local function line_and_icon()
+		local line, icon
+		for _, def in pairs(me.huds) do
+			if def.type == "text" and def.z_index == 45 and def.text ~= "" then line = def end
+			if def.type == "image" and def.text == "grug_map_home.png" then icon = def end
+		end
+		return line, icon
+	end
+	local line0 = line_and_icon()
+	local x0 = line0.position.x
+	grug_map.location.text_of = function() return "ann's Home", 0x55ff55, true end
+	step(0.6)
+	local line, icon = line_and_icon()
+	local g = grug_core.hud_layout.icon_before("ann's Home", 16, false)
+	local W = 1920
+	check(line.text == "ann's Home" and icon ~= nil, "F a home's name: the house icon")
+	check(icon and math.abs(line.position.x * W - (x0 * W + g.text_x)) <= 0.5 and
+		math.abs((icon.position.x * W + g.size / 2) - (x0 * W + g.icon_x)) <= 1 and
+		icon.position.y == line.position.y, "F ...left of the name, both centred together")
+	-- the longest name ends at the bezel's right edge, not off the screen
+	local long = ("W"):rep(24)
+	grug_map.location.text_of = function() return long, 0x55ff55, true end
+	step(0.6)
+	line, icon = line_and_icon()
+	local w = grug_core.hud_layout.text_px(long, 16, false)
+	local right = line.position.x * W + w / 2
+	check(right <= 1920 - 8 and right > 1920 - 40 and icon.position.x * W > 1920 - w - 60,
+		"F the longest name ends at the bezel's right edge (" .. right .. ")")
+	grug_map.location.text_of = function() return "Green Vale" end
+	step(0.6)
+	line, icon = line_and_icon()
+	check(icon == nil and math.abs(line.position.x - x0) < 1e-9,
+		"F a zone's name: no icon, centred again")
 end
 
 if #failures > 0 then

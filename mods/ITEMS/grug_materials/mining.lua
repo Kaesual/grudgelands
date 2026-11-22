@@ -496,7 +496,9 @@ local function hint_ready(name, now)
 	return not last or now - last.at >= OTHER_HINT_INTERVAL_US
 end
 
-function grug_materials.emit_hint(name, message)
+-- `icon` (optional, Round 86): a texture the flash draws before the line
+-- (a home's house icon in the protection hint).
+function grug_materials.emit_hint(name, message, icon)
 	if not name or name == "" or not message then return false end
 	local now = core.get_us_time()
 	local last = last_hint[name]
@@ -509,7 +511,7 @@ function grug_materials.emit_hint(name, message)
 	local player = core.get_player_by_name(name)
 	if not (player and owner and type(owner.flash) == "function" and
 			owner.flash(player, message, owner.FLASH_COLOR and
-				owner.FLASH_COLOR.notice)) then
+				owner.FLASH_COLOR.notice, icon)) then
 		core.chat_send_player(name, message)
 	end
 	return true
@@ -517,7 +519,8 @@ end
 
 -- The protection line names the reason when grug_core can tell it
 -- (town, landmark, road, bridge, village, camp, point of interest, home
--- territory); otherwise a plain "Protected".
+-- territory); otherwise a plain "Protected". A second value is the icon
+-- before the line (grug_core.protection_hint), or nil.
 function grug_materials.protection_hint(pos, name)
 	local owner = rawget(_G, "grug_core")
 	if owner and type(owner.protection_hint) == "function" then
@@ -536,9 +539,10 @@ grug_materials.BROKEN_PICK_HINT = "Your pick is broken – repair it"
 
 function grug_materials.emit_mining_failure(pos, digger, decision)
 	local name = digger_name(digger)
-	local message
+	local message, icon
 	if decision.reason == "protected" then
-		message = grug_materials.protection_hint(pos, name) or "Protected"
+		message, icon = grug_materials.protection_hint(pos, name)
+		message = message or "Protected"
 	elseif decision.reason == "too_hard" then
 		message = decision.broken_pick and grug_materials.BROKEN_PICK_HINT or
 			grug_materials.too_hard_hint(decision.required_pick_level)
@@ -546,7 +550,7 @@ function grug_materials.emit_mining_failure(pos, digger, decision)
 		message = grug_materials.tool_level_hint(decision.tool_name,
 			decision.required_level)
 	end
-	return grug_materials.emit_hint(name, message)
+	return grug_materials.emit_hint(name, message, icon)
 end
 
 local function cast_this_press(player)
@@ -561,7 +565,8 @@ local function wields_skill(stack)
 	return def ~= nil and ((def.groups or {}).grug_ability or 0) > 0
 end
 
--- The hint a punch earns, or nil. The protection line does not depend on the
+-- The hint a punch earns, or nil (with the protection line also its icon,
+-- or nil). The protection line does not depend on the
 -- wielded item: bare hand, skill hand, any tool or any item. A selected skill
 -- makes LMB on a node the hand cannot dig a cast (classes.md 2b), so a skill
 -- produces no tier or level line. A broken pick on rock earns the repair line
@@ -574,12 +579,12 @@ function grug_materials.punch_hint(pos, node, puncher)
 	local name = puncher:get_player_name()
 	-- Undiggable town dressing (diggable = false) still answers with the
 	-- protection line on protected ground, and with nothing else.
-	local protected = grug_materials.protection_hint(pos, name)
+	local protected, icon = grug_materials.protection_hint(pos, name)
 	if protected then
 		-- A press that already cast a skill (a self/support skill at an empty
 		-- context) was a cast, not a dig attempt: no protection line then.
 		if wields_skill(stack) and cast_this_press(puncher) then return nil end
-		return protected
+		return protected, icon
 	end
 	if def.diggable == false or wields_skill(stack) then return nil end
 	if grug_materials.tool_in_use(stack, def) then
@@ -607,8 +612,8 @@ function grug_materials.punch_hint_callback(pos, node, puncher)
 	if not is_player(puncher) then return end
 	local name = puncher:get_player_name()
 	if not hint_ready(name, core.get_us_time()) then return end
-	local message = grug_materials.punch_hint(pos, node, puncher)
-	if message then grug_materials.emit_hint(name, message) end
+	local message, icon = grug_materials.punch_hint(pos, node, puncher)
+	if message then grug_materials.emit_hint(name, message, icon) end
 end
 core.register_on_punchnode(grug_materials.punch_hint_callback)
 
@@ -624,8 +629,8 @@ core.register_on_protection_violation(function(pos, name)
 			not core.get_player_by_name(name) then
 		return
 	end
-	grug_materials.emit_hint(name,
-		grug_materials.protection_hint(pos, name) or "Protected")
+	local message, icon = grug_materials.protection_hint(pos, name)
+	grug_materials.emit_hint(name, message or "Protected", icon)
 end)
 
 core.register_on_leaveplayer(function(player)

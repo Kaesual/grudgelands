@@ -13,6 +13,169 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.86.0 — the account Claim Stone, home names and the claim preview (2026-11-22)
+
+**Map reset** needed: road cuts into hills take a new shape, so an existing
+world's map is generated anew from its seed. Characters keep their level,
+gear, inventory, money, quests, professions, mounts and waypoints, as in
+every map reset; their position and home claim go with the old map, and the
+containers in a claim come back through the Claim Stone's Belongings tab.
+Every claim ends with this reset, personal and account claims alike. A
+world on 0.83.0 or 0.84.x takes 0.85.0's reset and this one as one. No
+migration step of its own.
+
+- **The Claim Stone's preview shows the map's squares** (the known issue of
+  0.85.0 is fixed). While you hold a Claim Stone of either kind, the
+  minimap shows the squares of the map's grid:
+  - every square that cannot be claimed in red, a faint line on every
+    square's edge, the claims framed as without the stone, and the square
+    you stand in framed in green, green inside too when it is free;
+  - a line left of the minimap, on a dark box, about the square you stand
+    in: "This square: free to claim", or why not, for example "This square:
+    a road runs through it" or "This square: too near a quest place";
+  - the quota per square: a square that would put more than half of a
+    quest creature's ground under claims turns red and its line names the
+    creatures' area, while a square with a smaller share of the same ground
+    can stay free;
+  - every placement and removal, by anyone, shows at once.
+
+  A square shown free is never refused for the square's own sake; a stone
+  can still be refused on its outermost row of nodes, below y −100, when
+  the 3 × 3 × 3 space above it is not empty, or while your own stone stands
+  elsewhere, and the refusal says why. If the world's claim map failed to
+  build, every square is red and the line says that no Claim Stone can be
+  placed. The old red per column and the square centred on you are gone.
+  The stone's text, the Housing Steward and Help (a new **Housing** heading
+  on the Basics page) describe the square and its rules.
+- **The Account Claim Stone: one home for an account's characters of one
+  faction.**
+  - **Choosing:** the Housing Steward shows two columns, the personal
+    **Claim Stone** (a home of your own) and the **Account Claim Stone**;
+    either stone needs level 20. The account stone needs the character linked to an account on
+    grudgelands.com/play (the Account tab); without one, the Steward says so
+    in its place. A character with a placed personal stone picks it up
+    first; a personal stone you carry vanishes when you choose the account,
+    and the Steward asks you to confirm.
+  - **Before the home stands,** every character that chose it gets an
+    Account Claim Stone and may place it, but only one can be activated: at
+    that moment the other placed stones of that account and faction crumble
+    and their characters are told, and an account stone still carried
+    crumbles when its character tries to place it ("Your account's home
+    already stands: this Account Claim Stone crumbles."). **Once it
+    stands,** a character joins it at the Steward ("Join your account's
+    home") and gets no stone.
+  - **Every member owns it in full:** opens its stone, fuels it, gives
+    others access, picks it up, renames it and sets it as its own travel
+    home ("Set as home", per character). The stone's form is headed "Your
+    account's Claim Stone" and lists its owners. A character of the same
+    account with a personal stone has no rights there unless the access
+    list names it. A visitor's right-click reads "Account Claim Stone of"
+    and the home's name.
+  - **Leaving** only at the Steward, never while your own placed stone is
+    still unactivated, and never as the last member of a standing home: the
+    last one picks the stone up instead. A character that leaves may take a
+    personal stone; its account stones vanish and its travel home there
+    falls back to the innkeeper.
+  - **Losing the link:** a member that is unlinked on the website, whose
+    account leaves the website's list, whose faction an admin changes or
+    that is deleted leaves the same way. When the website's list takes the
+    last member, the home is not removed: it stands without an owner,
+    protects while its fuel lasts and cannot be refuelled, then it is an
+    empty stone that anyone with a pick can dig, like any claim whose owner
+    stopped fuelling it. A character of that account and faction can join it
+    at the Steward, owns it again and may refuel it; such a character is
+    told at its login. The deletion of the last member, an admin's faction
+    change of it, a pick-up and an admin's `/claim_remove` end the home at
+    once.
+  - **Belongings:** an account home's Belongings tab belongs to the account
+    and faction: every member sees it and takes from it, and what one takes
+    is gone for the others at once. A character's own waiting belongings
+    move there for good when it joins. They stay the account's when the
+    home ends and show again in the next account home of that account and
+    faction.
+  - The Account Claim Stone is soulbound like the personal one: dropping
+    it destroys it, and while the home does not stand the Steward gives a
+    new one.
+- **Home names:** every home has a name, at first "<character>'s Home"
+  after the character that placed its stone. An owner (in an account home
+  every member) renames it on the stone's form, below the fuel: 1 to 24
+  letters A–Z, digits, spaces, ' and -, not starting or ending with a
+  space. The name shows with a house icon in the banner when you enter, in
+  the line under the minimap, on the Map tab's "Current:" line and in the
+  protection hint ("<home name> – protected"). Everybody reads the same
+  name, the owner too: "Your Home" is gone. A visitor's right-click on a
+  personal stone still names its owner.
+- **The Claim Stone's new look:** a small house inside its block, its door
+  turned toward you when you place it: one terracotta gable with a chimney
+  for the personal stone, two slate gables for the account stone, in the
+  world, in the hand and in the inventory. Only the fuelled stone gives
+  light, brighter than before (level 8); an empty stone, its windows
+  shuttered, and a placed stone not yet activated, pale and
+  half-transparent, give none. The map's marker stays the claim icon.
+- **The Account page, "The Charter":** a framed panel with the crest and a
+  column with the steps.
+  - **Before linking** the panel shows "Every linked account gets" and up
+    to four rewards the website names for every linked account, each with
+    its icon and name; with none named, only the crest. The column says how
+    to link: open the website (**Open website**), sign in and press "Create
+    Character" for a code valid for 10 minutes (or link there with the
+    character's name and password), and enter the 10-character code with
+    **Check code**; then **Confirm link** or **Cancel**. The rewards shown
+    there are only shown: a character gets a reward only from its own
+    account.
+  - **Linked:** the panel names the account; the column lists "Your
+    rewards" with where to use each, and how to reach a website
+    administrator to unlink or for a missing reward.
+  - A change of the website's setting shows on an open page at once. Help's
+    website-account paragraph no longer says that every account gets the
+    Cheer emote.
+- **Road cuts fade into the hillside:** where a road is cut into a hill
+  that rises faster than its cut slope, the cut used to end 24 nodes from
+  the road's edge in a vertical wall, on some hills dozens of nodes high.
+  Now the cut's face rises to meet the natural ground at that line, 24
+  nodes out, so no wall is left there. The roads' routes do not change.
+  **Not a gentle bank:** on a steep hillside the cut's outer part is a rock
+  face at least as steep as the hill, beside a deep cut up to about 12
+  nodes up per node, and the soil slope of the first six nodes beside such
+  a cut, about one node up per node before, can rise 3 to 6 nodes per node.
+  A later version reworks how roads are planned.
+- **What the reset does to homes:** every claim ends, a placed but
+  unactivated stone included, and its stone does not come back; carried
+  stones stay. The containers in a personal claim wait in its owner's
+  Belongings tab (in a world from before 0.85.0, those of the old
+  101 × 101 square), those in an account home in the account's, and those
+  of a placed Account Claim Stone not yet activated in its character's,
+  which moves them to the account at its next login. A member of an
+  account home stays a member and gets an Account Claim Stone at the
+  Steward; everybody else gets a personal one there. The travel home falls
+  back to your innkeeper.
+- **Server admins:**
+  - Stop the server, back the world up, run
+    `python3 tools/migrate.py --world <world directory> --map-reset` from
+    the new version's checkout (it packs every claim's containers, for an
+    account claim under its account and faction), empty the map, raise
+    `grug_reset_world` and start it
+    ([updating a hosted world](README.md#your-own-world-or-server),
+    [upgrade contract](docs/technical/upgrade-contract.md#35-the-pre-reset-pass)).
+  - The first start on the new map builds the claim map (about 25 s, as
+    since 0.85.0) and renders the world map's base once more (about 12 s:
+    its code changed); the old Claim Stone overlay tiles
+    `grug_map_claim_*` are deleted from the world folder.
+  - `/claim_name_reset <player> | here` (the `server` privilege) gives a
+    home its default name again; `/claim_remove <member>` removes an
+    account home.
+  - The realm now reports the capability `rewards.defaults` to its
+    website, which may then send the list of rewards every linked account
+    gets (`default_rewards`, [contract](docs/technical/web-accounts.md)).
+    Nothing to set up in the game.
+- Internal: the claim record's `kind` and `name` are in use (an account
+  claim's owner is `account:<account id>:<faction>`); a member's record
+  is `v2|member|<owner text>`; an account's belongings are stored under
+  `recovered:account:…` and `packed:account:…`; the Claim Stones are node
+  boxes facing the placer (`4dir`); the new items and nodes are
+  `grug_housing:account_stone`, `_empty` and `_draft`
+  ([housing](docs/design/housing.md), [upgrade contract](docs/technical/upgrade-contract.md)).
+
 ## 0.85.0 — the arena Breach Road and claims by map chunk (2026-11-22)
 
 **Map reset** needed: the arena Breach Road joins world generation with the

@@ -231,6 +231,9 @@ grug_housing = {
 	is_fuel = function() return true end,
 	-- Round 50: no belongings from an old map wait (tools/r50_pgame).
 	recovered = {count = function() return 0 end},
+	-- Round 86: the rename row's name and icon (tools/r86_names).
+	home_name = function(claim) return claim.owner .. "'s Home" end,
+	HOME_ICON = "grug_map_home.png",
 }
 local stone_ui = {
 	esc = function(text) return core.formspec_escape(text) end,
@@ -551,7 +554,8 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 	local label = "stone " .. bags_key
 	check_form(label, player, fs, {location = "detached:grug_housing_fuel_" .. name,
 		lists = {"fuel"}, target = "fuel", inbox = false})
-	check(fs:find("button_exit[7.25,5.85;3.1,0.8;close;Close]", 1, true) ~= nil,
+	-- Round 86: 1.1 lower, below the rename row.
+	check(fs:find("button_exit[7.25,6.95;3.1,0.8;close;Close]", 1, true) ~= nil,
 		label .. ": the stone's own content is kept")
 	local max = scroll_max(player, 2)
 	if max > 0 then

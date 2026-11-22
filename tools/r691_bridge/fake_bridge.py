@@ -27,6 +27,12 @@ on stdin:
                                 account.set_password with an entry from
                                 tools/web_accounts/luanti_password.py make_entry;
                                 the account defaults to the name's binding
+    defaults [<reward> ...]     the rewards every linked account gets (Round 86,
+                                web-accounts.md §5.2 default_rewards; none: an
+                                empty setting); a new list version
+    defaults-off                act as a website that does not know the field
+                                (the list carries no default_rewards); a new
+                                list version
     send                        send the list (after --hold-list)
     state                       print accounts, bindings and codes
     help
@@ -36,7 +42,9 @@ arrived, so the waiting states show), --code-minutes M (a code's validity,
 10; 1 reaches expired_code quickly), --limit N (characters per account, 10;
 1 reaches account_full), --already-linked NAME (the website holds a binding
 for NAME that the game does not: already_linked; repeatable), --hold-list (no
-list until `send`: the game shows no Account tab before its first list).
+list until `send`: the game shows no Account tab before its first list),
+--defaults ID (a default reward, repeatable; default emote:cheer, the
+website's setting), --no-defaults (no default_rewards field at all).
 
 Example session (the game on the same machine, grug_bridge.url =
 http://127.0.0.1:8080, grug_bridge.token = the token below):
@@ -195,7 +203,7 @@ class Accounts:
     RESERVATION = 300  # seconds, §4
 
     def __init__(self, code_minutes=10, limit=10, delay=0, already_linked=(), hold_list=False,
-                 out=print):
+                 out=print, defaults=("emote:cheer",)):
         self.accounts = {"a_test1": {"name": "Test One", "rewards": []},
                          "a_test2": {"name": "Test Two", "rewards": []}}
         self.bindings = {}         # lower name -> {name, character_id, account_id}
@@ -220,6 +228,9 @@ class Accounts:
         self.next_id = 0
         self.sent_version = None
         self.out = out
+        # default_rewards (web-accounts.md §5.2, Round 86): the setting, or
+        # None for a website that does not know the field.
+        self.defaults = None if defaults is None else list(defaults)
 
     # -- the protocol ------------------------------------------------------
 
@@ -247,9 +258,10 @@ class Accounts:
         self.waiting = [entry for entry in self.waiting if entry[0] > now]
         for _, boot, event in due:
             self.handle_event(boot, event, now)
-        if ("accounts" in (request.get("capabilities") or []) and self.sending
+        capabilities = request.get("capabilities") or []
+        if ("accounts" in capabilities and self.sending
                 and request.get("accounts_version") != self.version):
-            reply["accounts"] = self.list()
+            reply["accounts"] = self.list("rewards.defaults" in capabilities)
             if self.sent_version != self.version:
                 self.sent_version = self.version
                 self.out(f"accounts: list version {self.version} sent")
@@ -257,14 +269,18 @@ class Accounts:
             reply["commands"] = (reply.get("commands") or []) + self.outbox
             self.outbox = []
 
-    def list(self):
+    def list(self, defaults=False):
         characters = sorted(self.bindings.values(), key=lambda b: b["name"].lower())
         owners = {b["account_id"] for b in characters}
-        return {"version": self.version,
+        sent = {"version": self.version,
                 "characters": [dict(b) for b in characters],
                 "accounts": [{"id": account_id, "name": self.accounts[account_id]["name"],
                               "rewards": list(self.accounts[account_id]["rewards"])}
                              for account_id in sorted(owners)]}
+        # Only to a game that reports rewards.defaults, sorted by id (§5.2).
+        if defaults and self.defaults is not None:
+            sent["default_rewards"] = sorted(self.defaults)
+        return sent
 
     def command(self, kind, args, label):
         self.next_id += 1
@@ -383,7 +399,7 @@ class Accounts:
             return ""
         verb, rest = words[0], words[1:]
         try:
-            return getattr(self, "do_" + verb)(*rest)
+            return getattr(self, "do_" + verb.replace("-", "_"))(*rest)
         except (AttributeError, TypeError):
             return "unknown command; try help"
         except KeyError as error:
@@ -452,6 +468,16 @@ class Accounts:
                                                "entry": entry}, f"setpw {name}")
         return f"setpw {name}: sent"
 
+    def do_defaults(self, *rewards):
+        self.defaults = list(rewards)
+        self.changed()
+        return ""
+
+    def do_defaults_off(self):
+        self.defaults = None
+        self.changed()
+        return ""
+
     def do_send(self):
         self.sending = True
         return "the list goes with the next request"
@@ -462,6 +488,7 @@ class Accounts:
             lines.append(f"  {account_id} {account['name']!r} rewards {account['rewards']}")
         for binding in sorted(self.bindings.values(), key=lambda b: b["name"].lower()):
             lines.append(f"  {binding['name']} -> {binding['account_id']} ({binding['character_id']})")
+        lines.append(f"  default rewards: {self.defaults}")
         lines.append(f"  catalogue: {self.catalog}")
         return "\n".join(lines)
 
@@ -477,13 +504,16 @@ def main():
     parser.add_argument("--limit", type=int, default=10)
     parser.add_argument("--already-linked", action="append", default=[])
     parser.add_argument("--hold-list", action="store_true")
+    parser.add_argument("--defaults", action="append", default=None)
+    parser.add_argument("--no-defaults", action="store_true")
     options = parser.parse_args()
     server = Bridge(options.port, options.token)
     server.echo = options.echo or not options.accounts
     if options.accounts:
+        defaults = None if options.no_defaults else (options.defaults or ["emote:cheer"])
         server.accounts = Accounts(options.code_minutes, options.limit, options.delay,
                                    options.already_linked, options.hold_list,
-                                   out=lambda text: print(text, flush=True))
+                                   out=lambda text: print(text, flush=True), defaults=defaults)
     server.start()
     if not options.accounts:
         server.thread.join()

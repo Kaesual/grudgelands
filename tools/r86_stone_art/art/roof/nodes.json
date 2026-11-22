@@ -1,0 +1,136 @@
+{
+  "box_units": "signed sixteenths from the node centre (divide by 16)",
+  "face_order": [
+    "top",
+    "bottom",
+    "right",
+    "left",
+    "back",
+    "front"
+  ],
+  "drawtype": "nodebox",
+  "collision_and_selection": "use the state's fixed boxes",
+  "variants": {
+    "personal": {
+      "active": {
+        "boxes": [
+          [-8, -8, -7, 8, -6, 7],
+          [-7, -6, -5, 7, 0, 5],
+          [-8, 0, -6, 8, 1, 6],
+          [-8, 1, -6, 8, 3, 6],
+          [-6, 3, -6, 6, 5, 6],
+          [-4, 5, -6, 4, 7, 6],
+          [-2, 7, -6, 2, 8, 6],
+          [4, 5, 1, 6, 7, 4],
+          [3, 7, 0, 7, 8, 5]
+        ],
+        "tiles": [
+          "roof_personal_active_top.png",
+          "roof_personal_active_bottom.png",
+          "roof_personal_active_right.png",
+          "roof_personal_active_left.png",
+          "roof_personal_active_back.png",
+          "roof_personal_active_front.png"
+        ],
+        "light_source": 4,
+        "use_texture_alpha": "opaque",
+        "inventory_image": "roof_personal_item.png",
+        "wield_image": "roof_personal_item.png"
+      },
+      "empty": {
+        "boxes": [
+          [-8, -8, -7, 8, -6, 7],
+          [-7, -6, -5, 7, 0, 5],
+          [-8, 0, -6, 8, 1, 6],
+          [-8, 1, -6, 8, 3, 6],
+          [-6, 3, -6, 6, 5, 6],
+          [-4, 5, -6, 4, 7, 6],
+          [-2, 7, -6, 2, 8, 6],
+          [4, 5, 1, 6, 7, 4],
+          [3, 7, 0, 7, 8, 5]
+        ],
+        "tiles": [
+          "roof_personal_active_top.png",
+          "roof_personal_active_bottom.png",
+          "roof_personal_empty_right.png",
+          "roof_personal_empty_left.png",
+          "roof_personal_empty_back.png",
+          "roof_personal_empty_front.png"
+        ],
+        "light_source": 0,
+        "use_texture_alpha": "opaque"
+      },
+      "draft": {
+        "geometry_and_tiles": "active",
+        "colorize": "#b6b7a8",
+        "colorize_strength": 92,
+        "opacity": 150,
+        "light_source": 2,
+        "use_texture_alpha": "blend"
+      }
+    },
+    "account": {
+      "active": {
+        "boxes": [
+          [-8, -8, -7, 8, -6, 7],
+          [-7, -6, -5, 7, 0, 5],
+          [-8, 0, -6, 8, 1, 6],
+          [-8, 1, -6, 0, 2, 6],
+          [-7, 2, -6, -1, 4, 6],
+          [-6, 4, -6, -2, 6, 6],
+          [-5, 6, -6, -3, 7, 6],
+          [0, 1, -6, 8, 2, 6],
+          [1, 2, -6, 7, 4, 6],
+          [2, 4, -6, 6, 6, 6],
+          [3, 6, -6, 5, 7, 6]
+        ],
+        "tiles": [
+          "roof_account_active_top.png",
+          "roof_personal_active_bottom.png",
+          "roof_account_active_right.png",
+          "roof_account_active_left.png",
+          "roof_account_active_back.png",
+          "roof_account_active_front.png"
+        ],
+        "light_source": 4,
+        "use_texture_alpha": "opaque",
+        "inventory_image": "roof_account_item.png",
+        "wield_image": "roof_account_item.png"
+      },
+      "empty": {
+        "boxes": [
+          [-8, -8, -7, 8, -6, 7],
+          [-7, -6, -5, 7, 0, 5],
+          [-8, 0, -6, 8, 1, 6],
+          [-8, 1, -6, 0, 2, 6],
+          [-7, 2, -6, -1, 4, 6],
+          [-6, 4, -6, -2, 6, 6],
+          [-5, 6, -6, -3, 7, 6],
+          [0, 1, -6, 8, 2, 6],
+          [1, 2, -6, 7, 4, 6],
+          [2, 4, -6, 6, 6, 6],
+          [3, 6, -6, 5, 7, 6]
+        ],
+        "tiles": [
+          "roof_account_active_top.png",
+          "roof_personal_active_bottom.png",
+          "roof_account_empty_right.png",
+          "roof_account_empty_left.png",
+          "roof_account_empty_back.png",
+          "roof_account_empty_front.png"
+        ],
+        "light_source": 0,
+        "use_texture_alpha": "opaque"
+      },
+      "draft": {
+        "geometry_and_tiles": "active",
+        "colorize": "#b6b7a8",
+        "colorize_strength": 92,
+        "opacity": 150,
+        "light_source": 2,
+        "use_texture_alpha": "blend"
+      }
+    }
+  },
+  "stone_texture": "roof_personal_active_front.png"
+}

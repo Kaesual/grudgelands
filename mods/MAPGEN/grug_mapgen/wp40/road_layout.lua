@@ -111,6 +111,13 @@ local DEFAULT_P = {
 	-- sampler / raster
 	BUCKET = 32, SIDE_MAX = 24, EMB_TOE = 3, EMB_REACH = 6, CUT_SLOPE = 1,
 	CUT_SOIL = 6, CUT_ROCK = 2, EMB_SLOPE = 1,
+	-- a cut is at most CUT_FADE per node of its distance to the side zone's
+	-- edge deep (Round 86 ROADS): it meets the ground at the edge instead of
+	-- ending in a wall where the hill rises faster than the cut slope; the
+	-- face is lifted above the slope it replaces by at most CUT_FADE_LIFT
+	-- times the square of its distance to the road's edge, so a deep cut keeps
+	-- its slope's foot beside the road and steepens only farther out
+	CUT_FADE = 1, CUT_FADE_LIFT = 0.25,
 	WALL_MIN = 5, WALL_H = 3, PILLAR_EVERY = 5,
 	-- ground points a bridge run lands on at each bank (D74)
 	BRIDGE_LAND = 2,
@@ -2558,6 +2565,12 @@ local function new_module(P)
 						local cap = ry + wh + min(ee, P.CUT_SOIL) * P.CUT_SLOPE +
 							max(0, ee - P.CUT_SOIL) * P.CUT_ROCK +
 							min(e, 1) * (1 - wh / P.WALL_H) * P.CUT_SLOPE
+						-- where the hill rises faster than that, the face steepens
+						-- to meet the ground at the side zone's edge: it follows
+						-- the hillside, at most CUT_FADE per node steeper; lifted at
+						-- most CUT_FADE_LIFT * e^2 above the slope (beside the road
+						-- it keeps the slope's foot)
+						cap = max(cap, min(t - P.CUT_FADE * (SIDE - e), cap + P.CUT_FADE_LIFT * e * e))
 						local walled = wh > 0 and e <= 1.5
 						if cap < cut_cap then
 							cut_cap, wall_at = cap, walled

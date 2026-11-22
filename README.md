@@ -98,18 +98,20 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.85.0** adds **Breach Road**, an arena on the middle road near the centre of the map:
-the road runs through it past ruined galleries, and each faction has a hall there with a
-waystone of its network, its own peaceful ground but no safe room. A Claim Stone now claims
-one map chunk of 80 × 80 nodes, in your faction's level 11–30 zones and, for the first time,
-its capital zones; a chunk with a road in it, or a settlement or quest content close by,
-cannot be claimed, and quest creatures keep half their ground. The Claim Stone's minimap preview does
-not show these rules yet (placement itself says why it refuses). 0.85.0 needs a **map
-reset**: characters keep everything but their position and their claim, whose containers
-come back in the Claim Stone's Belongings tab. Since 0.79.0 you can link your characters to
-an account on the realm's website (grudgelands.com/play); the account's rewards, such as the
-**Cheer** emote and the Supporter and donor cloaks, reach every linked character. Accounts
-are optional ([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)).
+**0.86.0** completes the new housing. A Claim Stone claims one map square of 80 × 80
+nodes in your faction's level 11–30 or capital zones, and with the stone in hand the
+minimap shows which squares you can claim and why the one you stand in cannot. A
+character linked to an account on the realm's website (grudgelands.com/play) may choose
+the **Account Claim Stone** instead: one home that the account's characters of one
+faction who choose it own together, with shared belongings. Every home has a name its owners choose,
+shown with a house icon wherever you enter it, and the stone itself is now a small house.
+The Account page shows what linking gives and each step to link; the account's rewards,
+such as the **Cheer** emote and the Supporter and donor cloaks, reach every linked
+character, and accounts stay optional ([rules](docs/design/accounts.md),
+[contract](docs/technical/web-accounts.md)). Road cuts into hills now meet the
+ground instead of ending in a wall. 0.86.0 needs a **map reset**: characters keep everything but their position and
+their claim, whose containers come back in the Claim Stone's Belongings tab. Since 0.85.0
+the arena **Breach Road** stands on the middle road near the centre of the map.
 
 Read the [changelog](CHANGELOG.md) for every earlier version and the upgrade
 requirements of each.

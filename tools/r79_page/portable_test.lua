@@ -28,6 +28,10 @@
 --      stored appearance follows), the redraw of online characters on a
 --      change, /achievement revoke keeping the worn account cloak;
 --   S  no link code in the server log.
+--
+-- Round 86 (lane ACCOUNT) rebuilt the page as "The Charter"
+-- (tools/r84_account_mock): the P checks follow its texts, places and
+-- button labels; tools/r86_account checks the default rewards.
 
 local repo = arg and arg[1] or "."
 local checks = 0
@@ -327,12 +331,13 @@ eq(#RID, 32, "P Rowan has an id")
 open(rowan)
 local fs = view(rowan)
 has(fs, "WEBSITE ACCOUNT", "P1 the heading")
-has(fs, "Rewards on your website account reach all your characters.", "P1 what an account gives")
+has(fs, "Link your character", "P1 the title")
 has(fs, "grudgelands.com/play", "P1 the address")
-has(fs, "with its name and password\\, or create a link code there and enter it here", "P1 how to link")
-has(fs, "field[4.000,4.700;6.200,0.700;grug_account_code;;]", "P1 the empty code field")
+has(fs, "Or link it there with this character's name and password.", "P1 how to link by password")
+has(fs, "Enter your 10-character code", "P1 how to link by code")
+has(fs, "field[9.080,10.140;5.960,1.000;grug_account_code;;]", "P1 the empty code field")
 has(fs, "field_close_on_enter[grug_account_code;false]", "P1 Enter does not close the window")
-has(fs, ";grug_account_link;Link]", "P1 Link")
+has(fs, ";grug_account_link;Check code]", "P1 Link")
 has(fs, "set_focus[grug_account_focus;true]", "P1 the focus on the invisible button")
 lacks(fs, "grug_account_wait_", "P1 nothing inert")
 lacks(fs, "please wait", "P1 no waiting line")
@@ -343,9 +348,9 @@ click(rowan, {grug_account_code = "ABC12", grug_account_link = "Link"})
 eq(sends.Rowan, 1, "P2 one send for the click")
 fs = view(rowan)
 shown(fs, "A code has 10 letters and digits, as the website shows it.", "P2 the refusal line")
-has(fs, "textcolor=" .. grug_core.ui.colors.danger, "P2 in the danger colour")
+has(fs, "textcolor=#efafa2", "P2 in the error colour (the mock's)")
 has(fs, "grug_account_code;;ABC12]", "P2 the typed code kept")
-has(fs, ";grug_account_link;Link]", "P2 Link stays")
+has(fs, ";grug_account_link;Check code]", "P2 Link stays")
 eq(#events, 0, "P2 no request for a refused code")
 
 -- A good code: the request goes out, the page waits.
@@ -361,7 +366,7 @@ shown(fs, "Checking your code with the website. This can take a few seconds, ple
 lacks(fs, ";grug_account_link;", "P3 no live Link")
 has(fs, "grug_account_wait_", "P3 Link drawn inert")
 has(fs, "grug_account_code;;WXYZ2-34567]", "P3 the code kept in the field")
-has(fs, "button[10.500,4.700;2.600,0.700;grug_account_wait_", "P3 the inert Link in Link's place")
+has(fs, "button[15.260,10.140;3.520,1.000;grug_account_wait_", "P3 the inert Check code in its place")
 -- A click on the inert Link (or a stale Link) while waiting asks nothing.
 click(rowan, {grug_account_code = CODE, grug_account_link = "Link"})
 eq(#events, 1, "P3 no second request while waiting")
@@ -376,19 +381,21 @@ eq(grug_accounts.link_answer({request_id = request_id, name = "Rowan", outcome =
 eq(sends.Rowan, 1, "P4 the page re-sent by itself")
 fs = view(rowan)
 local escaped = core.formspec_escape(NAME64)
-has(fs, "Link Rowan to the website account " .. escaped .. "?", "P4 the question, the name escaped")
-has(fs, "Only link to your own account. Only an administrator can undo a link.", "P4 the warning")
-has(fs, ";grug_account_confirm;Link]", "P4 Link")
+has(fs, "Link Rowan to the website account", "P4 the question")
+has(fs, escaped, "P4 the name escaped")
+has(fs, "Only link to your own account.", "P4 the warning")
+has(fs, "Only a website administrator can undo a link.", "P4 who undoes a link")
+has(fs, ";grug_account_confirm;Confirm link]", "P4 Confirm link")
 has(fs, ";grug_account_cancel;Cancel]", "P4 Cancel")
 has(fs, "style[grug_account_confirm;border=false;bgcolor=#ffffff;bgimg=grug_ui_danger.png^\\[hsl:105:0:0",
-	"P4 Link green (the confirm role)")
+	"P4 Confirm link green (the confirm role)")
 has(fs, "style[grug_account_cancel;border=false;bgcolor=#ffffff;bgimg=grug_ui_danger.png;", "P4 Cancel red")
 lacks(fs, "grug_account_code", "P4 no code field in the offer")
--- The long name stays in a wrapping textarea inside the card.
+-- The long name wraps in a textarea inside the column.
 do
-	local x, w = fs:match("textarea%[([%d.]+),[%d.]+;([%d.]+),[%d.]+;;;Link Rowan")
-	check(x and tonumber(x) >= 3.5 and tonumber(x) + tonumber(w) <= 16.5 + 1e-6,
-		"P4 the question inside the card")
+	local x, w = fs:match("textarea%[([%d.]+),[%d.]+;([%d.]+),[%d.]+;;;Ser Aldric")
+	check(x and tonumber(x) >= 8.3 and tonumber(x) + tonumber(w) <= 19.3 + 1e-6,
+		"P4 the name inside the column")
 end
 
 -- Cancel: back to the code, which still works.
@@ -396,7 +403,7 @@ click(rowan, {grug_account_cancel = "Cancel"})
 eq(events[#events].type, "account.link_cancel", "P5 Cancel sends the cancel")
 fs = view(rowan)
 has(fs, "grug_account_code;;WXYZ2-34567]", "P5 the code still in the field")
-has(fs, ";grug_account_link;Link]", "P5 Link again")
+has(fs, ";grug_account_link;Check code]", "P5 Link again")
 lacks(fs, "please wait", "P5 not waiting")
 
 -- Link again, confirm: the page waits for the binding.
@@ -404,16 +411,17 @@ click(rowan, {grug_account_code = CODE, grug_account_link = "Link"})
 request_id = events[#events].request_id
 grug_accounts.link_answer({request_id = request_id, name = "Rowan", outcome = "offer",
 	account_name = NAME64})
-click(rowan, {grug_account_confirm = "Link"})
+click(rowan, {grug_account_confirm = "Confirm link"})
 eq(events[#events].type, "account.link_confirm", "P6 the confirmation")
 fs = view(rowan)
 shown(fs, "Linking your character. This can take a few seconds, please wait.", "P6 the waiting line")
-lacks(fs, ";grug_account_confirm;", "P6 no live Link")
+lacks(fs, ";grug_account_confirm;", "P6 no live Confirm link")
 lacks(fs, ";grug_account_cancel;", "P6 no live Cancel")
-has(fs, "button[4.000,4.700;2.600,0.700;grug_account_wait_", "P6 Link inert in its place")
-has(fs, "button[6.900,4.700;2.600,0.700;grug_account_wait_", "P6 Cancel inert in its place")
-has(fs, "Link Rowan to the website account " .. escaped .. "?", "P6 the question stays")
-click(rowan, {grug_account_confirm = "Link"})
+has(fs, "button[8.490,8.610;3.700,0.890;grug_account_wait_", "P6 Confirm link inert in its place")
+has(fs, "button[12.430,8.610;2.450,0.890;grug_account_wait_", "P6 Cancel inert in its place")
+has(fs, "Link Rowan to the website account", "P6 the question stays")
+has(fs, escaped, "P6 with the name")
+click(rowan, {grug_account_confirm = "Confirm link"})
 eq(events[#events].type, "account.link_confirm", "P6 a second click sends nothing new")
 local confirms = 0
 for _, event in ipairs(events) do
@@ -426,14 +434,16 @@ sends.Rowan = 0
 send_list({{name = "Rowan", character_id = RID, account_id = "a_test1"}}, {ACCOUNT})
 check(sends.Rowan >= 1, "P7 the page re-sent by itself")
 fs = view(rowan)
-has(fs, "Linked to the website account " .. escaped .. ".", "P7 linked, the name escaped")
-has(fs, "ACCOUNT REWARDS", "P7 the rewards heading")
+has(fs, "LINKED WEBSITE ACCOUNT", "P7 linked")
+has(fs, escaped, "P7 the name escaped")
+has(fs, "Linked to Rowan", "P7 the character")
+has(fs, "Your rewards", "P7 the rewards heading")
 has(fs, "Your account has no rewards yet.", "P7 no rewards")
 lacks(fs, "grug_account_code", "P7 no code field")
 do
-	local x, w = fs:match("textarea%[([%d.]+),[%d.]+;([%d.]+),[%d.]+;;;Linked to")
-	check(x and tonumber(x) >= 3.5 and tonumber(x) + tonumber(w) <= 16.5 + 1e-6,
-		"P7 the name inside the card")
+	local x, w = fs:match("textarea%[([%d.]+),[%d.]+;([%d.]+),[%d.]+;;;Ser Aldric")
+	check(x and tonumber(x) >= 0.43 and tonumber(x) + tonumber(w) <= 7.75 + 1e-6,
+		"P7 the name inside the panel")
 end
 eq(grug_accounts.link_answer({request_id = request_id, name = "Rowan", outcome = "linked",
 	account_name = NAME64}), "ok", "P7 the linked answer after its list")
@@ -443,9 +453,10 @@ ACCOUNT.rewards = {"cloak:supporter"}
 send_list({{name = "Rowan", character_id = RID, account_id = "a_test1"}}, {ACCOUNT})
 fs = view(rowan)
 lacks(fs, "no rewards yet", "P8 a reward")
-has(fs, "Supporter Cloak  " .. core.colorize(grug_core.ui.colors.muted, "Cloak"), "P8 name and kind")
+has(fs, "Supporter Cloak", "P8 the name")
+has(fs, core.colorize("#b8bdb4", "Cloak"), "P8 the kind")
 has(fs, "Choose it on the Character page.", "P8 the hint")
-has(fs, "image[4.000,3.900;0.8,0.8;\\[combine:32x32:8\\,0=grug_achievements_cloak_supporter.png" ..
+has(fs, "image[8.690,3.630;1.210,1.210;\\[combine:32x32:8\\,0=grug_achievements_cloak_supporter.png" ..
 	"\\\\^\\[sheet\\\\:2x1\\\\:0\\,0]", "P8 the cloak's face as the icon, escaped")
 
 -- A second character, not linked: the website's refusal, then the timeout.
@@ -457,7 +468,7 @@ grug_accounts.link_answer({request_id = events[#events].request_id, name = "Bran
 	outcome = "refused", reason = "unknown_code"})
 fs = view(brann)
 has(fs, "The website does not know this code. Please check it.", "P9 the website's refusal")
-has(fs, ";grug_account_link;Link]", "P9 Link again")
+has(fs, ";grug_account_link;Check code]", "P9 Link again")
 click(brann, {grug_account_code = "ABCDEFGH23", grug_account_link = "Link"})
 sends.Brann = 0
 advance(31)
@@ -504,14 +515,14 @@ has(fs, CREATION, "P13 in creation the line")
 lacks(fs, "grug_account_code", "P13 no code field in creation")
 lacks(fs, "grug_account_link", "P13 no Link in creation")
 lacks(fs, "grug_account_wait_", "P13 no inert button either")
-lacks(fs, "Rewards on your website account", "P13 only the one line")
+lacks(fs, "Enter your 10-character code", "P13 only the one line")
 -- Created: the arrival re-sends the page, which offers the code.
 cora.class, cora.faction = "mage", "accord"
 sends.Cora = 0
 run_hooks("arrival", cora)
 eq(sends.Cora, 1, "P13 the arrival re-sends the page")
 fs = view(cora)
-has(fs, ";grug_account_link;Link]", "P13 after creation Link")
+has(fs, ";grug_account_link;Check code]", "P13 after creation Link")
 has(fs, "grug_account_code", "P13 after creation the code field")
 lacks(fs, "Finish creating", "P13 after creation no creation line")
 
@@ -680,7 +691,7 @@ eq(A.selected_cloak(rowan), "supporter", "A6 the earned cloak stays worn after t
 -- An unlink returns the page to "not linked".
 send_list({}, {})
 fs = view(rowan)
-has(fs, ";grug_account_link;Link]", "A7 unlinked: the code again")
+has(fs, ";grug_account_link;Check code]", "A7 unlinked: the code again")
 check(listed(rowan), "A7 the earned cloak stays")
 
 --

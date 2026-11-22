@@ -508,7 +508,7 @@ rulings 2 and 3: room for the coastal belt; ±3600 × ±3200 before): normal
 grew with it at the same scale, high kept its pixel count. The Round 51
 figures are one engine run each on the user's seed (2026-10-19, with the
 region names baked, the second figure the minimap's copy; the Claim Stone
-overlays add about 26 KB). Offline renders with the real renderer on the
+overlays, gone since Round 86, added about 26 KB). Offline renders with the real renderer on the
 same world (`tools/r27_minimap/render_base.lua`, without names and icons)
 compare: before the round 1080×960 in 12.0 s (6 tiles, 0.92 MB) and
 3600×3200 in 60.3 s (6.92 MB), after it 1215×1080 in 14.0 s (9 tiles,
@@ -544,23 +544,21 @@ middle of a render renders again instead of taking mixed tiles as current
 
 **Tiles.** The base is sent as 512 px tiles (`grug_map_base_<col>_<row>.png`,
 edge tiles smaller), the minimap's copy as
-`grug_map_mini_<col>_<row>.png`, since 0.50.2 the Claim Stone
-overlays as `grug_map_claim_<faction>_<col>_<row>.png` and since 0.53.1
+`grug_map_mini_<col>_<row>.png` and since 0.53.1
 the no-fly overlays as `grug_map_flight_<faction>_<col>_<row>.png` (both
-factions to every client; [Minimap](#minimap) "Claim mode", "Flight
-mode"), written to the world directory and announced as startup media;
-nothing else of the base is sent.
-The overlays are rendered and cached with the base; their rules (the
-column rule's source `grug_housing/registry.lua`, its world queries' source
-`grug_housing/api.lua`, the settlement margin and the digest of the mapgen
-tree, which holds the settlement cores' margins and the landmark columns)
-enter the cache key; for the no-fly overlays the flight rule's source
-(`grug_mounts/flight.lua`) and the same mapgen digest. A failing overlay
-render costs only its own preview: it logs an error, the base and the
-minimap are cached and announced without those overlays, and the next start
-tries again. After every
-render or cache hit, tiles of these names that the current quality does
-not use (after high → normal the 47 extra base tiles, about 5.8 MB) are
+factions to every client; [Minimap](#minimap) "Flight mode"), written to
+the world directory and announced as startup media; nothing else of the
+base is sent. (The Claim Stone overlays `grug_map_claim_<faction>_*` of
+0.50.2–0.85.0 are no longer made: since Round 86 the minimap draws the
+claim preview per map chunk itself, [Minimap](#minimap) "Claim mode".)
+The overlays are rendered and cached with the base; their rule (the
+flight rule's source `grug_mounts/flight.lua` and the digest of the
+mapgen tree) enters the cache key. A failing overlay render costs only its
+own preview: it logs an error, the base and the minimap are cached and
+announced without those overlays, and the next start tries again. After
+every render or cache hit, tiles of these names that the current quality
+does not use (after high → normal the 47 extra base tiles, about 5.8 MB;
+the old Claim Stone overlay tiles) are
 deleted from the world directory and their count is logged; a failed delete
 is a warning (Round 41). No other file is touched. A world of an earlier
 version re-renders once under the new key and overwrites its tiles of the
@@ -679,7 +677,7 @@ drawn from the base image above. The gliding version (approved in playtest,
   bezel covers the remaining corner overhang. Stable marker IDs retain
   their HUD elements. A reusable pool grows to the maximum simultaneously
   visible count, with no 24-marker cutoff and no automatic clustering.
-  Landmarks draw above ground overlays (including the green claim square),
+  Landmarks draw above ground overlays (including the claim preview's chunk grid),
   mender/Steward/capital services above that base layer, home/waypoints above
   those and quests above travel, by their state since Round 67
   (`markers.rank`). Trainers and innkeepers share the landmark layer; all
@@ -731,68 +729,73 @@ drawn from the base image above. The gliding version (approved in playtest,
   the zoom: walking 0.23 → 0.39 KB/s, sprinting 0.29 → 0.31, riding
   0.23 → 0.21, flying 0.15 → 0.31 KB/s, and new cell textures 0.17–0.40 →
   0.47–1.23 per second.
-- **Claim mode** (0.50.2, [housing.md](housing.md) §2 "Placement
-  preview"): while a player with a faction holds a Claim Stone, the minimap
-  shows where a claim may go, since 0.85.0 only in part: the red follows
-  the mask's column rule and the settlement margin, not the whole chunk
-  rule, and the square is centred on the arrow, not on the chunk the stone
-  would claim (a known defect; Round 86 replaces the preview). The cell
-  texture then also holds the faction's overlay tiles after the map's
-  (`[combine` blends them by their alpha): forbidden ground semi-transparent red (about 45 %). Every claim
-  near the cell, drafts included, is one `[fill` in the same red; two
-  claims that touch share a pixel line that looks darker (accepted). The
-  player's own 80 × 80 square (a claim's map chunk) is one HUD image above
-  the map and below the markers, centred on the arrow: a green fill (about
-  30 %) with a more opaque frame of one HUD pixel, built as `[fill`s at the
-  size it is drawn
-  (it changes only with the window; the map glides under it, so walking
-  sends nothing for it). The texture is built again on a cell change, a
-  mode change or a change of the claim set (grug_housing's claim-set
-  version: a stone placed, picked up, crumbled, destroyed or removed) and
-  sent only when its string differs, so a claim elsewhere sends nothing.
-  Every claim rectangle is clipped to the cell texture in Lua and left out
-  when empty: the engine refuses a `[fill` whose x or y lies outside the
-  image or whose width or height is 0, and leaves it out of the texture
-  with an error line (`imagesource.cpp`). Another item, no faction or no
-  overlays (the render failed or grug_housing is missing): the normal
-  minimap. A switched-off minimap appears for claim mode and goes after it;
-  its side row moves beside the bezel meanwhile and back afterwards.
-  **Overlays:** rendered once per world with the base, one per faction at
-  the minimap base's size, from the render's per-pixel water class and
-  zone (no second sampling); the territory is asked only for pixels whose
-  zone is eligible. At high quality a minimap pixel is red when any render
-  pixel whose centre lies in it is red, never averaged; then red is widened
-  by one pixel. Settlement cores and hard footprints come on top, widened by
-  the 16-node margin and rounded outward (the placement check's own query
-  over a quadtree of 64-pixel blocks). Not shown: the depth limit and the
-  arrival cube.
-  **Cost** (comparisons; `tools/r502_cmap/`): the overlays add about
-  0.4–0.5 s to the 9–10 s normal render and about 4.2 s to the 47 s high
-  render (LuaJIT offline, seed 4242424242; about 205,000 territory queries
-  at normal, 2.3 million at high, 44,000 settlement queries) and about
-  22.5 KB of tiles for both factions. Held on the bench's walk
-  (`bench_claim.lua`, 70 claims near the route), the stone sends the same
-  packets per second (11.1 walking, 33.1 flying) and about 8–10 % more
-  bytes (longer texture strings); the per-step cost stays within the
-  noise (about 1–2.5 µs per player and step with and without; the engine
-  adds one wielded-item read per player and step). An hour's walk builds
-  the same 1344 cell textures (26.6 MB) with the stone held as without;
-  held on every other leg 1384 (27.4 MB). A client decodes the faction's
-  overlay tiles once (at most six, about 4 MB as RGBA8).
+- **Claim mode** (0.50.2; per map chunk since Round 86,
+  [housing.md](housing.md) §2 "Placement preview"): while a player with a
+  faction holds a Claim Stone (any item of the stone item set: both kinds
+  show the same), the cell texture shows the chunk grid on top of the map's
+  tiles, all as `[fill`s of the cell texture before the mask: every chunk
+  the placement check refuses for the chunk's own sake
+  (`grug_housing.chunk_refusal`: no mask, the mask's rules, a claim
+  already there, the quota per chunk) in semi-transparent red (the old
+  overlay's red, about 45 %; a row's run of red chunks is one fill, grown
+  over the next rows while they hold the same run), a faint black line
+  (about 27 %) on every chunk edge, the claims framed as outside claim mode
+  (below), and the chunk the player stands in framed in the old square's
+  green, filled green (about 30 %) too when it is free. A chunk edge lies
+  half a node outside its first column and is rounded to the nearest base
+  pixel, the same for both chunks beside it, so the grid tiles the texture
+  (a chunk is 12 base pixels at normal). A text line left of the bezel, its
+  last line ending at the bezel's bottom and right-aligned to the bezel, on
+  a box of the "Now playing" box's grey, about 58 % opaque (fix rounds 1
+  and 2: it reads against a bright sky and white cloud; the box's width is the text's estimated from the
+  HUD font's glyph advances, `minimap_view.lua` `hint_box`, and goes with
+  the line), names the player's chunk: "This square: free to claim" in a light green,
+  or why not ("This square: a road runs through it", the quota with the
+  kind's area) in a light red; without a mask "No Claim Stone can be
+  placed: …" in two lines. The texture and the line are built again on a
+  cell change, a mode change, a change of the claim set (grug_housing's
+  claim-set version: a stone placed, picked up, crumbled, destroyed or
+  removed, by anyone) and a change of the player's chunk (which can happen
+  inside one cell), and sent only when their strings differ; a still
+  player sends nothing. Every rectangle is clipped to the cell texture in
+  Lua and left out when empty: the engine refuses a `[fill` whose x or y
+  lies outside the image or whose width or height is 0, and leaves it out
+  of the texture with an error line (`imagesource.cpp`). Another item or
+  no faction: the normal minimap. A switched-off minimap appears for claim
+  mode and goes after it; its side row moves beside the bezel meanwhile and
+  back afterwards. Nothing is baked into the base for it (the per-column
+  overlays of 0.50.2–0.85.0 are gone).
+  **Cost** (comparisons; `tools/r502_cmap/bench_claim.lua` on the trees
+  before and after Round 86, the same 70 claims and route; the stand-in
+  mask makes every fourth chunk claim ground by a hash, a worst case of
+  scattered chunks): with the stone held the same packets per second (9.7
+  → 9.8 walking, 30.6 → 31.1 flying) and about twice the bytes (328 → 702
+  bytes/s walking, 1027 → 2158 flying: the texture string grows from 168
+  to 911 characters on average, 1111 at most); the per-step cost stays
+  within the noise (about 1–4 µs per player and step before and after); an
+  hour's walk with the stone held builds 1569 cell textures (31.0 MB) where
+  the overlay built 1349 (26.7 MB), the extra ones where a chunk edge is
+  crossed inside a cell. On the production seed (one capture boot,
+  Round 86) claim mode's texture strings were 554–768 characters at six
+  places of a claim zone, a capital ring and Lorindor (182 without the
+  stone). A client decodes no overlay tiles any more (about
+  5 MB as RGBA8 before) and downloads about 26 KB less. Each rebuild asks
+  about 50 chunks (`chunk_refusal`: table lookups and, for a free chunk,
+  the quota's kinds).
 - **Claims** (0.50.2 lane HOME, ruling H4; [housing.md](housing.md) §1
   "Seeing a claim"): outside claim mode the cell texture frames every claim
   near the cell, drafts and expired claims included: the player's own in
   the green square's frame colour, every other in yellow (starting values
   the user tunes), one base pixel wide just inside the claim's
-  outward-rounded box (the rectangle claim mode fills red, so about ±1 base
-  pixel, roughly 7 nodes), no fill. Each frame is up to four `[fill`s,
+  outward-rounded box (about ±1 base pixel, roughly 7 nodes), no fill. Each frame is up to four `[fill`s,
   clipped to the cell texture in Lua exactly like claim mode's (an edge with
   nothing on the texture is left out), before the mask, so a frame is cut
   cleanly at the bezel and glides with the map; the own frame comes last, on
   top where two claims touch. The texture is built again on a cell change
   or a claim-set version change and sent only when its string differs; with
-  no claim near it is the plain map's string. In claim mode everything stays
-  as above (all claims red). **Cost** (comparisons, LuaJIT bench
+  no claim near it is the plain map's string. In claim mode the claims are
+  framed the same way on the chunk grid's edges (claim mode above).
+  **Cost** (comparisons, LuaJIT bench
   `tools/r502_cmap/bench_claim.lua` before and after, 70 claims near the
   route): the same packets per second (11.1 walking, 33.1 flying), about
   15 % more bytes without the stone (327 → 377 bytes/s walking: longer
@@ -822,8 +825,9 @@ drawn from the base image above. The gliding version (approved in playtest,
   **Cost** (comparisons; `tools/r531_flight/`, two engine boots on seed
   42 at normal quality, 2026-10-20): the no-fly overlays render in about
   0.05 s (210 rule calls: one per faction, water class and zone) beside
-  the Claim Stone overlays' 0.51–0.53 s and the base's 12.3–12.6 s, and add
-  29.2 KB of tiles for both factions (the Claim Stone overlays: 26.5 KB).
+  the base's 12.3–12.6 s (and the Claim Stone overlays' 0.51–0.53 s of
+  that time, gone since Round 86), and add 29.2 KB of tiles for both
+  factions (the Claim Stone overlays then: 26.5 KB).
   The per-step cost is one table read per player; the texture string grows
   by at most four tile entries while flying.
 - **Underground** the minimap keeps showing the surface map.
@@ -911,11 +915,18 @@ were in, and quest texts and level routes now name zones.
   footprint the text is **"Breach Road"** (`grug_mapgen.breach`, at any
   height); like a claim's name it changes only the text, and inside a hall
   the territory line reads the hall's ([pvp.md](pvp.md) §6.4).
-- **Claims** (0.50.2 lane HOME, the user's rulings H1–H2): inside a Claim
-  Stone's claim the text is **"Your Home"** for its owner and
-  **"<owner>'s Home"** for everybody else (permission holders included;
-  always `'s`, "Jens's Home"), in every claim state (draft, active,
-  expired). "Inside" is `grug_housing.claim_at` on the player's position,
+- **Claims** (0.50.2 lane HOME, the user's rulings H1–H2; Round 86 lane
+  NAMES): inside a Claim Stone's claim the text is the **home's name**
+  ([housing.md](housing.md) §1a; by default "<owner>'s Home", always `'s`,
+  "Jens's Home") for everybody, its owner too ("Your Home" is gone, Round
+  86 ruling 15), with a **house icon** before it in all three places, in
+  every claim state (draft, active, expired). HUD text cannot hold an
+  image, so the banner and the minimap line place the icon as its own
+  element left of the text, both centred together, from the text's width
+  estimated with the client's default font's glyph widths
+  (`grug_core.hud_layout.icon_before`); the Map tab's line draws it inside
+  the text (a hypertext). A home that bears a place's name still shows its
+  banner when entered. "Inside" is `grug_housing.claim_at` on the player's position,
   exact to the node in x and z and in 3D: from y −100 (the claim's lower
   limit) upwards without a top; no hysteresis, so the edge where the text
   changes is the edge of the protection. Only the text changes: the

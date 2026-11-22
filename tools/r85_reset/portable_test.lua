@@ -144,6 +144,7 @@ grug_core = {map_reset = {register_on_relocate = function(fn) relocate[#relocate
 grug_factions = {get_faction = function() return "accord" end}
 grug_housing = {
 	player_claim = m.player_claim,
+	is_owner = m.is_owner, -- Round 86: the owner question
 	is_draft = m.is_draft,
 	is_active = m.is_active,
 	arrival_pos = function(claim) return {x = claim.center.x, y = claim.center.y + 1, z = claim.center.z} end,

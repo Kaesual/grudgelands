@@ -26,6 +26,8 @@
 -- the Claim Stone inventory: take-only, scrollable, never in the draft's
 -- form. Each slot is one entry; a take deletes the entry or keeps the rest
 -- (re-checked against the stored entry, so a stale slot takes nothing).
+-- Round 86: an account claim's members all see the account's entries
+-- (recovered.holder), each in its own view; a take by one shows to the others.
 --
 -- One session per player holds the claim id, never the claim table: every
 -- action re-reads the player's claim from the registry and re-checks that it
@@ -75,12 +77,13 @@ local function recovered_name(name)
 end
 
 -- The player's claim, if it is still the placed claim of this session, owned
--- by the player and within reach; nil otherwise.
+-- by the player and within reach; nil otherwise. Round 86: a member's claim
+-- is its account's (state "member").
 local function current_claim(player, session)
 	if not session then return nil end
 	local name = player:get_player_name()
 	local claim, state = grug_housing.player_claim(name)
-	if not claim or state ~= "placed" or claim.id ~= session.claim_id or
+	if not claim or (state ~= "placed" and state ~= "member") or claim.id ~= session.claim_id or
 			grug_housing.permission(claim, name) ~= "owner" then
 		return nil
 	end
@@ -93,16 +96,22 @@ end
 
 -- Players with access, without the owner, sorted by name. The claim carries
 -- them as `permissions = {[name] = level}`; the level is read back through
--- the contract's permission() so the list shows what protection enforces.
+-- the contract's permission() so the list shows what protection enforces
+-- (an owner reads "owner", which is no row).
 local LEVEL_LABEL = {interact = "Interact", everything = "Everything"}
 
 local function access_rows(claim)
 	local rows = {}
 	local map = type(claim.permissions) == "table" and claim.permissions or {}
-	for name in pairs(map) do
+	for name, raw in pairs(map) do
 		local level = grug_housing.permission(claim, name)
-		if name ~= claim.owner and LEVEL_LABEL[level] then
+		if LEVEL_LABEL[level] then
 			rows[#rows + 1] = {name = name, level = level}
+		elseif level == "owner" and LEVEL_LABEL[raw] and claim.kind == "account" then
+			-- Round 86: a member of an account claim named before it joined;
+			-- its entry applies again if it leaves, so it shows and can be
+			-- removed.
+			rows[#rows + 1] = {name = name, level = raw, owner = true}
 		end
 	end
 	table.sort(rows, function(a, b) return a.name < b.name end)
@@ -115,11 +124,18 @@ local function countdown(seconds)
 	return ("%d min %02d s"):format(math.floor(seconds / 60), seconds % 60)
 end
 
+-- Round 86: an account claim or draft (kind "account").
+local function is_account(claim)
+	return claim.kind == "account"
+end
+
 -- R26 rulings 8-9: the draft's own form (redrawn every second while open).
 local function draft_formspec(claim, session, player)
 	local need = grug_housing.ACTIVATION_LUMPS
 	local growth = theme.text_growth(player, 10.75, 4.9)
-	local fs = {theme.frame(10.75, 4.9, "Your Claim Stone (draft, not active)", nil, player),
+	local account = is_account(claim)
+	local fs = {theme.frame(10.75, 4.9, account and "Your Account Claim Stone (draft, not active)" or
+		"Your Claim Stone (draft, not active)", nil, player),
 		theme.button_style("activate", "selected", growth), theme.button_style("pick_up", "danger", growth)}
 	fs[#fs + 1] = ("label[0.4,1.05;%s]"):format(ui.text(
 		"It protects nothing yet and crumbles in " ..
@@ -127,8 +143,8 @@ local function draft_formspec(claim, session, player)
 		" unless you activate it.", ui.RED))
 	fs[#fs + 1] = "label[0.4,1.5;" .. ui.esc(("Activation takes %d coal, charcoal or " ..
 		"anthracite from your inventory"):format(need)) .. "]"
-	fs[#fs + 1] = "label[0.4,1.9;" .. ui.esc(("(%s of fuel) and protects your " ..
-		"home at once."):format(ui.format_remaining(need * grug_housing.LUMP_SECONDS))) .. "]"
+	fs[#fs + 1] = "label[0.4,1.9;" .. ui.esc(("(%s of fuel) and protects its map " ..
+		"square (80 x 80) at once."):format(ui.format_remaining(need * grug_housing.LUMP_SECONDS))) .. "]"
 	fs[#fs + 1] = ("button[0.4,2.3;4.2,0.7;activate;%s]"):format(
 		ui.esc(("Activate (%d coal)"):format(need)))
 	fs[#fs + 1] = "tooltip[activate;" .. ui.esc(("After activation the stone " ..
@@ -137,18 +153,63 @@ local function draft_formspec(claim, session, player)
 	if session.message then
 		fs[#fs + 1] = ("label[0.4,3.35;%s]"):format(ui.text(session.message,
 			session.message_color))
+	elseif account then
+		-- Ruling 16: one account stone is ever activated.
+		fs[#fs + 1] = "label[0.4,3.35;" .. ui.esc("Activated, it is your account's home; " ..
+			"its other drafts crumble then.") .. "]"
 	end
 	fs[#fs + 1] = "button[0.4,3.8;3.1,0.8;pick_up;Pick up stone]"
 	fs[#fs + 1] = "button_exit[7.25,3.8;3.1,0.8;close;Close]"
 	return table.concat(fs)
 end
 
+-- Round 86: an account claim's owners, on the heading's row ("+N" beyond
+-- what fits).
+local OWNERS_CHARS = 42
+local function owners_line(claim)
+	local names = grug_housing.owner_names(claim)
+	local text = "Owners: " .. table.concat(names, ", ")
+	local shown = #names
+	while #text > OWNERS_CHARS and shown > 1 do
+		shown = shown - 1
+		local list = {}
+		for index = 1, shown do list[index] = names[index] end
+		text = ("Owners: %s +%d"):format(table.concat(list, ", "), #names - shown)
+	end
+	return text
+end
+
+-- The fuel panel; returns how much taller than 2.6 it is (Round 86: the
+-- burn times' box grows with the text so it never scrolls, and the pick-up
+-- wait has its own line below it instead of on the box's second line).
+-- The panel's and the rename row's text use `fs.text_scale`
+-- (grug_core.ui.text_scale, as the Account page does): at a large GUI
+-- scaling the client cuts the form's units to the window while its fonts
+-- keep their size, so the text would grow wider and taller than the boxes
+-- laid out in units (Round 86 FORMFIX: the burn times wrapped and
+-- scrolled at scaling 1.5). With it a line keeps its width and height in
+-- units, as at scaling 1 (LINE per line at text growth 1).
+local PANEL_BOTTOM, LINE = 2.8, 0.37
 local function fuel_section(fs, claim, inv)
 	local left = grug_housing.is_active(claim) and
 		(grug_housing.remaining_seconds(claim) or 0) or 0
 	local lumps = ui.lumps(left)
-	fs[#fs + 1] = theme.panel(0.25, 0.2, 10.25, 2.6)
-	fs[#fs + 1] = theme.heading(0.4, 0.5, "Your Claim Stone", fs.growth)
+	local growth = tonumber(fs.growth) or 1
+	local scale = tonumber(fs.text_scale) or growth
+	local times_h = 2 * LINE * growth + 0.03
+	local wait = grug_housing.pickup_wait(claim) or 0
+	local wait_y = 1.95 + times_h + 0.22 * growth
+	local bottom = wait > 0 and wait_y + 0.25 * growth or 1.95 + times_h + 0.05
+	local extra = math.max(0, bottom - PANEL_BOTTOM)
+	fs[#fs + 1] = theme.panel(0.25, 0.2, 10.25, 2.6 + extra)
+	-- The heading restores the labels to `scale`; the rename row's heading
+	-- keeps it, the access heading below sets the growth again.
+	if is_account(claim) then
+		fs[#fs + 1] = theme.heading(0.4, 0.5, "Your account's Claim Stone", scale)
+		fs[#fs + 1] = "label[5.3,0.5;" .. ui.esc(owners_line(claim)) .. "]"
+	else
+		fs[#fs + 1] = theme.heading(0.4, 0.5, "Your Claim Stone", scale)
+	end
 	fs[#fs + 1] = "label[0.4,1.1;Fuel: coal lumps, charcoal or anthracite]"
 	fs[#fs + 1] = ("list[%s;%s;0.4,1.4;1,1;]"):format(inv, LIST)
 	if lumps > 0 then
@@ -164,13 +225,13 @@ local function fuel_section(fs, claim, inv)
 		fs[#fs + 1] = ("label[1.7,1.65;%s]"):format(ui.text(
 			"No fuel: anyone can access your home right now", ui.RED))
 	end
-	fs[#fs + 1] = grug_core.ui.prose(1.7, 1.95, 8.2, 0.65,
-		"Lump: 7 h 16 min · Anthracite: 10 h 54 min\nUp to about 30 days.", true, fs.growth)
-	local wait = grug_housing.pickup_wait(claim) or 0
+	fs[#fs + 1] = grug_core.ui.prose(1.7, 1.95, 8.2, times_h,
+		"Lump: 7 h 16 min · Anthracite: 10 h 54 min\nUp to about 30 days.", true, growth, scale)
 	if wait > 0 then
-		fs[#fs + 1] = "label[1.7,2.6;" .. ui.esc("Pick-up possible in " ..
-			ui.format_remaining(wait) .. ".") .. "]"
+		fs[#fs + 1] = ("label[1.7,%s;%s]"):format(("%g"):format(wait_y), ui.esc("Pick-up possible in " ..
+			ui.format_remaining(wait) .. "."))
 	end
+	return extra
 end
 
 -- grug_home, when it offers travel from the stone (an optional dependency).
@@ -373,6 +434,51 @@ local function belongings_formspec(player, session, header)
 	return grug_inventory.station_formspec(player, table.concat(fs), y + 0.8 + TAB_OFFSET, session, 3)
 end
 
+-- Round 86: the slot of the home's name and its rename row on the activated
+-- stone's Claim Stone tab (lane NAMES), right below the fuel section;
+-- `fs` is that tab's list (`fs.growth` the text growth), `y` the row's top.
+-- Returns the height it uses: everything below moves down by it. One
+-- panel: the heading, the house icon, the name field (the home's name, or
+-- what the owner typed before a refusal) and Rename (or Enter in the
+-- field).
+local RENAME_H = 1.1
+-- The bytes of the raw name field that are read (grug_core.text.cut): a
+-- valid name has at most NAME_MAX ASCII characters.
+local HOME_NAME_BYTES = 4 * 24
+local function rename_row(fs, claim, player, session, y)
+	fs[#fs + 1] = theme.panel(0.25, y, 10.25, RENAME_H - 0.05)
+	fs[#fs + 1] = theme.heading(0.4, y + 0.525, "Home name", fs.text_scale or fs.growth)
+	fs[#fs + 1] = ("image[2.2,%g;0.6,0.6;%s]"):format(y + 0.225, grug_housing.HOME_ICON)
+	fs[#fs + 1] = theme.input_background(2.95, y + 0.175, 4.0, 0.7, "home_name")
+	fs[#fs + 1] = ("field[2.95,%g;4.0,0.7;home_name;;%s]"):format(y + 0.175,
+		ui.esc(session.home_typed or grug_housing.home_name(claim)))
+	fs[#fs + 1] = "field_close_on_enter[home_name;false]"
+	fs[#fs + 1] = ("button[7.15,%g;3.1,0.7;home_rename;Rename]"):format(y + 0.175)
+	fs[#fs + 1] = "tooltip[home_name;" .. ui.esc(("Everyone sees this name with the " ..
+		"house icon. Up to %d letters A-Z, digits, spaces, ' and -."):format(
+		grug_housing.NAME_MAX or 24)) .. "]"
+	return RENAME_H
+end
+
+-- Round 86: the rename row's fields (lane NAMES): true when it handled the
+-- submission (the form is then shown again), false otherwise. The typed
+-- text is kept across the form's other buttons, as the access name is.
+local function rename_fields(player, session, claim, fields)
+	if fields.home_name then
+		local typed = grug_core.text.cut(fields.home_name, HOME_NAME_BYTES)
+		session.home_typed = typed ~= grug_housing.home_name(claim) and typed or nil
+	end
+	if not (fields.home_rename or fields.key_enter_field == "home_name") then return false end
+	session.busy = true
+	local ok, message = grug_housing.rename(claim, player:get_player_name(),
+		grug_core.text.cut_trim(fields.home_name, HOME_NAME_BYTES))
+	session.busy = nil
+	if ok then session.home_typed = nil end
+	-- The form's message line (say(), defined further down).
+	session.message, session.message_color = message, not ok and ui.RED or nil
+	return true
+end
+
 local function main_formspec(player, claim, session)
 	session.draft = grug_housing.is_draft(claim)
 	if session.draft then return draft_formspec(claim, session, player) end
@@ -392,64 +498,78 @@ local function main_formspec(player, claim, session)
 	-- switch; the field gets it when the player clicks into it.
 	-- `fs.growth`: the text growth (grug_core.ui.text_growth), also for fuel_section.
 	local growth = theme.text_growth(player)
+	-- `fs.text_scale`: the fuel panel's and the rename row's text size
+	-- (grug_core.ui.text_scale; never above the growth, at most halved).
+	local scale = theme.text_scale and tonumber(theme.text_scale(player)) or growth
 	local fs = {"set_focus[close;true]", header, "container[0," .. TAB_OFFSET .. "]",
 		theme.button_style("pick_up", "danger", growth), theme.button_style("perm_remove", "danger", growth),
-		growth = growth}
-	fuel_section(fs, claim, inv)
+		growth = growth, text_scale = math.max(0.5 * growth, math.min(growth, scale))}
+	local extra = fuel_section(fs, claim, inv)
+	-- Everything below the rename row moves down by its height.
+	local dy = extra + rename_row(fs, claim, player, session, 2.85 + extra)
+	local function y(value) return ("%g"):format(value + dy) end
 
 	local rows = access_rows(claim)
 	session.names = {}
 	local entries = {}
 	for index, row in ipairs(rows) do
 		session.names[index] = row.name
-		entries[index] = ui.esc(row.name .. " — " .. LEVEL_LABEL[row.level])
+		entries[index] = ui.esc(row.name .. " — " .. LEVEL_LABEL[row.level] ..
+			(row.owner and " (an owner now)" or ""))
 	end
 	if session.selected and not session.names[session.selected] then
 		session.selected = nil
 	end
-	fs[#fs + 1] = theme.panel(0.25, 2.85, 5.65, 2.65) .. theme.panel(6.0, 2.85, 4.5, 2.65)
-	fs[#fs + 1] = theme.heading(0.4, 3.0, "Access for other players", growth)
+	fs[#fs + 1] = theme.panel(0.25, 2.85 + dy, 5.65, 2.65) .. theme.panel(6.0, 2.85 + dy, 4.5, 2.65)
+	fs[#fs + 1] = theme.heading(0.4, 3.0 + dy, "Access for other players", growth)
 	if #entries == 0 then
-		fs[#fs + 1] = "textlist[0.4,3.3;5.2,1.15;perm_list;#999999Nobody else has access.;0;false]"
+		fs[#fs + 1] = "textlist[0.4," .. y(3.3) ..
+			";5.2,1.15;perm_list;#999999Nobody else has access.;0;false]"
 	else
-		fs[#fs + 1] = ("textlist[0.4,3.3;5.2,1.15;perm_list;%s;%d;false]"):format(
-			table.concat(entries, ","), session.selected or 0)
+		fs[#fs + 1] = ("textlist[0.4,%s;5.2,1.15;perm_list;%s;%d;false]"):format(
+			y(3.3), table.concat(entries, ","), session.selected or 0)
 	end
-	fs[#fs + 1] = theme.input_background(6.2, 3.6, 4.05, 0.7, "perm_name")
-	fs[#fs + 1] = ("field[6.2,3.6;4.05,0.7;perm_name;Player name;%s]"):format(
-		ui.esc(session.typed or ""))
+	fs[#fs + 1] = theme.input_background(6.2, 3.6 + dy, 4.05, 0.7, "perm_name")
+	fs[#fs + 1] = ("field[6.2,%s;4.05,0.7;perm_name;Player name;%s]"):format(
+		y(3.6), ui.esc(session.typed or ""))
 	fs[#fs + 1] = "field_close_on_enter[perm_name;false]"
-	fs[#fs + 1] = "button[6.2,4.5;1.85,0.65;perm_interact;Interact]"
-	fs[#fs + 1] = "button[8.15,4.5;2.1,0.65;perm_everything;Everything]"
-	fs[#fs + 1] = "button[0.4,4.65;3.2,0.65;perm_remove;Remove access]"
+	fs[#fs + 1] = "button[6.2," .. y(4.5) .. ";1.85,0.65;perm_interact;Interact]"
+	fs[#fs + 1] = "button[8.15," .. y(4.5) .. ";2.1,0.65;perm_everything;Everything]"
+	fs[#fs + 1] = "button[0.4," .. y(4.65) .. ";3.2,0.65;perm_remove;Remove access]"
 	fs[#fs + 1] = "tooltip[perm_interact;" ..
 		ui.esc("Doors, gates, chests, furnaces and stations") .. "]"
 	fs[#fs + 1] = "tooltip[perm_everything;Also building and digging]"
 	if session.message then
-		fs[#fs + 1] = ("label[0.4,5.65;%s]"):format(ui.text(session.message,
+		fs[#fs + 1] = ("label[0.4,%s;%s]"):format(y(5.65), ui.text(session.message,
 			session.message_color))
 	end
-	fs[#fs + 1] = "button[0.4,5.85;3.1,0.8;pick_up;Pick up stone]"
+	fs[#fs + 1] = "button[0.4," .. y(5.85) .. ";3.1,0.8;pick_up;Pick up stone]"
 	local home = rawget(_G, "grug_home")
 	if home and type(home.set_home_claim) == "function" then
-		fs[#fs + 1] = "button[3.8,5.85;3.1,0.8;set_home;Set as home]"
+		fs[#fs + 1] = "button[3.8," .. y(5.85) .. ";3.1,0.8;set_home;Set as home]"
 	end
-	fs[#fs + 1] = "button_exit[7.25,5.85;3.1,0.8;close;Close]"
+	fs[#fs + 1] = "button_exit[7.25," .. y(5.85) .. ";3.1,0.8;close;Close]"
 	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, LIST)
 	-- The player's whole combined bag below (0.49.1 ruling 6); the session
 	-- keeps its scroll position.
 	fs[#fs + 1] = "container_end[]"
-	return grug_inventory.station_formspec(player, table.concat(fs), 5.85 + 0.8 + TAB_OFFSET,
+	return grug_inventory.station_formspec(player, table.concat(fs), 5.85 + 0.8 + TAB_OFFSET + dy,
 		session, 2)
 end
 
-local function confirm_formspec(draft, player)
-	local lines = draft and
-		("label[0.4,1.1;" .. ui.esc("It is not active yet; you can place it " ..
-			"again at once.") .. "]") or
-		("label[0.4,1.1;The protection ends at once. Whole unburnt lumps come back.]" ..
-		"label[0.4,1.6;" .. ui.esc(("You can place it again at once; activation " ..
-			"costs %d lumps again."):format(grug_housing.ACTIVATION_LUMPS)) .. "]")
+local function confirm_formspec(draft, player, account)
+	local lines
+	if draft then
+		lines = "label[0.4,1.1;" .. ui.esc("It is not active yet; you can place it " ..
+			"again at once.") .. "]"
+	else
+		-- Round 86: an account claim ends for every owner.
+		lines = (account and ("label[0.4,1.1;" .. ui.esc("The protection ends at once for " ..
+			"every owner. Whole unburnt lumps come back to you.") .. "]") or
+			"label[0.4,1.1;The protection ends at once. Whole unburnt lumps come back.]") ..
+			"label[0.4,1.6;" .. ui.esc(("You can place it again at once; activation " ..
+			"costs %d lumps again."):format(grug_housing.ACTIVATION_LUMPS)) .. "]"
+	end
 	return theme.frame(10.75, 3.9, "Pick up your Claim Stone?", nil, player) ..
 		theme.button_style("confirm_pick_up", "danger", theme.text_growth(player, 10.75, 3.9)) .. lines ..
 		"button[0.4,2.6;4.2,0.8;confirm_pick_up;Pick up]" ..
@@ -467,7 +587,7 @@ local function show(player, session)
 	if session.mode == "confirm" then
 		local claim = current_claim(player, session)
 		core.show_formspec(name, FORMNAME, confirm_formspec(claim ~= nil and
-			grug_housing.is_draft(claim), player))
+			grug_housing.is_draft(claim), player, claim ~= nil and is_account(claim)))
 		return true
 	end
 	local claim = current_claim(player, session)
@@ -621,11 +741,16 @@ local function ensure_inventory(name)
 				name, stack:to_string(), key))
 			-- Redrawn once the move is done (a shift-click may still fill
 			-- more slots with this stack): the tab's count, the slots closed up.
+			-- Round 86: also for every other member looking at the same
+			-- account belongings (their stale slots take nothing meanwhile).
 			core.after(0, function()
-				local session = sessions[name]
-				local online = core.get_player_by_name(name)
-				if session and online and session.tab == "belongings" then
-					show(online, session)
+				local holder = grug_housing.recovered.holder(name)
+				for viewer, session in pairs(sessions) do
+					local online = core.get_player_by_name(viewer)
+					if online and session.tab == "belongings" and
+							grug_housing.recovered.holder(viewer) == holder then
+						show(online, session)
+					end
 				end
 			end)
 		end,
@@ -659,17 +784,19 @@ local function target_name(session, fields)
 end
 
 local function set_access(player, session, claim, fields, level)
-	local owner = player:get_player_name()
 	local target = target_name(session, fields)
 	if not target then
 		say(session, "Type a player name or select one from the list.", ui.RED)
 		return
 	end
-	if target == owner then
+	local current = grug_housing.permission(claim, target)
+	-- Round 86: an owner's old entry (a member) may only be removed.
+	local stale = current == "owner" and level == nil and type(claim.permissions) == "table" and
+		LEVEL_LABEL[claim.permissions[target]] ~= nil
+	if current == "owner" and not stale then
 		say(session, "You own this claim.", ui.RED)
 		return
 	end
-	local current = grug_housing.permission(claim, target)
 	if level then
 		if not core.player_exists(target) then
 			say(session, "There is no player called " .. target .. ".", ui.RED)
@@ -679,7 +806,7 @@ local function set_access(player, session, claim, fields, level)
 			say(session, target .. " already has " .. LEVEL_LABEL[level] .. ".")
 			return
 		end
-	elseif not LEVEL_LABEL[current] then
+	elseif not stale and not LEVEL_LABEL[current] then
 		say(session, target .. " has no access.", ui.RED)
 		return
 	end
@@ -776,6 +903,12 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not claim then
 		sessions[name] = nil
 		if not fields.quit then core.close_formspec(name, FORMNAME) end
+		return true
+	end
+	-- The rename row (lane NAMES) first: it also keeps the typed name when
+	-- the submission is a click in the access list below.
+	if rename_fields(player, session, claim, fields) then
+		show(player, session)
 		return true
 	end
 	if fields.perm_list then

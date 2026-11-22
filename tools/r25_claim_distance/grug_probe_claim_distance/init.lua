@@ -251,7 +251,7 @@ local function scenario(c, edge)
 		local target = {x = beside.x, y = beside.y + 1, z = beside.z}
 		check(core.is_protected(target, OTHER), "stranger refused next to the road")
 		local other_hint = grug_core.protection_hint(target, OTHER)
-		check(other_hint == "Home of " .. OWNER .. " – protected", "stranger's claim hint")
+		check(other_hint == OWNER .. "'s Home – protected", "stranger's claim hint") -- Round 86 ruling 9
 		local other_placed = place_dirt(OTHER, beside)
 		check(not other_placed, "stranger cannot build next to the road")
 		check(not core.is_protected(target, OWNER), "owner may build next to the road")

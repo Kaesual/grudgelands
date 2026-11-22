@@ -274,7 +274,7 @@ core.after(2, function()
 			log(("EMERGED in %.1f s"):format((core.get_us_time() - started) / 1000000))
 			local ok, err = pcall(function()
 				sweep(report, base)
-				local HOME = "Home of " .. OWNER .. " – protected"
+				local HOME = OWNER .. "'s Home – protected" -- Round 86 ruling 9
 				local s = interact(base, STRANGER, "ACTIVE")
 				check(s.chest == "closed" and s.chest_put == 0 and s.chest_take == 0 and
 					s.door == "closed" and s.furnace_put == 0, "active claim: stranger refused")

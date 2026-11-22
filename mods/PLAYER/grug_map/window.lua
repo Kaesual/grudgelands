@@ -234,12 +234,36 @@ grug_map.quest_targets = {
 -- The window's content
 --
 
+-- The location line's text and whether it is a home's name (Round 86).
 local function current_zone(player)
-	if not grug_core.zone_authority_installed() then return "World map loading" end
-	local text = grug_map.location and grug_map.location.text_of(player) or ""
-	if text ~= "" then return text end
+	if not grug_core.zone_authority_installed() then return "World map loading", false end
+	local text, home = "", false
+	if grug_map.location then
+		local _
+		text, _, home = grug_map.location.text_of(player)
+	end
+	if text ~= "" then return text, home == true end
 	local zone = grug_zones.at(player:get_pos())
-	return zone and zone.display_name or "Open sea"
+	return zone and zone.display_name or "Open sea", false
+end
+
+-- The location line: "Current: <text>" in the muted prose; a home's name
+-- (Round 86) with the house icon before it, which a hypertext draws inside
+-- the line (the icon's side in screen pixels: an em of the line's font at
+-- the text growth and the GUI scaling, sitting on the baseline).
+local function location_line(player, layout, grown, info)
+	local text, home = current_zone(player)
+	local x, w = layout.location.x, layout.location.w
+	if not home then
+		return grug_core.ui.prose(x, PAD, w, 0.65, "Current: " .. text, true, grown, grown)
+	end
+	local size = math.floor(16 * (grown or 1) + 0.5)
+	local gui = info and tonumber(info.real_gui_scaling) or 1
+	local icon = math.floor(size * gui + 0.5)
+	return ("hypertext[%.3f,%.3f;%.3f,%.3f;;%s]"):format(x, PAD, w, 0.65,
+		core.formspec_escape(("<global color=%s size=%d>Current: " ..
+			"<img name=%s width=%d height=%d> %s"):format(grug_core.ui.colors.muted, size,
+			grug_housing.HOME_ICON, icon, icon, (core.hypertext_escape(text)))))
 end
 
 -- An arrow's place on the zoomed map as whole ARROW_STEPs; beyond the map (an
@@ -574,8 +598,7 @@ function W.formspec(player, session, info)
 		("button[%.2f,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD, PAD),
 		("label[%.2f,%.2f;%dx]"):format(PAD + 0.72, cy, zoom),
 		("button[%.2f,%.2f;0.6,0.6;grug_map_zoom_in;+]"):format(PAD + 1.25, PAD),
-		grug_core.ui.prose(layout.location.x, PAD, layout.location.w, 0.65,
-			"Current: " .. current_zone(player), true, grown, grown),
+		location_line(player, layout, grown, info),
 		minimap,
 		("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;horizontal;%.5f]"):format(layout.map_x,
 			layout.map_y, layout.viewport_w, layout.viewport_h, SCROLL_X,

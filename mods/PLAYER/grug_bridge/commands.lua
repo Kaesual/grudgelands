@@ -9,7 +9,7 @@ local C = {}
 
 C.CAPABILITIES = {"online", "kick", "banlist", "chat", "mail", "action.give_money",
 	"action.give_xp", "action.give_item", "action.grant_priv", "action.revoke_priv",
-	"accounts", "accounts.password", "characters.delete"}
+	"accounts", "accounts.password", "characters.delete", "rewards.defaults"}
 
 -- The deletion of a character (Round 83); init.lua adds its login guards.
 local D = dofile(core.get_modpath("grug_bridge") .. "/delete.lua")

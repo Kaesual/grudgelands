@@ -1,21 +1,22 @@
 # Housing rework — concept
 
 Drafted with the user on 2026-11-21, after Round 84. Status: **Part A built in Round 85
-(0.85.0) except its placement preview; Parts B and C are concept.** It holds the
+(0.85.0), its placement preview and Part B in Round 86 (0.86.0); Part C is concept and
+stays open.** It holds the
 rulings and measurements of that session so that three later pieces of work can be planned
 from it:
 
-- **Part A, grid claims:** built in Round 85 (the arena and a full map reset), except the
-  placement preview of §2.1 rule 5, which moved to Round 86 with Part B (Round 85
-  ruling 23; [Completion](round85-plan.md#completion-2026-11-22)).
-- **Part B, the account Claim Stone and home names:** its own round, together with the
-  Account page "The Charter" (the user, 2026-11-21: the page goes into the smaller of the
-  two rounds); it needs no map reset.
+- **Part A, grid claims:** built in Round 85 (the arena and a full map reset); the
+  placement preview of §2.1 rule 5 moved to Round 86 (Round 85 ruling 23) and was built
+  there ([Round 86 Completion](round86-plan.md#completion-2026-11-22)).
+- **Part B, the account Claim Stone and home names:** built in Round 86, together with the
+  Account page "The Charter" (§3.3 says where the build differs from §3.1). Part B needed
+  no map reset of its own; 0.86.0 is one because of the round's road cuts.
 - **Part C, the soft map reset:** built when the first soft reset is needed, not before.
 
 What this file says is direction and rulings, not a brief; each part gets its round plan.
-Today's rules are in [housing.md](../design/housing.md); they stay authoritative until a
-round changes them.
+Today's rules are in [housing.md](../design/housing.md); it is authoritative, this file
+only records the direction and the rulings.
 
 ## How to add to this document
 
@@ -40,9 +41,14 @@ round changes them.
 
 **Built in Round 85** as rulings 1–4 and 6 say, with the plan's rulings 14–16 and 20
 ([round85-plan.md](round85-plan.md) §2); [housing.md](../design/housing.md) §1–§2 holds the
-rules as built. **Not built: rule 5, the placement preview** (Round 85 ruling 23): the
-minimap still shows the old per-column overlay and a square centred on the player
-(housing.md §2 "Placement preview"); the next round builds it.
+rules as built. **Rule 5, the placement preview, built in Round 86** (moved there by
+Round 85 ruling 23; [round86-plan.md](round86-plan.md) §4 PREVIEW and ruling 2): with the
+stone in hand the minimap shows per chunk whether a stone can be placed there for the
+chunk's own sake, recomputed at every placement and removal, and a line names the
+reason for the chunk the player stands in (housing.md §2 "Placement preview"). As built,
+the quota's red is per chunk, as placement decides it (Round 85 ruling 16): a chunk turns
+red when its own share of a kind would take the claimed part above half, so a chunk with
+a smaller share can stay free, rather than every remaining chunk of the kind at once.
 
 ### 2.1 Rulings (the user, 2026-11-21)
 
@@ -142,11 +148,13 @@ The questions this section listed, each with its answer
   snapshot with the fingerprints is stored once per map (ruling 7, §4.4).
 - **The 16-node radius round points** (rule 2) stands as the plan's coordinator default.
 
-## 3. Part B: the account Claim Stone and home names (own round)
+## 3. Part B: the account Claim Stone and home names (Round 86)
 
 Replaces the direction of [accounts-concept.md](accounts-concept.md) §5.5. No map reset is
 needed, nothing changes for a character that does not opt in, and linking a character is
-never refused because of a stone.
+never refused because of a stone. **Built in Round 86** (0.86.0) as the rulings below say,
+with the differences of §3.3; [housing.md](../design/housing.md) §1a, §3a and §3b hold the
+rules as built.
 
 ### 3.1 Rulings (the user, 2026-11-21)
 
@@ -182,15 +190,47 @@ never refused because of a stone.
     in front of it, so a home is never mistaken for a place of the world. An admin command
     resets a name to the default.
 
-### 3.2 Open for that round's plan
+### 3.2 Settled in the Round 86 plan
 
-- The allowed characters of a name (proposal: letters, digits, space, apostrophe, hyphen;
-  the clan name rules if they fit) and whether the protection hint ("Home of <owner> –
-  protected") shows the home's name instead of the owner.
-- The house icon is an image element beside the text (the engine cannot put an image into
-  HUD text): layout work with screenshots.
-- Who is shown as the placer when that character leaves or is deleted.
-- Storage: `claim.owner` is a character name today; packed contents are keyed by player.
+The questions this section listed, each with its answer
+([round86-plan.md](round86-plan.md) §2, §3.1):
+
+- **A name's characters:** ASCII letters, digits, space, apostrophe and hyphen, 1–24
+  characters, no leading or trailing space; no word filter (ruling 8). **The protection
+  hint** shows the home's name with the house icon, "<home name> – protected" (ruling 9).
+- **The house icon** is an image element beside the HUD text, placed from the text's
+  width estimated with the client font's glyph widths; the icon is the shipped cottage
+  `grug_map_home.png` (ruling 19).
+- **The placer who leaves or is deleted:** the default name is stored at placement, so it
+  stays; the admin reset of an account claim's name uses the first member by name (plan
+  §2.3).
+- **Storage:** an account claim's owner is the text `account:<account id>:<faction>`,
+  which no name can be; membership is the character's own record, `v2|member|<owner
+  text>`; an account's belongings have keys of their own (plan §3.1, settled in the lane
+  briefs).
+
+### 3.3 Built differently from §3.1 (the user's rulings of 2026-11-22)
+
+- **Ruling 5, the item:** every member gets an account stone while the claim does not
+  stand and may place it as a draft, owned by the character that placed it; activating one
+  removes every other draft of that account and faction at once, and a leftover stone
+  vanishes when it is placed (Round 86 ruling 16).
+- **Ruling 8, a claim with no owner left:** a deleted account or an unlinked last member
+  ends the claim as `/claim_remove` does, its belongings staying stored for the account
+  and faction (ruling 13); narrowed by ruling 18: when the last member goes **through the
+  website's list** (an unlink, the account gone from it), the claim stands ownerless,
+  protects while its fuel lasts, cannot be refuelled and then is the empty stone anyone
+  may dig; a character of that account and faction may join it again. The deletion of
+  the last member by command, an admin's faction change of it, its pick-up and
+  `/claim_remove` end it at once.
+- **Membership across a map reset:** it survives; members get a stone at the Steward
+  (ruling 14).
+- **Ruling 11, names:** "Your Home" is gone, the owner too reads the home's name with the
+  icon (ruling 15); an account claim's default name is "<character>'s Home" of the
+  character that placed the stone, and every member may rename it (ruling 12).
+- **The stone itself:** the account stone is its own item, "Account Claim Stone", told
+  apart at a glance (ruling 10); both stones got a new look, a small house in a node box
+  (rulings 11, 19, 20), and only the fuelled stone gives light.
 
 ## 4. Part C: the soft map reset (future)
 

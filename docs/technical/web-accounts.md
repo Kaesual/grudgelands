@@ -11,6 +11,11 @@ user, as for the bridge. The model and the later phases:
 dated notes in §5.4 (the website's narrower answers), §6a item 4 (the confirmed rate
 limits) and §8 (what phase 2 is). Nothing else changed.
 
+**Amended 2026-11-22** (game 0.86.0, [round86-plan.md](../planning/round86-plan.md)):
+the list's new field `default_rewards` with the capability `rewards.defaults` (§5,
+§5.1, §5.2, §8, §9 step 8), agreed with the website on 2026-11-22; §10's shared Claim
+Stone is built without anything new from the website.
+
 Written for the agent that builds the website and bridge side. It names what the
 website must do, what it sends, what it receives and how the game behaves.
 
@@ -33,8 +38,9 @@ website must do, what it sends, what it receives and how the game behaves.
   "new random password" of the auto mode.
 
 Not part of phase 1, and never to be assumed by the website: account bans,
-characters created through a bridge command, shared Claim Stones. Each comes later
-as its own amendment (§10). **Character deletion** came with 0.83.0 (Round 83) as
+characters created through a bridge command. Each comes later as its own amendment
+(§10). The shared Claim Stone came with 0.86.0 and needs nothing new from the website
+(§10). **Character deletion** came with 0.83.0 (Round 83) as
 the bridge command `character.delete` ([web-bridge.md](web-bridge.md#amendment-2026-11-18-characterdelete)):
 it writes the tombstone below. Names the
 website reserves and the web client then creates at its first login are ordinary
@@ -156,6 +162,10 @@ New capability **`accounts`**, reported by game 0.79.0 and later. Offer nothing 
 this section to a game that does not report it. Protocol stays `1`: every field is
 new and optional for the other side.
 
+New capability **`rewards.defaults`** (*amendment of 2026-11-22*), reported by game
+0.86.0 and later, at the end of `capabilities`. Only a game that reports it gets the
+list's field `default_rewards` (§5.2).
+
 ### 5.1 Request
 
 ```json
@@ -175,7 +185,16 @@ new and optional for the other side.
 ```
 
 - **`accounts_version`** is the list version the game holds, `0` before the first
-  list. It is sent in every request.
+  list. It is sent in every request. *(2026-11-22)* A game that reports
+  `rewards.defaults` also sends `0` while the list it holds was stored by a game
+  version before 0.86.0; the website's ordinary rule (§5.2, "when to send it") then
+  sends the list once after the upgrade, now with `default_rewards`, and the game
+  reports the real version from then on, whether or not the field was in that list.
+  While it reports `0` for that reason, the game applies the next list whatever its
+  version, also the version it already holds; and it keeps applying and showing the
+  list it holds: only the reported number is `0`. If that response is lost, the game
+  reports `0` again and the list comes again. The website needs no special case for
+  an upgraded realm.
 - **`reward_catalog`** lists every reward the running game can give, as `id`, `kind`
   and display `name`. The only `kind` in phase 1 is `cloak`.
   - It comes in the first request of each `boot`, and again in every request until
@@ -201,8 +220,9 @@ new and optional for the other side.
        "account_id": "a_1842"}
     ],
     "accounts": [
-      {"id": "a_1842", "name": "jan", "rewards": ["cloak:supporter"]}
-    ]
+      {"id": "a_1842", "name": "jan", "rewards": ["cloak:supporter", "emote:cheer"]}
+    ],
+    "default_rewards": ["emote:cheer"]
   }
 }
 ```
@@ -236,6 +256,29 @@ new and optional for the other side.
     so the website can tell whether the running game knows it.
   - A reward id the game does not know grants nothing, but stays stored. The website
     may grant a reward before the game version that has it is live.
+- **`default_rewards`** (*amendment of 2026-11-22*; only for a game that reports
+  `rewards.defaults`): the ids of the rewards every linked account gets, as the
+  website's owner set them, sorted by id.
+  - **It is display only.** The game shows these rewards on the Account page, also to
+    a character that is not linked, as what linking gives. It grants nothing: an
+    account has a reward only when its own `rewards` names it, exactly as before, so
+    the website keeps adding the default rewards to every account's `rewards`.
+  - **It is part of the list.** A change of the setting raises the list's `version`
+    like any other change; the game ignores a list whose version it already
+    reported as `accounts_version`.
+    When the website starts to send the field with a setting that is not empty, that
+    counts as a change.
+  - **An empty list, `null` or a missing field** all mean that the page shows no
+    rewards before linking; nothing else differs. A website that does not know the
+    capability therefore needs no change.
+  - **An id the game does not know** is not shown, but stays stored (as for an
+    account's rewards), and shows once a game version that has it is live. A value
+    that is no well-formed reward id, and a second occurrence of an id, are dropped.
+  - The game shows the first four ids it knows, in the order sent; it does not sort,
+    and an id it does not know takes no place. "Sorted by id" means byte (ASCII)
+    order.
+  - The game takes each reward's name and icon from its own catalogue (§5.1); the
+    website sends ids only.
 - **Size:** the response limit is 1 MiB. Warn the administrators once the list
   passes 512 KiB; a delta form would then come as a later amendment.
 - Both sides accept `null` where an array is expected, as everywhere in the bridge.
@@ -526,6 +569,13 @@ back to none. There is no command for either.
   `cloak:moonfall`, `cloak:wintercourt`, `cloak:frost_regent`) and the Supporter
   Cloak are granted **manually** per account. All of them arrive through the
   catalogue (§5.1). No new field, event, command or capability.
+- **The default rewards on the Account page** (*note of 2026-11-22*, game 0.86.0):
+  which rewards every linked account gets stays the website owner's setting. The
+  website sends that setting as `default_rewards` (§5.2), and the game shows it on
+  the Account page before linking; a linked character's page shows its account's
+  `rewards`. The game's page also tells the player to
+  press the website's button that creates the link code; the website tells the game's
+  maintainers when that button's label changes, because the page names it.
 
 ## 9. Testing
 
@@ -543,11 +593,21 @@ back to none. There is no command for either.
   6. Unlink one character, then delete a test account.
   7. Restart the server. Bindings and rewards stay, the catalogue arrives again, and
      the list is re-sent after a version mismatch.
+  8. *(2026-11-22, game 0.86.0)* The default rewards:
+     1. Upgrade a realm that holds a list from before 0.86.0. Its first request
+        reports `rewards.defaults` and `accounts_version: 0`; the list arrives with
+        `default_rewards`, and the next request reports the list's real version.
+     2. Open the Account page with a character that is not linked: the rewards of
+        the setting show. Link it: the page shows the account's rewards.
+     3. Change the setting on the website: the list's version rises and the page of
+        an online character shows the new rewards without a relog.
+     4. Set no default reward: the page shows none and still explains the link.
+     5. Put an id into the setting that the game does not have: it is not shown.
 
 ## 10. Outlook: later amendments
 
 Not to be built now. Listed so that nothing in the website's data model blocks them.
-Each comes with its own capability:
+Each that needs the website comes with its own capability:
 
 - **Account ban:** a ban field per account in the list. The game refuses every
   character of a banned account at login.
@@ -563,8 +623,11 @@ Each comes with its own capability:
   itself and answers once the deletion is done; it writes the tombstone (§2) and
   drops the deleted character's row from its stored copy of the list at once; the
   website removes the binding.
-- **Shared Claim Stone** per account and faction (with a future map reset). The game
-  needs bindings of offline characters, which the list already provides.
+- **Shared Claim Stone** per account and faction: built in 0.86.0 as the Account
+  Claim Stone ([housing.md](../design/housing.md)). It needs nothing new from the
+  website: the game reads the bindings of offline characters from its stored copy
+  of the list; an unlink or an account deletion reaches it as the list change of
+  §7, a character deletion through `character.delete`.
 
 ## 11. Open points
 

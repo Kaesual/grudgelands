@@ -15,8 +15,17 @@ local Flow = dofile(path .. "/flow.lua")
 local META_ID = "grug_accounts:character_id"
 local META_SEEN = "grug_accounts:seen"
 
--- The one place the page names (rulings 13 and 17).
+-- The one place the page names (rulings 13 and 17), and the address its
+-- "Open website" buttons open.
 grug_accounts.WEBSITE = "grudgelands.com/play"
+grug_accounts.WEBSITE_URL = "https://" .. grug_accounts.WEBSITE
+-- The label of the website's button that creates a link code (Round 86
+-- ruling 3; the website's label, the user, 2026-11-21): the page's steps
+-- and Help name it. The website tells the maintainers when it changes
+-- (web-accounts.md §8).
+grug_accounts.CODE_BUTTON = "Create Character"
+-- The most default rewards the page shows (web-accounts.md §5.2).
+grug_accounts.DEFAULTS_SHOWN = 4
 
 local function log(level, text)
 	core.log(level, "[grug_accounts] " .. text)
@@ -44,7 +53,7 @@ end
 local ids = {}         -- online name -> character id (its meta)
 local own_success = {} -- name -> the success line of its own request
 local push_event       -- set by attach: the bridge's event queue
-local change_callbacks, state_callbacks = {}, {}
+local change_callbacks, state_callbacks, defaults_callbacks = {}, {}, {}
 local mods_loaded = false
 
 local model = Model({storage = core.get_mod_storage(), serialize = core.serialize,
@@ -156,6 +165,21 @@ function grug_accounts.catalog()
 	return model.catalog()
 end
 
+-- What linking gives (Round 86, web-accounts.md §5.2 default_rewards): the
+-- first DEFAULTS_SHOWN rewards of the website's setting the catalogue knows,
+-- in the order sent, as catalogue entries; display only, grants nothing.
+function grug_accounts.default_rewards()
+	return model.default_rewards(grug_accounts.DEFAULTS_SHOWN)
+end
+
+-- callback(): an applied list changed the default rewards. Its own signal:
+-- register_on_change names characters, and grug_bridge resends the online
+-- list on it.
+function grug_accounts.register_on_defaults(callback)
+	assert(type(callback) == "function", "grug_accounts.register_on_defaults: not a function")
+	defaults_callbacks[#defaults_callbacks + 1] = callback
+end
+
 -- callback(names): the names whose binding or rewards changed (online or
 -- not), after a list was applied.
 function grug_accounts.register_on_change(callback)
@@ -194,10 +218,12 @@ function grug_accounts.attach(push)
 end
 
 -- The list from a response (web-accounts.md §5.2): applied when its version
--- differs. Open requests of characters it binds end, the online characters
--- read their notices, then the change callbacks run.
+-- differs (or while version 0 is reported, §5.1). Open requests of
+-- characters it binds end, the online characters read their notices, then
+-- the change callbacks run, and the defaults callbacks when the default
+-- rewards changed.
 function grug_accounts.apply_list(list)
-	local names = model.apply(list)
+	local names, defaults_changed = model.apply(list)
 	if not names then return false end
 	for _, name in ipairs(names) do
 		local player = core.get_player_by_name(name)
@@ -208,6 +234,9 @@ function grug_accounts.apply_list(list)
 	end
 	if #names > 0 then
 		for _, callback in ipairs(change_callbacks) do callback(names) end
+	end
+	if defaults_changed then
+		for _, callback in ipairs(defaults_callbacks) do callback() end
 	end
 	return true
 end
@@ -220,7 +249,16 @@ function grug_accounts.catalog_rows()
 	return model.catalog_rows()
 end
 
+-- The reported version (web-accounts.md §5.1): 0 until a list was applied
+-- under rewards.defaults; enabled() reads the held one.
 function grug_accounts.accounts_version()
+	return model.reported_version()
+end
+
+-- The version of the list the game holds (0: none held, also when the
+-- stored list did not decode at boot), as against the reported one above
+-- (Round 86 GUARD: grug_housing skips its list checks without a list).
+function grug_accounts.held_version()
 	return model.version()
 end
 

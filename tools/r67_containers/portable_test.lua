@@ -204,7 +204,9 @@ local M = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({
 	now = function() return clock end,
 })
 grug_housing = {claim_at = M.claim_at, is_active = M.is_active, permission = M.permission,
-	STONE_ITEM = "grug_housing:claim_stone"}
+	STONE_ITEM = "grug_housing:claim_stone",
+	-- Round 86: the stone item set (api.lua)
+	STONE_ITEMS = {["grug_housing:claim_stone"] = ""}}
 local guards = {}
 grug_core.register_interaction_guard = function(fn) guards[#guards + 1] = fn end
 grug_core.register_protection_reason = noop

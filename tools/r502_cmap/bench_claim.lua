@@ -18,7 +18,13 @@
 --      distinct cell textures the client builds in 1 h of walking without
 --      the stone, with it held all the time, and held on every other leg,
 --      and their MB as RGBA8; plus the overlay tiles a client decodes in
---      claim mode (at most the faction's six).
+--      claim mode (at most the faction's six; none since Round 86) and the
+--      claim-mode cell texture string's length (mean and largest).
+-- Round 86 (lane PREVIEW): the claim mode draws the preview per map chunk
+-- from grug_housing.chunk_refusal, here the real preview.lua over a stand-in
+-- mask with every fourth chunk (by a hash) claim ground and no quota; the
+-- code before Round 86 ignores it and reads the overlay tiles, so the same
+-- file measures both (run it on each tree).
 local repo = assert(arg[1], "usage: bench_claim.lua <repo>")
 
 local has_ffi, ffi = pcall(require, "ffi")
@@ -71,6 +77,11 @@ local function new_player(name, pos)
 		if seen_textures and id == map_id and stat == "text" and not seen_textures[value] then
 			seen_textures[value] = true
 			seen_textures.n = seen_textures.n + 1
+			if self.wield ~= "" then
+				seen_textures.claim_n = seen_textures.claim_n + 1
+				seen_textures.claim_len = seen_textures.claim_len + #value
+				seen_textures.claim_max = math.max(seen_textures.claim_max, #value)
+			end
 		end
 	end
 	function p:hud_remove(id) huds[id] = nil end
@@ -160,9 +171,28 @@ for gx = -2250, 2250, 500 do
 		model.create("c" .. placed, {x = gx, y = 10, z = gz})
 	end
 end
+local preview_path = repo .. "/mods/PLAYER/grug_housing/preview.lua"
+local preview = io.open(preview_path, "rb") and dofile(preview_path)
+local stand_in = {
+	ground = function(_, cx, cz)
+		if (cx * 7919 + cz * 104729) % 4 == 0 then return true end
+		return false, "not_home"
+	end,
+	quota_refusal = function() return nil end,
+	add_taken = function(taken) return taken end,
+}
 rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	CHUNK_ORIGIN = model.CHUNK_ORIGIN,
 	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
-	claim_set_version = model.claim_set_version})
+	claim_set_version = model.claim_set_version,
+	-- Round 86: the owner question and the stone item set (grug_housing api.lua)
+	is_owner = model.is_owner,
+	is_stone_item = function(name) return name == "grug_housing:claim_stone" end,
+	-- Round 86 lane PREVIEW: the chunk preview (nil before it)
+	chunk_refusal = preview and function(faction, cx, cz)
+		return preview.chunk_refusal(model, stand_in, faction, cx, cz)
+	end,
+	claim_hint = preview and function(code) return preview.hint(code) end})
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Dawnmere Fields" end}})
 local base = dofile(repo .. "/mods/PLAYER/grug_map/base.lua")
@@ -236,7 +266,7 @@ local function tour(mode, hours, speed)
 		return seed / 2147483648
 	end
 	players.p1, players.p2 = nil, nil
-	seen_textures = {n = 0}
+	seen_textures = {n = 0, claim_n = 0, claim_len = 0, claim_max = 0}
 	local x, z = 0, -1500
 	local angle = rand() * 2 * math.pi
 	local leg = 150 + rand() * 450
@@ -266,17 +296,23 @@ local function tour(mode, hours, speed)
 		clock = clock + DT
 		run_steps()
 	end
-	local n = seen_textures.n
+	local seen = seen_textures
 	seen_textures = nil
-	return n
+	return seen.n, seen
 end
 print(("== texture growth, 1 h walking (4 n/s), cell texture %dx%d px = %.1f KB RGBA8"):format(
 	view.pixels, view.pixels, bytes / 1024))
 for _, mode in ipairs({"none", "held", "alternate"}) do
-	local n = tour(mode, 1, 4)
-	print(("%-10s %5d textures  %5.1f MB"):format(mode, n, n * bytes / 1048576))
+	local n, seen = tour(mode, 1, 4)
+	print(("%-10s %5d textures  %5.1f MB%s"):format(mode, n, n * bytes / 1048576,
+		seen.claim_n > 0 and ("; claim mode's strings %d chars mean, %d largest"):format(
+			math.floor(seen.claim_len / seen.claim_n + 0.5), seen.claim_max) or ""))
 end
 local overlay = 0
 for _, tile in ipairs(installed.minimap.claim.accord) do overlay = overlay + tile.w * tile.h * 4 end
-print(("overlay tiles a client decodes in claim mode: at most 6 (one faction), %.1f MB RGBA8"):format(
-	overlay / 1048576))
+if preview then
+	print("overlay tiles a client decodes in claim mode: none (Round 86: no overlay baked)")
+else
+	print(("overlay tiles a client decodes in claim mode: at most 6 (one faction), %.1f MB RGBA8"):format(
+		overlay / 1048576))
+end

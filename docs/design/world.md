@@ -364,9 +364,9 @@ Implementation: one central `core.is_protected` override in `grug_core`
 
 **Protection hints** (`items_crafting.md` §3.0.4): a refused edit names the
 protecting layer, e.g. "Town – protected", "Landmark – protected", "Road –
-protected", "Village – protected" (and similar for other POI kinds), "Home of
-<owner> – protected" for an active claim, or the territory ("Accord home
-territory – protected").
+protected", "Village – protected" (and similar for other POI kinds), "<home
+name> – protected" with the house icon for an active claim, or the territory
+("Accord home territory – protected").
 
 ## 2b. Ocean zones & deep-sea danger
 
@@ -1007,7 +1007,8 @@ WP17).
   state and those buttons alone, never Enter; they are never a destination
   themselves.
 - **The own Claim Stone** (Round 45 PT9): every list ends with "Your Claim
-  Stone", a waypoint for its owner only, once the stone is activated (a draft
+  Stone", a waypoint for its owner only (every member of an account claim,
+  Round 86), once the stone is activated (a draft
   is none); it stays one when its fuel runs out and goes with the stone
   (picked up, destroyed, removed by an admin). Without one the entry reads a
   greyed "No claim stone". Travel there works like waystone travel (free, no

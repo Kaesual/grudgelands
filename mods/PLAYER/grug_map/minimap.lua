@@ -38,16 +38,24 @@
 -- on every call, so every element keeps what was last sent and only
 -- differences (whole screen pixels) are sent.
 --
--- Claim mode (fix 0.50.2; docs/design/housing.md §2): while a player with a
--- faction holds a Claim Stone, the cell texture also holds the faction's
--- red overlay of forbidden ground (base.lua claim_overlay) and one red
--- rectangle per claim near the cell (grug_housing.claims_in, drafts
--- included), and a green square of the claim's size sits on the arrow. The
--- texture is built again on a cell change, a mode change or a change of the
--- claim set (grug_housing.claim_set_version) and sent only when its string
--- differs; the square changes only with the window. A switched-off minimap
--- appears for claim mode and goes after it. The preview is a guide:
--- grug_housing's validate alone decides a placement.
+-- Claim mode (fix 0.50.2; by map chunks since Round 86 lane PREVIEW;
+-- docs/design/housing.md §2 "Placement preview"): while a player with a
+-- faction holds a Claim Stone (any of grug_housing.STONE_ITEMS), the cell
+-- texture shows the chunk grid: every chunk on it that placement refuses
+-- for the chunk's own sake (grug_housing.chunk_refusal: the claim mask, a
+-- claim already there, the quota, in validate's order; every chunk without
+-- a mask) filled red, a faint line on every chunk edge, the claims framed
+-- as outside claim mode, and the chunk the player stands in framed green,
+-- green inside too when it is free. A line left of the bezel, on a dark box
+-- (minimap_view.lua hint_box), says what the player's chunk is: free, or
+-- why not (grug_housing.claim_hint). The
+-- texture and the line are built again on a cell change, a mode change, a
+-- change of the claim set (grug_housing.claim_set_version) or of the
+-- player's chunk, and sent only when their strings differ: no work per
+-- step beyond the chunk of the position. A switched-off minimap appears for
+-- claim mode and goes after it. A chunk the preview leaves clear can still
+-- refuse a stone for the spot or the player (the chunk's edge, the arrival
+-- cube, depth, a stone already placed); validate's line says so.
 --
 -- Claims outside claim mode (fix 0.50.2 lane HOME, ruling H4): the cell
 -- texture frames the player's own claim in the square's green and every
@@ -70,8 +78,9 @@
 -- the party arrows only then or when a member moved or turned to another of
 -- the 16 heading frames. A player standing still with a still party costs
 -- one position read, one wield-index read, one read of the claim set's
--- version and one mount-table read per step; the held item's name is read
--- only when the wield index changes and every WINDOW seconds (Round 81,
+-- version and one mount-table read per step (in claim mode also the chunk
+-- of the position, two divisions); the held item's name is read only when
+-- the wield index changes and every WINDOW seconds (Round 81,
 -- wielded_name).
 
 local atlas = grug_map.atlas
@@ -109,13 +118,21 @@ local BEZEL = "grug_map_minimap_bezel.png"
 local BEZEL_PX = 256
 -- Every fixed place and own-faction service is now a separate marker.
 -- The pool grows to the visible roster; all slots stay below the bezel.
-local Z = {background = 10, map = 11, square = 12, marker = 20, bezel = 45, party = 50,
+local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50,
 	player = 60}
 -- Claim mode's colours (the plan's starting values, the user tunes them):
--- the claims in the overlay's red (base.lua CLAIM_RED, about 45 % opaque;
--- set by M.install), the player's square green, its fill about 30 % opaque,
--- its frame 80 %.
+-- refused chunks in the old overlay's red (base.lua CLAIM_RED, about 45 %
+-- opaque; set by M.install), the grid's lines black at about 27 % (the
+-- short colour form keeps the texture string short), the
+-- player's chunk in the old square's green, its fill about 30 % opaque,
+-- its frame 80 %. The line beside the bezel: a free chunk in that green
+-- lightened, a refused one in that red lightened, on a box of the "Now
+-- playing" box's grey (fix round 1), about 58 % opaque (fix round 2: at 30 %
+-- the red stayed weak over white cloud); HINT_GAP HUD px from the bezel.
 local SQUARE_FILL, SQUARE_EDGE = "#40d04a4d", "#40d04acc"
+local GRID = "#0004"
+local HINT_FREE, HINT_REFUSED, HINT_GAP = 0x8fe596, 0xff9c8c, 6
+local HINT_BOX = "#34343494"
 -- The claims' frames outside claim mode (lane HOME's starting values, the
 -- user tunes them): the own claim in the square's frame green, the others
 -- in a yellow.
@@ -152,12 +169,12 @@ local function marker_px(frame)
 	return frame.marker
 end
 M.marker_px = marker_px
--- The claims (set by M.install when grug_housing is there): the Claim
--- Stone's item name and half the claim's side (a map chunk, Round 85), for
--- the square on the arrow. Claim mode needs the overlays too: their tiles by
--- faction and the red.
-local housing, STONE, RADIUS
-local claim_tiles, CLAIM_RED
+-- The claims (set by M.install when grug_housing is there); claim mode
+-- needs its chunk preview (chunk_refusal, Round 86): `ORIGIN` the first
+-- node of chunk 0, `CHUNK` its side. Every Claim Stone item turns claim mode
+-- on (grug_housing.is_stone_item, Round 86).
+local housing, ORIGIN, CHUNK
+local claim_ready, CLAIM_RED
 -- The no-fly overlays' tiles by faction (set by M.install when base.lua
 -- rendered them).
 local flight_tiles
@@ -309,7 +326,7 @@ local BACKGROUND -- the sea disc under the map, set by M.install
 local function create(player, state)
 	local hud = {background = image(player, Z.background, true),
 		map = image(player, Z.map, true), bezel = image(player, Z.bezel, true),
-		square = image(player, Z.square, true), markers = {}, by_marker = {}, party = {}}
+		markers = {}, by_marker = {}, party = {}}
 	for i = 1, PARTY_SLOTS do hud.party[i] = image(player, Z.party + i) end
 	-- The player's arrow is a compass element: the client turns it with the
 	-- view every frame, so turning around sends nothing; it stays centred.
@@ -319,15 +336,22 @@ local function create(player, state)
 	hud.location = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
 		alignment = {x = 0, y = 1}, text = "", number = LOCATION_COLOR,
 		z_index = Z.bezel}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
-	hud.all = {hud.background, hud.map, hud.bezel, hud.square, hud.player, hud.location}
+	-- Claim mode's line left of the bezel (Round 86), right-aligned, its
+	-- last line ending at the bezel's bottom, on its box (fix round 1).
+	hud.claim_box = image(player, Z.bezel - 1, true)
+	hud.claim_hint = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
+		alignment = {x = -1, y = -1}, text = "", number = HINT_FREE,
+		z_index = Z.bezel}), text = "", color = HINT_FREE, x = 0, y = 0}
+	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location, hud.claim_box,
+		hud.claim_hint}
 	for _, list in ipairs({hud.markers, hud.party}) do
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
 	state.hud, state.cell_x, state.cell_y, state.static = hud, nil, nil, nil
 	state.near, state.frame_box, state.window = nil, nil, nil
-	-- what the map, markers, party arrows and claim square were last drawn for
+	-- what the map, markers, party arrows and claim line were last drawn for
 	state.mx, state.my, state.drawn_near, state.drawn_frame = nil, nil, nil, nil
-	state.drawn_texture, state.square_frame, state.square_claim = nil, nil, nil
+	state.drawn_texture, state.hint_frame, state.hint_drawn = nil, nil, nil
 	state.party_shown, state.seen, state.members = nil, {}, {}
 	for i = 1, PARTY_SLOTS do state.seen[i] = {} end
 end
@@ -524,10 +548,33 @@ local function update_window(player, state)
 	end
 	local frame = state.frame
 	local location = grug_map.location
-	local text, color = "", nil
-	if location then text, color = location.text_of(player) end
+	local text, color, home = "", nil, false
+	if location then text, color, home = location.text_of(player) end
+	local x, top = frame.center_x, location_top(frame)
+	-- Round 86: a home's name with the house icon before it, both centred
+	-- together (hud_layout.icon_before, the line's default font at the GUI
+	-- scaling); the icon's top on the text's, its middle at the letters'
+	-- (0.6 of an em down, HOME_ICON_EM 1.2 high). A line wider than the
+	-- bezel ends at the bezel's right edge and grows to the left, as "Now
+	-- playing" does (a name of 24 characters is wider). Its element is
+	-- added at the first home.
+	if home and text ~= "" then
+		local icon = layout.icon_before(text, math.floor(layout.FONT_PX * frame.gui), false)
+		x = x + math.min(0, frame.center_x + frame.diameter / 2 - (x + icon.width / 2))
+		if not hud.home_icon then
+			hud.home_icon = image(player, Z.bezel, true)
+			hud.all[#hud.all + 1] = hud.home_icon
+		end
+		local texture = grug_housing.HOME_ICON
+		changes = changes + show(player, frame, hud.home_icon, texture,
+			x + icon.icon_x - icon.size / 2, top,
+			exact(icon.size, texture_size(texture), frame))
+		x = x + icon.text_x
+	elseif hud.home_icon then
+		changes = changes + show(player, frame, hud.home_icon, "")
+	end
 	changes = changes + show_text(player, frame, hud.location, text, color or LOCATION_COLOR,
-		frame.center_x, location_top(frame))
+		x, top)
 	return changes
 end
 
@@ -546,12 +593,19 @@ local function wielded_name(player, state, fresh)
 	return state.wield_name
 end
 
--- Claim mode: the faction whose overlay the player sees while holding a
--- Claim Stone, or nil (another item, no faction, no overlays).
+-- Claim mode: the faction whose preview the player sees while holding a
+-- Claim Stone, or nil (another item, no faction, no grug_housing preview).
 local function claim_mode(player, state, fresh)
-	if not claim_tiles or wielded_name(player, state, fresh) ~= STONE then return nil end
-	local faction = grug_factions.get_faction(player)
-	return faction and claim_tiles[faction] and faction or nil
+	if not claim_ready or not housing.is_stone_item(wielded_name(player, state, fresh)) then
+		return nil
+	end
+	return grug_factions.get_faction(player)
+end
+
+-- The chunk index of node coordinate v (a position rounded to its node, as
+-- grug_housing's claim_at).
+local function chunk_of(v)
+	return math.floor((math.floor(v + 0.5) - ORIGIN) / CHUNK)
 end
 
 -- Flight mode: the faction whose no-fly overlay the player sees while on a
@@ -570,16 +624,70 @@ local function chunk_square(claim)
 	return (x0 + x1) / 2, (z0 + z1) / 2, (x1 - x0) / 2
 end
 
--- The claim part of the cell texture: the faction's overlay tiles and one
--- clipped rectangle per claim on the texture, in id order.
-local function claim_layer(state)
-	local min_x, min_z, max_x, max_z = V.texture_area(view, state.ox, state.oy)
-	local rects = {}
-	for _, claim in ipairs(housing.claims_in(min_x, min_z, max_x, max_z)) do
-		local rect = V.claim_rect(view, state.ox, state.oy, chunk_square(claim))
-		if rect then rects[#rects + 1] = rect end
+-- Claim mode's part of the cell texture (Round 86), in drawing order: every
+-- refused chunk on the texture in red, a run of refused chunks along a row
+-- in one fill, grown over the next rows while they hold the same run; a
+-- grid line on every chunk edge on the texture; the claims'
+-- frames as outside claim mode (the others' yellow, the own green last);
+-- the player's chunk (state.chunk_x/z) framed green, green inside too when
+-- it is free. Returns the layer and the player's chunk's refusal (code and
+-- kind; nil when free).
+local function claim_layer(name, state)
+	local cols, rows = V.chunk_cells(view, state.ox, state.oy, CHUNK, ORIGIN)
+	local faction, rects, by_col, by_row = state.claim, {}, {}, {}
+	for _, col in ipairs(cols) do by_col[col[1]] = col end
+	-- `above`: the previous row's runs by their x span; a run of the same
+	-- span in the next row grows that fill downward instead of adding one
+	local above = {}
+	for _, row in ipairs(rows) do
+		by_row[row[1]] = row
+		local here, x0 = {}, nil
+		for index = 1, #cols + 1 do
+			local col = cols[index]
+			local refused = col and housing.chunk_refusal(faction, col[1], row[1])
+			if refused and not x0 then x0 = col[2] end
+			if not refused and x0 then
+				local x1 = cols[index - 1][3]
+				local key = x0 * 4096 + x1
+				local rect = above[key]
+				if rect then
+					rect.h = row[3] - rect.y
+				else
+					rect = {x = x0, y = row[2], w = x1 - x0, h = row[3] - row[2], color = CLAIM_RED}
+					rects[#rects + 1] = rect
+				end
+				here[key], x0 = rect, nil
+			end
+		end
+		above = here
 	end
-	return {tiles = claim_tiles[state.claim], rects = rects, color = CLAIM_RED}
+	local size = view.combined
+	for _, col in ipairs(cols) do
+		if col[4] >= 0 then rects[#rects + 1] = {x = col[4], y = 0, w = 1, h = size, color = GRID} end
+	end
+	for _, row in ipairs(rows) do
+		if row[4] >= 0 then rects[#rects + 1] = {x = 0, y = row[4], w = size, h = 1, color = GRID} end
+	end
+	local own
+	local function frame(claim, color)
+		local x0, z0 = housing.claim_bounds(claim)
+		local col, row = by_col[math.floor((x0 - ORIGIN) / CHUNK)], by_row[math.floor((z0 - ORIGIN) / CHUNK)]
+		if col and row then V.cell_frame(view, col, row, color, rects) end
+	end
+	for _, claim in ipairs(housing.claims_in(V.texture_area(view, state.ox, state.oy))) do
+		if housing.is_owner(claim, name) then own = claim else frame(claim, OTHER_FRAME) end
+	end
+	if own then frame(own, OWN_FRAME) end
+	local code, kind = housing.chunk_refusal(faction, state.chunk_x, state.chunk_z)
+	local col, row = by_col[state.chunk_x], by_row[state.chunk_z]
+	if col and row then
+		if not code then
+			rects[#rects + 1] = {x = col[2], y = row[2], w = col[3] - col[2], h = row[3] - row[2],
+				color = SQUARE_FILL}
+		end
+		V.cell_frame(view, col, row, SQUARE_EDGE, rects)
+	end
+	return {rects = rects}, code, kind
 end
 
 -- The claims near the cell outside claim mode: the others' frames first,
@@ -589,7 +697,7 @@ local function frame_layer(name, state)
 	local min_x, min_z, max_x, max_z = V.texture_area(view, state.ox, state.oy)
 	local rects, own = {}, nil
 	for _, claim in ipairs(housing.claims_in(min_x, min_z, max_x, max_z)) do
-		if claim.owner == name then
+		if housing.is_owner(claim, name) then
 			own = claim
 		else
 			local cx, cz, half = chunk_square(claim)
@@ -603,14 +711,19 @@ local function frame_layer(name, state)
 	return rects[1] and {rects = rects} or nil
 end
 
--- The player's green square in claim mode, hidden otherwise.
-local function draw_square(player, state, frame)
-	local element = state.hud.square
-	if not state.claim then return show(player, frame, element, "") end
-	local square = V.claim_square(view, frame, RADIUS)
-	return show(player, frame, element,
-		V.claim_square_texture(square, SQUARE_FILL, SQUARE_EDGE), square.x, square.y,
-		exact(square.size, square.size, frame))
+-- Claim mode's line (state.hint, state.hint_free) left of the bezel on its
+-- dark box, both ending at the bezel's bottom (minimap_view.lua hint_box);
+-- both hidden outside claim mode.
+local function draw_hint(player, state, frame)
+	local hud = state.hud
+	if not state.hint then
+		return show(player, frame, hud.claim_box, "") + show_text(player, frame, hud.claim_hint, "")
+	end
+	local g = V.hint_box(frame, state.hint, HINT_GAP)
+	return show(player, frame, hud.claim_box, ("[fill:%dx%d:%s"):format(g.w, g.h, HINT_BOX),
+			g.x, g.y, exact(g.w, g.w, frame)) +
+		show_text(player, frame, hud.claim_hint, state.hint,
+			state.hint_free and HINT_FREE or HINT_REFUSED, g.text_x, g.text_y)
 end
 
 -- The map element and the markers inside the hole, for the map corner
@@ -737,18 +850,27 @@ local function update(player, state, slow, window)
 	local cx, cy = V.cell(view, pos.x, pos.z)
 	local version = housing and housing.claim_set_version() or nil
 	local flight = flight_mode(player)
+	-- In claim mode the player's chunk too (it can change inside a cell).
+	local chunk_x, chunk_z
+	if claim then chunk_x, chunk_z = chunk_of(pos.x), chunk_of(pos.z) end
 	if cx ~= state.cell_x or cy ~= state.cell_y or claim ~= state.claim or
-			version ~= state.claim_version or flight ~= state.flight then
+			version ~= state.claim_version or flight ~= state.flight or
+			chunk_x ~= state.chunk_x or chunk_z ~= state.chunk_z then
 		if cx ~= state.cell_x or cy ~= state.cell_y then
 			state.cell_x, state.cell_y = cx, cy
 			state.ox, state.oy = V.origin(view, cx, cy)
 			state.near = nil
 		end
 		state.claim, state.claim_version, state.flight = claim, version, flight
-		-- The recipe is built again; the client gets it only when it differs.
+		state.chunk_x, state.chunk_z = chunk_x, chunk_z
+		-- The recipe and claim mode's line are built again; the client gets
+		-- them only when they differ.
 		local layer
+		state.hint = nil
 		if claim then
-			layer = claim_layer(state)
+			local code, kind
+			layer, code, kind = claim_layer(player:get_player_name(), state)
+			state.hint, state.hint_free = housing.claim_hint(code, kind), code == nil
 		elseif housing then
 			layer = frame_layer(player:get_player_name(), state)
 		end
@@ -759,9 +881,9 @@ local function update(player, state, slow, window)
 			M.stats.textures = M.stats.textures + 1
 		end
 	end
-	if frame ~= state.square_frame or state.claim ~= state.square_claim then
-		state.square_frame, state.square_claim = frame, state.claim
-		changes = changes + draw_square(player, state, frame)
+	if frame ~= state.hint_frame or state.hint ~= state.hint_drawn then
+		state.hint_frame, state.hint_drawn = frame, state.hint
+		changes = changes + draw_hint(player, state, frame)
 	end
 	if slow then state.party = nil end
 	if slow or not state.static then
@@ -894,15 +1016,13 @@ function M.install(installed)
 	reference_hole = nil
 	-- the sea disc beyond the base: the open sea's colour (base.lua)
 	BACKGROUND = M.mask .. "^[multiply:" .. grug_map.base.OPEN_SEA_HEX
-	-- The claims' frames need grug_housing; claim mode the overlays
-	-- (base.lua) too.
+	-- The claims' frames need grug_housing; claim mode its chunk preview too
+	-- (Round 86: nothing is baked into the base for it any more).
 	housing = rawget(_G, "grug_housing")
-	if housing then
-		STONE, RADIUS = housing.STONE_ITEM, (housing.CHUNK - 1) / 2
-		if mini.claim then
-			claim_tiles = mini.claim
-			CLAIM_RED = ("#%02x%02x%02x%02x"):format(unpack(grug_map.base.CLAIM_RED))
-		end
+	claim_ready = housing ~= nil and type(housing.chunk_refusal) == "function"
+	if claim_ready then
+		ORIGIN, CHUNK = housing.CHUNK_ORIGIN, housing.CHUNK
+		CLAIM_RED = ("#%02x%02x%02x%02x"):format(unpack(grug_map.base.CLAIM_RED))
 	end
 	flight_tiles = mini.flight
 end

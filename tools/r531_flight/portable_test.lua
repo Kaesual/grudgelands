@@ -21,16 +21,18 @@
 --      the centre column of any render pixel in it (high); sample points in
 --      every rule outcome agree; no faction-less overlay;
 --   I  install on that world at the game's size: both factions' no-fly
---      tiles announced and handed to the minimap beside the Claim Stone
---      overlays; a failing flight rule keeps the base, the minimap's copy and
---      the claim overlays, without flight tiles and with another key; without
---      grug_mounts the key is the 0.53.0 one;
+--      tiles announced and handed to the minimap (and, since Round 86, no
+--      Claim Stone overlay: the minimap draws that preview per chunk); a
+--      failing flight rule keeps the base and the minimap's copy, without
+--      flight tiles and with another key; without grug_mounts the key is the
+--      0.53.0 one;
 --   M  minimap runtime: the faction's no-fly tiles in the cell texture only
 --      while the player sits on a flying mount (grug_mounts.is_flying over
 --      the real active table): not on foot, a ground mount or a boat, not
 --      without a faction; after the map's tiles and before the Claim Stone
---      layer; dismounting restores the plain texture string; a still flyer
---      sends nothing; a switched-off minimap stays off.
+--      layer (its chunk fills since Round 86); dismounting restores the
+--      plain texture string; a still flyer sends nothing; a switched-off
+--      minimap stays off.
 -- Prints "R531 FLIGHT PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -210,8 +212,8 @@ do
 		local label = render_size == 60 and "O normal" or "O high"
 		local spec = {quality = "normal", width = render_size, height = render_size,
 			relief_step = 8, relief = B.RELIEF, minimap = {quality = "normal", width = W, height = H}}
-		local _, _, claims, flights = B._render(zones, VIEW, spec, nil, nil, flight)
-		eq(claims, nil, label .. ": no claim overlays without the claim rules")
+		-- Round 86: render takes and returns no Claim Stone overlays
+		local _, _, flights = B._render(zones, VIEW, spec, nil, flight)
 		local scale = 400 / render_size
 		for _, faction in ipairs(FACTIONS) do
 			local tiles = flights and flights[faction]
@@ -253,7 +255,7 @@ do
 	-- sample points (normal size): a pixel centre column in each outcome
 	local spec = {quality = "normal", width = W, height = H, relief_step = 8, relief = B.RELIEF,
 		minimap = {quality = "normal", width = W, height = H}}
-	local _, _, _, flights = B._render(zones, VIEW, spec, nil, nil, flight)
+	local _, _, flights = B._render(zones, VIEW, spec, nil, flight)
 	local function red_at(faction, x, z)
 		local i = math.floor((x - VIEW.min_x) * W / 400)
 		local j = math.floor((VIEW.max_z - z) * H / 400)
@@ -334,12 +336,13 @@ do
 	check(good.minimap and good.minimap.flight and good.minimap.flight.accord and
 		good.minimap.flight.throng and good_count.flight == 18,
 		"I install: both factions' no-fly tiles announced and handed to the minimap")
-	check(good.minimap.claim and good_count.claim == 18, "I install: the claim overlays stay")
+	-- Round 86: the Claim Stone overlays are no longer baked
+	check(good.minimap.claim == nil and good_count.claim == 0, "I install: no Claim Stone overlay")
 	eq(good.minimap.flight.accord[1].name, "grug_map_flight_accord_0_0.png", "I the tile names")
 	local bad, bad_count, bad_key = install("fail")
 	check(bad.tiles and #bad.tiles == 9 and bad.minimap and bad.minimap.tiles and
-		#bad.minimap.tiles == 9 and bad.minimap.claim and bad_count.claim == 18,
-		"I a failing flight rule: the base, the minimap's copy and the claim overlays stay")
+		#bad.minimap.tiles == 9 and bad_count.claim == 0,
+		"I a failing flight rule: the base and the minimap's copy stay")
 	check(bad.minimap.flight == nil and bad_count.flight == 0,
 		"I a failing flight rule: no flight tiles")
 	check(bad_key and good_key and bad_key ~= good_key, "I a failing flight rule: another key")
@@ -407,15 +410,20 @@ local model = registry({storage = {get_string = function(k) return data[k] or ""
 	keys = function() return {} end}, now = function() return 1800000000 end})
 model.load()
 rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", CHUNK = model.CHUNK,
+	CHUNK_ORIGIN = model.CHUNK_ORIGIN,
 	claim_bounds = model.claim_bounds, claims_in = model.claims_in,
-	claim_set_version = model.claim_set_version})
+	claim_set_version = model.claim_set_version,
+	-- Round 86: the owner question and the stone item set (grug_housing api.lua)
+	is_owner = model.is_owner,
+	is_stone_item = function(name) return name == "grug_housing:claim_stone" end,
+	-- Round 86: the chunk preview (here every chunk refused, as without a mask)
+	chunk_refusal = function() return "no_mask" end,
+	claim_hint = function() return "No Claim Stone can be placed" end})
 rawset(_G, "grug_map", {quest_slots = function() return {} end, atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Somewhere" end}})
 grug_map.base = B
 local mini = {quality = "normal", width = 1080, height = 960,
 	tiles = B.tiles(1080, 960, B.MINI_PREFIX),
-	claim = {accord = B.tiles(1080, 960, B.CLAIM_PREFIX .. "_accord"),
-		throng = B.tiles(1080, 960, B.CLAIM_PREFIX .. "_throng")},
 	flight = {accord = B.tiles(1080, 960, B.FLIGHT_PREFIX .. "_accord"),
 		throng = B.tiles(1080, 960, B.FLIGHT_PREFIX .. "_throng")}}
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
@@ -466,9 +474,9 @@ eq(sent, 0, "M a still flyer sends nothing")
 me.wield = "grug_housing:claim_stone"
 step()
 local both = minimap.texture_of(me)
-check(both:find("grug_map_flight_accord_", 1, true) and both:find("grug_map_claim_accord_", 1, true)
-	and both:find("grug_map_flight_accord_", 1, true) < both:find("grug_map_claim_accord_", 1, true),
-	"M stone on a flyer: the no-fly tiles under the claim overlay")
+check(both:find("grug_map_flight_accord_", 1, true) and both:find("^[fill", 1, true)
+	and both:find("grug_map_flight_accord_", 1, true) < both:find("^[fill", 1, true),
+	"M stone on a flyer: the no-fly tiles under the claim preview")
 me.wield = ""
 step()
 eq(minimap.texture_of(me), flying, "M the stone put away: the flight texture again")

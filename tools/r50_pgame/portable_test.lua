@@ -31,7 +31,11 @@
 --      contents place empty with a warning (ruling 15), a protected and an
 --      invalid spot keep the item and its contents, a packed container that
 --      no longer fits is refused and kept;
---   F. the join notice and the Housing Steward's line.
+--   F. the join notice and the Housing Steward's line;
+--   G. Round 86 (lane PACK): a joining member's chest moves to the account
+--      with its contents, two members see it at the account claim's stone,
+--      one takes it, the other's stale slot takes nothing and both forms
+--      are drawn again (the key forms: tools/r86_pack).
 --
 --   luajit tools/r50_pgame/portable_test.lua [REPO]
 -- Prints "R50 PGAME PORTABLE PASS checks=<n>", or the failures and raises.
@@ -742,7 +746,8 @@ grug_housing = {}
 local HP = ROOT .. "/mods/PLAYER/grug_housing/"
 -- Round 81: the bound-item seam soulbound.lua registers its rule with.
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bound.lua")
-for _, file in ipairs({"api.lua", "soulbound.lua", "packed.lua", "recovered.lua",
+-- Round 86: account.lua (the account Claim Stone's side of the Steward).
+for _, file in ipairs({"api.lua", "account.lua", "soulbound.lua", "packed.lua", "recovered.lua",
 		"interface.lua"}) do
 	dofile(HP .. file)
 end
@@ -1314,7 +1319,68 @@ do
 		"F the Steward says the same")
 	check(H.open_manager(carl, entity), "F the Steward talks to carl")
 	lacks(last_shown("carl").fs, "Belongings", "F ...and says nothing of it to a player without")
-	has(last_shown("carl").fs, "size[11.500,8.600]", "F ...in the themed form without a belongings notice")
+	-- Round 86: 3.1 taller with the choice of the two stones (lane STONE).
+	has(last_shown("carl").fs, "size[11.500,11.700]", "F ...in the themed form without a belongings notice")
+end
+
+------------------------------------------------------------------------------
+-- G. Round 86 (lane PACK): an account claim's belongings at its stone, two
+-- members' views. Lane STONE's membership and owner text are faked: the
+-- model's account_owner_of, the members' player_claim, the record's owner.
+------------------------------------------------------------------------------
+do
+	local ACC = "account:a_9:accord"
+	local members = {}
+	local model_owner_of, player_claim = H.model.account_owner_of, H.player_claim
+	local acc_claim
+	H.model.account_owner_of = function(name) return members[name] end
+	H.player_claim = function(name)
+		if members[name] and acc_claim then return acc_claim, "placed" end
+		return player_claim(name)
+	end
+	-- dave's waiting chest of 32 books moves to the account as he joins it.
+	local chest = stored("recovered:dave:2:1")
+	local key = "recovered:" .. ACC .. ":2:1"
+	members.dave = ACC
+	eq(R.move_to_account("dave", ACC), 1, "G dave's chest moves to the account at his join")
+	eq(stack_of(key):get_meta():get_string("ref"), "packed:" .. ACC .. ":2:1",
+		"G ...its reference with it")
+	eq(#P.stacks(contents_of(key)), 32, "G ...and its 32 books")
+	check(stored("recovered:dave:2:1") == "" and stored("packed:dave:2:1") == "",
+		"G nothing left under dave")
+	local expected = ItemStack(chest)
+	expected:get_meta():set_string("ref", "packed:" .. ACC .. ":2:1")
+	eq(stored(key), expected:to_string(), "G the item changed only in its reference")
+
+	local hal, ivy = new_player("hal", 8), new_player("ivy", 8)
+	members.hal, members.ivy = ACC, ACC
+	H.model.issue("hal", 30, false)
+	acc_claim = H.model.create("hal", {x = 500, y = 10, z = 500})
+	H.model.activate(acc_claim, 5)
+	acc_claim.owner = ACC
+	hal.pos, ivy.pos = {x = 500, y = 11, z = 500}, {x = 501, y = 11, z = 500}
+	for _, p in ipairs({hal, ivy}) do
+		check(H.open_stone_interface(p, acc_claim), "G " .. p.name .. " opens the account's stone")
+		has(last_shown(p.name).fs, "stone_tab_2;Belongings (1)]", "G ...with the account's belongings")
+		submit(p, {stone_tab_2 = "Belongings"})
+		eq(slot(p.name, 1), stored(key), "G ..." .. p.name .. " sees the chest in slot 1")
+	end
+	local before = #shown
+	eq(engine_take(hal, 1, 1, "main", 1), 1, "G hal takes the chest")
+	eq(hal.inv:get_stack("main", 1):to_string(), slot("ivy", 1), "G ...exactly the entry's item")
+	eq(stored(key), "", "G ...its entry is gone")
+	eq(engine_take(ivy, 1, 1, "main", 1), 0, "G ivy's stale slot takes nothing")
+	eq(ivy.inv:get_stack("main", 1):to_string(), "", "G ...nothing arrives: no duplicate")
+	run_afters()
+	local redrawn = {}
+	for i = before + 1, #shown do redrawn[shown[i].name] = shown[i].fs end
+	check(redrawn.hal and redrawn.ivy, "G the take redraws both members' forms")
+	lacks(redrawn.ivy or "", "Belongings (", "G ...ivy's without the emptied tab")
+	eq(#P.stacks(P.contents(hal.inv:get_stack("main", 1))), 32,
+		"G hal's chest still unpacks with its 32 books")
+	members.ivy = nil
+	check(not H.open_stone_interface(ivy, acc_claim), "G after leaving ivy has no rights there")
+	H.model.account_owner_of, H.player_claim = model_owner_of, player_claim
 end
 
 if failures > 0 then

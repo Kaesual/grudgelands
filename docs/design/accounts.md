@@ -3,7 +3,9 @@
 Decided 2026-11-14 to 2026-11-16 (the user's rulings); phase 1 implemented in
 Round 79, version 0.79.0 (`grug_accounts`, the bridge side in `grug_bridge`,
 the account cloak in `grug_achievements`), phase 2 in Round 80, version 0.80.0
-(the donor cloaks in `grug_achievements`, the Cheer emote in `grug_quickbar`).
+(the donor cloaks in `grug_achievements`, the Cheer emote in `grug_quickbar`);
+the Account page "The Charter" with the website's default rewards in Round 86,
+version 0.86.0.
 Provenance: [Round 79 plan](../planning/round79-plan.md) and
 [Round 80 plan](../planning/round80-plan.md), each §2 (rulings), §3.1
 (coordinator defaults, built as written below; whether the user confirms them
@@ -51,12 +53,20 @@ builds on; it is not repeated here.
     Wintercourt and Frost Regent.
 14. **Reward cloaks always have wings** (2026-11-16): the wings mark the
     "better" cloaks.
+15. **The Account page is "The Charter"** (Round 86 ruling 3, the mock-up
+    `tools/r84_account_mock`): its steps tell the player to press the
+    website's button that creates the code, labelled "Create Character" (the
+    user, 2026-11-21; the label is the website's and one constant in the game,
+    `grug_accounts.CODE_BUTTON`).
+16. **Which rewards every linked account gets** is the website owner's
+    setting; the game only shows what the website sends, also to a character
+    that is not linked (Round 86 ruling 4).
 
 The user's choices during Round 79 (2026-11-15), on the screenshots:
 
 - A character still in **character creation** sees only one line on the
   Account page ("Finish creating your character first. You can link it
-  afterwards."), no code field and no Link button.
+  afterwards."), no code field and no button.
 - A **re-granted** account cloak is worn again: the character's cloak choice
   is kept when the account loses the cloak, so a later grant puts it back on.
 - **The tab's place** follows the inventory's registration order (after
@@ -68,29 +78,42 @@ The user's choices during Round 79 (2026-11-15), on the screenshots:
   on a realm whose website supports accounts: the bridge is active and the
   game has received the website's first list. It appears at the inventory
   window's next build after that list. Without it nothing changes.
-- **Not linked:** the page says what an account gives ("Rewards on your
-  website account reach all your characters."), how to link (sign in on
-  `grudgelands.com/play`, link there with the character's name and password,
-  or create a code there and enter it here), the code field and **Link**.
-  Lower case, spaces and the hyphen are accepted; a code that is not 10
-  symbols of the alphabet is refused at once, without asking the website.
-- **Waiting:** after Link and after the confirmation the page says that the
+- **The page** is "The Charter": a framed panel on the left with the crest
+  and, on the right, the column with the actions.
+- **Not linked:** the panel shows "Every linked account gets" and the rewards
+  the website names as every linked account's (its `default_rewards`, at most
+  four, each with its icon, name and kind; one alone also with the hint where
+  to use it); without any the panel shows only the crest and nothing else
+  changes. The column says "Link your character", then three steps: open the
+  website (`grudgelands.com/play` and **Open website**, which the client
+  confirms before it opens a browser), sign in and press "Create Character"
+  (the code is valid for 10 minutes; a line below says the character can
+  instead be linked there with its name and password), and enter the
+  10-character code in the field with **Check code**. Lower case, spaces and
+  the hyphen are accepted; a code that is not 10 symbols of the alphabet is
+  refused at once, without asking the website. These rewards are only shown:
+  a character gets a reward only from its own account.
+- **Waiting:** after Check code and after the confirmation the page says that the
   website is being asked, that this can take a few seconds and that the player
   should wait. The buttons are shown inert; the page changes by itself when
   the answer arrives. Without an answer for 30 s: "The website did not
   answer. Please try again later."
-- **The offer:** "Link <character> to the website account <name>?", the
-  warning "Only link to your own account. Only an administrator can undo a
-  link.", a green **Link** and a red **Cancel**. An offer not confirmed within
+- **The offer:** "Confirm your account", "Link <character> to the website
+  account" with the account's name, the warning "Only link to your own
+  account." and "Only a website administrator can undo a link.", a green
+  **Confirm link** and a red **Cancel**. An offer not confirmed within
   2 minutes lapses; logging out cancels it.
 - **Refusals** each have their own line (unknown, expired or used code, an
   account with 10 characters, a character already linked, too many attempts).
   At most 5 link requests per character in 10 minutes (reset by a relog; the
   website limits on its own as well).
-- **Linked:** "Linked to the website account <name>." and the account's
-  rewards in two columns, filled left to right (icon, name, kind and where to
-  use it), or "Your account has no rewards yet." The card holds up to 18
-  rewards at every text size.
+- **Linked:** the panel names the account ("LINKED WEBSITE ACCOUNT", its
+  name, "Linked to <character>"); the column lists "Your rewards" (icon,
+  name, kind and where to use it; one or two as wide rows, more in two
+  columns whose rows shrink, the hint then only in the row's tooltip; up to
+  18 fit) or "Your account has no rewards yet.", and below them "Missing a
+  reward or want to unlink? Ask a website administrator." with the address
+  and **Open website**.
 - **Notices** in the message feed, each once: "This character is now linked
   to the website account <name>." (a binding by password, or one made while
   the character was offline), "This character is no longer linked to a website
@@ -118,8 +141,9 @@ The user's choices during Round 79 (2026-11-15), on the screenshots:
 ## For an administrator
 
 - **On the website:** create codes, grant and remove rewards per account (from
-  the catalogue the game reports), unlink a character, rename or delete an
-  account, set a linked character's password. Every change reaches the game as
+  the catalogue the game reports), set the rewards every linked account gets
+  (sent as `default_rewards`; the game only shows them), unlink a character,
+  rename or delete an account, set a linked character's password. Every change reaches the game as
   a new list; the game applies any list whose version differs.
 - **In the game** there is nothing to set up beyond the
   [bridge's settings](../technical/web-bridge.md#settings). Without the bridge
@@ -162,7 +186,9 @@ administrator's character cannot be deleted this way.
 
 ## Later phases
 
-More Supporter content (the money-cannon emote and others), account bans, characters created through a bridge command
-and the shared Claim Stone are the
+More Supporter content (the money-cannon emote and others), account bans and characters created through a bridge command
+are the
 [concept's](../planning/accounts-concept.md) §4–§5; each comes with its own
 amendment to the [contract](../technical/web-accounts.md#10-outlook-later-amendments).
+The shared Claim Stone came with 0.86.0 as the Account Claim Stone
+([housing.md](housing.md) §3b), with nothing new from the website.

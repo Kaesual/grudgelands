@@ -263,6 +263,11 @@ do
 	_G.grug_housing = {model = model, storage = storage,
 		STONE_NODES = {["grug_housing:claim_stone"] = true},
 		player_claim = function(name) return model.player_claim(name) end,
+		-- Round 86: whom a claim's notices reach, and the end of a membership
+		-- (no account claim here; tools/r86_stone tests a member's deletion).
+		owner_names = model.owner_names,
+		is_owner = model.is_owner,
+		end_account_membership = function() return false end,
 		register_on_claim_changed = function(fn) listeners[#listeners + 1] = fn end,
 		notify_claim_changed = function(claim, event)
 			events[#events + 1] = event .. ":" .. claim.id

@@ -15,7 +15,11 @@
 -- Storage keys:
 --   list           the applied list, cleaned: {version, characters =
 --                  {{name, character_id, account_id}}, accounts = {{id, name,
---                  rewards = {id...}}}}
+--                  rewards = {id...}}}, default_rewards = {id...}}; a list
+--                  applied since 0.86.0 always has default_rewards (empty when
+--                  the website sent none): a stored list without it was
+--                  applied before the game reported rewards.defaults, and the
+--                  game then reports version 0 (web-accounts.md §5.1)
 --   id:<name>      the id index, the name in lower case: a character id, or
 --                  M.TOMBSTONE (written by the deletion of the character,
 --                  Round 83: M.forget)
@@ -37,6 +41,8 @@ return function(api)
 	local INDEX_PREFIX = "id:"
 
 	local version = 0
+	local marked = false  -- the held list was applied under rewards.defaults
+	local defaults = {}   -- default_rewards as stored, in the order sent
 	local bindings = {}   -- lower name -> {name, character_id, account_id}
 	local accounts = {}   -- account id -> {id, name, rewards = {id -> true}}
 	local catalog = {}    -- the registered rewards, in registration order
@@ -186,11 +192,25 @@ return function(api)
 			end
 		end
 		table.sort(list.characters, function(a, b) return a.name:lower() < b.name:lower() end)
+		-- default_rewards (§5.2, 2026-11-22): well-formed ids, each once, in
+		-- the order sent; an id the catalogue does not know stays stored.
+		-- Missing, null or not a list: none.
+		list.default_rewards = {}
+		local listed, dropped = {}, 0
+		for _, reward in ipairs(array(sent.default_rewards)) do
+			if M.valid_reward_id(reward) and not listed[reward] then
+				listed[reward] = true
+				list.default_rewards[#list.default_rewards + 1] = reward
+			else
+				dropped = dropped + 1
+			end
+		end
+		if dropped > 0 then warn(("dropped %d malformed or repeated default reward ids"):format(dropped)) end
 		return list
 	end
 
 	local function index_list(list)
-		version, bindings, accounts = list.version, {}, {}
+		version, bindings, accounts, defaults = list.version, {}, {}, list.default_rewards
 		for _, account in ipairs(list.accounts) do
 			local rewards = {}
 			for _, reward in ipairs(account.rewards) do rewards[reward] = true end
@@ -216,30 +236,45 @@ return function(api)
 		local raw = storage:get_string(LIST_KEY)
 		local stored = raw ~= "" and api.deserialize(raw) or nil
 		local list = build(stored, true)
-		if list then index_list(list) end
+		if list then
+			index_list(list)
+			marked = type(stored.default_rewards) == "table"
+		end
 	end
 
+	-- The held list's version: what the game applies and shows.
 	function M.version()
 		return version
 	end
 
+	-- The version the game reports as accounts_version (§5.1, 2026-11-22):
+	-- 0 while the held list was applied before the game reported
+	-- rewards.defaults, so the website sends it once more with the field.
+	function M.reported_version()
+		return marked and version or 0
+	end
+
 	-- Applies the list the website sent when its version differs from the
-	-- held one (also a lower one: a restored backup). Answers nil when the
-	-- list was ignored or held already, else the names whose binding, account
-	-- name or rewards changed (sorted; possibly none).
+	-- held one (also a lower one: a restored backup), and any version while
+	-- the game reports 0 for a list from before rewards.defaults. Answers nil
+	-- when the list was ignored or held already, else the names whose
+	-- binding, account name or rewards changed (sorted; possibly none) and
+	-- whether the default rewards changed.
 	function M.apply(sent)
 		local list = build(sent)
 		if not list then
 			log("warning", "ignored an account list without a version")
 			return nil
 		end
-		if list.version == version then return nil end
+		if list.version == version and marked then return nil end
+		local old_defaults = table.concat(defaults, ",")
 		local before, names = {}, {}
 		for key, binding in pairs(bindings) do
 			before[key] = {name = binding.name, signature = signature(key)}
 		end
 		local previous = bindings
 		index_list(list)
+		marked = true
 		storage:set_string(LIST_KEY, api.serialize(list))
 		for key, binding in pairs(bindings) do
 			local old = before[key]
@@ -258,7 +293,23 @@ return function(api)
 			end
 		end
 		table.sort(names)
-		return names
+		return names, table.concat(defaults, ",") ~= old_defaults
+	end
+
+	-- The rewards every linked account gets (§5.2 default_rewards, display
+	-- only): the first `max` ids of the held list the catalogue knows, in
+	-- the order sent, as catalogue entries.
+	function M.default_rewards(max)
+		local out = {}
+		for _, id in ipairs(defaults) do
+			local entry = catalog_by_id[id]
+			if entry then
+				out[#out + 1] = {id = entry.id, kind = entry.kind, name = entry.name, icon = entry.icon,
+					hint = entry.hint, description = entry.description}
+				if max and #out >= max then break end
+			end
+		end
+		return out
 	end
 
 	--

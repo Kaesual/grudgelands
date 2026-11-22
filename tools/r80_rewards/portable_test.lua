@@ -17,10 +17,13 @@
 --      falls back to No cloak and redraws; a worn donor cloak survives the
 --      loss of another; an earned Supporter Cloak and a donor cloak together;
 --   P  the Account page with all seven account cloaks at text scale 1 and
---      0.5: two columns, every cell inside the card and the card inside the
---      20 x 13.5 body, the text's rough width inside its column; a stub
---      catalogue of 18 rewards (an emote among them) still inside, and the
---      real catalogue within those 18.
+--      0.5: two columns, every cell inside the linked column above its help
+--      block, the text's rough width inside its column; a stub catalogue of
+--      18 rewards (an emote among them) still inside, and the real catalogue
+--      within those 18. (Round 86 rebuilt the page as "The Charter": the
+--      rewards fill the right column of the linked page, one or two as wide
+--      rows, more in two columns whose rows shrink; a row without room for
+--      its hint keeps it in its tooltip.)
 
 local repo = arg and arg[1] or "."
 local checks = 0
@@ -411,7 +414,9 @@ eq(A.selected_cloak(dara), "none", "W5 Dara back to No cloak")
 -- P: the Account page holds every reward
 --
 
-local CARD_X = 3.5
+-- The linked column (page.lua): rewards between its first rule and the
+-- help block.
+local COL_X, COL_W, TOP, BOTTOM = 8.49, 10.76, 3.15, 9.56
 -- Rough widths in form units per character at text scale 1 (measured on the
 -- Round 79 capture: about 0.135 for the bold name, 0.1 for the hint at 0.9;
 -- with a margin).
@@ -421,49 +426,49 @@ local function strip(text)
 	return (text:gsub("\27%(c@[^)]*%)", ""):gsub("\\(.)", "%1"))
 end
 
--- The card, the rewards' images and labels of a linked page, and the
+-- The rewards' frames, names, hints and tooltips of a linked page, and the
 -- checks every layout must pass.
-local function layout(fs, scale, count, label)
-	local cx, cy, cw, ch = fs:match("background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_ui_panel")
-	cx, cy, cw, ch = tonumber(cx), tonumber(cy), tonumber(cw), tonumber(ch)
-	check(cx and cy + ch <= 13.5 + 1e-6, label .. " the card inside the body (" .. tostring(ch) .. ")")
-	eq(cx, CARD_X, label .. " the card's x")
-	local images, columns = 0, {}
-	for x, y in fs:gmatch("image%[([%d.]+),([%d.]+);0%.8,0%.8;") do
-		x, y = tonumber(x), tonumber(y)
-		images = images + 1
+local function layout(fs, _, count, label)
+	local frames, columns = {}, {}
+	for x, y, size in fs:gmatch("box%[([%d.]+),([%d.]+);([%d.]+),[%d.]+;#a995674b%]") do
+		x, y, size = tonumber(x), tonumber(y), tonumber(size)
+		frames[#frames + 1] = {x = x, y = y, size = size}
 		columns[x] = true
-		check(x >= cx and x + 0.8 <= cx + cw and y >= cy and y + 0.8 <= cy + ch,
-			label .. " icon " .. images .. " inside the card")
+		check(x >= COL_X and x + size <= COL_X + COL_W and y >= TOP and y + size <= BOTTOM,
+			label .. " icon " .. #frames .. " inside the column")
 	end
-	eq(images, count, label .. " one icon per reward")
+	eq(#frames, count, label .. " one icon per reward")
 	local xs = {}
 	for x in pairs(columns) do xs[#xs + 1] = x end
 	table.sort(xs)
-	eq(#xs, math.min(2, count), label .. " two columns")
-	local right = {}
-	for index, x in ipairs(xs) do right[index] = xs[index + 1] or (cx + cw - 0.5) end
+	eq(#xs, count <= 2 and 1 or 2, label .. " the columns")
+	-- A column ends at the next column's frame (or the column's edge).
 	local function column_end(x)
-		for index, left in ipairs(xs) do
-			if math.abs(left + 1.0 - x) < 1e-6 then return right[index] end
+		local stop = COL_X + COL_W
+		for _, left in ipairs(xs) do
+			if left > x and left < stop then stop = left end
+		end
+		return stop
+	end
+	-- Every name and hint label right of a frame or under it fits its column.
+	local names, hints = 0, 0
+	for weight, size, x, y, text in fs:gmatch("style_type%[label;font=(%a+);font_size=%*([%d.]+)%]" ..
+			"label%[([%d.]+),([%d.]+);([^%]]*)%]") do
+		x, y, size = tonumber(x), tonumber(y), tonumber(size)
+		local plain = strip(text)
+		if x >= COL_X and y > TOP and y < BOTTOM and plain ~= "Cloak" and plain ~= "Emote" then
+			local per = weight == "bold" and BOLD_W or HINT_W
+			-- `size` is the font size with the text scale in it.
+			check(x + per * size * #plain <= column_end(x) + 1e-6,
+				("%s %q fits its column (%.2f > %.2f)"):format(label, plain, x + per * size * #plain,
+				column_end(x)))
+			if weight == "bold" then names = names + 1 else hints = hints + 1 end
 		end
 	end
-	-- Name and hint labels sit 1.0 right of their icon; each must end before
-	-- the next column (or the card's inner edge) at this text scale.
-	local labels = 0
-	for x, y, text in fs:gmatch("label%[([%d.]+),([%d.]+);([^%]]*)%]") do
-		x, y = tonumber(x), tonumber(y)
-		local stop = column_end(x)
-		if stop and y > 3.85 then
-			labels = labels + 1
-			local plain = strip(text)
-			local per = (plain:find("  ", 1, true) and BOLD_W or HINT_W) * scale
-			check(x + per * #plain <= stop, ("%s %q fits its column (%.2f > %.2f)"):format(label,
-				plain, x + per * #plain, stop))
-			check(y >= cy and y <= cy + ch, label .. " label inside the card")
-		end
-	end
-	eq(labels, count * 2, label .. " a name and a hint per reward")
+	eq(names, count, label .. " a name per reward")
+	local tips = select(2, fs:gsub("tooltip%[", ""))
+	eq(tips, count, label .. " a tooltip per reward")
+	return hints
 end
 
 local ALL = {}
@@ -478,11 +483,11 @@ for _, scale in ipairs({1, 0.5}) do
 	for _, id in ipairs(book.account_cloaks) do
 		has(fs, core.formspec_escape(book.cloak[id].name), "P1 " .. id .. " listed")
 	end
-	layout(fs, scale, 7, "P1 seven cloaks at " .. scale)
+	eq(layout(fs, scale, 7, "P1 seven cloaks at " .. scale), 7, "P1 a hint under each at " .. scale)
 end
 
--- A stub catalogue of 18 rewards (nine rows, the most the card holds), an
--- emote and long names among them; the real catalogue stays within that.
+-- A stub catalogue of 18 rewards (nine rows), an emote and long names among
+-- them; the real catalogue stays within that.
 local real_catalog, real_rewards = grug_accounts.catalog, grug_accounts.rewards_of
 local STUB = {}
 for index = 1, 18 do
@@ -500,16 +505,17 @@ grug_accounts.rewards_of = function()
 end
 for _, scale in ipairs({1, 0.5}) do
 	UI.text_scale = function() return scale end
-	layout(view(rowan), scale, 18, "P2 eighteen rewards at " .. scale)
+	eq(layout(view(rowan), scale, 18, "P2 eighteen rewards at " .. scale), 0,
+		"P2 the hints in the tooltips at " .. scale)
 end
 grug_accounts.catalog, grug_accounts.rewards_of, UI.text_scale = real_catalog, real_rewards, real_scale
-check(#grug_accounts.catalog() <= 18, "P2 the real catalogue fits the card")
+check(#grug_accounts.catalog() <= 18, "P2 the real catalogue fits the column")
 
--- One reward: one column, the default card height.
+-- One reward: the mock's wide row with its hint.
 ONE.rewards = {"cloak:moonfall"}
 send_list(bindings(), {ONE, TWO})
 local fs = view(rowan)
-layout(fs, 1, 1, "P3 one reward")
-has(fs, "background9[3.500,0.600;13.000,6.600;", "P3 the default card")
+eq(layout(fs, 1, 1, "P3 one reward"), 1, "P3 its hint")
+has(fs, "box[8.610,3.550;1.370,1.370;#a995674b]", "P3 the wide row's frame")
 
 print(("r80_rewards: %d checks passed"):format(checks))

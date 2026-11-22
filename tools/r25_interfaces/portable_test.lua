@@ -242,6 +242,10 @@ grug_core.get_player_object_faction = grug_factions.get_faction
 
 grug_housing = {}
 dofile("mods/PLAYER/grug_housing/api.lua")
+-- Round 86: the account Claim Stone's side of the Steward (account.lua; no
+-- grug_accounts here, so its column gives the no-account line).
+core.register_on_mods_loaded = function() end
+dofile("mods/PLAYER/grug_housing/account.lua")
 local H = grug_housing
 -- Round 50: the stone form and the Steward ask for belongings from an old
 -- map (recovered.lua, tested by tools/r50_pgame); none wait here.
@@ -393,7 +397,8 @@ lacks(fs, "owner —", "owner not in the access list")
 has(fs, "listring[detached:grug_housing_fuel_owner;fuel]listring[current_player;main]",
 	"shift-click ring")
 lacks(fs, "set_home", "no Set-as-home button without grug_home.set_home_claim")
-has(fs, "button[0.4,5.85;3.1,0.8;pick_up;Pick up stone]", "pick-up button")
+-- Round 86 (lane NAMES): the rename row (1.1 high) moves the tab below it down.
+has(fs, "button[0.4,6.95;3.1,0.8;pick_up;Pick up stone]", "pick-up button")
 lacks(fs, "Pick-up possible", "no lock line 24 h after activation")
 lacks(fs, "activate", "no activation button on an activated stone")
 
@@ -425,7 +430,7 @@ grug_home = {set_home_claim = function(player, c)
 	return true, "Your Claim Stone is now your home."
 end}
 H.open_stone_interface(owner, claim)
-has(last_shown("owner").fs, "button[3.8,5.85;3.1,0.8;set_home;Set as home]",
+has(last_shown("owner").fs, "button[3.8,6.95;3.1,0.8;set_home;Set as home]",
 	"Set-as-home button with grug_home.set_home_claim")
 submit(owner, "grug_housing:stone", {set_home = ""})
 eq(home_calls[1], 7, "Set as home passes the claim")
@@ -669,7 +674,7 @@ has(last_shown("owner").fs, "carol — Interact", "carol listed")
 -- Select carol (row 2 of bob, carol, zed) and change her to Everything with an
 -- empty name field: the selected row is the target.
 submit(owner, "grug_housing:stone", {perm_list = "CHG:2", perm_name = ""})
-has(last_shown("owner").fs, "field[6.2,3.6;4.05,0.7;perm_name;Player name;carol]",
+has(last_shown("owner").fs, "field[6.2,4.7;4.05,0.7;perm_name;Player name;carol]",
 	"selecting a row fills the name")
 submit(owner, "grug_housing:stone", {perm_name = "", perm_everything = ""})
 eq(calls.set_permission[#calls.set_permission].name, "carol", "change targets the selection")
@@ -694,6 +699,37 @@ has(last_shown("owner").fs, "carol has no access.", "no-access message")
 before = #shown
 submit(owner, "grug_housing:stone", {perm_name = "x", key_enter_field = "perm_name"})
 eq(#shown, before, "Enter in the name field does nothing")
+
+-- Round 86 (lane NAMES): the rename row. grug_housing.rename (names.lua,
+-- tested by tools/r86_names) is a stand-in here: the form passes the cut,
+-- trimmed field and shows the answer; a refusal keeps what was typed.
+local renames = {}
+H.rename = function(c, name, text)
+	renames[#renames + 1] = {id = c.id, name = name, text = text}
+	if text == "Bad|Name" then return false, "A home's name may use only letters A-Z, digits, spaces, ' and -." end
+	c.name = text
+	return true, "Your home is now called " .. text .. "."
+end
+fs = last_shown("owner").fs
+has(fs, "field[2.95,3.025;4.0,0.7;home_name;;owner's Home]", "R86 the name field holds the default")
+has(fs, "button[7.15,3.025;3.1,0.7;home_rename;Rename]", "R86 the Rename button")
+has(fs, "image[2.2,3.075;0.6,0.6;grug_map_home.png]", "R86 the house icon in the row")
+submit(owner, "grug_housing:stone", {home_name = "  Rook's Rest ", home_rename = ""})
+eq(renames[#renames].text, "Rook's Rest", "R86 Rename passes the trimmed name")
+eq(renames[#renames].name, "owner", "R86 ...as the owner")
+has(last_shown("owner").fs, "Your home is now called Rook's Rest.", "R86 the answer shown")
+has(last_shown("owner").fs, "home_name;;Rook's Rest]", "R86 the field shows the new name")
+submit(owner, "grug_housing:stone", {home_name = "Bad|Name", key_enter_field = "home_name"})
+eq(renames[#renames].text, "Bad|Name", "R86 Enter in the name field renames")
+has(last_shown("owner").fs, "may use only letters", "R86 a refusal shown")
+has(last_shown("owner").fs, "home_name;;Bad|Name]", "R86 ...the typed text kept")
+local count = #renames
+submit(owner, "grug_housing:stone", {home_name = "Kept", perm_name = "", perm_remove = ""})
+eq(#renames, count, "R86 another button does not rename")
+has(last_shown("owner").fs, "home_name;;Kept]", "R86 ...but keeps what was typed")
+submit(owner, "grug_housing:stone", {home_name = ("x"):rep(5000), home_rename = ""})
+eq(#renames[#renames].text, 96, "R86 a huge field is cut before the trim")
+claim.name, H.rename = nil, nil
 
 --
 -- 6. Claim changes refresh an open form
@@ -870,7 +906,9 @@ lacks(fs, "Manager", "no Manager wording")
 lacks(fs, "24 hours", "no daily rule any more")
 has(fs, "Activate it within 5 minutes with 5 coal\\, charcoal or anthracite", "activation line (Round 78: anthracite)")
 has(fs, "stays in place for 12 hours", "pick-up lock line")
-has(fs, "button[7.7,7.7;3.4,0.6;receive;Receive Claim Stone]", "receive button")
+-- Round 86: the button moved into the choice's personal column (lane STONE).
+has(fs, "button[0.65,8.65;4.6,0.6;receive;Receive Claim Stone]", "receive button")
+has(fs, core.formspec_escape(H.NO_ACCOUNT_LINE), "Round 86: the account column without an account")
 
 -- A successful hand-out: the window then shows the reason in place of the
 -- button (Round 49 ruling 4).
@@ -888,7 +926,7 @@ submit(visitor, "grug_housing:manager", {receive = ""})
 fs = last_shown("visitor").fs
 has(fs, "\27(c@#ff6060)Make room in your inventory for the Claim Stone.",
 	"issue refusal in red")
-has(fs, "button[7.7,7.7;3.4,0.6;receive;Receive Claim Stone]", "a full inventory keeps the button")
+has(fs, "button[0.65,8.65;4.6,0.6;receive;Receive Claim Stone]", "a full inventory keeps the button")
 -- Opened while the player cannot receive one: the reason, no button.
 receive_result = {false, "You need level 20 to receive a Claim Stone."}
 check(H.open_manager(visitor, manager), "Steward opens below level 20")

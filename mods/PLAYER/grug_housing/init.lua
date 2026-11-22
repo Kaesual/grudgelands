@@ -4,6 +4,8 @@
 -- Each file has one owner lane so the lanes can work in parallel:
 --   registry.lua     the pure claim model (Lane A)
 --   api.lua          claim core and the interface contract (Lane A)
+--   account.lua      the account Claim Stone: memberships against
+--                    grug_accounts, the Steward's choice (Round 86)
 --   mask.lua         the claim mask of this world and its world-folder files
 --                    (claim_mask.lua, claim_mask_store.lua; Round 85)
 --   stone.lua        the stone item and nodes, draft and fuel expiry (Lane A)
@@ -15,12 +17,14 @@
 --   interaction.lua  right-click and node-inventory guard (Lane B)
 --   interface.lua    stone formspec, Housing Steward, character status (Lane C)
 --   admin.lua        the admin removal command (Round 26)
+--   names.lua        home names: rename, the admin reset (Round 86)
 -- The home-stone travel target lives in grug_home (Lane D).
 
 grug_housing = {}
 
 local path = core.get_modpath("grug_housing")
 dofile(path .. "/api.lua")
+dofile(path .. "/account.lua")
 dofile(path .. "/mask.lua")
 dofile(path .. "/stone.lua")
 dofile(path .. "/soulbound.lua")
@@ -30,3 +34,4 @@ dofile(path .. "/protection.lua")
 dofile(path .. "/interaction.lua")
 dofile(path .. "/interface.lua")
 dofile(path .. "/admin.lua")
+dofile(path .. "/names.lua")

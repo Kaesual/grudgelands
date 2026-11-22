@@ -5,8 +5,9 @@
 --
 -- Runs the shipped bytes of grug_housing registry.lua, api.lua and
 -- claim_mask.lua (a real mask built on a small constructed world) under stubs:
---   A  the record: the v3 text of the plan (twelve fields, kind and name
---      empty), read back with kind and name kept; only v3 loads, every other
+--   A  the record: the v3 text of the plan (twelve fields, kind empty, the
+--      name the default "<owner>'s Home" since Round 86), read back with
+--      kind and name kept; only v3 loads, every other
 --      record is returned as skipped (another version, a wrong field count,
 --      a bad number);
 --   B  the chunk arithmetic of the registry equals claim_mask.lua's, at
@@ -73,14 +74,16 @@ do
 	local storage = new_storage()
 	local M = new_model(storage)
 	local claim = M.create("ann", {x = -33, y = -100, z = 48})
+	-- Round 86 (lane NAMES, rulings 12, 15): placement stores the default
+	-- home name "<character>'s Home" in the name field (kind stays "").
 	eq(storage.data["claim:" .. claim.id], record_text({owner = "ann", x = -33, y = -100, z = 48,
 		placed_at = 1000, activated_at = 0, paid_until = 1000, expired_for = 1000, perms = "",
-		kind = "", name = ""}), "A a new draft writes the v3 text, kind and name empty")
+		kind = "", name = "ann's Home"}), "A a new draft writes the v3 text, kind empty, the default name")
 	M.set_permission(claim, "bob", "interact")
 	M.set_permission(claim, "cid", "everything")
 	eq(storage.data["claim:" .. claim.id], record_text({owner = "ann", x = -33, y = -100, z = 48,
 		placed_at = 1000, activated_at = 0, paid_until = 1000, expired_for = 1000,
-		perms = "bob=interact,cid=everything", kind = "", name = ""}),
+		perms = "bob=interact,cid=everything", kind = "", name = "ann's Home"}),
 		"A permissions in the tenth field")
 	-- a later round fills kind and name: read and written back unchanged
 	storage.data["claim:9"] = record_text({owner = "dee", x = 500, y = 3, z = 500,
