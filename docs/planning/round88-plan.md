@@ -22,10 +22,11 @@ own for every potion family.
 | 3 | ICONS | The picked icons, every tier, in the game (or a follow-up 0.88.1 when the picks come late). |
 | last | D | The round's records. |
 
-Auto-forward on a mount waits for the user's own test (§7); a MOUNT lane joins
-wave 2 only when that test finds a case to fix. Its likely fix: the mount also
-reads `control.movement_y`, beside `control.up`
-(`grug_mounts/entity.lua` `horizontal_input`).
+Auto-forward on a mount is not part of the round: it works in the user's own
+test (2026-11-27), so there is no known bug. The user asks the reporting player
+for the exact circumstances; should a case turn up, the mount could also read
+`control.movement_y` beside `control.up` (`grug_mounts/entity.lua`
+`horizontal_input`).
 
 ## 2. User rulings
 
@@ -162,8 +163,7 @@ balance beyond the Sprint cooldown.
 ## 7. Orchestration and open points
 
 - Start from main 0.87.0. The model routing is the user's for the session.
-- Open with the user: the **auto-forward test** on a mount (desktop 5.18 and
-  the web client); the **story purple**, which the user checks in the game;
+- Open with the user: the **story purple**, which the user checks in the game;
   the **Warrior knockback skill**, for a later class round. For that skill: the
   mob displacement it would use (`grug_mobs.displace_mob`) already refuses a
   destination in lava or fire, without a floor under it or inside a block, and
