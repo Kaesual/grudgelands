@@ -56,11 +56,11 @@ HALLS waits only for the user's go on the draft and for REWRITE's merge.
    0.87.0 on the map of 0.86.0; the halls are rewritten in place (§3).
 6. **Home name.** The waypoint list shows the name the home carries
    (`grug_housing.home_name`) instead of "Your Claim Stone".
+7. **Astra drafts the balcony**; the user looks at the proposal as an artifact
+   before anything is built.
 8. **The bubble's look** (2026-11-28, on the screenshots): the egg shape, not
    the sphere; the surface gets a texture so that it reads as a shield, not as a
    ball. The user picks from variants.
-7. **Astra drafts the balcony**; the user looks at the proposal as an artifact
-   before anything is built.
 
 ## 3. Shared conventions
 
