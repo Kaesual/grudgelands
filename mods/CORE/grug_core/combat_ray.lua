@@ -288,7 +288,10 @@ end
 -- front still comes first. A "blocking" rotated object ends the ray there
 -- with nothing, as the engine ends it (Environment::continueRaycast); a
 -- blocking node or other object ends the engine's part the same way, but
--- rotated hits behind it are not held back (no such node or object exists).
+-- rotated hits behind it are not held back. The one blocking node, the arena
+-- barrier (Round 89), comes here as an ordinary pointed node whenever the
+-- caller names no pointabilities (the core.raycast wrapper in
+-- grug_mapgen/world_nodes.lua); no such other object exists.
 function grug_core.aim_raycast(origin, destination, liquids, pointabilities)
 	local ray = core.raycast(origin, destination, true, liquids == true,
 		pointabilities)

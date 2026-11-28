@@ -16,6 +16,10 @@ F node grug_decor:darkage_slate_tile
 G node grug_materials:bronze_block
 H node grug_materials:emberglass_lamp
 I node wool:blue
+J node grug_decor:capital_rail
+K node grug_mapgen:arena_barrier
+L node stairs:slab_silver_sandstone_block
+M node stairs:slab_stone_block
 end
 
 layer 0
@@ -53,17 +57,17 @@ layer 0
 
 layer 1
 |DCDDCDDCDCCCCCCCCCCCC|
-|D...D...C...........C|
-|D...D...C..CCCCCCCC.C|
-|C...D...CB.........BC|
-|....D...C...........C|
-|....D...C...........C|
-|....D...............C|
-|....D...............C|
-|C...D...............C|
-|D...D....B.........BC|
-|D...D...C...........C|
-|D.......C...........C|
+|D...D...CDDDDDDDDDD.C|
+|D...D...CDDCCCCCCCC.C|
+|C...D...CBDDDDDDDDDBC|
+|....D...C.......DDD.C|
+|....D...C.......DDD.C|
+|....D...........DDD.C|
+|....D...........DDD.C|
+|C...D...........DDD.C|
+|D...D....B......DDDBC|
+|D...D...C.......BCC.C|
+|D.......C.......LMM.C|
 |D.......C...........C|
 |D.......C...........C|
 |DDDDDDDDD.......CC..C|
@@ -86,15 +90,15 @@ layer 1
 
 layer 2
 |DCDDCDDCDDDDDDCDDDDDC|
-|D...D...D...........D|
-|D...D...D...........D|
-|C...D...CB.........BC|
-|....D...D...........D|
-|....D...D...........D|
-|....D...............D|
-|....D...............D|
-|C...D...............D|
-|D...D....B.........BC|
+|D...D...DDDDDDDDDDD.D|
+|D...D...DDDDDDDDDDD.D|
+|C...D...CBDDDDDDDDDBC|
+|....D...D.......DDD.D|
+|....D...D.......DDD.D|
+|....D...........DDD.D|
+|....D...........DDD.D|
+|C...D...........BCC.D|
+|D...D....B......LMMBC|
 |D...D...D...........D|
 |D.......D...........D|
 |D.......D...........I|
@@ -119,13 +123,13 @@ layer 2
 
 layer 3
 |DCDDCDDCDDDDIIBIIDDDC|
-|D...D...D...........D|
-|D...D...D...........D|
-|C...D...CB.........BC|
-|....D...D...........D|
-|....D...D...........D|
-|....D...............D|
-|....D...............D|
+|D...D...DDDDDDDDDDD.D|
+|D...D...DDDDDDDDDDD.D|
+|C...D...CBDDDDDDDDDBC|
+|....D...D.......DDD.D|
+|....D...D.......DDD.D|
+|....D...........BCC.D|
+|....D...........LMM.D|
 |C...D...............D|
 |D...D....B.........BC|
 |D...D...D...........D|
@@ -152,11 +156,11 @@ layer 3
 
 layer 4
 |DCDDCDDCDDDDIIBIIDDDC|
-|D...D...D...........D|
-|D...D...D...........D|
-|C...D...CB.........BC|
-|....D...D...........D|
-|....D...D...........D|
+|D...D...DDDDDDDDCCC.D|
+|D...D...DDDDDDDDCCC.D|
+|C...D...CBDDDDDDBCCBC|
+|....D...D.......BCC.D|
+|....D...D.......LMM.D|
 |....D...............D|
 |....D...............D|
 |C...D...............D|
@@ -185,9 +189,9 @@ layer 4
 
 layer 5
 |DCDDCDDCDDDDIIBIIDDDC|
-|D...D...D...........D|
-|D...D...D...........D|
-|C...D...CB.........BC|
+|D...D...DDDDDDCM....D|
+|D...D...DDDDDDCM....D|
+|C...D...CBDDDDBL...BC|
 |C...D...D...........D|
 |C...D...D...........D|
 |C...D...D...........D|
@@ -218,9 +222,9 @@ layer 5
 
 layer 6
 |DCDDCDDCDDDDBBBBBDDDC|
-|....D...D...........D|
-|....D...D...........D|
-|C...D...CB.........BC|
+|....D...DDDDCM......D|
+|....D...DDDDCM......D|
+|C...D...CBDDBL.....BC|
 |....D...D...........D|
 |....D...D...........D|
 |....D...D...........D|
@@ -250,17 +254,17 @@ layer 6
 |DCDDCDDCDDDDBBBBBDDDC|
 
 layer 7
-|.C..C..CCCCCCCCCCCCCC|
+|.B..C..CCCCCCCCCCCCCC|
+|.B......CDCM........C|
+|........CDCM........C|
+|........CBBL.......BC|
 |........C...........C|
 |........C...........C|
-|........CBBBBBBBBBBBC|
 |........C...........C|
 |........C...........C|
 |........C...........C|
-|........C...........C|
-|........C...........C|
-|........CBBBBBBBBBBBC|
-|........C...........C|
+|.B......CBBBBBBB...BC|
+|.B......C...........C|
 |DDDDD...C...........C|
 |IDDDD...C...........C|
 |IDDDD...C...........C|
@@ -283,17 +287,17 @@ layer 7
 |.C..C..CCCCCCCCCCCCCC|
 
 layer 8
-|........FFFFFFFFFFFFF|
-|........FFFFFDDEDDFFF|
-|........FFFFDDDDDDDFF|
-|........FFFDDDDDDDDDF|
-|........FFFDDDDDDDDDF|
-|........FFFEDDDDDDDEF|
-|........FFFDDDDDDDDDF|
-|........FFFDDDDDDDDDF|
-|........FFFFDDDDDDDFF|
-|........FFFFFDDEDDFFF|
-|........FFFFFFFFFFFFF|
+|CCCCCCCCCDDDBDDDBFFFF|
+|KCCCCCCCCM......BDFFF|
+|KCCCCCCCCM......BDDFF|
+|KCCCCCCCCL......BDDDF|
+|KCCCCCCCCDDDBDDDBDDDF|
+|KCCCCCCCCFFEDDDDDDDEF|
+|KCCCCCCCCFFDDDDDDDDDF|
+|KCCCCCCCCFFDDDDDDDDDF|
+|KCCCCCCCCFFFDDDDDDDFF|
+|KCCCCCCCCFFFFDDEDDFFF|
+|CCCCCCCCCFFFFFFFFFFFF|
 |DDDDD...FFFFFFFFFFFFF|
 |IDDDD...FFFFFFFFFFFFF|
 |IDDDD...FFFFFFFFFFFFF|
@@ -316,17 +320,17 @@ layer 8
 |........FFFFFFFFFFFFF|
 
 layer 9
-|........D..DD..DD..DD|
-|........D....DDEDD..D|
-|........D...DDDDDDD.D|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|........D..EDDDDDDDED|
-|........D..DDDDDDDDDD|
-|...........DDDDDDDDD.|
-|............DDDDDDD..|
-|........D....DDEDD..D|
-|........D...........D|
+|CCCCCCCCCDDDBDDDB..DD|
+|KJ..............BD..D|
+|KJ..............BDD.D|
+|KJ..............BDDD.|
+|KJ......CDDDBDDDBDDD.|
+|KJ......C..EDDDDDDDED|
+|KJ......C..DDDDDDDDDD|
+|KJ......C..DDDDDDDDD.|
+|KJ......C...DDDDDDD..|
+|KJ......C....DDEDD..D|
+|CCCCCCCCC...........D|
 |DDDDD................|
 |IDDDD................|
 |BDDDD...D...........D|
@@ -349,17 +353,17 @@ layer 9
 |........D..DD..DD..DD|
 
 layer 10
-|........D..DD..DD..DD|
-|........D....DDEDD..D|
-|........D...DDDDDDD.D|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|........D..EDDDDDDDED|
-|........D..DDDDDDDDDD|
-|...........DDDDDDDDD.|
-|............DDDDDDD..|
-|........D....DDEDD..D|
-|........D...........D|
+|BDDDBDDDBDDDHDDDB..DD|
+|K...............BD..D|
+|K...............BDD.D|
+|K...............BDDD.|
+|K.......BDDDBDDDBDDD.|
+|K.......B..EDDDDDDDED|
+|K.......B..DDDDDDDDDD|
+|K.......B..DDDDDDDDD.|
+|K.......B...DDDDDDD..|
+|K.......B....DDEDD..D|
+|BDDDBDDDB...........D|
 |CCCCC................|
 |BCCCC................|
 |ICCCC...D...........D|
@@ -382,17 +386,17 @@ layer 10
 |........D..DD..DD..DD|
 
 layer 11
-|.....................|
-|.............DDDDD...|
-|............DDDDDDD..|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|............DDDDDDD..|
-|.............DDDDD...|
-|.....................|
+|BDDDHDDDBDDDBDDDB....|
+|K...............BD...|
+|K...............BDD..|
+|K...............BDDD.|
+|K.......BDDDBDDDBDDD.|
+|K.......B..DDDDDDDDD.|
+|K.......B..DDDDDDDDD.|
+|K.......H..DDDDDDDDD.|
+|K.......B...DDDDDDD..|
+|K.......B....DDDDD...|
+|BDDDHDDDB............|
 |CCCCC................|
 |BCCCC................|
 |ICCCC................|
@@ -415,17 +419,17 @@ layer 11
 |.....................|
 
 layer 12
-|.....................|
-|.............BBBBB...|
-|............BDDDDDB..|
-|...........BDDDDDDDB.|
-|...........BDDDDDDDB.|
-|...........BDDDDDDDB.|
-|...........BDDDDDDDB.|
-|...........BDDDDDDDB.|
-|............BDDDDDB..|
-|.............BBBBB...|
-|.....................|
+|BDDDBDDDBDDDBDDDB....|
+|K...............BB...|
+|K...............BDB..|
+|K...............BDDB.|
+|K.......BDDDBDDDBDDB.|
+|K.......B..BDDDDDDDB.|
+|K.......B..BDDDDDDDB.|
+|K.......B..BDDDDDDDB.|
+|K.......B...BDDDDDB..|
+|K.......B....BBBBB...|
+|BDDDBDDDB............|
 |G..DD................|
 |G....................|
 |G....................|
@@ -448,17 +452,17 @@ layer 12
 |.....................|
 
 layer 13
-|.....................|
-|.............DDDDD...|
-|............DDDDDDD..|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|...........DDDDDDDDD.|
-|............DDDDDDD..|
-|.............DDDDD...|
-|.....................|
+|GBBBBBBBBFFFFFFFF....|
+|BFFFFFFFFFFFFFFFFD...|
+|BFFFFFFFFFFFFFFFFDD..|
+|BFFFFFFFFFFFFFFFFDDD.|
+|BFFFFFFFFFFFFFFFFDDD.|
+|BFFFFFFFF..DDDDDDDDD.|
+|BFFFFFFFF..DDDDDDDDD.|
+|BFFFFFFFF..DDDDDDDDD.|
+|BFFFFFFFF...DDDDDDD..|
+|BFFFFFFFF....DDDDD...|
+|GBBBBBBBB............|
 |D..DD................|
 |.....................|
 |.....................|

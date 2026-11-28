@@ -20,7 +20,7 @@ eligibility and flag".
 | A faction's level-1–30 zones and its three capitals (its territory) | peaceful | own faction: clears it; the other faction: flags it ("Enemy Territory") |
 | Every level-31–60 zone (the six contested approaches, the four Battlegrounds zones, Ashenward March and Bannerbreak Mesa included) and both dragon islands | contested | flags it ("Contested Territory") |
 | Every non-ocean land column at **y = −501 and below** (depth tier T4 and deeper), under any surface zone | contested | flags it |
-| Inside a hall of the arena Breach Road (its interior box, in 3D; §6.4) | peaceful, the hall's faction | own faction: clears it; the other faction: flags it ("Enemy Territory") |
+| Inside a hall of the arena Breach Road (its interior, upper stair and balcony boxes, in 3D; §6.4) | peaceful, the hall's faction | own faction: clears it; the other faction: flags it ("Enemy Territory") |
 | Deep ocean and the dragon channels | neither | keeps the last value |
 
 - **Depth (round31-plan §6 item 15):** under peaceful land the tiers T1–T3
@@ -285,12 +285,18 @@ round85-plan.md rulings 1, 10–13, 19, 21). Every position comes from its
 layout (`grug_mapgen/wp40/breach_layout.lua`, published as
 `grug_mapgen.breach`); the site differs per seed.
 
-- **Territory:** each hall's **interior** (the closed room behind its sills,
-  from the air above its floor to the roof's underside) is its faction's
-  peaceful ground, in 3D (`grug_pvp/rules.lua` `R.hall_at`, asked before the
-  zone in `R.zone_answers`). The sills and doorways, the roofs, the courts,
-  the galleries, the field and everything outside stay what the zone says:
-  contested. The flag rules are §2's unchanged: entering the own hall clears
+- **Territory:** each hall's **friendly boxes** are its faction's peaceful
+  ground, in 3D (`grug_pvp/rules.lua` `R.hall_at`, asked before the zone in
+  `R.zone_answers`; the list `world().halls[faction].friendly` of
+  `breach_layout.lua`): the **interior** (the closed room behind its sills,
+  from the air above its floor to the roof's underside, with the stair's
+  lower flight and turn), the **upper stair** under its hood and the
+  **balcony** (its deck, the parapet's rail and the air up to the underside
+  of its own roof, ending at the barrier's inner face; Round 89 ruling 3).
+  The sills and doorways, the hall's roof and the balcony's roof, the
+  barrier and the air beyond it, the gate court under the balcony, the
+  courts, the galleries, the field and everything outside stay what the
+  zone says: contested. The flag rules are §2's unchanged: entering the own hall clears
   the location flag at the next sample, so a player without PvP contact in
   the last 60 s and without a running button is unflagged at once; one who
   comes in from a fight stays flagged for 60 s after the last contact and can
@@ -299,7 +305,33 @@ layout (`grug_mapgen/wp40/breach_layout.lua`, published as
   "Friendly Territory" or "Enemy Territory (PvP)" inside a hall.
 - **No guards, no flight rule, no mount rule** in the halls (rulings 10, 12,
   19): an enemy may stand in a hall unharmed; whatever holds for riding and
-  flying in the Battlegrounds holds inside.
+  flying in the Battlegrounds holds inside. Both roofs are contested ground:
+  a player on a flying mount may land and mount there (Round 89 ruling 3).
+- **The stair and the balcony** (Round 89, rulings 3 and 4; the approved
+  draft `tools/r89_balcony_draft/`): a stair inside each hall climbs by half
+  steps, without a jump, from the room's floor along the side wall, turns
+  under a hood and arrives at a roofed balcony at roof level that juts out
+  of the building toward the road: a deck for two rows of six, a parapet
+  (a timber rail a player may stand on), its own roof, solid end walls and a
+  closed wall toward the hall's roof, so on foot it is reached only by the
+  stair. The Accord's in pale sandstone and slate, the Throng's in timber;
+  the same function. No new PvP rule: an enemy in the balcony is in enemy
+  territory like in the hall.
+- **The barrier** (Round 89, "The barrier"): the balcony's open side is
+  closed by one sheet of invisible solid blocks (`grug_mapgen:arena_barrier`,
+  45 per hall) directly in front of the parapet, from the deck's floor
+  layer to the roof's underside, between the end walls. Nobody walks,
+  jumps, falls or flies through it, in either direction; a client points
+  nothing on it (no outline, no dig, no punch or placement through it), and
+  every server ray (the combat and aiming rays, heals and skill targets,
+  mob sight and their shot locks, blink, the area anchors) stops at it as at
+  a wall, so no shot or spell is aimed and no projectile launched through
+  it; a homing projectile already in flight follows its target wherever it
+  goes, through the barrier as through every wall. Light and sight pass:
+  spectators see the fight, and nametags stay
+  visible (shown by distance alone, 25 to 30 nodes:
+  [combat_stats.md](combat_stats.md) §6). Area effects reach through
+  it like through every wall (above).
 - **Waystones:** one ordinary waystone per hall, the eighth of its faction's
   network ([world.md](world.md) §6), discovered by visiting like every other,
   with the Expeditions tab: **Breachward Hall** (The Accord, the east hall)

@@ -213,7 +213,13 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   hp modifier after dodge/fall mitigation; since Round 80 a contribution is
   stored in whole points, and the modifier hands its change on as the integer
   the engine stores, truncated toward zero, so the hp loggers such as the
-  nametag never see a fraction; fixture `tools/r80_fixes`), **race passives** as a perk
+  nametag never see a fraction; fixture `tools/r80_fixes`; since Round 89 the
+  absorb bookkeeping keeps one shield bubble per shielded player in
+  `grug_core/shield_bubble.lua`: `sync` at an add, at `get_absorb`'s prune
+  (the `shield` status reads it every status pass, and its `on_expire` runs
+  it once more when the last entry ends), after the soak, `remove` on death
+  and leave; an entity whose player is gone removes itself in `on_detach`;
+  fixture `tools/r89_bubble`), **race passives** as a perk
   table in the grug_classes race registry (`grug_classes.get_race_perk`,
   stub-mirrored as `grug_core.get_race_perk`; elf range via per-stack
   meta `range` override) and mob slows (`grug_mobs.slow`, staticdata-safe
@@ -307,6 +313,12 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   `core.raycast`: it tests `rotate = true` selection boxes in Lua because the
   server's raycast misreads them since Luanti 5.12
   ([upstream workarounds](../upstream-workarounds.md) §1).
+  A node with `pointable = "blocking"` (the arena barrier, Round 89) would
+  end every engine raycast with nothing, which these rays read as a clear
+  line; `grug_mapgen/world_nodes.lua` therefore wraps `core.raycast` so a
+  ray that names no pointabilities points the barrier like any node, and
+  every server ray (this one, mob sight, shot locks, blink, area anchors)
+  stops at it ([pvp.md](../../design/pvp.md) §6.4).
   The held clock attacks only a live hostile returned by that current server
   eye/look ray while `get_player_control().dig` is true. When due, no
   target/friendly/blocker/out-of-range aim is an **aim miss** and leaves the

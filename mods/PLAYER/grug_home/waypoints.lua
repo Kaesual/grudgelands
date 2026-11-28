@@ -11,9 +11,9 @@
 -- no cooldown, alive and out of combat, through grug_home.travel (the home
 -- return's own emerge, validation and teleport). Enemy stones are inert.
 -- Since Round 45 (PT9) every list ends with the owner's activated Claim
--- Stone, "Your Claim Stone" (grug_home.claim_waypoint, claim_home.lua),
--- reached the same way and landing in its arrival cube; without one the
--- entry reads "No claim stone". The stone is an origin too: its owner travels
+-- Stone under the home's own name (Round 89 ruling 6; grug_home.claim_waypoint,
+-- claim_home.lua), reached the same way and landing in its arrival cube;
+-- without one the entry "Your Claim Stone" reads "No claim stone". The stone is an origin too: its owner travels
 -- from it to the discovered waystones (grug_home.travel_from_claim, the stone
 -- form's Waypoints tab). Since Round 72 the window has an Expeditions tab and
 -- the stones inside an Expedition open the list without it (below); since
@@ -224,6 +224,17 @@ local function head(player, dialog, body_h, subtitle)
  return fs, growth
 end
 
+-- The Waystones tab's status column (Round 89). Left of it stands a
+-- waystone's or the home's name: up to 24 characters (grug_housing NAME_MAX;
+-- a default "<player>'s Home" has at most 27 narrower ones). The widest, 24
+-- W, is 360 px in the 16 px default font (hud_layout.text_px), 6.76 units
+-- at the smallest unit a form is drawn with beside that font (0.5555 x 96 px
+-- against 16 px, both times the GUI scaling and the display density:
+-- guiFormSpecMenu.cpp getFixedImgsize, fontengine.cpp), so the column starts
+-- 0.15 units after it; the Travel button ends with the separator line. The
+-- Expeditions tab's buttons share the column, so switching tabs moves none.
+local STATUS_X, STATUS_W = 7.35, 2.25
+
 local function waystones_form(player, dialog)
  local origin = dialog.origin
  local entries = rules.entries(rows, grug_factions.get_faction(player),
@@ -235,15 +246,15 @@ local function waystones_form(player, dialog)
   fs[#fs + 1] = ("box[0.4,%.2f;9.2,0.012;#829c9625]"):format(y + 0.35)
   fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, core.formspec_escape(entry.row.label))
   if entry.state == "here" then
-   fs[#fs + 1] = ("label[6.8,%.2f;You are here]"):format(y)
+   fs[#fs + 1] = ("label[%.2f,%.2f;You are here]"):format(STATUS_X, y)
   elseif entry.state == "travel" then
-   fs[#fs + 1] = ("button[6.8,%.2f;2.4,0.6;go_%s;Travel]"):format(y - 0.3,
-    entry.row.claim and rules.CLAIM_ID or entry.row.id)
+   fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;go_%s;Travel]"):format(STATUS_X, y - 0.3,
+    STATUS_W, entry.row.claim and rules.CLAIM_ID or entry.row.id)
   elseif entry.state == "no_claim" then
-   fs[#fs + 1] = ("label[6.8,%.2f;%s]"):format(y,
+   fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STATUS_X, y,
     core.colorize("#8a8a8a", "No claim stone"))
   else
-   fs[#fs + 1] = ("label[6.8,%.2f;%s]"):format(y,
+   fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STATUS_X, y,
     core.colorize("#8a8a8a", "Not yet visited"))
   end
  end
@@ -271,7 +282,8 @@ local function expeditions_form(player, dialog)
  for index, row in ipairs(list) do
   local y = 1.15 + 0.7 * index
   fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, core.formspec_escape(row.label))
-  fs[#fs + 1] = ("button[6.8,%.2f;2.4,0.6;enter_%s;Enter]"):format(y - 0.3, row.id)
+  fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;enter_%s;Enter]"):format(STATUS_X, y - 0.3,
+   STATUS_W, row.id)
  end
  if #list == 0 and line then
   fs[#fs + 1] = grug_core.ui.prose(0.4, 1.6, 9.2, 0.9, line, true, growth)
@@ -281,15 +293,18 @@ local function expeditions_form(player, dialog)
   fs[#fs + 1] = grug_core.ui.prose(0.4, y, 9.2, 0.8,
    confirm and confirm.confirm or block.text, true, growth)
   if confirm then
-   fs[#fs + 1] = ("button[4.3,%.2f;2.4,0.6;act_back;Back]"):format(y + 0.85)
+   fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;act_back;Back]"):format(STATUS_X - STATUS_W - 0.1,
+    y + 0.85, STATUS_W)
    if confirm.role then fs[#fs + 1] = grug_core.ui.button_style("act_confirm", confirm.role, growth) end
-   fs[#fs + 1] = ("button[6.8,%.2f;2.4,0.6;act_confirm;Confirm]"):format(y + 0.85)
+   fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;act_confirm;Confirm]"):format(STATUS_X, y + 0.85,
+    STATUS_W)
   else
    for index, button in ipairs(block.buttons) do
     local field = ("act_%s_%s"):format(button.action, block.id)
     if button.role then fs[#fs + 1] = grug_core.ui.button_style(field, button.role, growth) end
-    fs[#fs + 1] = ("button[%.2f,%.2f;2.4,0.6;%s;%s]"):format(6.8 - 2.5 * (index - 1),
-     y + 0.85, field, core.formspec_escape(button.label))
+    fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;%s;%s]"):format(
+     STATUS_X - (STATUS_W + 0.1) * (index - 1), y + 0.85, STATUS_W, field,
+     core.formspec_escape(button.label))
    end
   end
  elseif #list == 0 and not line then

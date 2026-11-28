@@ -1,7 +1,7 @@
 # Upgrade contract: the declared releases
 
 The per-release case history of the [upgrade contract](upgrade-contract.md) §2 (the
-declaration): why each release from 0.41.0 to 0.86.1 declared its map reset, step or
+declaration): why each release from 0.41.0 to 0.89.0 declared its map reset, step or
 neither. Section numbers (§) refer to the upgrade contract. The rules are in the
 contract; this file only records the cases.
 
@@ -190,3 +190,13 @@ contract; this file only records the cases.
   is compatible: a text change, no saved state, no world generation; no
   step. The production world takes it in the same move from 0.83.0, across
   0.86.0's reset.
+- 0.87.0 (Round 87, the roads in housing areas) and 0.88.0 (Round 88, player
+  feedback) are compatible: no map reset, no step. 0.87.0's world file
+  `grug_road_chunks.txt` is map-bound state with its row in §3.2; 0.88.0's
+  removed mixture items are aliases of the glass bottle, which the engine
+  resolves wherever a stack loads.
+- 0.89.0 (Round 89, the arena halls' stairs and balconies) declares the
+  eighth step, 0.89.0 (§5.8), and no map reset: as with 0.69.0, the step only
+  leaves a world marker and the game rewrites the arena's two hall boxes
+  online (§5.9); the arena's outer measures do not change. The production
+  world moves from 0.87.0 to 0.89.0 with this step alone.

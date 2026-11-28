@@ -405,6 +405,14 @@ Rules: [expeditions.md](docs/design/expeditions.md).
   ([Round 88](docs/planning/round88-plan.md#carry-overs)).
 - **Quickbar hint at GUI scale 2:** "Click to use; the window closes." reaches the
   window's right edge ([Round 80](docs/planning/round80-plan.md#carry-overs)).
+- **"Home: Claim Stone"** on the Character page, in the quickbar's heading and in the
+  innkeeper's "Your home" line could show the home's name, as the Waystones list does; the
+  claim row carries `name` ([Round 89](docs/planning/round89-plan.md#carry-overs)).
+- **Duration covers that restart or loop:** a status source's cover (the potion cooldown,
+  the Deserter's Mark) and the guild effect start clear after a relog (a source could pass
+  its own start); the Slowed cover loops about every 2 s under its heartbeat causes (the
+  rime node, ice water, the treant's aura), which the movement aggregator could report apart
+  ([Round 89](docs/planning/round89-plan.md#carry-overs)).
 
 ### UI review follow-ups (2026-10-26)
 
@@ -518,6 +526,13 @@ Every new sound goes through a listening page ([sound.md](docs/design/sound.md) 
   load, an accepted exception the upgrade contract does not name yet ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **The mod map's coupling list** omits the vendored `vessels` calling
   `grug_inventory.station_formspec` ([Round 81](docs/planning/round81-plan.md#carry-overs)).
+- **The arena barrier's `core.raycast` wrapper** would sit better in a `grug_core` registry
+  beside `aim_raycast`, installed before any other mod loads, than in
+  `grug_mapgen/world_nodes.lua` ([Round 89](docs/planning/round89-plan.md#carry-overs)).
+- **`tools/r89_bubble/gen_bubble.py --check`** compares PNG bytes, so it depends on the
+  Pillow version (12.3.0) ([Round 89](docs/planning/round89-plan.md#carry-overs)).
+- **`tools/building_templates/nodes.json`** is stale for older rounds' nodes (the claim and
+  account stones, Expedition decor, aliases) ([Round 89](docs/planning/round89-plan.md#carry-overs)).
 
 ## Player experience follow-up (2026-10-11)
 
@@ -598,6 +613,9 @@ their replacements. No round is assigned yet.
   2 s (half the packets, still continuous with a 2–3 s mote life)? ([Round 81](docs/planning/round81-plan.md#carry-overs)).
 - **A systematic mapgen failure** would send one red chat line per chunk to every player; a
   cap needs the user's call ([Round 41](docs/planning/round41-plan.md#carry-overs)).
+- **Names from the arena balcony:** the road's centre is 28–33 nodes from the deck, beyond
+  the 25-node nametag range, so spectators see no names on the road
+  ([Round 89](docs/planning/round89-plan.md#carry-overs)).
 
 ### Audit 2026-10 open questions
 
@@ -671,7 +689,7 @@ since 2026-11-16), CMB-10 and MGS-08 (Round 81 rulings 2 and 3,
 
 The residual notes of each round live in its plan, in a section "Carry-overs" after
 "Completion": `docs/planning/round<NN>-plan.md#carry-overs` for Rounds 29–37, 40–49, 51–62,
-65–74, 76 and 78–88 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
+65–74, 76 and 78–89 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
 the plans with longer names for
 [24](docs/planning/round24-mining-underground-mobs-plan.md#carry-overs),
 [25](docs/planning/round25-housing-plan.md#carry-overs),

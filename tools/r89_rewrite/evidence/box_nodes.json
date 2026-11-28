@@ -1,0 +1,114 @@
+{
+ "default:acacia_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "default:cobble": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "default:obsidian_block": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "default:pine_tree": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "default:silver_sandstone_block": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "default:stone_block": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "default:stonebrick": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "default:wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "grug_decor:darkage_basalt_brick": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "grug_decor:darkage_marble": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "grug_decor:darkage_slate_tile": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "grug_mapgen:waystone": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "grug_materials:bronze_block": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "grug_materials:emberglass_lamp": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "wool:blue": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ },
+ "wool:red": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "walkable": true
+ }
+}

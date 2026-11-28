@@ -25,13 +25,18 @@ local function placed_claim(name)
  end
 end
 
+-- `label` names the kind of home ("Home: Claim Stone" on the Character page
+-- and the quickbar, the innkeeper's "Your home" line); `name` is the home's
+-- own name (grug_housing.home_name, read afresh at every call, so a rename
+-- shows at the next look), which the waystone list and the map show (Round
+-- 89 ruling 6).
 local function claim_row(player, claim)
  local faction = grug_factions.get_faction(player)
  local arrival = housing.arrival_pos(claim)
  if not faction or type(arrival) ~= "table" then return nil end
  local c = claim.center
  return {id="claim:" .. tostring(claim.id), claim=tostring(claim.id), faction=faction,
-  label="Claim Stone", pos=vector.new(c.x,c.y,c.z),
+  label="Claim Stone", name=housing.home_name(claim), pos=vector.new(c.x,c.y,c.z),
   arrival=vector.new(arrival.x,arrival.y,arrival.z)}
 end
 
@@ -48,9 +53,10 @@ function grug_home.get(player)
  return grug_home.innkeeper(player)
 end
 
--- Round 45 PT9: the owner's Claim Stone as a waypoint ("Your Claim Stone"
--- in every waystone's list, waypoints.lua), whether or not it is the travel
--- home: the placed, activated claim's row, else nil. A draft is none yet; an
+-- Round 45 PT9: the owner's Claim Stone as a waypoint (labelled with the
+-- home's name in every waystone's list since Round 89, waypoints.lua),
+-- whether or not it is the travel home: the placed, activated claim's row,
+-- else nil. A draft is none yet; an
 -- unfuelled stone still is; it goes with the stone (pick-up, destruction, an
 -- admin removal). Same id as the claim home row.
 function grug_home.claim_waypoint(player)
@@ -58,7 +64,7 @@ function grug_home.claim_waypoint(player)
  if not claim or (housing.is_draft and housing.is_draft(claim)) then return nil end
  local row = claim_row(player, claim)
  if row then
-  row.label = "Your Claim Stone"
+  row.label = row.name
   -- Round 86: the account stone's own look.
   row.texture = claim.kind == "account" and housing.ACCOUNT_STONE_TEXTURE or housing.STONE_TEXTURE
  end

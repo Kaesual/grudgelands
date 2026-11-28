@@ -14,7 +14,7 @@
 --    with a message; a stone picked up during the emerge or a stale button
 --    goes nowhere; a moved stone is reached at its new place; a destroyed
 --    one reads "No claim stone" again; only the owner sees it.
--- C. The Map: the stone is a "Your Claim Stone" waypoint marker with the
+-- C. The Map: the stone is a waypoint marker named after the home with the
 --    stone's own texture unless it is the travel home (then the home marker
 --    alone marks it).
 -- D. From the stone (the follow-up: the stone form's Waypoints tab calls
@@ -258,8 +258,9 @@ claims.tester.claim.activated_at = clock
 fs = open(player, "dawnmere")
 check(fs:find("go_claim", 1, true) and not fs:find("No claim stone", 1, true), "B activated: Travel")
 local row = home.claim_waypoint(player)
-check(row and row.label == "Your Claim Stone" and row.pos.x == 700, "B the waypoint row")
-check(fs:find("Your Claim Stone", 1, true) > fs:find("pvp_fortress_accord", 1, true),
+-- Round 89 ruling 6: the entry carries the home's name (here the default).
+check(row and row.label == "tester's Home" and row.pos.x == 700, "B the waypoint row")
+check(fs:find("tester's Home", 1, true) > fs:find("pvp_fortress_accord", 1, true),
  "B the stone closes the list, after the fortress")
 claims.tester.claim.paid_until = clock - 60
 fs = open(player, "dawnmere")
@@ -356,7 +357,8 @@ place("tester", moved, false)
 check(#claim_marks("waypoint") == 0, "C draft, no marker")
 claims.tester.claim.activated_at = clock
 local marks = claim_marks("waypoint")
-check(#marks == 1 and marks[1].label == "Your Claim Stone" and marks[1].kind == "waypoint" and
+-- Round 89 ruling 6: the marker carries the home's name.
+check(#marks == 1 and marks[1].label == "tester's Home" and marks[1].kind == "waypoint" and
  marks[1].texture == "grug_map_claim.png", "C activated stone: one waypoint marker with the map-only claim icon")
 check(home.set_home_claim(player), "C set the stone as the travel home")
 check(#claim_marks("waypoint") == 0 and #claim_marks("home") == 1, "C the home marker alone marks the home stone")

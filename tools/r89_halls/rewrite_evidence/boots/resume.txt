@@ -1,0 +1,15 @@
+launcher: staged probe: grug_probe_r89_rewrite
+seconds: 25, exit 0
+joins: ['visitor logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.89.0, game 0.89.0: no migration step due
+ACTION[Main]: [grug_core] migration 0.89.0: the world's online work is done
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38624.
+ACTION[Server]: visitor [127.0.0.1] joins game. List of players: visitor
+ACTION[Server]: [r89_rewrite_probe] phase resume, job pending: true
+ACTION[Server]: [grug_mapgen] arena hall accord rewritten: 12369 cells, emerge 4.9 s, write 4.1 ms
+ACTION[Server]: visitor leaves game. List of players: 
+ACTION[Server]: [grug_mapgen] arena hall throng rewritten: 12369 cells, emerge 0.3 s, write 4.1 ms
+ACTION[Server]: [grug_mapgen] the arena halls' rewrite is done, every box read back
+ACTION[Server]: [r89_rewrite_probe] dumped resume
+ACTION[Server]: [r89_rewrite_probe] observations written: resume

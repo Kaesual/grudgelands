@@ -1,0 +1,42 @@
+PASS  setup   the old game 023f420d exported (0.88.0, below 0.89.0)
+PASS  setup   the new game staged from the working tree at 0.89.0: game.conf 0.88.0 raised to 0.89.0 (test only); test-only hall templates
+PASS  setup   boot S (0.88.0): a new world, a hall emerged as planned, the visitor joined
+PASS  setup   the halls: accord partly (8463 of 12369 cells missing), throng whole (0 of 12369 cells missing); mapchunk borders crossed: {"accord": ["y"], "throng": ["y"]}
+PASS  setup   a discovery of the Accord's hall stone stores 'breach_road_accord'
+PASS  guard   boot R: the 0.88.0 world without the tool is refused, naming the step
+PASS  guard   the refused start wrote nothing
+PASS  tool    --check: world 0.88.0, due [0.89.0], nothing written
+PASS  tool    migrate: exit 0, one marker, nothing else
+PASS  tool    only the marker and the record changed
+PASS  tool    --check after: world 0.89.0, nothing due
+PASS  crash   boot C: killed after 2 hall(s) were written; the world is left pending or marked
+PASS  resume  boot Z: the next start finishes both halls while a player joins
+PASS  resume  the marker and the pending key are gone, the record is 0.89.0
+PASS  resume  the visitor still has the Accord's hall stone: in the waystone list at the join, and in the stored row after it
+PASS  fresh   boot N: a new world, no migration crossed, no job, no marker, no key
+PASS  proof   no box node of either hall has on_construct, on_timer, after_place or an LBM (16 node types)
+PASS  stones  accord: the waystone on its cell, its arrival validated at the layout's arrival, a right-click of its faction discovers it, no object in the box
+PASS  stones  accord: the stone answers as in the new world
+PASS  stones  throng: the waystone on its cell, its arrival validated at the layout's arrival, a right-click of its faction discovers it, no object in the box
+PASS  stones  throng: the stone answers as in the new world
+PASS  proof   accord (partly): every box cell equals the new world's
+PASS  proof   accord: the light of the box's air and of the ring equals the new world's
+PASS  proof   accord: the ring equals the new world's
+PASS  proof   accord: the ring equals the 0.88.0 world's where that existed
+PASS  proof   accord: the new world's box is the new design (the probe's own reading of the model)
+PASS  proof   accord: old and new design differ (1822 cells)
+PASS  proof   accord: changed cells on both sides of the mapchunk border y = 128 (195)
+PASS  proof   throng (whole): every box cell equals the new world's
+PASS  proof   throng: the light of the box's air and of the ring equals the new world's
+PASS  proof   throng: the ring equals the new world's
+PASS  proof   throng: the ring equals the 0.88.0 world's where that existed
+PASS  proof   throng: the new world's box is the new design (the probe's own reading of the model)
+PASS  proof   throng: old and new design differ (1799 cells)
+PASS  proof   throng: changed cells on both sides of the mapchunk border y = 128 (191)
+PASS  proof   old metadata and the timer left the box; no metadata in either box
+PASS  proof   the ring's metadata stays
+PASS  repeat  boot A: the job again changes no node, and a cell reverted after the last write is found by the read-back and written back
+PASS  reset   the tool's --map-reset runs the step
+PASS  reset   boot M: 0.89.0 with a map reset starts; no job, the marker gone, no key
+
+40 checks, 0 failed, 361 s

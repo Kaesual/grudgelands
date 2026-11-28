@@ -142,6 +142,50 @@ return function(engine, directory, nodes, gathering)
   end,
  })
 
+ -- The arena barrier (Round 89, round89-plan.md ruling 3 "The barrier"):
+ -- invisible solid cubes the arena writer puts in front of each hall
+ -- balcony's parapet (the hall templates, `breach_model.lua`). Nobody walks,
+ -- jumps, flies or falls through it (walkable, a full collision cube), light
+ -- and sunlight pass, spectators see through it (airlike: nothing drawn, the
+ -- minimap skips it). `pointable = "blocking"` (Luanti 5.9): a client's
+ -- pointing ray ends at it with nothing pointed (src/environment.cpp
+ -- continueRaycast), so no outline, no dig and no punch or placement through
+ -- it. The server's own rays see it as an ordinary solid node: the raycast
+ -- wrapper below. It is no air for anyone (no grug_air group: the writer and
+ -- the water guard treat it as a block), it cannot be dug or blown up, and
+ -- nothing is built into it.
+ local BARRIER="grug_mapgen:arena_barrier"
+ engine.register_node(BARRIER, {
+  description="Arena Barrier",
+  drawtype="airlike",
+  paramtype="light",
+  sunlight_propagates=true,
+  walkable=true,
+  pointable="blocking",
+  diggable=false,
+  buildable_to=false,
+  floodable=false,
+  is_ground_content=false,
+  drop="",
+  on_blast=function() end,
+  groups={not_in_creative_inventory=1},
+ })
+ -- A "blocking" node ends an engine raycast with nothing (the iterator
+ -- stops there), which every server ray of the game would read as a clear
+ -- path: the combat and aiming rays (grug_core.aim_raycast, whose rotated
+ -- boxes would show through), mob sight (mobs_redo line_of_sight), the
+ -- shot locks, blink and the area anchors stop only at a walkable node they
+ -- are handed. So every server raycast that names no pointabilities of its
+ -- own points the barrier like any node (`pointabilities`, Luanti 5.9):
+ -- each of those rays meets a walkable node there and stops.
+ if engine.raycast then
+  local raycast=engine.raycast
+  local SOLID={nodes={[BARRIER]=true}}
+  engine.raycast=function(pos1, pos2, objects, liquids, pointabilities)
+   return raycast(pos1, pos2, objects, liquids, pointabilities or SOLID)
+  end
+ end
+
  -- The mailbox (Round 48, mail plan ruling 1): written by `dressing.waystone`
  -- beside every waystone, so it too exists before the settlement content is
  -- resolved. A post with a box, one node tall, its front (the -z tile)

@@ -275,6 +275,20 @@ local function world_0_69_0()
 	grug_mapgen.camp_rewrite.request()
 end
 
+--
+-- 0.89.0, the world part. The online part of the migration step 0.89.0
+-- (Round 89 lane REWRITE; tools/migration/steps/v0_89_0.py, which only sets
+-- the world marker). The two halls of the arena Breach Road get their new
+-- templates without a map reset: each hall template's box is rewritten as a
+-- new world generates it (upgrade contract §5.9). As for 0.69.0, this
+-- handler only records the job (grug_mapgen's durable pending key), and
+-- grug_mapgen/hall_rewrite.lua does it after the load, resuming after a
+-- restart. Safe to run again: it records the same key.
+
+local function world_0_89_0()
+	grug_mapgen.hall_rewrite.request()
+end
+
 grug_core.migrations = {
 	-- The declaration's `migrate` list, ascending: the guard refuses a world
 	-- whose record lies before one of them. tools/check_upgrade.py proves this
@@ -287,6 +301,7 @@ grug_core.migrations = {
 		"0.53.0", -- talents reset, talent windows and retired skills gone; a join part
 		"0.67.0", -- metal rods refunded as bars in every store; offline only
 		"0.69.0", -- the camps under construction rewritten; a world part
+		"0.89.0", -- the arena Breach Road's two halls rewritten; a world part
 	},
 	-- Online work, only for a step that leaves some:
 	--   handlers["x.y.z"] = {
@@ -299,5 +314,6 @@ grug_core.migrations = {
 		["0.48.0"] = {character = character_0_48_0},
 		["0.53.0"] = {character = character_0_53_0},
 		["0.69.0"] = {world = world_0_69_0},
+		["0.89.0"] = {world = world_0_89_0},
 	},
 }

@@ -464,12 +464,41 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   column, nothing above); fixture `tools/r85_build/portable_test.lua`,
   engine capture `tools/r85_build/capture.sh`.
 
+  **Round 89 lane REWRITE** (the migration 0.89.0, upgrade contract §5.9):
+  `hall_rewrite.lua` with `wp40/r89_hall_sites.lua` rewrites an existing
+  world's two hall template boxes (21 × 19 × 31 each, pinned to 0.88.0's) as
+  the writer above settles them on the world's site, once, after the load,
+  through the pending key `hall_rewrite`; it stands beside
+  `camp_rewrite.lua`, the same flow.
+
+  **Round 89 lane HALLS** (the stair and the balcony, [pvp.md](../../design/pvp.md)
+  §6.4): the two hall templates are the approved draft's
+  (`tools/r89_balcony_draft/`), in the same boxes, plain unrotated nodes
+  only (the model refuses orientation and forces param2 0: slabs lie as
+  bottom slabs, the parapet's `grug_decor:capital_rail` runs along z). The
+  new node `grug_mapgen:arena_barrier` (`world_nodes.lua`: airlike, walkable,
+  `pointable = "blocking"`, light and sunlight through, not diggable, no
+  `grug_air`) closes each balcony's open side. A "blocking" node ends an
+  engine raycast with nothing, which the game's server rays (they stop at
+  the first walkable node they are handed) would read as a clear line, so
+  `world_nodes.lua` wraps `core.raycast`: a ray that names no
+  pointabilities of its own points the barrier like any node, and every
+  server ray stops at it; a client still points nothing there. `breach_layout.lua`
+  gives each hall its friendly boxes (`friendly`: interior, upper stair,
+  balcony) and keeps `interior` for its other readers (the tools). Fixture
+  `tools/r89_halls/portable_test.lua` (boxes, barrier cells, the walk up the
+  stair and over the deck and the rail, the territory of every box node and
+  both roofs, the node and the wrapper); `tools/r89_halls/check_escape.py`
+  is the composition's escape check (upgrade contract §5.9);
+  `tools/r89_halls/capture.sh` the engine proof and the pictures.
+
   **Round 85 lane TERRITORY** ([pvp.md](../../design/pvp.md) §6.4): main
   publishes the layout in world nodes as `grug_mapgen.breach`
   (`r7_loader.lua` builds it from the placement text and returns it as
   `wp40.breach`), the one source of the arena's positions for the game's
-  readers: `grug_pvp` (the halls' interior boxes as peaceful ground,
-  `rules.lua` `R.hall_at`, `R.zone_answers`), `grug_home/waypoints.lua` (the
+  readers: `grug_pvp` (the halls' friendly boxes as peaceful ground, since
+  Round 89 interior, upper stair and balcony, `rules.lua` `R.hall_at`,
+  `R.zone_answers`), `grug_home/waypoints.lua` (the
   two hall waystones, `breach_road_accord` and `breach_road_throng`, at the
   layout's waystone cells, where BUILD's model sets the
   `grug_mapgen:waystone` node, with the arrival socket beside), `grug_mobs`

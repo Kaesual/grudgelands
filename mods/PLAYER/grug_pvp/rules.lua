@@ -44,11 +44,12 @@ function R.territory(pvp_rule, faction_here, own_faction)
 end
 
 -- The arena Breach Road's halls (Round 85, round85-plan.md rulings 1, 10 and
--- 11): inside a hall's interior box its faction is at home, in 3D, so the
--- doorway, the roof, the courts and the field stay what the zone says.
--- `halls` is a list of {faction, min = {x, y, z}, max = {x, y, z}} (inclusive
--- node boxes, `breach_layout.lua` world().halls[faction].interior); the
--- faction whose box holds the node of `pos`, or nil.
+-- 11; Round 89 ruling 3): inside a hall's friendly boxes (its interior, upper
+-- stair and balcony) its faction is at home, in 3D, so the doorway, both
+-- roofs, the courts and the field stay what the zone says. `halls` is a list
+-- of {faction, min = {x, y, z}, max = {x, y, z}} (inclusive node boxes,
+-- `breach_layout.lua` world().halls[faction].friendly, several per faction);
+-- the faction whose box holds the node of `pos`, or nil.
 function R.hall_at(halls, pos)
 	if not halls or not pos then
 		return nil
@@ -67,8 +68,8 @@ function R.hall_at(halls, pos)
 end
 
 -- grug_zones' answers for a position (its PvP rule and, on peaceful ground,
--- the faction owning it), with a hall's interior as its faction's peaceful
--- ground: the one answer the location flag and the zone banner read.
+-- the faction owning it), with a hall's friendly boxes as its faction's
+-- peaceful ground: the one answer the location flag and the zone banner read.
 function R.zone_answers(zones, halls, pos)
 	local hall = R.hall_at(halls, pos)
 	if hall then

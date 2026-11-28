@@ -1,0 +1,13 @@
+{
+ "finish": "reset",
+ "game": "0.89.0",
+ "halls": null,
+ "job": true,
+ "leaves": 0,
+ "load": {
+  "from": "0.89.0",
+  "new_world": false
+ },
+ "pending": false,
+ "phase": "reset"
+}

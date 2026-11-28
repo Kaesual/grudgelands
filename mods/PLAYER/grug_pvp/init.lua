@@ -241,7 +241,8 @@ end
 -- Location (rulings 2 and 3)
 --
 
--- The arena Breach Road's two hall interiors (Round 85, R.hall_at), from
+-- The arena Breach Road's two halls' friendly boxes (Round 85, R.hall_at;
+-- since Round 89 each hall's interior, upper stair and balcony), from
 -- grug_mapgen's layout of this world; looked up at the first sample (this mod
 -- does not depend on grug_mapgen), an empty list without it.
 local halls
@@ -252,9 +253,8 @@ local function hall_boxes()
 		local breach = mapgen and mapgen.breach
 		for _, faction in ipairs({"accord", "throng"}) do
 			local hall = breach and breach.halls[faction]
-			if hall then
-				halls[#halls + 1] = {faction = faction, min = hall.interior.min,
-					max = hall.interior.max}
+			for _, box in ipairs(hall and hall.friendly or {}) do
+				halls[#halls + 1] = {faction = faction, min = box.min, max = box.max}
 			end
 		end
 	end
@@ -262,7 +262,8 @@ local function hall_boxes()
 end
 
 -- grug_zones' answers for a position: its PvP rule and, on peaceful ground,
--- the faction owning it; a hall's interior is its faction's peaceful ground.
+-- the faction owning it; a hall's friendly boxes are its faction's peaceful
+-- ground.
 local function zone_answers(zones, pos)
 	return R.zone_answers(zones, hall_boxes(), pos)
 end

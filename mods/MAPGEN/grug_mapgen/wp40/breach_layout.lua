@@ -69,13 +69,26 @@ M.MOUTHS = {
 -- roof's underside), `floor` its floor layer; `waystone` the marker's base
 -- cell (template u 4, y 1, v 0), `arrival` the arrival socket (u 5, y 1, v 0),
 -- `muster` the muster point (u 6, y 1, v 0).
+-- `friendly` (Round 89, round89-plan.md ruling 3): the hall's friendly
+-- territory, the boxes of the approved balcony draft
+-- (`tools/r89_balcony_draft/REPORT.md`, hall frame u toward the road, y from
+-- the floor layer, v): the interior (it holds the lower flight and the
+-- turn), the upper stair under its hood (u 5..12, y 8..12, v 12..14) and the
+-- balcony (u 13..19, y 9..12, v 6..14: the deck, the parapet's rail and the
+-- air up to the underside of its own roof, ending at the barrier's inner
+-- face; the barrier stands at u 20). The hall's roof and the balcony's roof
+-- stay what the zone says.
 local function hall(sign)
 	local function x(u) return sign * (42 - u) end
-	local x1, x2 = x(1), x(11)
+	local function box(u1, y1, v1, u2, y2, v2)
+		return {min = {x = math.min(x(u1), x(u2)), y = 6 + y1, z = math.min(-sign * v1, -sign * v2)},
+			max = {x = math.max(x(u1), x(u2)), y = 6 + y2, z = math.max(-sign * v1, -sign * v2)}}
+	end
+	local interior = box(1, 1, -14, 11, 7, 14)
 	return {
 		floor_y = 6,
-		interior = {min = {x = math.min(x1, x2), y = 7, z = -14},
-			max = {x = math.max(x1, x2), y = 13, z = 14}},
+		interior = interior,
+		friendly = {interior, box(5, 8, 12, 12, 12, 14), box(13, 9, 6, 19, 12, 14)},
 		waystone = {x = x(4), y = 7, z = 0},
 		arrival = {x = x(5), y = 7, z = 0},
 		muster = {x = x(6), y = 7, z = 0},
@@ -197,7 +210,8 @@ end
 --                         datum to BOX_ABOVE over it
 --   fringe                the levelled ground and its blend: the hull's
 --                         bounds grown by the site's reach, the same heights
---   halls[faction]        interior, floor_y, waystone, arrival, muster
+--   halls[faction]        interior, friendly (a list of boxes, the
+--                         interior first), floor_y, waystone, arrival, muster
 --   mouths                north and south road ends {x, y, z, dz}
 --   road                  {x, y, min_z, max_z, half_width}: the straight
 --                         inner segment between the mouths
@@ -218,8 +232,11 @@ function M.world(site)
 		max = {x = M.HALF_X + site.reach, y = 0, z = M.HALF_Z + site.reach}})
 	out.halls = {}
 	for faction, h in pairs(M.HALLS) do
+		local friendly = {}
+		for index, b in ipairs(h.friendly) do friendly[index] = box(b) end
 		out.halls[faction] = {floor_y = y + h.floor_y, interior = box(h.interior),
-			waystone = point(h.waystone), arrival = point(h.arrival), muster = point(h.muster)}
+			friendly = friendly, waystone = point(h.waystone), arrival = point(h.arrival),
+			muster = point(h.muster)}
 	end
 	out.mouths = {}
 	for index, m in ipairs(M.MOUTHS) do

@@ -1,0 +1,36 @@
+{
+ "accord": {
+  "arrival": {
+   "x": 69,
+   "y": 123.51,
+   "z": -48
+  },
+  "cell": true,
+  "discovered": "breach_road_accord",
+  "layout_arrival": {
+   "x": 69,
+   "y": 124,
+   "z": -48
+  },
+  "node": "grug_mapgen:waystone",
+  "objects": null,
+  "use": "ok"
+ },
+ "throng": {
+  "arrival": {
+   "x": -5,
+   "y": 123.51,
+   "z": -48
+  },
+  "cell": true,
+  "discovered": "breach_road_throng",
+  "layout_arrival": {
+   "x": -5,
+   "y": 124,
+   "z": -48
+  },
+  "node": "grug_mapgen:waystone",
+  "objects": null,
+  "use": "ok"
+ }
+}

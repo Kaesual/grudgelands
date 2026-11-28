@@ -367,7 +367,10 @@ do
 	_G.grug_mapgen = {camp_rewrite = {request = function() requests = requests + 1 end}}
 	dofile(repo .. "/mods/CORE/grug_core/migrations.lua")
 	local versions = grug_core.migrations.versions
-	assert(versions[#versions] == "0.69.0", "the step is registered")
+	-- (Round 89: later steps follow 0.69.0 in the list, so membership, not the end)
+	local listed = false
+	for _, version in ipairs(versions) do listed = listed or version == "0.69.0" end
+	assert(listed, "the step is registered")
 	local handlers = grug_core.migrations.handlers["0.69.0"]
 	assert(handlers.world and not handlers.character, "a world part only")
 	handlers.world("1")

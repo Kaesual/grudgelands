@@ -1,0 +1,11 @@
+launcher: staged probe: grug_probe_r89_rewrite
+seconds: 78, exit 0
+joins: []
+--- log lines
+ACTION[Main]: [grug_core] world version 0.89.0, game 0.89.0: no migration step due
+ACTION[Main]: [grug_core] migration 0.89.0: the world's online work is done
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38624.
+ACTION[Server]: [r89_rewrite_probe] phase crash, job pending: true
+ACTION[Server]: [grug_mapgen] arena hall accord rewritten: 12369 cells, emerge 4.8 s, write 7.7 ms
+ACTION[Server]: [r89_rewrite_probe] holding an emerge after the first hall's write
+ACTION[Server]: [r89_rewrite_probe] holding an emerge after the first hall's write

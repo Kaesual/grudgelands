@@ -741,6 +741,18 @@ Mage's Rime Mantle, the Scout's Parry and Close Dance, and the Last Light
 Locket's trinket special (`items_crafting.md` §6.2). Each shows as the one
 `shield` status icon.
 
+**The shield bubble** (Round 89 ruling 2): while any contribution lives, one
+half-transparent bubble laced with fine, irregular veins of light surrounds the player, coloured by the contribution
+added last that is still live (a recast counts as added): gold for the
+Priest's Shield, blue for Rime Mantle, white to light grey for every other.
+When that one ends first, the colour falls back to the latest still live;
+the bubble goes with the last contribution (used up, expired), on death and
+on leave, and there is never more than one. Its own player does not see it in
+first person; other players and the third-person camera do. One entity
+attached to the player, nothing saved and no work per server step
+(`grug_core/shield_bubble.lua`, called from the absorb bookkeeping; the
+colour table `grug_core.shield_bubble.COLORS`).
+
 ### 3.12 The graph talents of round K (Round 52, live since Round 53)
 
 Round 52 ([class plan](../planning/round52-class-plan.md) C6, C12, D3–D5,

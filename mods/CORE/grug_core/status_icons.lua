@@ -15,7 +15,7 @@
 -- the shared potion cooldown (Round 78 ruling 2, `potion_cooldown` below).
 --
 -- This file is PURE Lua: it calls nothing from `core`, so the portable
--- fixture (tools/r26_status_icons) loads the real thing.
+-- fixtures (tools/r26_status_icons, tools/r89_ui) load the real thing.
 
 local icons = {}
 grug_core.status_icons = icons
@@ -56,6 +56,16 @@ end
 local function def(kind, name, detail, icon, variants)
 	return {kind = kind, name = name, detail = detail, icon = icon,
 		variants = variants}
+end
+
+-- A heartbeat status (Round 89 fix round): its owner sets it again on every
+-- tick of a cause with a duration a little longer than the tick, so it lasts
+-- as long as the cause and its expiry says nothing about when it ends. Its
+-- icon gets no duration cover (icons.has_cover), which would loop with every
+-- tick and read as a timer.
+local function heartbeat(entry)
+	entry.no_cover = true
+	return entry
 end
 
 icons.STATUS = {
@@ -125,10 +135,12 @@ icons.STATUS = {
 	slowed = def("debuff", "Slowed", "Movement speed reduced", art("slowed")),
 	rooted = def("debuff", "Rooted", "Cannot move", art("rooted")),
 	stunned = def("debuff", "Stunned", "Cannot act or move", art("stunned")),
-	scorched = def("debuff", "Scorched", "Burning ground", art("scorched")),
+	-- Set for 1.5 s on every 1 s damage tick (grug_mobs boss_dragons.lua):
+	-- heartbeats, so no cover.
+	scorched = heartbeat(def("debuff", "Scorched", "Burning ground", art("scorched"))),
 	-- A dragon fight's participant outside its arena (grug_mobs boss_dragons.lua).
-	dragon_wrath = def("debuff", "Dragon's Wrath", "Return to the dragon's arena",
-		art("scorched")),
+	dragon_wrath = heartbeat(def("debuff", "Dragon's Wrath", "Return to the dragon's arena",
+		art("scorched"))),
 	-- Round 72.1: whoever cancels an Expedition (grug_expeditions registrar.lua, a
 	-- status source). No art of its own yet: the contested banner upside down and
 	-- muted, until the user picks a drawn icon.
@@ -259,6 +271,52 @@ function icons.caption(value, untimed, remaining_us)
 		return ""
 	end
 	return icons.countdown(remaining_us)
+end
+
+-- The duration cover (Round 89 ruling 1): a timed effect's icon darkens
+-- clockwise from twelve o'clock as its time runs, start clear, end fully
+-- covered. The frames are the hotbar's cooldown covers (grug_abilities
+-- cooldown_math.lua: M.PIE, M.FRAMES, M.PIE_PX; texture names are global,
+-- so no dependency and no new file): frame k covers what a cooldown still
+-- has to run after k/FRAMES of it, the share 1 - k/FRAMES counter-clockwise
+-- from twelve. Mirrored (^[transformFX) that share runs clockwise from
+-- twelve, so the frame of the remaining share, mirrored, covers the elapsed
+-- share the ruling asks for.
+icons.COVER = "grug_abilities_cd_pie_%02d.png"
+icons.COVER_FRAMES = 72
+icons.COVER_PX = 96
+
+-- Whether status `id` shows a duration cover: every timed one but the
+-- heartbeats above.
+function icons.has_cover(id)
+	local entry = icons.STATUS[id]
+	return not (entry and entry.no_cover)
+end
+
+-- The covered steps (of COVER_FRAMES) of an effect with `remaining_us` of
+-- `total_us` left: 0 (clear) at the start up to COVER_FRAMES - 1 at the end,
+-- rounded down so the cover never runs ahead of the time; nil without a
+-- total (an untimed effect).
+function icons.cover_step(remaining_us, total_us)
+	remaining_us, total_us = tonumber(remaining_us), tonumber(total_us)
+	if not remaining_us or not total_us or total_us <= 0 then
+		return nil
+	end
+	local step = math.floor((1 - remaining_us / total_us) * icons.COVER_FRAMES)
+	if step < 0 then
+		return 0
+	elseif step > icons.COVER_FRAMES - 1 then
+		return icons.COVER_FRAMES - 1
+	end
+	return step
+end
+
+-- The cover's texture for `step` covered steps; "" (nothing drawn) for none.
+function icons.cover_texture(step)
+	if not step or step <= 0 then
+		return ""
+	end
+	return icons.COVER:format(icons.COVER_FRAMES - step) .. "^[transformFX"
 end
 
 -- The class icon for the party UI (ruling 22): plate only, no frame.

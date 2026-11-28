@@ -98,22 +98,21 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.88.0** answers a batch of player feedback. Knockback now comes from the attacker's
-weight (none, light, medium or heavy; elites a little more), never from its damage;
-projectiles push nothing, and pushes no longer add up. The Character page lists your stats
-with a detail box that explains each value and where it comes from. Every potion family
-has a bottle of its own, its tier shown by the glass and the stopper. Herbs, berries and
-wild crops can be gathered in the other faction's home land, while building there stays
-refused; quest givers whose quests are far below your level show a grey "!", and
-professions advance on the level-up.
+**0.89.0** shows how long an effect still runs: its icon darkens clockwise as its time
+passes. A player with an active shield is wrapped in a veined, half-transparent bubble in
+the colour of the shield cast last, and the Waystones list calls your home by its name.
+Each hall of the arena **Breach Road** (since 0.85.0 on the middle road near the centre of
+the map) has a stair up to a roofed balcony, your faction's ground, from which you watch
+the field behind an invisible wall. **0.88.0** made knockback follow the attacker's
+weight, never its damage, and added the Character page's stat list and a bottle for every
+potion family.
 Since **0.86.0** a Claim Stone claims one map square of 80 × 80 nodes in your faction's
 level 11–30 or capital zones, and a character linked to an account on the realm's website
 (grudgelands.com/play) may choose the **Account Claim Stone**: one named home that the
 account's characters of one faction share, with shared belongings. The account's
 rewards, such as the **Cheer** emote and the Supporter and donor cloaks, reach every
 linked character, and accounts stay optional ([rules](docs/design/accounts.md),
-[contract](docs/technical/web-accounts.md)). Since 0.85.0 the arena **Breach Road**
-stands on the middle road near the centre of the map.
+[contract](docs/technical/web-accounts.md)).
 
 Read the [changelog](CHANGELOG.md) for every earlier version and the upgrade
 requirements of each.

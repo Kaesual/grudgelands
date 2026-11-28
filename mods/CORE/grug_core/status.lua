@@ -18,6 +18,11 @@
 -- paths (movement flags, shield-borne talent modifiers) are not copied into
 -- this table: their owner registers a status SOURCE, read at display time,
 -- so the icon can never outlive the effect.
+--
+-- Each slot of the row is three HUD elements: the icon, its caption (the
+-- countdown, or a shield's points) and, since Round 89 (ruling 1), the
+-- duration cover over the icon, which darkens clockwise as a timed effect's
+-- time runs (status_icons.lua cover_step; untimed effects show none).
 
 local MODIFIER_KEYS = {
 	hp_pool_percent = true,
@@ -137,6 +142,8 @@ function grug_core.set_status(player, id, definition)
 		end
 	end
 	sequence = sequence + 1
+	statuses[name] = statuses[name] or {}
+	local old_record = statuses[name][id]
 	local record = {
 		id = id,
 		label = tostring(definition.label or id),
@@ -153,11 +160,16 @@ function grug_core.set_status(player, id, definition)
 		sequence = sequence,
 		untimed = untimed,
 	}
+	-- When the effect began, for the icon's duration cover (Round 89): a
+	-- set with a new expiry (a refresh) starts it again; a repeated set of
+	-- the running effect with the same expiry keeps it.
+	if not untimed then
+		record.started_us = old_record and old_record.expiry_us == expiry and
+			old_record.started_us or now
+	end
 	if interval then
 		record.next_tick_us = now + interval * 1e6
 	end
-	statuses[name] = statuses[name] or {}
-	local old_record = statuses[name][id]
 	statuses[name][id] = record
 	notify_modifier_change(player, old_record, record)
 	return record
@@ -321,7 +333,9 @@ end
 -- Every active, visible effect in row order: stored statuses and source
 -- entries. A value function returning false hides its status (Sprint cleared
 -- early, an empty shield). Each entry: {id, kind, texture, caption, name,
--- detail, value, untimed, remaining_us}. `ordered` (optional) is each_status'
+-- detail, value, untimed, remaining_us, expiry_us, started_us}; only a stored
+-- status knows when it began (`started_us`), a source entry does not.
+-- `ordered` (optional) is each_status'
 -- list from the caller's own sweep in this step (the status pass); a record
 -- that has expired since sends it through each_status again.
 function grug_core.status_effects(player, ordered)
@@ -368,6 +382,8 @@ function grug_core.status_effects(player, ordered)
 				value = value,
 				untimed = record.untimed == true,
 				remaining_us = remaining,
+				expiry_us = remaining and record.expiry_us or nil,
+				started_us = remaining and record.started_us or nil,
 			}
 		end
 	end
@@ -434,6 +450,36 @@ local function advance_statuses(player, now)
 end
 
 local ICON_SCALE = layout.STATUS_ICON / 64
+-- The cover frames are COVER_PX square; a quarter pixel more keeps the
+-- engine's truncated size at STATUS_ICON px, the icon's own (hud.cpp:496).
+local COVER_SCALE = (layout.STATUS_ICON + 0.25) / icons.COVER_PX
+-- A source entry's expiry is read afresh at every display, and where it
+-- counts whole seconds of another clock (the potion cooldown, the
+-- Deserter's Mark) it moves by up to a second between reads: only an expiry
+-- later by more than this is a refresh that starts a new cover.
+local REFRESH_SLACK_US = 1.5e6
+
+-- The texture of an entry's duration cover (Round 89 ruling 1): "" for an
+-- untimed effect or a heartbeat (status_icons has_cover). A stored status
+-- knows when it began; a source entry's whole duration is what the row saw
+-- when it first showed that effect (id and expiry), kept in `seen` and
+-- copied into `kept` while it shows, so a cover follows its effect when the
+-- row reorders, never its slot.
+local function cover_of(entry, seen, kept)
+	if not entry.remaining_us or not entry.expiry_us or not icons.has_cover(entry.id) then
+		return ""
+	end
+	local total = entry.started_us and entry.expiry_us - entry.started_us
+	if not total then
+		local first = seen and seen[entry.id]
+		if not first or entry.expiry_us > first.expiry_us + REFRESH_SLACK_US then
+			first = {expiry_us = entry.expiry_us, total_us = entry.remaining_us}
+		end
+		kept[entry.id] = first
+		total = first.total_us
+	end
+	return icons.cover_texture(icons.cover_step(entry.remaining_us, total))
+end
 
 local function change(player, slot, key, id, property, value)
 	local previous = slot[key]
@@ -462,21 +508,29 @@ local function refresh_hud(player, ordered)
 	local shown = grug_core.status_display(player, ordered)
 	local window = #shown > 0 and core.get_player_window_information and
 		core.get_player_window_information(name) or nil
+	local kept = {}
 	for index = 1, #hud.slots do
 		local slot = hud.slots[index]
 		local entry = shown[index]
+		local cover = entry and cover_of(entry, hud.seen, kept) or ""
 		if entry then
 			local icon_offset, caption_offset = layout.status_slot(index, #shown,
 				window)
 			change(player, slot, "icon_offset", slot.icon, "offset", icon_offset)
 			change(player, slot, "caption_offset", slot.caption, "offset",
 				caption_offset)
+			-- An empty cover is not drawn: its place is written when it shows.
+			if cover ~= "" then
+				change(player, slot, "cover_offset", slot.cover, "offset", icon_offset)
+			end
 		end
 		change(player, slot, "texture", slot.icon, "text",
 			entry and entry.texture or "")
 		change(player, slot, "text", slot.caption, "text",
 			entry and entry.caption or "")
+		change(player, slot, "cover_text", slot.cover, "text", cover)
 	end
+	hud.seen = kept
 end
 
 grug_core.refresh_status_hud = refresh_hud
@@ -506,13 +560,26 @@ core.register_on_joinplayer(function(player)
 				number = 0xffffff,
 				z_index = 1,
 			}),
+			-- The duration cover over the icon (Round 89 ruling 1), drawn above it.
+			cover = player:hud_add({
+				type = "image",
+				position = {x = anchor.position.x, y = anchor.position.y},
+				offset = icon_offset,
+				alignment = {x = 0, y = 0},
+				scale = {x = COVER_SCALE, y = COVER_SCALE},
+				text = "",
+				z_index = 2,
+			}),
 			icon_offset = icon_offset,
 			caption_offset = caption_offset,
+			cover_offset = icon_offset,
 			texture = "",
 			text = "",
+			cover_text = "",
 		}
 	end
-	huds[player:get_player_name()] = {slots = slots}
+	-- `seen`: id -> {expiry_us, total_us}, the source entries' first sight.
+	huds[player:get_player_name()] = {slots = slots, seen = {}}
 end)
 
 core.register_on_dieplayer(clear_runtime_statuses)

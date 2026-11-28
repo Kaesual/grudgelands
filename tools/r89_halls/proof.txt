@@ -1,0 +1,80 @@
+ACTION[Server]: [r89halls] READY
+ACTION[Server]: [r89halls] site -72,8 datum 55 reach 29
+ACTION[Server]: [r89halls] arena emerged in 3.5 s
+ACTION[Server]: [r89halls] barrier node: drawtype airlike walkable true pointable blocking sunlight true diggable false groups.grug_air nil
+ACTION[Server]: [r89halls] PROOF accord | barrier cells | the hall box in the engine | 45 cells | PASS
+ACTION[Server]: [r89halls] PROOF throng | barrier cells | the hall box in the engine | 45 cells | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory stair foot | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory stair turn | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory upper stair | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory deck | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory rail top | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory in front of the barrier | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory hall roof | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory balcony roof | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] PROOF accord | territory gate court | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory stair foot | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory stair turn | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory upper stair | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory deck | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory rail top | grug_pvp.territory_at | friendly / enemy | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory in front of the barrier | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory hall roof | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory balcony roof | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] PROOF throng | territory gate court | grug_pvp.territory_at | contested / contested | PASS
+ACTION[Server]: [r89halls] LIGHT accord day: deck 10, rail top 13, barrier 14, in front 15, gallery under the roof's back 9
+ACTION[Server]: [r89halls] PROOF accord | walk into the barrier | deck, toward the field | u max 18.57 (inner face 19.5), y min 8.50 | PASS
+ACTION[Server]: [r89halls] PROOF accord | jump out from the rail | parapet's top, toward the field | u max 19.20, y min 9.50 | PASS
+ACTION[Server]: [r89halls] PROOF accord | fly into the barrier | air in front, toward the deck | u min 20.80 (outer face 20.5) | PASS
+ACTION[Server]: [r89halls] PROOF accord | fall in front and press in | air in front under the roof's edge, falling | u min 20.80 while level with the opening, y min 0.50 | PASS
+ACTION[Server]: [r89halls] PROOF accord | flying mount out | over the deck, forward toward the field | mount u max 18.60, half width 0.90, box height 1.65 (inner face 19.5) | PASS
+ACTION[Server]: [r89halls] PROOF accord | flying mount in | air in front, forward toward the deck | mount u min 21.40, half width 0.90 (outer face 20.5) | PASS
+ACTION[Server]: [r89halls] PROOF accord | aim ray out (ranged attack) | deck at a target in the air in front | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF accord | aim ray, control | deck at the target on the deck | aim_miss object grug_probe_r89_halls:target | PASS
+ACTION[Server]: [r89halls] PROOF accord | aim ray out at a mob (turned box) | deck at a boar in the air in front | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF accord | engine ray, no pointabilities (as a client points) | deck at the boar | 0 pointed things (nil) | PASS
+ACTION[Server]: [r89halls] PROOF accord | server raycast (the wrapper) | deck at the boar | first: grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF accord | projectile at a mob beyond | deck at the boar in front | refused (no lock) | PASS
+ACTION[Server]: [r89halls] PROOF accord | projectile whose target crosses in flight | deck at the boar, the boar set 4 nodes out through the barrier | hit at u 22.40 | FINDING
+ACTION[Server]: [r89halls] PROOF accord | heal ray in | air in front at the player on the deck | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF accord | heal ray, control | deck behind the player | aim_miss friendly player grugcap | PASS
+ACTION[Server]: [r89halls] PROOF accord | aim ray in (ranged attack) | air in front at the player on the deck | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF accord | area anchor out | deck at the field below | anchor at u 18.45 y 8.50 | PASS
+ACTION[Server]: [r89halls] PROOF accord | area anchor in | air in front at the deck | No ground found. | PASS
+ACTION[Server]: [r89halls] PROOF accord | area on the hall's roof | an anchor on the hall's roof 3 nodes from a player on the deck, radius 4 | the player on the deck is in it | FINDING
+ACTION[Server]: [r89halls] PROOF accord | nametag through the barrier | the archer's tag 7.31 nodes away, the player on the rail | observed by the player | PASS
+ACTION[Server]: [r89halls] PROOF accord | mob sight | bandit archer in front at u 25.99 y 7.50, at the player on the rail | mobs_redo line_of_sight nil, core.line_of_sight false (first block: grug_mapgen:arena_barrier at u 20.00 y 11.00), shot lock none | PASS
+ACTION[Server]: [r89halls] PROOF accord | mob attack | the archer at the player on the rail, 8 s | arrows seen 0, hits on the player 0, mob state attack, player at u 19.00 y 9.50 | PASS
+ACTION[Server]: [r89halls] PROOF accord | mob sight, control without the barrier | bandit archer in front at u 25.99 y 7.50, at the player on the rail | mobs_redo line_of_sight true, core.line_of_sight true (first block: none), shot lock made | PASS
+ACTION[Server]: [r89halls] PROOF accord | mob attack, control without the barrier | the archer at the player on the rail, 8 s | arrows seen 4, hits on the player 3, mob state attack, player at u 19.00 y 9.50 | PASS
+ACTION[Server]: [r89halls] PROOF accord | barrier restored | after the control | 45 cells | PASS
+ACTION[Server]: [r89halls] LIGHT throng day: deck 10, rail top 13, barrier 14, in front 15, gallery under the roof's back 9
+ACTION[Server]: [r89halls] PROOF throng | walk into the barrier | deck, toward the field | u max 18.57 (inner face 19.5), y min 8.50 | PASS
+ACTION[Server]: [r89halls] PROOF throng | jump out from the rail | parapet's top, toward the field | u max 19.20, y min 9.50 | PASS
+ACTION[Server]: [r89halls] PROOF throng | fly into the barrier | air in front, toward the deck | u min 20.80 (outer face 20.5) | PASS
+ACTION[Server]: [r89halls] PROOF throng | fall in front and press in | air in front under the roof's edge, falling | u min 20.80 while level with the opening, y min 0.50 | PASS
+ACTION[Server]: [r89halls] PROOF throng | flying mount out | over the deck, forward toward the field | mount u max 18.60, half width 0.90, box height 1.65 (inner face 19.5) | PASS
+ACTION[Server]: [r89halls] PROOF throng | flying mount in | air in front, forward toward the deck | mount u min 21.40, half width 0.90 (outer face 20.5) | PASS
+ACTION[Server]: [r89halls] PROOF throng | aim ray out (ranged attack) | deck at a target in the air in front | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF throng | aim ray, control | deck at the target on the deck | aim_miss object grug_probe_r89_halls:target | PASS
+ACTION[Server]: [r89halls] PROOF throng | aim ray out at a mob (turned box) | deck at a boar in the air in front | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF throng | engine ray, no pointabilities (as a client points) | deck at the boar | 0 pointed things (nil) | PASS
+ACTION[Server]: [r89halls] PROOF throng | server raycast (the wrapper) | deck at the boar | first: grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF throng | projectile at a mob beyond | deck at the boar in front | refused (no lock) | PASS
+ACTION[Server]: [r89halls] PROOF throng | projectile whose target crosses in flight | deck at the boar, the boar set 4 nodes out through the barrier | hit at u 22.40 | FINDING
+ACTION[Server]: [r89halls] PROOF throng | heal ray in | air in front at the player on the deck | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF throng | heal ray, control | deck behind the player | aim_miss friendly player grugcap | PASS
+ACTION[Server]: [r89halls] PROOF throng | aim ray in (ranged attack) | air in front at the player on the deck | aim_miss node grug_mapgen:arena_barrier | PASS
+ACTION[Server]: [r89halls] PROOF throng | area anchor out | deck at the field below | anchor at u 18.45 y 8.50 | PASS
+ACTION[Server]: [r89halls] PROOF throng | area anchor in | air in front at the deck | No ground found. | PASS
+ACTION[Server]: [r89halls] PROOF throng | area on the hall's roof | an anchor on the hall's roof 3 nodes from a player on the deck, radius 4 | the player on the deck is in it | FINDING
+ACTION[Server]: [r89halls] PROOF throng | nametag through the barrier | the archer's tag 7.28 nodes away, the player on the rail | observed by the player | PASS
+ACTION[Server]: [r89halls] PROOF throng | mob sight | bandit archer in front at u 26.00 y 7.50, at the player on the rail | mobs_redo line_of_sight nil, core.line_of_sight false (first block: grug_mapgen:arena_barrier at u 20.00 y 11.00), shot lock none | PASS
+ACTION[Server]: [r89halls] PROOF throng | mob attack | the archer at the player on the rail, 8 s | arrows seen 0, hits on the player 0, mob state attack, player at u 19.00 y 9.50 | PASS
+ACTION[Server]: [r89halls] PROOF throng | mob sight, control without the barrier | bandit archer in front at u 26.00 y 7.50, at the player on the rail | mobs_redo line_of_sight true, core.line_of_sight true (first block: none), shot lock made | PASS
+ACTION[Server]: [r89halls] PROOF throng | mob attack, control without the barrier | the archer at the player on the rail, 8 s | arrows seen 4, hits on the player 4, mob state attack, player at u 19.00 y 9.50 | PASS
+ACTION[Server]: [r89halls] PROOF throng | barrier restored | after the control | 45 cells | PASS
+ACTION[Server]: [r89halls] LIGHT accord night: deck 7, rail top 6, barrier 5, in front 5, gallery under the roof's back 9
+ACTION[Server]: [r89halls] LIGHT throng night: deck 7, rail top 6, barrier 5, in front 5, gallery under the roof's back 9
+ACTION[Server]: [r89halls] RESULT PASS pass=66 fail=0 findings=4
+ACTION[Server]: [r89halls] shutdown

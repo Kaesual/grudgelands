@@ -37,6 +37,7 @@ workstation; elsewhere an installed copy of
 | The player or NPC model, a cloak, its bones or animations | `python3 tools/r33_c3/gen_cloak_model.py --check`; `python3 tools/web_data/model/build_glb.py --check` and `check_glb.py` |
 | Items, factions, classes, races or textures the website reads | `tools/web_data/export.lua --check` (regenerates `tools/web_data/web_data.json`; [tools/web_data/README.md](../../tools/web_data/README.md)) |
 | The ridden bats' models | `python3 tools/r451_mc/gen_bat_ride_mesh.py --check` (also a round-end gate) |
+| The shield bubble's mesh or textures | `python3 tools/r89_bubble/gen_bubble.py --check` |
 | Item numbers or their generator | `python3 tools/r33_ds/build_doc.py --check` (the generated tables of `item_tiers.md`; change data or the script, never a generated table) |
 | A recipe | `tools/r57_chains/run.sh OUT_DIR` (one boot through the queue; the depth per recipe) |
 | Bag sizes | the fixtures `r48_bags` (it runs the 0.48.0 step under its own sizes), `r44_ih`, `r33_c1`; `tools/r62_bags/capture.sh` shows the Inventory page with four 20-slot bags (one boot) |

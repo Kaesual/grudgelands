@@ -839,3 +839,6 @@ node grug_guild:stonewright_grinder_1_0_0
 node grug_guild:stonewright_grinder_1_0_1
 node grug_guild:stonewright_grinder_1_1_0
 node grug_guild:stonewright_grinder_1_1_1
+# Round 89 HALLS: the arena halls' balcony parapet and its invisible barrier
+node grug_decor:capital_rail
+node grug_mapgen:arena_barrier

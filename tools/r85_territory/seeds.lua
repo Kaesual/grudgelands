@@ -64,17 +64,22 @@ put("world_seconds", ("%.1f"):format(world_seconds))
 -- Territory
 -- ---------------------------------------------------------------------------
 local R = dofile(repo .. "/mods/PLAYER/grug_pvp/rules.lua")
-local halls = {}
+-- The territory list as grug_pvp builds it (Round 89: every friendly box of
+-- a hall); the interior checks below are the interiors'.
+local halls, interiors = {}, {}
 for _, faction in ipairs({"accord", "throng"}) do
 	local box = B.halls[faction].interior
-	halls[#halls + 1] = {faction = faction, min = box.min, max = box.max}
+	interiors[#interiors + 1] = {faction = faction, min = box.min, max = box.max}
+	for _, b in ipairs(B.halls[faction].friendly) do
+		halls[#halls + 1] = {faction = faction, min = b.min, max = b.max}
+	end
 end
 local function territory(pos, own)
 	local rule, here = R.zone_answers(S, halls, pos)
 	return R.territory(rule, here, own)
 end
 local hall_zones = {}
-for _, hall in ipairs(halls) do
+for _, hall in ipairs(interiors) do
 	local other = hall.faction == "accord" and "throng" or "accord"
 	local lo, hi, good, total = hall.min, hall.max, 0, 0
 	for x = lo.x, hi.x do

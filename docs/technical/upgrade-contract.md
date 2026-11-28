@@ -150,6 +150,7 @@ written in `register_on_mods_loaded`, after every clear.
 | `grug_housing`'s world-folder file `grug_claim_mask.txt` (Round 85, `mask.lua`; not mod storage) | the claim mask's snapshot of the map (the mask and its per-chunk fingerprints): the first start after the reset writes it anew for the new map (its header names the seed and the map-reset record, [format](claim-mask-format.md)) | — |
 | `grug_housing` world file `grug_road_chunks.txt` | first start of the new map captures its housing-area road chunks | the preceding recorded map's set for this seed, beside the new current set in one atomic write ([format](claim-mask-format.md#grug_road_chunkstxt)) |
 | `grug_mapgen` (Round 69, `camp_rewrite.lua`) | `camp_rewrite`, the pending box rewrite (§5.9): a new map generates the new blueprint | — |
+| `grug_mapgen` (Round 89, `hall_rewrite.lua`) | `hall_rewrite`, the pending rewrite of the arena's two hall boxes (§5.9): a new map generates the new halls | — |
 | `grug_core` `map_reset_pack:<seq>` (§3.5) | — | the pass's marker until the game's handler has run at the next load |
 | `grug_core` `reset_world` | — | the world record itself |
 | `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up, destruction or admin removal (since 0.86.0 one per member of an account claim, and a member's own leaving: `left`, `unlinked`, `faction`) |
@@ -166,8 +167,9 @@ the seed and the code and stay valid. The settlement
 NPCs, rares, dragons, leaders and the rift return as on a fresh world.
 The claim placement quota (Round 85) keeps no state of its own: its taken
 columns are rebuilt from the claim records, so the cleared `claim:` keys clear
-it too. The arena Breach Road (Round 85) stores nothing; its two hall
-waystones are ordinary discovered waypoints (kept below).
+it too. The arena Breach Road (Round 85) stores nothing but the pending
+hall rewrite above; its two hall waystones are ordinary discovered waypoints
+(kept below).
 
 | Player meta | Map-bound |
 |---|---|
@@ -544,7 +546,8 @@ skip its due steps.
   `tools/r48_bags/portable_test.lua`, 0.53.0's `tools/r53_ms/run.sh` with
   `tools/r53_ms/portable_test.lua`, 0.67.0's `tools/r67_craft/run.sh` (no
   online work, so no join fixture), 0.69.0's `tools/r69_camp/run.sh` with
-  `tools/r69_camp/portable_test.lua` (§5.8, §5.9). A tool run on a world before a
+  `tools/r69_camp/portable_test.lua` (§5.8, §5.9), 0.89.0's `tools/r89_rewrite/run.sh`
+  with `tools/r89_rewrite/portable_test.lua` (§5.8, §5.9). A tool run on a world before a
   step also runs every later declared step, so an older step's exact checks
   read a copy migrated by that step alone (the tool in-process, pinned to its
   checkout), and the mechanism's checks leave the declared steps' markers
@@ -578,8 +581,9 @@ skip its due steps.
 | 0.53.0 (Round 53, the new classes) | For every character, offline ones included: the player meta `grug_classes:talents` (the spent ranks; the points follow from the level, so every point is refunded), `grug_classes:respec_used` (the next respec is free again), every `grug_classes:talent_ready:<id>` and `grug_classes:unbroken_ready` and `grug_classes:untouchable_ready` (the 0.52.1 talent windows' stored cooldowns) are deleted; every stack of the retired skills `grug_abilities:cinderfall`, `:glacial_ward` and `:pinning_shot` leaves every list (the shown hotbar, the other layout `grug_hotbar_store`, a stray copy in `main[9..]` or a bag; a skill is a bound item that no node or detached inventory and no letter takes, and a dropped one is deleted); every character gets the marker. A character's inventory is written only when a retired skill went. The skills the new kits lock or swap are registered and left to the game's join (`grug_abilities.normalize_kit`); the Priest's Smite is not moved into Strike's slot | Each character's next join (`grug_core.migrations.handlers["0.53.0"]`, first join callback): a character with a class gets one chat line, "Your talent points have been reset.", and nothing else. The lower maximum HP of the Mage and the Priest is the stats' own join (`apply_stats` clamps the current HP) | `tools/r53_ms/run.sh`: unit tests, then a 0.52.1 world built by the 0.52.1 game (one character per class at level 30 with spent talents, stored windows and the retired skills on both layouts and in a bag), the shipped tool in the runner's container, boots and joins of 0.53.0; the join part's fixture `tools/r53_ms/portable_test.lua` |
 | 0.67.0 (Round 67, the playtest's crafting notes) | The six metal rods (`grug_professions:metal_rod_<metal>`) left the game (ruling 13): every rod stack becomes ceil(N / 2) bars of its metal (`grug_materials:<metal>_bar`), in place, its wear and meta dropped, in every store a removed item covers (§1), offline characters included: every list of every character's inventory; the `consumed` stacks of the running job (player meta `grug_jobs:job`) and of the waiting ones (`grug_jobs:queue`; a job whose recipe is gone returns them when it ends); `grug_housing`'s `recovered:*` entries (a rod stack, and the `lists` item meta of a packed container not cleaned yet) and the `packed:*` content keys; `grug_mail`'s `box:<name>` letters' attachments. A value is written only when it held a rod. Not covered (accepted, ruling default "Metal rods in saved state"): rods in node inventories on the map stay unknown items (a step never reads the map), and a cleaned packed container's tooltip text keeps naming the rods its stored contents no longer hold | none | `tools/r67_craft/run.sh`: unit tests in the runner's container, then a 0.66.1 world built by the 0.66.1 game (rods in main, the other hotbar, the overflow, a running and a waiting job, a letter, three Claim Stone entries; an offline character), the shipped tool in the runner's container, a refused boot and a boot and join of 0.67.0 (the jobs end and return bars) |
 | 0.69.0 (Round 69, the camps under construction) | The world marker `migrate_world:0.69.0`; nothing else is written (a step never reads the map) | The next load (`grug_core.migrations.handlers["0.69.0"]`, a world part): the handler records the job in `grug_mapgen`'s mod storage, key `camp_rewrite`, and after the load `grug_mapgen/camp_rewrite.lua` rewrites the six camps' boxes (§5.9). No character part | `tools/r69_camp/run.sh`: a 0.68.0 world built by the 0.68.0 game, the shipped tool in the runner's container, a refused boot, a boot killed during the job, the next boot finishing it with a join, a new world of the same seed compared cell by cell, a repeat, and the step with a map reset; the job's fixture `tools/r69_camp/portable_test.lua` |
+| 0.89.0 (Round 89, the arena halls' stairs and balconies) | The world marker `migrate_world:0.89.0`; nothing else is written (a step never reads the map) | The next load (`grug_core.migrations.handlers["0.89.0"]`, a world part): the handler records the job in `grug_mapgen`'s mod storage, key `hall_rewrite`, and after the load `grug_mapgen/hall_rewrite.lua` rewrites the two hall template boxes of the arena Breach Road (§5.9). No character part | `tools/r89_rewrite/run.sh`: a world of the previous version built by its game (the commit `OLD`), the shipped tool in the runner's container, a refused boot, a boot killed during the job, the next boot finishing it with a join of a character who discovered the Accord's hall stone, a new world of the same seed compared cell by cell, the stones, a repeat, and the step with a map reset; the job's fixture `tools/r89_rewrite/portable_test.lua` |
 
-0.49.0 to 0.52.1, 0.53.1 to 0.66.1, 0.68.0, 0.69.1 and 0.70.0 to 0.82.0 declare no step. The pre-reset pass (§3.5) is no step: it
+0.49.0 to 0.52.1, 0.53.1 to 0.66.1, 0.68.0, 0.69.1 and 0.70.0 to 0.88.0 declare no step. The pre-reset pass (§3.5) is no step: it
 has no version of its own, runs at every map reset from 0.50.0 on, and
 writes no world version.
 
@@ -655,7 +659,8 @@ same proof:
   that outlasts the settling time can still undo a write after the read-back.
 - **Preparation authority:** the files `preparation_identity.lua` lists stay
   byte-identical, or a world in `full` preparation mode stops at its next
-  start. So the job's seam lives outside them (`r69_camp_sites.lua`).
+  start. So the job's seam lives outside them (`r69_camp_sites.lua`,
+  `r89_hall_sites.lua`).
   `tools/check_upgrade.py` holds a change of those files to a new map reset
   entry or the CHANGELOG's `grug_prepare_full_world` admin line.
 - **A map reset in between:** the clear drops the key, and a start that resets
@@ -665,6 +670,26 @@ same proof:
   the job every box cell equals a new world of the same seed (node and
   param2), and a ring outside each box equals both the old world and the new
   world; old metadata and timers gone.
+
+**The arena's halls (Round 89, the migration 0.89.0).** The second use, on
+the same conditions: each hall template's box (21 × 19 × 31 cells from the
+floor layer up, placed on the layout's waystone cell) lies inside the arena's
+protected box (kind `arena`, the footprint from 10 below the datum to 35
+above: no digging or building for anyone, `world_protection.lua`
+`arena_box`), and claims keep off the arena's hull (`exclude_breach_v1`).
+The arena's outer measures, its footprint, layout and protection do not
+change (round89-plan.md ruling 5); `r89_hall_sites.lua` refuses a template
+whose box differs from 0.88.0's. The cells are the arena writer's
+(`breach_writer.lua` over `breach_model.lua`), every template cell being a
+plain node or air, so the box is whole; the writer's clear above a hall
+(`CLEAR_ABOVE`) is air in every world and stays out of the write. The
+waystone is the same plain node on the same cell, with no metadata, timer
+or object; its discovery lives in player meta. `grug_mapgen/hall_rewrite.lua`
+is `camp_rewrite.lua`'s flow with its own key (`hall_rewrite`), emerge,
+write, read-back and severe report. A player standing in a hall during the
+job meets the same case as in a camp (above); the arrival, muster and
+waystone cells stay free in the templates. The proof is
+`tools/r89_rewrite/e2e.py` (old game at a commit, new working tree).
 
 `tools/check_upgrade.py`'s town comparison sees neither this nor any other
 POI: it compares what the start towns and capitals build.

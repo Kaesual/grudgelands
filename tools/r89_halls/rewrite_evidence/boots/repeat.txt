@@ -1,0 +1,16 @@
+launcher: staged probe: grug_probe_r89_rewrite
+seconds: 36, exit 0
+joins: []
+--- log lines
+ACTION[Main]: [grug_core] world version 0.89.0, game 0.89.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38624.
+ACTION[Server]: [r89_rewrite_probe] phase repeat, job pending: true
+ACTION[Server]: [grug_mapgen] arena hall accord rewritten: 12369 cells, emerge 4.3 s, write 6.6 ms
+ACTION[Server]: [grug_mapgen] arena hall throng rewritten: 12369 cells, emerge 0.1 s, write 6.3 ms
+ACTION[Server]: [r89_rewrite_probe] reverted one written cell
+WARNING[Server]: [grug_mapgen] the arena halls' read-back found accord: 1 cells differ, 0 unread; writing again, pass 2
+ACTION[Server]: [grug_mapgen] arena hall accord rewritten: 12369 cells, emerge 0.1 s, write 5.6 ms
+ACTION[Server]: [grug_mapgen] arena hall throng rewritten: 12369 cells, emerge 0.1 s, write 5.9 ms
+ACTION[Server]: [grug_mapgen] the arena halls' rewrite is done, every box read back
+ACTION[Server]: [r89_rewrite_probe] dumped repeat
+ACTION[Server]: [r89_rewrite_probe] observations written: repeat

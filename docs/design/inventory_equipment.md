@@ -897,6 +897,20 @@ the Round 19 top-centre text list:
   code: green for buffs, red for debuffs, gold for neutral states. The
   caption under each icon is the countdown or the value (for example a
   shield's remaining absorb).
+- **Duration cover** (Round 89 ruling 1): every timed effect's icon darkens
+  clockwise from twelve o'clock as its time runs, clear at the start and
+  fully covered at the end, with the hotbar's 50 % black cooldown cover
+  (mirrored, 72 steps); the caption stays as above. Untimed effects have
+  none, and neither do the heartbeat statuses Scorched and Dragon's Wrath,
+  which their cause sets again every second for as long as it lasts. The whole
+  duration is known from the effect's start; for an effect reported by its
+  owner at display time (the movement flags, the PvP flag, the potion
+  cooldown, the Deserter's Mark) it is what the row saw when it first
+  showed it. Such a cover, and the Miner's Guild effect's, which is set
+  anew at the join, starts clear after a relog. A refresh (a later expiry)
+  starts a new cover. The shield's cover runs to the end of its longest
+  absorb; when the shield is used up first, the icon goes before it is
+  fully covered.
 - **Capacity:** at most 10 icons. When more statuses run, debuffs keep their
   slots first, then neutral states, then buffs.
 - **No cooldowns** on the row (ruling 21), with one exception since Round 78

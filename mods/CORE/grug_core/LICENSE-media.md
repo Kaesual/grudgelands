@@ -118,3 +118,16 @@ like every status (`status_icons.lua`).
 No external
 art, fonts or generated bitmap artwork. Regenerate with the script; verify
 with `python3 tools/ui_theme/build.py --check`.
+
+## Round 89 shield bubble — CC0
+
+Own work, generated for Grudgelands by `tools/r89_bubble/gen_bubble.py` (no
+source images, no randomness; `--check` compares). The entity is
+`grug_core/shield_bubble.lua`.
+
+| File | Origin / treatment | License |
+|---|---|---|
+| `models/grug_core_shield_bubble.obj` | Own work; a 16 × 8 low-poly ellipsoid (224 triangles) around its origin, written by the generator | CC0-1.0 |
+| `textures/grug_core_shield_bubble_gold.png` | Own work; 256×128 RGBA, a soft gold tint thickening toward the poles under a fine, irregular network of light veins (the look `web`: random walks with a fixed seed, seamless around), written by the generator | CC0-1.0 |
+| `textures/grug_core_shield_bubble_frost.png` | Own work; the same veins in blue | CC0-1.0 |
+| `textures/grug_core_shield_bubble_plain.png` | Own work; the same veins in white to light grey | CC0-1.0 |

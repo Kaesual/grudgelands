@@ -109,6 +109,10 @@ Full rules: [housing.md](housing.md) §8.
   since Round 44).
 - Death respawns at the Claim Stone too, fuelled or not (Round 69, retiring
   Round 25 ruling 25); the fallbacks are the ones above.
-- Independently, the activated stone is the waypoint "Your Claim Stone" in
-  every waystone's list and an origin for travel to the discovered waystones
-  (Round 45 PT9, [world.md](world.md) §6).
+- Independently, the activated stone is a waypoint in every waystone's list,
+  under the home's own name (Round 89 ruling 6; the default
+  "<owner>'s Home", [housing.md](housing.md)), and an origin for travel to the
+  discovered waystones (Round 45 PT9, [world.md](world.md) §6). A player
+  without an activated stone sees the greyed entry "Your Claim Stone" with
+  "No claim stone". The map's markers of the stone (the home marker, or the
+  waypoint marker when it is not the travel home) carry the same name.

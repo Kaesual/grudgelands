@@ -25,10 +25,11 @@ Sections: [World version and migrations](#world-version-and-migrations), [Player
   fn(player, marker)}` for a step's online work. A new step adds its version
   here and, when it leaves online work, its handlers (in this file, above the
   registry: the guard collects them at load) and their fixture. The
-  declared steps are 0.44.0, 0.45.0, 0.47.0, 0.48.0, 0.53.0, 0.67.0 and
-  0.69.0; every one but 0.44.0, 0.67.0 and 0.69.0 leaves a character handler, run at the character's next join
-  before every other join callback, and 0.69.0 leaves a world handler (it
-  records the camp rewrite job that `grug_mapgen/camp_rewrite.lua` runs
+  declared steps are 0.44.0, 0.45.0, 0.47.0, 0.48.0, 0.53.0, 0.67.0, 0.69.0
+  and 0.89.0; every one but 0.44.0, 0.67.0, 0.69.0 and 0.89.0 leaves a character handler, run at the character's next join
+  before every other join callback, and 0.69.0 and 0.89.0 leave a world handler (each
+  records a box rewrite job that `grug_mapgen/camp_rewrite.lua`, for 0.89.0
+  `grug_mapgen/hall_rewrite.lua`, runs
   after the load; [upgrade contract](../upgrade-contract.md) §5.9). 0.45.0's hands craft-grid and
   `craftresult` leftovers over (give helper, output area, feet), refreshes
   first-tier weapons' capabilities and rebuilds gear tooltips (fixture
@@ -73,7 +74,7 @@ Sections: [World version and migrations](#world-version-and-migrations), [Player
   as ceil(N / 2) bars of its metal in the inventories, the jobs' `consumed`
   stacks, `grug_housing`'s `recovered:*` and `packed:*` keys and
   `grug_mail`'s mailboxes, offline only, [upgrade contract](../upgrade-contract.md)
-  §5.8; `v0_69_0.py` only sets the world marker for its online part). Python 3.13, standard library; `psycopg` 3 imported only for
+  §5.8; `v0_69_0.py` and `v0_89_0.py` only set the world marker for their online part). Python 3.13, standard library; `psycopg` 3 imported only for
   PostgreSQL. Unit tests: `tools/r43_mt/test_migrate.py` (the container run
   `tools/r43_mt/container_test.sh`; against a copy of the declaration with
   an empty `migrate` list); end to end with the engine:
@@ -81,7 +82,7 @@ Sections: [World version and migrations](#world-version-and-migrations), [Player
   (`tools/r44_ms/run.sh` for 0.44.0, `tools/r45_ms/run.sh` for 0.45.0,
   `tools/r47_ms/run.sh` for 0.47.0, `tools/r48_bags/run.sh` for 0.48.0,
   `tools/r53_ms/run.sh` for 0.53.0, `tools/r67_craft/run.sh` for 0.67.0,
-  `tools/r69_camp/run.sh` for 0.69.0:
+  `tools/r69_camp/run.sh` for 0.69.0, `tools/r89_rewrite/run.sh` for 0.89.0:
   unit tests and an end-to-end run from a world of the previous release).
 
 ## Player meta read by external tools

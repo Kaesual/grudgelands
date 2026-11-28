@@ -4,7 +4,8 @@
 --
 --   luajit tools/r85_territory/portable_test.lua [REPO]
 --
--- T  territory (grug_pvp/rules.lua R.hall_at, R.zone_answers): every node of
+-- T  territory (grug_pvp/rules.lua R.hall_at, R.zone_answers, on every
+--    friendly box of the halls as grug_pvp lists them): every node of
 --    each hall's interior box answers the hall's faction, also from a
 --    player's float position (feet on the floor, jumping, touching a wall);
 --    the node beyond each face of the box (the sills and doorways, the roof,
@@ -39,10 +40,16 @@ local W = L.world(site)
 -- ---------------------------------------------------------------------------
 -- T: territory
 -- ---------------------------------------------------------------------------
-local halls = {}
+-- The territory list as grug_pvp builds it (Round 89: every friendly box of
+-- a hall, its interior, upper stair and balcony, tools/r89_halls checks the
+-- two new ones); the checks below are the interiors'.
+local halls, interiors = {}, {}
 for _, faction in ipairs({"accord", "throng"}) do
 	local box = W.halls[faction].interior
-	halls[#halls + 1] = {faction = faction, min = box.min, max = box.max}
+	interiors[#interiors + 1] = {faction = faction, min = box.min, max = box.max}
+	for _, b in ipairs(W.halls[faction].friendly) do
+		halls[#halls + 1] = {faction = faction, min = b.min, max = b.max}
+	end
 end
 -- The Battlegrounds: contested everywhere (no faction owns the column).
 local zones = {
@@ -53,7 +60,7 @@ local function answer(pos, own)
 	local rule, here = R.zone_answers(zones, halls, pos)
 	return R.territory(rule, here, own)
 end
-for _, hall in ipairs(halls) do
+for _, hall in ipairs(interiors) do
 	local other = hall.faction == "accord" and "throng" or "accord"
 	local lo, hi, inside = hall.min, hall.max, 0
 	for x = lo.x, hi.x do

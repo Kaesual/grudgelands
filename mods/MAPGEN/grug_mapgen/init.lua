@@ -78,6 +78,15 @@ grug_mapgen.camp_rewrite = dofile(modpath .. "/camp_rewrite.lua")(core,
 	grug_core.severe)
 grug_mapgen.wp40.camp_sites = nil
 
+-- The one-off rewrite of the arena Breach Road's two halls (Round 89):
+-- resumes a pending rewrite at this start, and the migration 0.89.0
+-- requests it.
+grug_mapgen.hall_rewrite = dofile(modpath .. "/hall_rewrite.lua")(core,
+	core.get_mod_storage(), dofile(modpath .. "/wp40/r89_hall_sites.lua")(modpath .. "/wp40",
+		core, grug_mapgen.wp40.placement_layout_text,
+		grug_mapgen.wp40.planner_source.column_values_at),
+	grug_core.map_reset, grug_core.severe)
+
 -- Planned water flow for grug_core's water guard (world_zones.md §7.4): at a
 -- step between two planned inland surfaces, river or canal, the higher water
 -- flows over the lower one. That flow is generated world, also inside

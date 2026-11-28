@@ -1,0 +1,2 @@
+accord (partly): box 12369 cells, 0 differ from the new world, light 102; ring 48496 cells, 0 differ from the new world, light 0; 18494 kept from 0.88.0, 0 differ; 1822 box cells changed from the old design
+throng (whole): box 12369 cells, 0 differ from the new world, light 1456; ring 48496 cells, 0 differ from the new world, light 0; 48496 kept from 0.88.0, 0 differ; 1799 box cells changed from the old design

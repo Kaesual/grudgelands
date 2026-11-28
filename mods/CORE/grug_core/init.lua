@@ -125,6 +125,9 @@ dofile(modpath .. "/particles.lua")
 dofile(modpath .. "/particle_effects.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")
+-- The shield bubble (Round 89): its entity and grug_core.shield_bubble, which
+-- combat.lua's absorb bookkeeping calls.
+dofile(modpath .. "/shield_bubble.lua")
 dofile(modpath .. "/combat.lua")
 -- Knockback on players by weight class (Round 88); needs combat.lua's
 -- knockback_pushes.

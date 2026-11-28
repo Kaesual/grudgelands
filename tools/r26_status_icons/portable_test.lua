@@ -340,11 +340,18 @@ check(read_file("mods/ITEMS/grug_food/init.lua"):find(
 local alice = fake_player("alice")
 players[1] = alice
 for _, fn in ipairs(joins) do fn(alice) end
-local slots = 0
+-- Round 89: each slot also has its duration cover, the image above the icon
+-- (z_index 2; tools/r89_ui checks it).
+local slots, covers = 0, 0
 for _, def in pairs(alice.huds) do
-	if def.type == "image" then slots = slots + 1 end
+	if def.type == "image" and def.z_index == 2 then
+		covers = covers + 1
+	elseif def.type == "image" then
+		slots = slots + 1
+	end
 end
 eq(slots, layout.STATUS_LIMIT, "one image per slot at join")
+eq(covers, layout.STATUS_LIMIT, "one cover per slot at join")
 
 local function step(dt)
 	us_time = us_time + dt * S
@@ -395,7 +402,7 @@ check(shown_ids():find("stunned", 1, true) ~= nil, "stun shows")
 step(0.5)
 local textures_on_hud = {}
 for _, def in pairs(alice.huds) do
-	if def.type == "image" and def.text ~= "" then
+	if def.type == "image" and def.z_index ~= 2 and def.text ~= "" then -- covers: r89_ui
 		textures_on_hud[#textures_on_hud + 1] = def.text
 	end
 end

@@ -13,6 +13,65 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.89.0 — effect timers on the icons, the shield bubble, home names, the arena's balconies (2026-11-28)
+
+**Migration** needed: the server's host runs the migration tool once on the
+stopped world (last point). No map reset, no new world. The arena's two halls
+change in place.
+
+- **How long an effect still runs:** every effect that runs out now darkens
+  its icon in the status row clockwise from twelve as its time passes, like
+  the hotbar's cooldowns, until the icon is fully covered when it ends. The
+  caption under the icon stays as it was: the shield shows its points, every
+  other effect its countdown. A refreshed effect starts over; effects without
+  an end (a mount, the territory) and Scorched and Dragon's Wrath, which last
+  as long as their cause, stay uncovered. After a login the potion cooldown,
+  the Deserter's Mark and the guild effect start uncovered.
+- **A shield you can see:** while any shield is up, a half-transparent egg
+  with fine, irregular veins surrounds the player: gold for the Priest's
+  Shield, blue for the Mage's Rime Mantle and white to light grey for every
+  other (Hold Ground, Unbroken, Parry, Close Dance, Last Light). With several
+  shields it takes the colour of the one cast last, and there is only ever one
+  bubble. It goes when the last shield is used up or runs out, and on death.
+  You do not see your own in first person; other players and your
+  third-person view do. It glows a little at night.
+- **Your home by name:** the Waystones list shows your home's name instead of
+  "Your Claim Stone", and so does the map's waypoint marker; the home marker
+  reads "Your home: <name>". Without an active stone the greyed "Your Claim
+  Stone" stays. The Waystones and Expeditions tabs' buttons now stand in one
+  column.
+- **Balconies on the arena's halls:** in Breach Road each faction's hall has a
+  stair inside that climbs by half steps, without a jump, to a roofed balcony
+  at roof level above a gate, facing the road: room for two rows of six
+  spectators, the Accord's in pale sandstone and slate, the Throng's in timber.
+  Stair and balcony are your faction's ground like the hall; the flag rules
+  are unchanged. An invisible wall closes the balcony's open side: you can
+  stand on the parapet rail and watch, but nobody walks, jumps, falls or flies
+  through it, nobody aims a shot, a heal or a spell through it, and mobs do not
+  see through it. Area effects still reach through it, as through every wall,
+  and a homing shot already in flight still follows its target. The hall's
+  roof and the balcony's roof stay contested: a flying mount may land there.
+- **For the server's host:** stop the server, back the world up, run
+  `python3 tools/migrate.py --world <world directory>` from the new version's
+  checkout and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
+  Without the tool the start is refused and names the step. The tool only
+  marks the world. In the first seconds after the start the game rebuilds the
+  arena's two halls inside their fixed boxes and checks them (up to about 5 s
+  per hall measured). No player can build on the arena, so nothing of a player's
+  is lost; anything an administrator built inside a hall's box is replaced. A
+  character who logged out where the new stair now stands joins inside a
+  block, where it suffocates: it gets out with Return Home, or dies and
+  respawns if that is on its cooldown. An older
+  world moves to 0.89.0 in one update, crossing every map reset and step in
+  between.
+- Internal: the cover frames in `grug_core/status_icons.lua`, the bubble in
+  `grug_core/shield_bubble.lua`, the node `grug_mapgen:arena_barrier` with a
+  `core.raycast` wrapper in `grug_mapgen/world_nodes.lua` so every server ray
+  stops at it, the friendly boxes in `breach_layout.lua`, the rewrite in
+  `grug_mapgen/hall_rewrite.lua`.
+
 ## 0.88.0 — player feedback: knockback, the Character page, potion bottles (2026-11-27)
 
 Compatible: no map reset, no new world, nothing for the host to do. This

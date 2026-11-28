@@ -1,0 +1,48 @@
+{
+  "proposed": {
+    "grug_mapgen:arena_barrier": {
+      "status": "Pending game registration",
+      "geometry": "Invisible, light-transmitting full cube",
+      "blocks": [
+        "walking",
+        "flight",
+        "falling",
+        "aiming rays",
+        "projectiles"
+      ],
+      "selectable": false,
+      "diggable": false,
+      "build_against": false
+    }
+  },
+  "accord": [
+    "default:cobble",
+    "default:silver_sandstone_block",
+    "default:stone_block",
+    "default:stonebrick",
+    "grug_decor:capital_rail",
+    "grug_decor:darkage_basalt_brick",
+    "grug_decor:darkage_slate_tile",
+    "grug_mapgen:arena_barrier",
+    "grug_materials:bronze_block",
+    "grug_materials:emberglass_lamp",
+    "stairs:slab_silver_sandstone_block",
+    "stairs:slab_stone_block",
+    "wool:blue"
+  ],
+  "throng": [
+    "default:acacia_wood",
+    "default:cobble",
+    "default:pine_tree",
+    "default:wood",
+    "grug_decor:capital_rail",
+    "grug_decor:darkage_basalt_brick",
+    "grug_decor:darkage_marble",
+    "grug_mapgen:arena_barrier",
+    "grug_materials:bronze_block",
+    "grug_materials:emberglass_lamp",
+    "stairs:slab_acacia_wood",
+    "stairs:slab_wood",
+    "wool:red"
+  ]
+}

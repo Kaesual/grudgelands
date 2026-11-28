@@ -1455,14 +1455,18 @@ a site the world generation chooses by rule (round85-plan.md rulings 1, 5, 9,
   the draft's east), dryland (dry grass over dry dirt, basalt). So the
   palette follows the zone and biome patch the site stands in, across the
   zone border too. The masonry, the halls and the stairs are the draft's on
-  every world.
+  every world. Since Round 89 each hall holds a stair inside up to a roofed
+  balcony toward the road, its open side closed by invisible solid blocks
+  (`grug_mapgen:arena_barrier`; [pvp.md](pvp.md) §6.4), in the same template
+  box.
 - **The hearths smoke** (ruling 3): one 1 s spawner per hearth each second
   (`grug_mapgen/breach_smoke.lua`, the effect `breach_hearth_smoke`): three
   puffs a second living 3 s, at most 18 live for the pair (the draft: 22),
   the draft's tint and drift on the game's plain smoke mote, a faster rise
   in the shorter life. No sound.
 - **A place of the game** (Round 85 lane TERRITORY, [pvp.md](pvp.md) §6.4):
-  each hall's interior is its faction's peaceful ground, each hall's waystone
+  each hall's interior, upper stair and balcony are its faction's peaceful
+  ground, each hall's waystone
   (the node the blocks set on the layout's cell) is an ordinary waystone,
   the whole site is protected from digging, building, fire and explosions, no hostile mob, camp, leader, quest place or rare patrol point
   stands on the footprint or its fringe, and its name shows on the location

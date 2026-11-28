@@ -147,10 +147,11 @@ atlas.register_marker_provider("home", function(player)
     position=row.pos, kind=chosen and "home" or "innkeeper", faction=row.faction}
   end
  end
- -- A Claim Stone travel home (grug_home claim_home.lua) is marked at its stone.
+ -- A Claim Stone travel home (grug_home claim_home.lua) is marked at its
+ -- stone, under the home's own name (Round 89 ruling 6).
  if selected and selected.claim then
-  result[#result + 1] = {id=selected.id, label="Your Claim Stone",
-   detail="Your home: Claim Stone", position=selected.pos, kind="home", personal=true,
+  result[#result + 1] = {id=selected.id, label=selected.name,
+   detail="Your home: " .. selected.name, position=selected.pos, kind="home", personal=true,
    faction=selected.faction}
  end
  return result
@@ -159,8 +160,9 @@ end)
 -- Discovered waystones of the player's own network (Round 29, WP17);
 -- undiscovered ones are not shown, and a marker never unlocks travel. The
 -- owner's activated Claim Stone is a waypoint too (Round 45 PT9), marked
--- with its map-only claim icon unless it is the travel home, which the home
--- marker already shows.
+-- with its map-only claim icon and, since Round 89, the home's name (label
+-- and tooltip) unless it is the travel home, which the home marker already
+-- shows.
 atlas.register_marker_provider("waypoint", function(player)
  local result = {}
  for _, row in ipairs(grug_home.known_waypoints(player)) do

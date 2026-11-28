@@ -1405,8 +1405,27 @@ end
 -- Contribution modifiers expire with their owner; no parallel status timer.
 --
 
-local absorbs = {} -- player name -> source id -> {amount = n, expiry = us time}
+local absorbs = {} -- player name -> source id -> {amount = n, expiry = us time, seq = n}
 local effective_absorb_callbacks = {}
+-- Counts every stored contribution, so the shield bubble knows the one added
+-- last (`seq` of the entry; a recast takes a new number).
+local absorb_seq = 0
+
+-- The shield bubble (shield_bubble.lua, Round 89) follows a player's entries
+-- at the moments below: an add, the prune in get_absorb, the soak, the
+-- shield status's expiry, death and leave. Fixtures that load this file
+-- without it have no bubble.
+local function sync_bubble(player, now)
+	local bubble = grug_core.shield_bubble
+	if bubble then
+		bubble.sync(player, absorbs[player:get_player_name()], now)
+	end
+end
+
+local function remove_bubble(player)
+	local bubble = grug_core.shield_bubble
+	if bubble then bubble.remove(player) end
+end
 
 function grug_core.register_on_effective_absorb(func)
 	table.insert(effective_absorb_callbacks, func)
@@ -1462,14 +1481,19 @@ function grug_core.add_absorb(player, id, amount, duration, source, action_id, m
 		(tonumber(properties.hp_max) or amount) - existing))
 	if amount <= 0 then
 		absorbs[name][id] = nil
+		-- A refresh that adds nothing still ended that id's contribution.
+		sync_bubble(player)
 		return 0
 	end
+	absorb_seq = absorb_seq + 1
 	absorbs[name][id] = {
 		amount = amount,
 		expiry = expiry,
 		modifiers = modifiers,
 		source = source and source:get_player_name(),
+		seq = absorb_seq,
 	}
+	sync_bubble(player)
 	local status_expiry = expiry
 	for _, entry in pairs(absorbs[name]) do
 		status_expiry = math.max(status_expiry, entry.expiry)
@@ -1489,6 +1513,11 @@ function grug_core.add_absorb(player, id, amount, duration, source, action_id, m
 			value = function(target)
 				local remaining = grug_core.get_absorb(target)
 				return remaining > 0 and remaining or false
+			end,
+			-- The status outlives every entry it shows, so its expiry is the
+			-- moment the last one ended: the prune takes the bubble away.
+			on_expire = function(target)
+				grug_core.get_absorb(target)
 			end,
 			kind = "buff",
 		})
@@ -1521,6 +1550,7 @@ function grug_core.get_absorb(player)
 	local name = player:get_player_name()
 	local entries = absorbs[name]
 	if not entries then
+		remove_bubble(player)
 		if grug_core.clear_status then
 			grug_core.clear_status(player, "shield")
 		end
@@ -1540,6 +1570,7 @@ function grug_core.get_absorb(player)
 			grug_core.clear_status(player, "shield")
 		end
 	end
+	sync_bubble(player, t)
 	return total
 end
 
@@ -1549,10 +1580,12 @@ end
 
 core.register_on_dieplayer(function(player)
 	absorbs[player:get_player_name()] = nil
+	remove_bubble(player)
 end)
 
 core.register_on_leaveplayer(function(player)
 	absorbs[player:get_player_name()] = nil
+	remove_bubble(player)
 end)
 
 -- The engine stores a modifier's result as an integer, truncated toward
@@ -1700,6 +1733,7 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		-- damage-over-time tick.
 		if reason.type == "punch" then grug_sounds.play("block", player) end
 		if next(entries) == nil then absorbs[name] = nil end
+		sync_bubble(player)
 	end
 	-- PvP contact (pvp-plan ruling 7a): a player's hit that cost HP or absorb.
 	-- A dodge returned above; a mob's hit has no player object.

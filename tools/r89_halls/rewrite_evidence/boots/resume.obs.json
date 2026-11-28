@@ -1,0 +1,201 @@
+{
+ "box_nodes": {
+  "default:acacia_wood": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "default:cobble": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "default:pine_tree": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "default:silver_sandstone_block": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "default:stone_block": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "default:stonebrick": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "default:wood": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_decor:capital_rail": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_decor:darkage_basalt_brick": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_decor:darkage_marble": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_decor:darkage_slate_tile": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_mapgen:arena_barrier": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_mapgen:waystone": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_materials:bronze_block": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "grug_materials:emberglass_lamp": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "stairs:slab_acacia_wood": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "stairs:slab_silver_sandstone_block": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "stairs:slab_stone_block": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "stairs:slab_wood": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "wool:blue": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  },
+  "wool:red": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "walkable": true
+  }
+ },
+ "finish": "resume",
+ "game": "0.89.0",
+ "halls": null,
+ "job": true,
+ "leaves": 1,
+ "load": {
+  "from": "0.89.0",
+  "new_world": false
+ },
+ "pending": false,
+ "phase": "resume",
+ "stones": {
+  "accord": {
+   "arrival": {
+    "x": 69,
+    "y": 123.51,
+    "z": -48
+   },
+   "cell": true,
+   "discovered": "breach_road_accord",
+   "layout_arrival": {
+    "x": 69,
+    "y": 124,
+    "z": -48
+   },
+   "node": "grug_mapgen:waystone",
+   "objects": null,
+   "use": "ok"
+  },
+  "throng": {
+   "arrival": {
+    "x": -5,
+    "y": 123.51,
+    "z": -48
+   },
+   "cell": true,
+   "discovered": "breach_road_throng",
+   "layout_arrival": {
+    "x": -5,
+    "y": 124,
+    "z": -48
+   },
+   "node": "grug_mapgen:waystone",
+   "objects": null,
+   "use": "ok"
+  }
+ },
+ "visitor_known": [
+  "breach_road_accord"
+ ]
+}

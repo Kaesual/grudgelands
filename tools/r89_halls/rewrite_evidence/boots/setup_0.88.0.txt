@@ -1,0 +1,12 @@
+launcher: staged probe: grug_probe_r89_rewrite
+seconds: 86, exit 0
+joins: ['visitor registered (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.88.0 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.88.0 (a new world), game 0.88.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38624.
+ACTION[Server]: visitor [127.0.0.1] joins game. List of players: visitor
+ACTION[Server]: [r89_rewrite_probe] phase setup_0.88.0, job pending: nil
+ACTION[Server]: visitor leaves game. List of players: 
+ACTION[Server]: [r89_rewrite_probe] dumped setup_0.88.0
+ACTION[Server]: [r89_rewrite_probe] observations written: setup

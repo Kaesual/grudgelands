@@ -1,0 +1,16 @@
+launcher: staged patch: patch_reset.diff
+seconds: 70, exit 0
+joins: []
+--- log lines
+ACTION[Main]: [grug_core] world version 0.89.0, game 0.89.0: no migration step due
+ACTION[Main]: [grug_core] map reset 1: cleared the world preparation progress
+ACTION[Main]: [grug_core] map reset 1: cleared grug_mapgen
+ACTION[Main]: [grug_core] map reset 1: cleared grug_mapgen
+ACTION[Main]: [grug_core] map reset 1: cleared the grug_mobs actor records
+ACTION[Main]: [grug_core] map reset 1: cleared the housing claims
+ACTION[Main]: [grug_core] migration 0.89.0: the world's online work is done
+ACTION[Main]: [grug_core] map reset pass 1: the packed containers are ready
+ACTION[Main]: [grug_core] map reset 1 applied to the world (was 0)
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:30830.
+ACTION[Server]: [r89_rewrite_probe] phase reset, job pending: false
+ACTION[Server]: [r89_rewrite_probe] observations written: reset
