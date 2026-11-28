@@ -45,12 +45,20 @@ HALLS waits only for the user's go on the draft and for REWRITE's merge.
    balcony's roof stay contested ground: a player on a flying mount may land
    and mount there. This narrows Round 85 rulings 10 and 11 only by the new
    boxes.
+   **The barrier** (2026-11-28, on the first draft): every open side of the
+   balcony is closed by invisible solid blocks directly in front of the parapet,
+   not in the gap above it. A player may stand on the parapet, but nobody jumps,
+   shoots or heals out of the balcony and nothing comes in (no line of sight);
+   spectators see through it. Glass is not wanted.
 4. **No new PvP rule.** A player must flag by their own choice to attack an
    enemy in friendly territory; the balcony needs nothing further.
 5. **No map reset.** The arena's outer measures do not change. Production runs
    0.87.0 on the map of 0.86.0; the halls are rewritten in place (§3).
 6. **Home name.** The waypoint list shows the name the home carries
    (`grug_housing.home_name`) instead of "Your Claim Stone".
+8. **The bubble's look** (2026-11-28, on the screenshots): the egg shape, not
+   the sphere; the surface gets a texture so that it reads as a shield, not as a
+   ball. The user picks from variants.
 7. **Astra drafts the balcony**; the user looks at the proposal as an artifact
    before anything is built.
 
