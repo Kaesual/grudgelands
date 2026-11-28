@@ -7,20 +7,18 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 ## Now
 
-- **Game:** 0.89.0 (Round 89), **migrate** from 0.88.0, on the local branch `round89`,
-  awaiting the user's test; no squash, tag or push yet. main is 0.88.0, squash commit
-  `749f7dd5`, tag `round-88`, pushed with the tag `round-87` on 2026-11-28.
+- **Game:** 0.89.0 (Round 89), **migrate** from 0.88.0, squash commit `1738af89`, tag
+  `round-89`, pushed on 2026-11-28 and synced to the user's game.
 - **Production:** 0.87.0 on the map of 0.86.0 (the user, 2026-11-28).
 - **Last change besides rounds:** the read-only code audit of 2026-11
   ([audit](audit-2026-11/README.md)), whose findings Rounds 81 and 82 fixed or left as
   carry-overs.
-- **Next:** the user's test of [Round 89](planning/round89-plan.md#completion-2026-11-28)
-  (effect timers on the icons, the shield bubble, home names, the arena's balconies), then
-  its squash and tag. Road selection and home preservation:
+- **Next:** the next round is open. Round 89's leftovers:
+  [Carry-overs](planning/round89-plan.md#carry-overs). Road selection and home preservation:
   [Round 87](planning/round87-plan.md#carry-overs), [BACKLOG](../BACKLOG.md); the
   platform follow-ups of Rounds 80, 80.1 and 83 remain in their Completions.
-- **Other branches:** `round89` and its lane worktrees `r89-*`; `round88` (kept local) and
-  its lane worktrees `r88-*`; `town-viewer` (kept on purpose: the three.js town viewer);
+- **Other branches:** `round89` and `round88` (kept local) with their lane worktrees
+  `r89-*` and `r88-*`; `town-viewer` (kept on purpose: the three.js town viewer);
   `study-dwarf-architecture` and `study-website-screenshots` (unmerged studies of
   2026-11-11).
 - **GUI acceptance is not tracked** (the user, 2026-11-16): an agent proposes a human test
@@ -37,7 +35,7 @@ at the top of the table, drops the oldest row and replaces the lines that change
 
 | Round | Version | Upgrade | Pushed | Completion |
 |---|---|---|---|---|
-| 89 | 0.89.0 | migrate | no | [Round 89](planning/round89-plan.md#completion-2026-11-28) |
+| 89 | 0.89.0 | migrate | yes | [Round 89](planning/round89-plan.md#completion-2026-11-28) |
 | 88 | 0.88.0 | compatible | yes | [Round 88](planning/round88-plan.md#completion-2026-11-27) |
 | 87 | 0.87.0 | compatible | yes | [Round 87](planning/round87-plan.md#completion-2026-11-22) |
 | 86 | 0.86.0–0.86.1 | map reset | yes | [Round 86](planning/round86-plan.md#completion-2026-11-22), [86.1](planning/round86-plan.md#follow-up-0861-2026-11-22) |

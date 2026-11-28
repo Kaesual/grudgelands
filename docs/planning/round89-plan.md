@@ -1,7 +1,7 @@
 # Round 89 — Shield feedback, home names and the arena's balconies
 
-**Built 2026-11-28** ([Completion](#completion-2026-11-28)) on the local branch
-`round89`, awaiting the user's test. Release 0.89.0, **migrate** from 0.88.0: no
+**Built 2026-11-28** ([Completion](#completion-2026-11-28)) and landed on main
+after the user's acceptance (tag `round-89`). Release 0.89.0, **migrate** from 0.88.0: no
 map reset, but one declared migration step whose online part rewrites the
 arena's two halls in place (the upgrade contract classifies a protected
 composition rewritten inside its unchanged box as migrate, §5.9; the pattern
