@@ -531,7 +531,7 @@ end
 
 --
 -- The potion belt (spec §2.9, §3.5): four slots for potions and elixirs
--- (group grug_potion; alchemy mixtures are not in it). Filled by the give
+-- (group grug_potion). Filled by the give
 -- helper first (Round 70) and in the Inventory tab, used from the quickbar.
 -- Created for every player at join; set_size leaves an existing list as it
 -- is.

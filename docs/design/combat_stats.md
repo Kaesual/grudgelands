@@ -214,18 +214,23 @@ diminishing-returns curves.
 Equipment sources and ordinary affixes add before final
 consumer caps. Crit and Dodge remain capped at 30%; armor reduction is capped
 at 70% after the attacker-level formula. Raw armor rating is never discarded.
-The Character UI exposes effective Crit/Dodge, resulting armor rating and
-reduction evaluated against the player's own character level. General formulas,
-cap rules and multiplier explanations belong to Help, not the Talents header.
-This same-level display does not change with the selected target or the
-last attacker.
+The Character UI exposes effective Crit/Dodge, the resulting armor rating and
+its reduction against enemies of the character's own level −5, ±0, +5 and +10
+(Round 88; Armor's detail). The Help page keeps the general formulas, cap
+rules and multiplier explanations, not the Talents header. These displays do
+not change with the selected target or the last attacker.
 No talent or skill overrides the reduction cap.
 
-The Character page shows concise maximum HP and mana, or HP and fixed Rage,
-without a pool/armor derivation panel. The HUD bars display current pool values. The Help page owns
-the formula prose for pools, Strength, Intelligence, Dexterity and the three
-capped stats. Melee bonus, spell power and attributes are formulas there, not
-extra Character-page rows.
+The Character page's Stats mode (Round 88, the user's ruling 8; layout in
+[inventory_equipment.md](inventory_equipment.md) §1) lists maximum HP and
+mana, or HP and fixed Rage, Strength, Intelligence and Dexterity (with their
+effect on hover), Armor, Dodge and Crit. A selected row's detail shows the
+stat's direct effects (melee bonus, spell power, healing and absorb factor,
+Crit and Dodge from Dexterity, reductions) and where its value comes from:
+the pools as the calculation (base pool × class factor × each percentage),
+the others as base, level growth, each equipment slot, talents and effects.
+Every number comes from the accessors combat reads. The HUD bars display
+current pool values.
 
 Active timed statuses are an additional stat source. `grug_core.set_status`
 accepts only `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor`
@@ -564,9 +569,9 @@ Normal tier at level L:
   it shoots back instead, `biomes_mobs.md`); the swimmers keep
   their own water speeds (the Stingray 3.5, the sharks 4 and 5). The
   deep-sea Kraken runs **10** inside a deep-ocean column and **5**
-  elsewhere (`world.md` §2b). The ordinary 4.6 band keeps
-  the Swiftness Draught below it (4.0 × 1.10 = 4.4), and continues to feed the
-  pursuit policy of §4. Each value is the `run_velocity` field of the
+  elsewhere (`world.md` §2b). The ordinary 4.6 band feeds the
+  pursuit policy of §4; Sprint and, since Round 88, the Swiftness Draught
+  (4.0 × 1.30 = 5.2) are its named exceptions (§4). Each value is the `run_velocity` field of the
   family's definition in `grug_mobs/<family>.lua`.
 - **Roaming pace (Round 24):** every mob roams at a calm walk and uses its
   full speed only in combat. mobs_redo moves an idle mob at `walk_velocity`
@@ -632,20 +637,35 @@ Normal tier at level L:
   hit, because without the hit pause the next AI step overwrites the
   velocity. Implementation: `grug_mobs/separation.lua`, called from
   `mobs/api.lua` `on_punch`.
-- **Knockback on players** (Round 37 ruling 2.1.3): only **player melee in
-  PvP** and **mob hits** push a player, with the engine's own push (builtin
-  `knockback.lua`, off the hit's raw damage). Player melee pushes only as an
-  accepted swing (Strike or a melee swing skill) on a player the attacker may
-  harm (both flagged, enemy factions). A refused or suppressed punch pushes
-  nothing: an ally, an unflagged player, a native tool or fist click. A
-  player's casts, arrows and every other ability damage push nothing, in PvP
-  too. A mob's melee, its area hits and its projectiles (arrows, hex bottles,
-  dragon breath and side shots; user ruling 2026-10-06) push. Riders are never pushed, nor is a player hit by the dragon's
-  slam (it has its own arena push). Implementation: one
-  `core.calculate_knockback` override, `grug_core.knockback_pushes`
-  (`grug_core/combat.lua`). An Expedition pack's push is level, the same
-  push's horizontal share (`grug_expeditions/packs.lua`): its mobs swing as one, and the
-  downward share of a step's pushes would read as a fall on flat ground.
+- **Knockback on players** (Round 37 ruling 2.1.3, Round 88 ruling 7): a
+  push is a property of the **attack**, never of its damage and never of a
+  level. Only **player melee in PvP** and a **mob's own hit** push a player.
+  Player melee pushes only as an accepted swing (Strike or a melee swing
+  skill) on a player the attacker may harm (both flagged, enemy factions), by
+  a small fixed **2 m/s**. A refused or suppressed punch pushes nothing: an
+  ally, an unflagged player, a native tool or fist click. A player's casts,
+  arrows and every other ability damage push nothing, in PvP too, and
+  **projectiles push nothing** (a mob's arrows, hex bottles, mud balls,
+  rocks, dragon breath and side shots). A mob's melee and area hits push by
+  its family's **weight class**: none **0**, light **2.5**, medium **4**,
+  heavy **6 m/s** (starting values by feel); an **elite** pushes **×1.25**
+  its class; a critter pushes nothing; the named rares and the bosses (the
+  Kings, the Generals, the dragons, the Kraken, the rift boss and the
+  Expeditions' bosses) are set one by one. The table of families, rares and
+  bosses is `grug_mobs/knockback.lua`; the numbers are `grug_core.KNOCKBACK`
+  (`grug_core/knockback.lua`). Every push is **horizontal**, from the
+  attacker to the player, with one fixed lift of **1.5 m/s**, the same for
+  every source, so no push points into the floor (an Expedition pack's too).
+  **Pushes do not add up:** per player one window of **0.6 s** from the first
+  push; inside it a further push applies only by the amount it is stronger
+  than the strongest so far (its horizontal speed and its lift each), after
+  it the next push counts in full. A boss attack with its own push (the
+  kings' shatter, 8 m/s with a lift of 4; the rift boss's pulse, 7 m/s)
+  shares that window. Riders are never pushed, nor is a player hit by the
+  dragon's slam (it has its own arena push). Implementation: the one
+  `core.calculate_knockback` override and `grug_core.push_player`
+  (`grug_core/knockback.lua`); who pushes is `grug_core.knockback_pushes`
+  (`grug_core/combat.lua`).
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing (the player's `collide_with_objects` in
@@ -660,19 +680,23 @@ Normal tier at level L:
   pathfinding. Implementation: `grug_mobs/separation.lua`, called from the
   dogfight branch of `mobs/api.lua` `do_states()` for every ground mob in it (a
   mob with both attacks in melee too, Round 78).
-- **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
-  (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
+- **The 4.6 > 4.0 inequality holds except for named exceptions**: long-cooldown
+  skills (`skill_trees.md` §5, ruling 10 of 2026-09-16) and, since Round 88,
+  the Swiftness Draught. Ruling 10: "skills may explicitly
   **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
   The rule: **the bigger the break, the stronger the limit**, usually cooldown
   or duration." *(The ruling is quoted verbatim and says 4.4 because the band
   moved to 4.6 on the same day, in ruling 2 above; the numbers derived from it
   below are stated against the shipped 4.6.)* The first one is the Scout's
-  **Sprint** — **+50 % for 10 s on a 300 s cooldown** (user amendment 2026-09-20,
-  `scout.md` §2) — which puts a sprinting player at **6.0** against 4.6 for
-  ten seconds in every five minutes. Nothing permanent or cheap is covered:
-  the Swiftness Draught stays at **+10 % for 5 s**
-  (4.0 × 1.10 = 4.4 < 4.6, `items_crafting.md` §3.6, archived
-  [decision P4](../archive/design/items-history.md#101-2026-08-06)) and a
+  **Sprint** — **+50 % for 10 s on a 180 s cooldown** (user amendment 2026-09-20,
+  `scout.md` §2; 300 s until Round 88, ruling 3) — which puts a sprinting
+  player at **6.0** against 4.6 for ten seconds in every three minutes. The second is the **Swiftness
+  Draught**, **+30 % for 5 s** since Round 88 (ruling 3; +10 % before,
+  4.0 × 1.10 = 4.4 < 4.6, archived
+  [decision P4](../archive/design/items-history.md#101-2026-08-06)): 5.2
+  against 4.6 for five seconds, on the shared 30-second potion clock. Both
+  at once stay at 6.0: the movement clamp holds 1 + 0.5 + 0.3 at 1.5
+  (`grug_core/movement.lua`). Nothing permanent is covered: a
   mount pays for its permanent 6.4–12 nodes/s with the damage dismount
   (`mounts.md` §3.1).
 - **View range follows the attack type** (decided 2026-09-16, user ruling 3):
@@ -1474,7 +1498,7 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   the mana half may be consumed at full mana. Every successfully consumed
   potion, draught or elixir plays the shared drinking sound; a refused use is
   silent. Antivenom clears poison,
-  Swiftness grants +10% speed for 5 seconds, and Cave Draught grants night
+  Swiftness grants +30% speed for 5 seconds (+10% before Round 88), and Cave Draught grants night
   vision for 10 minutes. One elixir status is active at a time and stacks with
   food: at T1–T6 Vigor grants +4.0/4.8/5.6/6.4/7.2/8.0% maximum HP, Focus
   +5.0/5.6/6.2/6.8/7.4/8.0% maximum mana, Precision +4.2/5.2/6.0/7.0/7.8/8.6

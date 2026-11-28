@@ -276,7 +276,8 @@ do
 		icons.marker("pvp_fortress", "throng") == "fortress", "C fortresses unchanged")
 	check(icons.marker("mining_camp", "accord") == "mining_camp" and
 		icons.marker("capital", "accord") == "capital", "C other kinds unchanged")
-	check(icons.class("pvp_accord_low") == "war_camp" and icons.layer("camp_construction") == "pvp",
+	-- Round 88 ruling 1: the PvP layer went, its places are POIs.
+	check(icons.class("pvp_accord_low") == "war_camp" and icons.layer("camp_construction") == "pois",
 		"C class and layer unchanged")
 	local function same(a, b)
 		if #a ~= #b then return false end

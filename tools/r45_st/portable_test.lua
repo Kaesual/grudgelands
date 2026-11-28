@@ -127,6 +127,7 @@ function vector.equals(a, b) return a.x == b.x and a.y == b.y and a.z == b.z end
 
 -- Item stacks: name, count, wear and a metadata table.
 local registered_items = {}
+local registered_aliases = {} -- Round 88: the mixture ids (section M)
 local Meta = {}
 Meta.__index = Meta
 local function new_meta() return setmetatable({fields = {}}, Meta) end
@@ -320,6 +321,8 @@ core = {
 	registered_entities = entity_defs,
 	register_node = function(name, def) register_item(name, def, "node") end,
 	register_craftitem = function(name, def) register_item(name, def, "craft") end,
+	-- Round 88: the mixture ids are aliases (section M).
+	register_alias = function(name, target) registered_aliases[name] = target end,
 	override_item = function(name, fields)
 		local def = assert(registered_items[name], "override of " .. name)
 		for key, value in pairs(fields) do def[key] = value end
@@ -1086,20 +1089,22 @@ do
 end
 
 ------------------------------------------------------------------------------
--- M. The mixtures are inert items.
+-- M. The mixtures left the game (Round 88 ruling 2): their 40 ids are aliases
+-- of the glass bottle, no registered item.
 ------------------------------------------------------------------------------
 do
 	local mixtures = 0
-	for name, def in pairs(registered_items) do
+	for name in pairs(registered_items) do
+		check(not name:find("^grug_alchemy:mixture_"), "M " .. name .. " is no registered item")
+	end
+	for name, target in pairs(registered_aliases) do
 		if name:find("^grug_alchemy:mixture_") then
 			mixtures = mixtures + 1
-			check(def.groups and def.groups.grug_potion_mixture == 1, "M " .. name .. " keeps its group")
-			check(def.description:find("No longer used", 1, true) ~= nil, "M " .. name .. " says it is unused")
+			eq(target, "vessels:glass_bottle", "M " .. name .. " is a glass bottle")
 			eq(grug_jobs.ingredient_tier(name), nil, "M " .. name .. " is no ingredient")
-			eq(def.on_use, nil, "M " .. name .. " has no use")
 		end
 	end
-	eq(mixtures, 40, "M the 40 mixture ids stay registered")
+	eq(mixtures, 40, "M the 40 mixture ids are aliases")
 	eq(grug_brewing.register_recipe, nil, "M the brewing adapter is gone")
 	eq(grug_brewing.match, nil, "M ...and its matcher")
 	local automatic = dofile(JOBS .. "automatic.lua")

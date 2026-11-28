@@ -30,10 +30,10 @@
 --      the claimed swing lands the transaction's scaled damage, settles
 --      one outgoing action (weapon wear), one
 --      trinket proc and the rage; an unclaimed packet lands nothing;
---   N  knockback per source (ruling 2.1.3): refused punch, ally, unflagged
---      player, nested punch, PvP cast or player arrow, nil hitter push 0;
---      PvP melee, a mob hit and a mob projectile push; a rider and the
---      dragon slam push 0;
+--   N  knockback per source (ruling 2.1.3, Round 88 ruling 7): refused punch,
+--      ally, unflagged player, nested punch, PvP cast or player arrow, a mob
+--      projectile, nil hitter push 0; PvP melee and a mob hit push; a rider
+--      and the dragon slam push 0;
 --   R  the unreachable WP38 tool/fist accumulator, wear accumulator and
 --      ordinary-input seam are gone (CMB-03), with no caller left.
 -- Prints "R37 CB PORTABLE PASS checks=<n>" or the failures.
@@ -202,7 +202,8 @@ core = {
 	deserialize = function() return nil end,
 	add_particlespawner = function() end,
 	log = function() end,
-	-- The builtin formula stand-in: 5 m/s for any damaging punch.
+	-- The builtin formula stand-in: 5 m/s for any damaging punch (knockback.lua
+	-- replaces it in section N).
 	calculate_knockback = function(_, _, _, _, _, _, damage)
 		return (damage or 0) > 0 and 5 or 0
 	end,
@@ -243,7 +244,8 @@ do
 	local equipment = {grug_weapon = true, grug_offhand = true, grug_head = true,
 		grug_chest = true, grug_legs = true, grug_feet = true}
 	function grug_inventory.is_equipment_list(list) return equipment[list] == true end
-	armor_cache, slot_cache, aggregate_cache = {}, {}, {}
+	-- Round 88 STATS: equipment_changed also drops the per-slot armor cache.
+	armor_cache, armor_pieces_cache, slot_cache, aggregate_cache = {}, {}, {}, {}
 	WEAPON_LIST, OFFHAND_LIST = "grug_weapon", "grug_offhand"
 	run(cut("mods/PLAYER/grug_inventory/equipment.lua",
 		"\n(function grug_inventory%.equipment_changed%(.-\nend)\n", "equipment_changed"),
@@ -613,7 +615,12 @@ end
 -- N: knockback per source.
 ------------------------------------------------------------------------------
 do
-	-- The two existing wrappers stack on ours, as at runtime.
+	-- Round 88 (ruling 7): the push is the attack's weight class, not the
+	-- engine's damage formula; knockback.lua is the override now (the push
+	-- sizes and the window are tools/r88_knock's), so builtin gets 0 and the
+	-- push arrives as add_velocity. The two existing wrappers stack on ours,
+	-- as at runtime.
+	assert(loadfile(ROOT .. "/mods/CORE/grug_core/knockback.lua"))()
 	player_attached = {}
 	run(cut("mods/BASE/player_api/api.lua",
 		"\n(local old_calculate_knockback = minetest%.calculate_knockback\n.-\nend)\n",
@@ -625,16 +632,26 @@ do
 	local harm = true
 	grug_core.pvp_can_harm = function() return harm end
 	local a, b = new_player("a", "accord"), new_player("b", "throng")
+	b._pos = {x = 1, y = 0, z = 0}
+	local pushes = {}
+	function b:add_velocity(v) pushes[#pushes + 1] = v end
+	-- The horizontal speed one punch adds, each in a window of its own.
 	local function push(player, hitter)
-		return core.calculate_knockback(player, hitter, 1, {}, {x = 1, y = 0, z = 0}, 1.5, 6)
+		us = us + 10 * 1000000
+		local before = #pushes
+		eq(core.calculate_knockback(player, hitter, 1, {}, {x = 1, y = 0, z = 0}, 1.5, 6), 0,
+			"N builtin itself pushes nothing")
+		local v = pushes[before + 1]
+		return v and math.floor(math.sqrt(v.x * v.x + v.z * v.z) * 100 + 0.5) / 100 or 0
 	end
 	local function mob(fields)
 		local ent = fields
-		return {is_player = function() return false end, get_luaentity = function() return ent end}
+		return {is_player = function() return false end, get_luaentity = function() return ent end,
+			get_pos = function() return {x = 0, y = 0, z = 0} end}
 	end
 	eq(push(b, a), 0, "N a refused punch (no swing) pushes 0")
 	local token = grug_core.begin_authoritative_swing(a, b, {})
-	eq(push(b, a), 5, "N PvP melee (the authoritative swing) pushes")
+	eq(push(b, a), grug_core.KNOCKBACK.pvp, "N PvP melee (the authoritative swing) pushes the PvP push")
 	harm = false
 	eq(push(b, a), 0, "N an ally or an unflagged player is not pushed")
 	harm = true
@@ -648,12 +665,16 @@ do
 	eq(push(b, a), 0, "N a PvP cast or arrow (ability punch) pushes 0")
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N ability damage never pushes")
 	grug_core.in_ability_punch = false
-	eq(push(b, mob({_cmi_is_mob = true})), 5, "N a mob hit pushes")
-	eq(push(b, mob({name = "grug_mobs:arrow"})), 5, "N a mob projectile pushes (ruling 2026-10-06)")
+	eq(push(b, mob({_cmi_is_mob = true})), grug_core.KNOCKBACK.medium,
+		"N a mob hit pushes (without grug_mobs' table: medium)")
+	eq(push(b, mob({name = "grug_mobs:arrow"})), 0, "N a mob projectile pushes 0 (ruling 7)")
 	eq(push(b, nil), 0, "N a punch without hitter pushes 0")
 	player_attached.b = true
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N a rider is not pushed")
 	player_attached.b = nil
+	b._attach = {}
+	eq(push(b, mob({_cmi_is_mob = true})), 0, "N an attached player is not pushed")
+	b._attach = nil
 	slam_hit = true
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N the dragon slam pushes 0")
 	slam_hit = false

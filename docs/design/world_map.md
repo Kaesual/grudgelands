@@ -25,7 +25,7 @@ and rulings 20 and 21 of 2026-10-30 (Round 67):
 - Markers draw by importance, bottom to top (the minimap's layers of
   before, extended by the quest states): places, bosses, trainers and
   innkeepers, then the Steward and the services, the home and waystones,
-  then quest givers by their state (a silver "!" of a quest in one or two levels lowest, then in
+  then quest givers by their state (a low giver's silver "!" lowest, then in
   progress, available, ready; a story marker above the plain one of its
   status) (`grug_map/markers.lua` `rank`; the minimap's z-index and the map
   window's draw order). The map window keeps the baked layer's order for
@@ -100,9 +100,9 @@ beyond the bounds it holds no tile, so its sea disc shows, and it places party
 members by their real positions, rim arrows included.
 
 Round 16 (approved 2026-09-22): authored quest givers have individual icon
-markers with the same per-player ready/available/active/locked precedence as
-world symbols (`locked`, the silver "!", means "next quest in one or two
-levels" since Round 65). Since Round 47 the world map shows them in its Quests layer,
+markers with the same per-player ready/available/active/low precedence as
+world symbols (`low`, the silver "!", means "only quests 10 or more levels
+below yours" since Round 88; a quest not yet acceptable has no marker). Since Round 47 the world map shows them in its Quests layer,
 the same states as the minimap ([Map window](#map-window)); in Round 44–46
 it showed only a question mark at the hand-in NPC of each active quest.
 Include individual profession/Riding trainers at their
@@ -228,13 +228,13 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   ceiling rule gives it (`grug_core.ui.text_growth`), so on a screen above
   1620 px height it grows less than the window does.
 - **Layout** (dialog review, 2026-10-25; Round 67): shared inventory
-  navigation, then one row above the map: the zoom on the left, the eight
-  layer buttons beside it over the map, the location line and the minimap
+  navigation, then one row above the map: the zoom on the left, the seven
+  layer buttons beside it (eight until Round 88) over the map, the location line and the minimap
   switch over the quest column. Where the buttons there would be narrower
   than their text (about 68 screen pixels at GUI scale 1, growing with the
   GUI scaling and the text growth: 1280×720, small windows, the phone) they
-  take a row of their own across the window under the zoom row, two rows of
-  four where even that is too narrow. The map keeps its 9:8 aspect ratio
+  take a row of their own across the window under the zoom row, two rows
+  (four and three) where even that is too narrow. The map keeps its 9:8 aspect ratio
   and native scrollbars and is as large as the body's height allows, at
   most 62 % of the usable width; the quest column takes the rest, at least
   6.5 units (equal halves before Round 67), so no empty band stands beside
@@ -259,12 +259,11 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
 
   | Button | Long name | Content | Factions | Tooltip |
   |---|---|---|---|---|
-  | Quests | Quest givers | every quest giver by its state, the minimap's set and precedence: gold "?" ready, "!" available, silver "?" active, silver "!" locked (next quest in one or two levels) | own | the NPC's name |
+  | Quests | Quest givers | every quest giver by its state, the minimap's set and precedence: gold "?" ready, "!" available, silver "?" active, silver "!" low (only quests 10 or more levels below the player's) | own | the NPC's name |
   | Bosses | Kings & bosses | the six kings, the two dragons (a dragon arena within 64 nodes of its dragon is one icon), the rift boss at his clash site (the clash icon), the rare dens | both | the name, with the level where the registry has a fixed one ("King of Highcourt (level 70)"); a den its name, "Rare den" and the level at its anchor |
   | Services | Trainers & traders | the profession and Riding trainers, the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
   | Travel | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
-  | Places | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the brown tent and bright pickaxe icon `grug_map_mining_camp.png`), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
-  | PvP | PvP | the two fortresses and the war camps in their faction's colour (Round 66 ruling 8: the Throng's red `grug_map_war_camp.png`, the Accord's blue `grug_map_war_camp_accord.png`, the same symbol; the faction from the slot `pvp_<faction>_<band>`), with the camps under construction (Round 58, the scaffold icon; since Round 66 its cloth in the faction's colour, `grug_map_camp_construction_<faction>.png`, the faction of the camp's race), and the arena Breach Road at its centre (Round 85, the clash sites' `grug_map_clash.png`) | both | the name |
+  | Places | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the brown tent and bright pickaxe icon `grug_map_mining_camp.png`), clash sites; since Round 88 (ruling 1, the PvP layer gone) also the two fortresses and the Battlegrounds war camps in their faction's colour (Round 66 ruling 8: the Throng's red `grug_map_war_camp.png`, the Accord's blue `grug_map_war_camp_accord.png`, the same symbol; the faction from the slot `pvp_<faction>_<band>`), the camps under construction (Round 58, the scaffold icon; since Round 66 its cloth in the faction's colour, `grug_map_camp_construction_<faction>.png`, the faction of the camp's race) and the arena Breach Road at its centre (Round 85, the clash sites' `grug_map_clash.png`) | both | "Bandit camp: Coalbrand Yard" (kind and name); a war camp "War camp and mining camp: <name>", a fortress and a camp under construction their name; the arena its name over "Arena: a hall for each faction" |
   | Zones | Zones | every zone's name and level band as text | — | — |
   | None | No markers | only the arrows | — | — |
 

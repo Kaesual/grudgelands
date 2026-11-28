@@ -897,8 +897,8 @@ Alchemists brew a potion or elixir from its reagents and vial as an Alchemy
 recipe at a **Brewing Stand** nearby (Round 45, 2 s per item; spec §2.27,
 §2.30): the job makes the finished product, and each one awards current-tier
 progress. There is no mixture step and no automatic brewing; the old
-"Prepared … Mixture" items stay registered as inert items (stable ids) that
-no recipe makes or uses. The stand is a T3 Alchemy recipe (a
+"Prepared … Mixture" items left the game in Round 88 (ruling 2): each id is
+an alias of the Glass Bottle, so a leftover loads as a bottle. The stand is a T3 Alchemy recipe (a
 station: it awards no profession progress): three Steel Bars, one Furnace
 and one Glass Bottle. Glass Bottles cost 3 copper.
 
@@ -1646,7 +1646,8 @@ prefixes/suffixes, attributes and base equipment all add
 before their consumers. Crit and Dodge cap at 30%. Armor sources add uncapped
 raw rating; `combat_stats.md` §2 converts that rating against attacker level
 and caps only final reduction at 70%. Character shows effective Crit/Dodge
-plus armor rating and Damage reduction (same-level); Help explains formulas
+plus armor rating, and in Armor's detail the reduction against enemies of
+several levels around the character's own (Round 88); Help explains formulas
 and caps.
 
 The old eight-identical-affix-slot calculation is retired: each trinket now has

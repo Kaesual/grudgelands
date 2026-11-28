@@ -102,20 +102,9 @@ local function beside(player)
 	return at
 end
 
--- A mob's hit pushes along the line from its origin, above a player's feet, to the feet
--- (builtin knockback.lua): close by, that line points into the floor. A pack swings as
--- one, the pushes of a step add up, and the client takes the stop for a fall: on flat
--- ground, a whole pool of damage. So a pack's hit, or its rock, pushes level, as strong
--- as ever (the rule of who pushes stays grug_core.knockback_pushes).
-local calculate_knockback = core.calculate_knockback
-function core.calculate_knockback(player, hitter, interval, caps, dir, distance, damage)
-	local push = calculate_knockback(player, hitter, interval, caps, dir, distance, damage)
-	local source = hitter and push ~= 0 and grug_core.damage_source(hitter)
-	local ent = source and source:get_luaentity()
-	if not ent or not ent._grug_pack then return push end
-	player:add_velocity({x = dir.x * push, y = 0, z = dir.z * push})
-	return 0
-end
+-- A pack's hit pushes like any mob's (grug_core/knockback.lua, Round 88): level with
+-- the one small lift, by its family's class, and a pack swinging as one pushes once in
+-- a window, not once per mob. Its rock, a projectile, pushes nothing.
 
 -- ---- Bodies -----------------------------------------------------------------------
 

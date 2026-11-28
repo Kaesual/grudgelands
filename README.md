@@ -98,21 +98,22 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
-**0.86.1** names the website's real way to a link code on the Account page.
-**0.86.0** completes the new housing. A Claim Stone claims one map square of 80 × 80
-nodes in your faction's level 11–30 or capital zones, and with the stone in hand the
-minimap shows which squares you can claim and why the one you stand in cannot. A
-character linked to an account on the realm's website (grudgelands.com/play) may choose
-the **Account Claim Stone** instead: one home that the account's characters of one
-faction who choose it own together, with shared belongings. Every home has a name its owners choose,
-shown with a house icon wherever you enter it, and the stone itself is now a small house.
-The Account page shows what linking gives and each step to link; the account's rewards,
-such as the **Cheer** emote and the Supporter and donor cloaks, reach every linked
-character, and accounts stay optional ([rules](docs/design/accounts.md),
-[contract](docs/technical/web-accounts.md)). Road cuts into hills now meet the
-ground instead of ending in a wall. 0.86.0 needs a **map reset**: characters keep everything but their position and
-their claim, whose containers come back in the Claim Stone's Belongings tab. Since 0.85.0
-the arena **Breach Road** stands on the middle road near the centre of the map.
+**0.88.0** answers a batch of player feedback. Knockback now comes from the attacker's
+weight (none, light, medium or heavy; elites a little more), never from its damage;
+projectiles push nothing, and pushes no longer add up. The Character page lists your stats
+with a detail box that explains each value and where it comes from. Every potion family
+has a bottle of its own, its tier shown by the glass and the stopper. Herbs, berries and
+wild crops can be gathered in the other faction's home land, while building there stays
+refused; quest givers whose quests are far below your level show a grey "!", and
+professions advance on the level-up.
+Since **0.86.0** a Claim Stone claims one map square of 80 × 80 nodes in your faction's
+level 11–30 or capital zones, and a character linked to an account on the realm's website
+(grudgelands.com/play) may choose the **Account Claim Stone**: one named home that the
+account's characters of one faction share, with shared belongings. The account's
+rewards, such as the **Cheer** emote and the Supporter and donor cloaks, reach every
+linked character, and accounts stay optional ([rules](docs/design/accounts.md),
+[contract](docs/technical/web-accounts.md)). Since 0.85.0 the arena **Breach Road**
+stands on the middle road near the centre of the map.
 
 Read the [changelog](CHANGELOG.md) for every earlier version and the upgrade
 requirements of each.

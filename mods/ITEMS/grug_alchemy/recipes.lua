@@ -28,23 +28,17 @@ grug_alchemy.POTION_AMOUNTS = {70, 200, 400, 650, 1000, 1350}
 local ELIXIRS = {
 	{key = "vigor", name = "Elixir of Vigor", modifier = "hp_pool_percent",
 		values = {4.0, 4.8, 5.6, 6.4, 7.2, 8.0}, duration = 900,
-		text = "+%.1f%% maximum HP for 15 minutes",
-		colors = {"#c4483e", "#b43a32", "#a52c29", "#922221", "#82201f", "#761a1c"}},
+		text = "+%.1f%% maximum HP for 15 minutes"},
 	{key = "focus", name = "Elixir of Focus", modifier = "mana_pool_percent",
 		values = {5.0, 5.6, 6.2, 6.8, 7.4, 8.0}, duration = 900,
-		text = "+%.1f%% maximum Mana for 15 minutes",
-		colors = {"#4269c4", "#375cb8", "#2c4da1", "#233f91", "#203886", "#1c337c"}},
+		text = "+%.1f%% maximum Mana for 15 minutes"},
 	{key = "precision", name = "Elixir of Precision", modifier = "crit_percent",
 		values = {4.2, 5.2, 6.0, 7.0, 7.8, 8.6}, duration = 900,
-		text = "+%.1f percentage points Crit for 15 minutes",
-		colors = {"#e19a3d", "#d28a31", "#be7627", "#a96720", "#9c5e1c", "#925618"}},
+		text = "+%.1f percentage points Crit for 15 minutes"},
 	{key = "stoneskin", name = "Stoneskin Elixir", modifier = "armor",
 		values = {0.8, 1.6, 2.4, 3.2, 4.0, 4.8}, duration = 1800, rating = true,
-		text = "+%s armor rating for 30 minutes",
-		colors = {"#8a8a8a", "#808080", "#747474", "#686868", "#5c5c5c", "#505050"}},
+		text = "+%s armor rating for 30 minutes"},
 }
-local HEALING_COLORS = {"#d13b45", "#c3313b", "#b42631", "#a81729", "#961222", "#850e1c"}
-local MANA_COLORS = {"#356ed1", "#2f63c2", "#2a57b2", "#253ea3", "#203893", "#1b3184"}
 
 -- The two ingredients (plus a Glass Bottle) of every product per tier.
 local RECIPES = {
@@ -93,20 +87,20 @@ local UTILITY = {
 	[2] = {
 		{kind = "utility", id = "potion_antivenom", name = "Antivenom",
 			inputs = {G .. "dragonweed", M .. "venom_gland"}, effect_kind = "antivenom",
-			duration = 0, text = "Cures poison", color = "#63ba52"},
+			duration = 0, text = "Cures poison"},
 		{kind = "utility", id = "potion_swiftness", name = "Swiftness Draught",
 			inputs = {G .. "dragonweed", M .. "fang"}, effect_kind = "swiftness",
-			duration = 5, text = "+10% movement speed for 5 seconds", color = "#e9c83b"},
+			duration = 5, text = "+30% movement speed for 5 seconds"},
 	},
 	[3] = {
 		{kind = "utility", id = "potion_cave", name = "Cave Draught",
 			inputs = {C .. "cave_cap", M .. "bound_wisp_mote"}, effect_kind = "cave",
-			duration = 600, text = "Night vision for 10 minutes", color = "#804db5"},
+			duration = 600, text = "Night vision for 10 minutes"},
 	},
 	[5] = {
 		{kind = "elixir", id = "elixir_deepwater", name = "Deepwater Elixir",
 			inputs = {G .. "stormkelp", C .. "cave_cap"}, effect_kind = "deepwater",
-			duration = 600, text = "Water breathing for 10 minutes", color = "#269ca7"},
+			duration = 600, text = "Water breathing for 10 minutes"},
 	},
 }
 
@@ -129,6 +123,13 @@ local function note_inputs(inputs)
 	end
 end
 
+-- Round 88 (ruling 2): every family has a bottle of its own per tier,
+-- textures/grug_alchemy_<family>_t<tier>.png; the single-tier draughts and
+-- the Deepwater Elixir drop the tier (grug_alchemy_<family>.png).
+local function image(family, tier)
+	return "grug_alchemy_" .. family .. (tier and "_t" .. tier or "") .. ".png"
+end
+
 local function requirement(tier)
 	local level = grug_alchemy.TIER_LEVELS[tier]
 	return level > 1 and ("\nRequires level " .. level) or ""
@@ -142,7 +143,7 @@ local function potion(tier, kind)
 	local inputs = RECIPES[tier][kind == "health" and "healing" or "mana"]
 	grug_alchemy.register_consumable(id, {
 		family = "potion", tier = tier,
-		color = (kind == "health" and HEALING_COLORS or MANA_COLORS)[tier],
+		image = image(kind == "health" and "healing" or "mana", tier),
 		description = name .. "\n" .. effect .. " at once. Shared " ..
 			grug_traders.POTION_COOLDOWN .. " second potion cooldown." ..
 			requirement(tier),
@@ -160,7 +161,7 @@ local function elixir(tier, def)
 	local id = "elixir_" .. def.key .. "_t" .. tier
 	local inputs = RECIPES[tier][def.key]
 	grug_alchemy.register_consumable(id, {
-		family = "elixir", tier = tier, color = def.colors[tier],
+		family = "elixir", tier = tier, image = image(def.key, tier),
 		description = name .. "\n" .. effect .. ". Replaces your current elixir." ..
 			requirement(tier),
 		on_use = grug_alchemy.elixir_use({label = name, modifier = def.modifier,
@@ -174,7 +175,7 @@ end
 local function special(tier, def)
 	if def.kind == "elixir" then
 		grug_alchemy.register_consumable(def.id, {
-			family = "elixir", tier = tier, color = def.color,
+			family = "elixir", tier = tier, image = image(def.effect_kind),
 			description = def.name .. "\n" .. def.text ..
 				". Replaces your current elixir." .. requirement(tier),
 			on_use = grug_alchemy.elixir_use({label = def.name, value = 0,
@@ -182,7 +183,7 @@ local function special(tier, def)
 		})
 	else
 		grug_alchemy.register_consumable(def.id, {
-			family = "potion", tier = tier, color = def.color,
+			family = "potion", tier = tier, image = image(def.effect_kind),
 			description = def.name .. "\n" .. def.text .. ". Shared " ..
 				grug_traders.POTION_COOLDOWN .. " second potion cooldown." ..
 				requirement(tier),
@@ -227,19 +228,13 @@ for index = 1, #catalog do
 		time = grug_jobs.DURATIONS.potion})
 end
 
--- The prepared mixtures of the automatic brewing before Round 45 stay
--- registered as inert items (stable ids: chests and dug stations may still
--- hold them); no recipe makes or uses them. Lane MS deletes them from
--- characters (round45-plan.md ruling 2).
+-- The prepared mixtures of the automatic brewing before Round 45 (ids
+-- grug_alchemy:mixture_<id>) left the game in Round 88 (ruling 2): each id is
+-- an alias of the glass bottle, so a stray one in a chest or a dug station
+-- loads as a bottle (the engine resolves an alias when a stack is read).
+-- The 0.45.0 step deleted them from characters (round45-plan.md ruling 2).
 for index = 1, #catalog do
-	local row = catalog[index]
-	row.mixture = "grug_alchemy:mixture_" .. row.id
-	core.register_craftitem(row.mixture, {
-		description = "Prepared " .. row.name .. " Mixture\nNo longer used: " ..
-			"alchemists now brew finished potions and elixirs.",
-		inventory_image = core.registered_items["grug_alchemy:" .. row.id].inventory_image,
-		groups = {grug_potion_mixture = 1}, _grug_tier = row.tier,
-	})
+	core.register_alias("grug_alchemy:mixture_" .. catalog[index].id, VIAL)
 end
 
 -- Housing copy: the stand itself, an Alchemy recipe without XP and without a

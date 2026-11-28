@@ -374,7 +374,8 @@ do
 		"\n(local notifying = %{%}.-\nfunction grug_core%.notify_equipment_change%(.-\nend)\n",
 		"notify_equipment_change"), "notify_equipment_change")
 	grug_inventory = {melee_list = function() return "grug_weapon" end}
-	armor_cache, slot_cache = {}, {}
+	-- Round 88 STATS: equipment_changed also drops the per-slot armor cache.
+	armor_cache, armor_pieces_cache, slot_cache = {}, {}, {}
 	run(cut("mods/PLAYER/grug_inventory/equipment.lua",
 		"\n(function grug_inventory%.equipment_changed%(.-\nend)\n", "equipment_changed"),
 		"equipment_changed")

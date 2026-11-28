@@ -72,7 +72,7 @@ local function utility_use(kind, duration)
 				return
 			end
 		elseif kind == "swiftness" then
-			grug_core.set_move_modifier(player, "alchemy_swiftness", {speed = 0.10},
+			grug_core.set_move_modifier(player, "alchemy_swiftness", {speed = 0.30},
 				duration)
 			grug_core.set_status(player, "alchemy_swiftness", {
 				label = "Swiftness Draught", duration = duration,
@@ -159,9 +159,8 @@ function grug_alchemy.register_consumable(id, definition)
 	else groups.grug_elixir = 1 end
 	core.register_craftitem("grug_alchemy:" .. id, {
 		description = definition.description,
-		inventory_image = definition.image or
-			"grug_traders_item_potion_healing_weak.png^[colorize:" ..
-			(definition.color or "#55AA55") .. ":90",
+		inventory_image = assert(definition.image,
+			"grug_alchemy: " .. id .. " has no inventory image"),
 		stack_max = 20,
 		groups = groups,
 		_grug_ilvl = grug_alchemy.TIER_LEVELS[definition.tier],

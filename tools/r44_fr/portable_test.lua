@@ -304,6 +304,8 @@ dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
 stub_page("grug_inventory:help", "Help", true)
 -- Round 81: the per-player passes register through grug_core.
 dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
+-- Round 88: the Stats mode's stat sheet on neutral stand-ins (tools/r88_stats).
+dofile(repo .. "/tools/r88_stats/sheet_stubs.lua")(repo)
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 stub_page("grug_parties:group", "Social", false)
 stub_page("creative:all", "All", true, {is_in_nav = function() return false end})

@@ -330,7 +330,8 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "sprint", repeat_policy = "once", class = "scout", name = "Sprint", kind = "cast",
 	target_kind = "self", color = "#c9b85d", cost = {mana_percent = 15},
-	cooldown = 300, range = 0,
+	-- Round 88 ruling 3: 180 s (300 s before).
+	cooldown = 180, range = 0,
 	description = "Move 50% faster for 10 s.",
 	cast = function(user)
 		grug_core.set_move_modifier(user, "scout_sprint", {speed = 0.50}, 10)

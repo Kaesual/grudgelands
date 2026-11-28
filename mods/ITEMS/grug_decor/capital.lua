@@ -75,7 +75,7 @@ local products = {
  leatherworker_exterior={"Leatherworker", "[combine:32x16:0,0=grug_gear_item_chest_leather_light.png:16,0=grug_mobs_item_light_leather.png"},
  woodcarver={"Woodcarver", "grug_gear_item_staff_wood.png"},
  goldsmith={"Goldsmith", "grug_gear_trinket_manawell_t4.png"},
- alchemist={"Alchemist", "grug_traders_item_potion_healing_weak.png"},
+ alchemist={"Alchemist", "grug_alchemy_healing_t1.png"},
  cooking={"Cooking", "default_clay_lump.png^[colorize:#d8a552:145"},
 }
 local names={}

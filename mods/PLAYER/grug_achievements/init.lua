@@ -473,10 +473,10 @@ local function picker_order(ids)
 	return ids
 end
 
--- The Character page's cloak picker (Stats mode, beside the model). Items are
+-- The Character page's cloak picker (the gear box, under the model). Items are
 -- the owned cloaks by name; the client sends the chosen name back, so the
 -- order is the picker's own (choose_cloak_by_name matches the name).
-function grug_achievements.cloak_dropdown(player, x, y, w)
+function grug_achievements.cloak_dropdown(player, x, y, w, h)
 	local meta, account = player:get_meta(), account_cloaks(player)
 	local selected = R.selected(book, meta, account)
 	local items, index = {}, 1
@@ -486,7 +486,9 @@ function grug_achievements.cloak_dropdown(player, x, y, w)
 			index = position
 		end
 	end
-	return ("dropdown[%.2f,%.2f;%.2f;grug_cloak;%s;%d]"):format(x, y, w,
+	-- `h` (optional, Round 88): the height; without it the engine's 1.
+	local size = h and ("%.2f,%.2f"):format(w, h) or ("%.2f"):format(w)
+	return ("dropdown[%.2f,%.2f;%s;grug_cloak;%s;%d]"):format(x, y, size,
 		table.concat(items, ","), index)
 end
 

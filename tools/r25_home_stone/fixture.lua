@@ -516,6 +516,8 @@ do
  core.get_current_modname = function() return "grug_inventory" end
  -- Round 81: the per-player passes register through grug_core.
  dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
+ -- Round 88: the Stats mode's stat sheet on neutral stand-ins (tools/r88_stats).
+ dofile(repo .. "/tools/r88_stats/sheet_stubs.lua")(repo)
  dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
  core.get_current_modname = function() return "grug_home" end
  local character = pages["grug_inventory:character"]

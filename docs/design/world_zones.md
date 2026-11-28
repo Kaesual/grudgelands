@@ -2485,8 +2485,8 @@ and quests are in [pvp.md](pvp.md) §6–§7.
   free roamers are nudged away from them like from a village; a mob in
   combat may follow its target in (`biomes_mobs.md`, `combat_stats.md`).
 - **Map:** both fortresses and the war camps show to everyone: baked
-  into the minimap's image, and in the map window's PvP layer (Round 47;
-  `world_map.md`).
+  into the minimap's image, and in the map window's Places layer (the PvP
+  layer from Round 47 until Round 88; `world_map.md`).
 - **No activation node:** unlike outposts (guard banner) and bandit camps
   (camp fire) the PvP POIs get no anchor node; their garrison stands on the
   blueprint's sockets. The same holds for the Round 58 mining camps and

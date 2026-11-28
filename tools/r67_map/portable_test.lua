@@ -132,7 +132,8 @@ local services = {
 }
 atlas.register_marker_provider("service", function() return services end)
 local givers = {}
-for i, status in ipairs({"story_ready", "ready", "locked", "available", "story_available", "active"}) do
+-- Round 88: "low" (the grey "!", file grug_map_quest_locked.png) replaces "locked".
+for i, status in ipairs({"story_ready", "ready", "low", "available", "story_available", "active"}) do
 	givers[i] = {id = "g" .. i, label = "Giver " .. status, kind = "quest", status = status,
 		position = {x = -2000 + 300 * i, z = 1000}}
 end
@@ -292,8 +293,8 @@ do
 	check(rank("capital") == rank("trainer") and rank("trainer") == rank("innkeeper") and
 		rank("trainer") < rank("service") and rank("service") == rank("steward") and
 		rank("service") < rank("waypoint") and rank("waypoint") == rank("home") and
-		rank("waypoint") < rank("quest", "locked"), "M rank: places, services, travel, quests")
-	check(rank("quest", "locked") < rank("quest", "active") and
+		rank("waypoint") < rank("quest", "low"), "M rank: places, services, travel, quests")
+	check(rank("quest", "low") < rank("quest", "active") and
 		rank("quest", "active") < rank("quest", "available") and
 		rank("quest", "available") < rank("quest", "ready") and
 		rank("quest", "ready") < rank("quest", "story_ready") and
@@ -336,8 +337,8 @@ do
 	end
 	eq(table.concat(drawn, ","), "locked,active,available,story_available,ready,story_ready",
 		"M quest givers drawn by importance")
-	-- Tooltips topmost first: the story_ready giver's tooltip before the locked one's.
-	local first, last = form:find(";Giver story_ready]", 1, true), form:find(";Giver locked]", 1, true)
+	-- Tooltips topmost first: the story_ready giver's tooltip before the low one's.
+	local first, last = form:find(";Giver story_ready]", 1, true), form:find(";Giver low]", 1, true)
 	check(first and last and first < last, "M the topmost marker's tooltip first")
 end
 
@@ -352,7 +353,7 @@ do
 	for id in form:gmatch(MARKED) do marked[#marked + 1] = id end
 	eq(table.concat(marked, ","), "towns", "B the active layer's button marked")
 	check(form:find("style[grug_map_layer_quests,grug_map_layer_bosses,grug_map_layer_trainers," ..
-		"grug_map_layer_pois,grug_map_layer_pvp,grug_map_layer_zones,grug_map_layer_none;border=false;" ..
+		"grug_map_layer_pois,grug_map_layer_zones,grug_map_layer_none;border=false;" .. -- R88: no PvP
 		"bgcolor=#ffffff;bgimg=grug_ui_clear.png;", 1, true) ~= nil and
 		form:find("style[grug_map_layer_towns;border=false;bgcolor=#ffffff;bgimg=grug_ui_clear.png;", 1,
 		true) ~= nil and form:find("grug_map_layer_quests:hovered,grug_map_layer_bosses:hovered,", 1, true),
@@ -361,11 +362,12 @@ do
 	for id, label in form:gmatch("button%[[^;]+;[^;]+;grug_map_layer_(%a+);([^%]]*)%]") do
 		labels[#labels + 1] = label
 	end
-	eq(table.concat(labels, ","), "Quests,Bosses,Services,Travel,Places,PvP,Zones,None",
+	-- Round 88 ruling 1: the PvP layer went.
+	eq(table.concat(labels, ","), "Quests,Bosses,Services,Travel,Places,Zones,None",
 		"B the short labels in order")
 	local b = state.layout.buttons
 	check(b.inline and b.rows == 1 and near(b.y, 0.25) and near(state.layout.map_y, 1.05) and
-		near(b.x + 8 * b.w + 7 * b.gap, 0.25 + state.layout.map_w + 0.35, 1e-6),
+		near(b.x + 7 * b.w + 6 * b.gap, 0.25 + state.layout.map_w + 0.35, 1e-6), -- R88: 7 buttons
 		"B 1920x1080: the buttons in the one row above the map, right of the zoom")
 	check(form:find("button[0.25,0.25;0.6,0.6;grug_map_zoom_out;-]", 1, true) and
 		state.layout.location.x > state.layout.column.x - 1e-9, "B the zoom left, the location over the column")

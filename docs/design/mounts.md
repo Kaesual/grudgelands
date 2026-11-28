@@ -424,24 +424,26 @@ refresh it. Bosses and location-bound encounters retain their own limits.
 Mounts run **6.4–12 nodes/s** and could otherwise bypass ordinary chase danger
 indefinitely. Damage therefore dismounts a rider; mounted attacks remain blocked.
 
-The same pillar is why the **Swiftness Draught** is capped where it is:
-`items_crafting.md` §3.6 gives it **+10 % for 5 s** and the archived
-[decision P4](../archive/design/items-history.md#101-2026-08-06) states the
-arithmetic outright — 4.0 × 1.10 = 4.4 < 4.6, so even the alchemist's brief
-sprint keeps mobs faster.
+The **Swiftness Draught** was capped by the same pillar until Round 88
+(+10 % for 5 s, 4.0 × 1.10 = 4.4 < 4.6, the archived
+[decision P4](../archive/design/items-history.md#101-2026-08-06)); since
+Round 88 (ruling 3) it gives **+30 % for 5 s** ([item_tiers.md](item_tiers.md)
+§5) and is the second named exception below.
 A mount breaks that ceiling permanently and by design; **the dismount is
 what pays for it.** Riding buys travel between fights, never an exit from
 one.
 
 Named, long-cooldown skills may temporarily exceed the ordinary speed
 inequality (`skill_trees.md` §5). The Scout's Sprint gives **+50% for 10 s on
-a 300 s cooldown** (`scout.md` §2): 6.0 nodes/s against ordinary aggressive
+a 180 s cooldown** (`scout.md` §2; 300 s until Round 88): 6.0 nodes/s against ordinary aggressive
 mobs' 4.6. That temporary advantage does not replace permanent mount travel.
 The exception is deliberately narrow: it covers named, time-limited,
-long-cooldown abilities and nothing permanent or cheap. The
-**Swiftness Draught's +10 % for 5 s stays below the mob band** (4.0 × 1.10 =
-4.4 < 4.6), and a mount keeps paying for its permanent 6.4–12 nodes/s with the
-dismount rule above.
+long-cooldown abilities and nothing permanent or cheap. The second named
+exception (the user, Round 88 ruling 3) is the **Swiftness Draught's +30 %
+for 5 s**: 4.0 × 1.30 = 5.2 nodes/s against 4.6, five seconds per drink on
+the shared 30-second potion clock. With Sprint the movement clamp (1 + sum
+at most 1.5) holds the player at 6.0, so the two do not add up. A mount
+keeps paying for its permanent 6.4–12 nodes/s with the dismount rule above.
 
 **Ranged attackers make it more than a formality.** The ranged mob
 families fight at range (`dogshoot`, `combat_stats.md` §3) and the Scout

@@ -256,7 +256,23 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -501 and below the universal contested deep rule overrides
-  land-side faction ownership.
+  land-side faction ownership. **Gathering exception** (Round 88 ruling 6):
+  the enemy faction may dig (and right-click pick) a gathering source there:
+  every node of the group `grug_gathering_source` (the herbs, spices and
+  found food of the gathering catalogue, the wild cooking and alchemy
+  sources) and the apple and the ripe blueberry bush (the catalogue's reused
+  food sources; `grug_gathering/territory.lua`), and, for consistency (the
+  user, 2026-11-27), the small ground plants: grass, dry and jungle grass,
+  ferns, marram grass, the flowers and alpine plants, lichen, moss carpet,
+  cattails, land reeds and the dry shrub (attached to the ground with the
+  group `flora` or `grug_decor_plant`, their variants, and those four by
+  name). Trees, logs, leaves (the decoration leaves too), corals, water and
+  hanging plants, saplings, ores, stone and soil stay refused, and so does
+  every placement: a grass or flower cell takes no placement, since the
+  exception answers for such a plant only while its own dig or punch runs. It holds only where the home's own faction may change the
+  place: roads, bridges, settlement and POI cores, towns, landmarks, guild
+  rooms and protected water keep refusing with their own hint, and a claim
+  refuses as before (`housing.md` §6).
 - **R2b — Contested land and Battlegrounds**: every ordinary level-31–60
   frontier or dragon-island zone has no construction owner; both factions may
   dig and place subject to tools and explicit protected envelopes (R1, R1b).
@@ -783,7 +799,7 @@ combat damage for the ordinary five-second combat window.
   down to the 0.1 floor count) and leaves room for a further 60 % slow during
   the flight; near the edge it is weakened, with less than a node of room it
   is dropped. The dive's slam knockback follows the same rule, and the
-  engine's own punch knockback is off for the slam's hit. No
+  ordinary punch knockback (`combat_stats.md` §3) is off for the slam's hit. No
   chain with the dive: the gust waits at least 4 s after a slam, and breath,
   lightning and dive wait 2 s after a gust.
 

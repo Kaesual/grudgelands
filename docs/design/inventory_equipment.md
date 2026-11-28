@@ -119,11 +119,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   bag rules: its contents move into the inventory first, and without room it
   stays, with the rules' feed line.
 - **The Character tab:** model and eight labelled native equipment slots
-  on the left, the selected Stats/Effects/Achievements panel on the right,
-  both above the short inventory view. The mode lives only in runtime
-  context; Stats is the default. The original model preview remains
-  mouse-rotatable. Stats includes the actual combat values, Claim
-  Stone status and cloak picker; the professions overview stays in Crafting.
+  on the left with the **cloak picker** under the model, between the slot
+  columns (Round 88; in every mode), the selected Stats/Effects/Achievements
+  panel on the right, both above the short inventory view. The mode lives
+  only in runtime context; Stats is the default. The original model preview
+  remains mouse-rotatable. Stats shows the actual combat values and the
+  Claim Stone status; the professions overview stays in Crafting.
   Effects retain their coarse remaining-time labels. Achievements retain
   their real catalog and bottom pager, with full tooltip descriptions.
   The Scout quiver and the Return home control remain in the equipment
@@ -149,11 +150,28 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   The balance, **Withdraw** and the deposit slot are on the Inventory tab
   (the deposit since Round 44, balance and Withdraw since the Round 45
   playtest).
-  Round 19 removes the pool/armor derivation section. Character shows concise
-  effective Crit and Dodge alongside armor rating, **Damage reduction** (the
-  armor's reduction against an enemy of the character's own level; its tooltip
-  says so and that it is higher against lower-level and lower against
-  higher-level enemies; Round 28 ruling 21) and maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
+  **The Stats mode** (Round 88, the user's ruling 8) is a list column and a
+  detail box. The list, in groups with thin separators: **Maximum HP**,
+  **Maximum mana** (**Maximum rage** for the Warrior) | **Strength**,
+  **Intelligence**, **Dexterity** | **Armor**, **Dodge** | **Crit**; name
+  left, value right. A row is a button (the navigation hover and selection
+  textures); hovering Strength, Intelligence or Dexterity shows one line of
+  its effect. **Maximum HP is selected whenever the page opens** (entering the
+  tab, a mode button, the window's close); the selection is runtime context
+  like the mode, never stored. Under the list: the Miner's Guild rank and
+  balance and the Claim Stone status. The detail box (scrolls when longer)
+  shows the stat's name and value, one sentence of what it does, **Effect**
+  (its direct effects: maximum pool, melee damage, spell power, healing and
+  absorbs, Crit and Dodge from Dexterity, Armor's reduction against enemies
+  of the character's level −5, ±0, +5 and +10), then smaller **Where it comes
+  from** (the pools as the calculation, base pool × class factor × each
+  percentage; the others as base, level growth, each equipment slot with its
+  item, talents, effects and the Dwarf's factor, then the total; a source the
+  page does not know shows as "Other sources", a chance over its cap as the
+  cap line) and the rule in small print. Every number comes from the
+  accessors combat reads. The Damage reduction row of Round 28 ruling 21 went
+  into Armor's detail. General formulas and the B/C/G/T/S legend belong to
+  Help.
 - Talents uses the shared frame and real coordinates for its page content.
   The existing class talent graphs and their backgrounds, details and skill
   catalogue retain separate areas; combat statistics belong to Character.
@@ -754,7 +772,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   quickbar (below).
 - **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn under the
   equipment slots in the Character page's gear box with the arrow total
-  beside it. There is
+  beside it on one line ("Quiver 181/500"); a Scout's "Home:" line sits on
+  the same row, right of it (Round 88, so the two never overlap). There is
   no quiver item and no Leatherworker quiver recipe; non-Scouts have no quiver
   slot. It holds up to **500 arrows**; arrows stack to **100** in any
   inventory. Internally the list `grug_quiver_content` carries five stacks of
@@ -909,8 +928,8 @@ the Round 19 top-centre text list:
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
 - **Character page modes** (Round 44: a mode box beside the gear box, see
-  §1): "Stats" (the model; pools, armor, damage reduction, crit, dodge, the
-  Claim Stone status and the cloak picker beside it; the **Return home** button with its
+  §1): "Stats" (the stat list and the selected stat's detail, the Miner's
+  Guild and the Claim Stone status; §1 "The Stats mode"; the **Return home** button with its
   cooldown in whole minutes sits in the gear box in every mode, re-sent when
   the text changes, [home_travel.md](home_travel.md)),
   "Effects": icon,
@@ -921,10 +940,10 @@ the Round 19 top-centre text list:
   first, then the primary slots, its tier, "Crafts: n/m toward tier N+1"
   (`professions.md` §1 counts; "Highest tier reached." at T6) and, while
   the character's ten-level band caps the tier, the note "Capped by your
-  level: reach level 10N+1, then craft once more for tier N+1") lives in
+  level: tier N+1 comes at level 10N+1", Round 88) lives in
   the Crafting tab's box (§1). "Achievements" sits after Effects, and
-  the **cloak picker** sits beside the model (in the Stats mode;
-  [character_visuals.md](character_visuals.md) §5b).
+  the **cloak picker** sits under the model in the gear box (every mode since
+  Round 88; [character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list, in the Social tab's party and clan rows and on each row of its
   online players' list, with the race icon beside it (`parties.md`).

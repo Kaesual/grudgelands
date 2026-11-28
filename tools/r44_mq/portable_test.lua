@@ -667,14 +667,16 @@ local OWN = {
 		"grug_map_housing_steward.png", "grug_map_crownbinder.png", "grug_map_repair.png"},
 	towns = {"grug_map_capital.png", "grug_map_start.png", "grug_map_village.png",
 		"grug_map_outpost.png", "grug_map_home.png", "grug_map_innkeeper.png", "grug_map_waypoint.png"},
-	pois = {"grug_map_bandit.png", "grug_map_mirefolk.png", "grug_map_mine.png"},
-	pvp = {"grug_map_fortress.png", "grug_map_war_camp.png"},
+	-- Round 88 ruling 1: the PvP layer's fortresses and war camps are Places.
+	pois = {"grug_map_bandit.png", "grug_map_mirefolk.png", "grug_map_mine.png",
+		"grug_map_fortress.png", "grug_map_war_camp.png"},
 }
 -- (the rift boss in Bosses uses the clash site's icon; POIs has the clash
 -- site itself: both are checked by tooltip below)
 
 do
-	giver_states.elder, giver_states.smith, giver_states.warlord = "available", "locked", "ready"
+	-- Round 88: the grey "!" is the value "low" (was "locked"), drawn from the same file.
+	giver_states.elder, giver_states.smith, giver_states.warlord = "available", "low", "ready"
 	local state = W.new_state()
 	eq(state.layer, "quests", "O a new session starts on the Quests layer (§3 default)")
 	-- One layer only: every layer shows its own markers and none of the
@@ -700,7 +702,7 @@ do
 	-- Quests: the own faction's givers by state, the NPC's name as tooltip.
 	local map = layer_form(accord, "quests")
 	has(map, ";Elder Maren]", "O Quests: the giver's name as tooltip")
-	has(map, ";Smith Doran]", "O Quests: a locked giver is shown (§8 default) with its name")
+	has(map, ";Smith Doran]", "O Quests: a low giver is shown (§8 default) with its name")
 	lacks(map, "Warlord Gash", "O Quests: no giver of the other faction")
 	lacks(map, "grug_map_quest_ready.png", "O Quests: the other faction's ready giver is not drawn")
 	check(count(map, "tooltip%[") >= 2, "O Quests: silhouette tooltip rectangles")
@@ -760,9 +762,11 @@ do
 			"Mine: Bridgechalk Dig", "Gem camp: Wyrmglass Fault Camp", "Clash site: Ashen Wheelbreak"}) do
 		has(map, ";" .. text .. "]", "O POIs: " .. text)
 	end
-	map = layer_form(throng, "pvp")
-	has(map, ";Ashenward Bastion]", "O PvP: the other faction's fortress")
-	has(map, ";Front Throng Low Camp]", "O PvP: a war camp")
+	-- Round 88 ruling 1: the former PvP layer's places under Places; a war
+	-- camp names that it is also a mining camp.
+	map = layer_form(throng, "pois")
+	has(map, ";Ashenward Bastion]", "O Places: the other faction's fortress")
+	has(map, ";War camp and mining camp: Front Throng Low Camp]", "O Places: a war camp")
 	-- Zones: a box and a single-line label per zone, no icons or tooltips.
 	map = layer_form(accord, "zones")
 	eq(count(map, "box%["), 2, "O Zones: a box per zone")
@@ -864,7 +868,7 @@ do
 		order[#order + 1] = id .. "=" .. label
 	end
 	eq(table.concat(order, ","), "quests=Quests,bosses=Bosses,trainers=Services,towns=Travel," ..
-		"pois=Places,pvp=PvP,zones=Zones,none=None",
+		"pois=Places,zones=Zones,none=None", -- Round 88 ruling 1: no PvP layer
 		"O button order as in the work package's table, the short labels (Round 67 default)")
 	for _, layer in ipairs(grug_map.layers.LIST) do
 		has(form, "tooltip[grug_map_layer_" .. layer.id .. ";" .. fs_escape(layer.title) .. "]",
@@ -1739,9 +1743,10 @@ do
 	-- The static layers are built once at start: the providers return the
 	-- same rows on every call.
 	local rows = grug_map.layers.rows
-	check(#rows.settlement == 5 and #rows.poi == 5 and #rows.pvp == 2 and #rows.boss == 5,
-		("L the static rows (%d towns, %d POIs, %d PvP, %d bosses)"):format(#rows.settlement,
-			#rows.poi, #rows.pvp, #rows.boss))
+	-- Round 88 ruling 1: the two PvP rows are POIs (5 + 2), no pvp provider.
+	check(#rows.settlement == 5 and #rows.poi == 7 and rows.pvp == nil and #rows.boss == 5,
+		("L the static rows (%d towns, %d POIs, %d bosses)"):format(#rows.settlement,
+			#rows.poi, #rows.boss))
 end
 
 -- No layer changes the zoom or the scroll (Round 84 ruling 13; reversed:

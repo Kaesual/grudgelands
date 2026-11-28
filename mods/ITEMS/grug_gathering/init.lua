@@ -12,6 +12,9 @@ local registered_nodes = dofile(modpath .. "/nodes.lua")(core, catalog, harvest)
 dofile(modpath .. "/presentation.lua")
 -- 0.53.1: apples and ripe blueberry bushes are also picked with right-click.
 dofile(modpath .. "/pick.lua")
+-- Round 88: the sources and the ground plants may be gathered in enemy home
+-- territory; whether a node name is one of them (complete once mods loaded).
+grug_gathering.enemy_home_gatherable = dofile(modpath .. "/territory.lua")(catalog)
 
 function grug_gathering.manifest()
 	return catalog.manifest()

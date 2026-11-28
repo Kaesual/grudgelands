@@ -328,7 +328,8 @@ do
 	local icons = dofile(repo .. "/mods/PLAYER/grug_map/settlement_icons.lua")
 	check(icons.kind("mining_camp") == "mine" and icons.layer("mining_camp") == "pois" and
 		icons.poi_word("mining_camp") == "Mining camp", "K the map shows a mining camp")
-	check(icons.kind("camp_construction") == "war_camp" and icons.layer("camp_construction") == "pvp",
+	-- Round 88 ruling 1: the PvP layer went, its places are POIs.
+	check(icons.kind("camp_construction") == "war_camp" and icons.layer("camp_construction") == "pois",
 		"K the map shows a camp under construction as a war camp")
 	local json = dofile(repo .. "/tools/r28_b1/json.lua")
 	local handle = assert(io.open(repo .. "/mods/ENTITIES/grug_mobs/data/pvp_names.json", "r"))

@@ -1,0 +1,248 @@
+[
+  {
+    "family": "healing",
+    "tier": 1,
+    "item_id": "grug_alchemy:potion_healing_t1",
+    "texture": "grug_alchemy_healing_t1.png"
+  },
+  {
+    "family": "healing",
+    "tier": 2,
+    "item_id": "grug_alchemy:potion_healing_t2",
+    "texture": "grug_alchemy_healing_t2.png"
+  },
+  {
+    "family": "healing",
+    "tier": 3,
+    "item_id": "grug_alchemy:potion_healing_t3",
+    "texture": "grug_alchemy_healing_t3.png"
+  },
+  {
+    "family": "healing",
+    "tier": 4,
+    "item_id": "grug_alchemy:potion_healing_t4",
+    "texture": "grug_alchemy_healing_t4.png"
+  },
+  {
+    "family": "healing",
+    "tier": 5,
+    "item_id": "grug_alchemy:potion_healing_t5",
+    "texture": "grug_alchemy_healing_t5.png"
+  },
+  {
+    "family": "healing",
+    "tier": 6,
+    "item_id": "grug_alchemy:potion_healing_t6",
+    "texture": "grug_alchemy_healing_t6.png"
+  },
+  {
+    "family": "vigor",
+    "tier": 1,
+    "item_id": "grug_alchemy:elixir_vigor_t1",
+    "texture": "grug_alchemy_vigor_t1.png"
+  },
+  {
+    "family": "vigor",
+    "tier": 2,
+    "item_id": "grug_alchemy:elixir_vigor_t2",
+    "texture": "grug_alchemy_vigor_t2.png"
+  },
+  {
+    "family": "vigor",
+    "tier": 3,
+    "item_id": "grug_alchemy:elixir_vigor_t3",
+    "texture": "grug_alchemy_vigor_t3.png"
+  },
+  {
+    "family": "vigor",
+    "tier": 4,
+    "item_id": "grug_alchemy:elixir_vigor_t4",
+    "texture": "grug_alchemy_vigor_t4.png"
+  },
+  {
+    "family": "vigor",
+    "tier": 5,
+    "item_id": "grug_alchemy:elixir_vigor_t5",
+    "texture": "grug_alchemy_vigor_t5.png"
+  },
+  {
+    "family": "vigor",
+    "tier": 6,
+    "item_id": "grug_alchemy:elixir_vigor_t6",
+    "texture": "grug_alchemy_vigor_t6.png"
+  },
+  {
+    "family": "mana",
+    "tier": 1,
+    "item_id": "grug_alchemy:potion_mana_t1",
+    "texture": "grug_alchemy_mana_t1.png"
+  },
+  {
+    "family": "mana",
+    "tier": 2,
+    "item_id": "grug_alchemy:potion_mana_t2",
+    "texture": "grug_alchemy_mana_t2.png"
+  },
+  {
+    "family": "mana",
+    "tier": 3,
+    "item_id": "grug_alchemy:potion_mana_t3",
+    "texture": "grug_alchemy_mana_t3.png"
+  },
+  {
+    "family": "mana",
+    "tier": 4,
+    "item_id": "grug_alchemy:potion_mana_t4",
+    "texture": "grug_alchemy_mana_t4.png"
+  },
+  {
+    "family": "mana",
+    "tier": 5,
+    "item_id": "grug_alchemy:potion_mana_t5",
+    "texture": "grug_alchemy_mana_t5.png"
+  },
+  {
+    "family": "mana",
+    "tier": 6,
+    "item_id": "grug_alchemy:potion_mana_t6",
+    "texture": "grug_alchemy_mana_t6.png"
+  },
+  {
+    "family": "focus",
+    "tier": 1,
+    "item_id": "grug_alchemy:elixir_focus_t1",
+    "texture": "grug_alchemy_focus_t1.png"
+  },
+  {
+    "family": "focus",
+    "tier": 2,
+    "item_id": "grug_alchemy:elixir_focus_t2",
+    "texture": "grug_alchemy_focus_t2.png"
+  },
+  {
+    "family": "focus",
+    "tier": 3,
+    "item_id": "grug_alchemy:elixir_focus_t3",
+    "texture": "grug_alchemy_focus_t3.png"
+  },
+  {
+    "family": "focus",
+    "tier": 4,
+    "item_id": "grug_alchemy:elixir_focus_t4",
+    "texture": "grug_alchemy_focus_t4.png"
+  },
+  {
+    "family": "focus",
+    "tier": 5,
+    "item_id": "grug_alchemy:elixir_focus_t5",
+    "texture": "grug_alchemy_focus_t5.png"
+  },
+  {
+    "family": "focus",
+    "tier": 6,
+    "item_id": "grug_alchemy:elixir_focus_t6",
+    "texture": "grug_alchemy_focus_t6.png"
+  },
+  {
+    "family": "precision",
+    "tier": 1,
+    "item_id": "grug_alchemy:elixir_precision_t1",
+    "texture": "grug_alchemy_precision_t1.png"
+  },
+  {
+    "family": "precision",
+    "tier": 2,
+    "item_id": "grug_alchemy:elixir_precision_t2",
+    "texture": "grug_alchemy_precision_t2.png"
+  },
+  {
+    "family": "precision",
+    "tier": 3,
+    "item_id": "grug_alchemy:elixir_precision_t3",
+    "texture": "grug_alchemy_precision_t3.png"
+  },
+  {
+    "family": "precision",
+    "tier": 4,
+    "item_id": "grug_alchemy:elixir_precision_t4",
+    "texture": "grug_alchemy_precision_t4.png"
+  },
+  {
+    "family": "precision",
+    "tier": 5,
+    "item_id": "grug_alchemy:elixir_precision_t5",
+    "texture": "grug_alchemy_precision_t5.png"
+  },
+  {
+    "family": "precision",
+    "tier": 6,
+    "item_id": "grug_alchemy:elixir_precision_t6",
+    "texture": "grug_alchemy_precision_t6.png"
+  },
+  {
+    "family": "stoneskin",
+    "tier": 1,
+    "item_id": "grug_alchemy:elixir_stoneskin_t1",
+    "texture": "grug_alchemy_stoneskin_t1.png"
+  },
+  {
+    "family": "stoneskin",
+    "tier": 2,
+    "item_id": "grug_alchemy:elixir_stoneskin_t2",
+    "texture": "grug_alchemy_stoneskin_t2.png"
+  },
+  {
+    "family": "stoneskin",
+    "tier": 3,
+    "item_id": "grug_alchemy:elixir_stoneskin_t3",
+    "texture": "grug_alchemy_stoneskin_t3.png"
+  },
+  {
+    "family": "stoneskin",
+    "tier": 4,
+    "item_id": "grug_alchemy:elixir_stoneskin_t4",
+    "texture": "grug_alchemy_stoneskin_t4.png"
+  },
+  {
+    "family": "stoneskin",
+    "tier": 5,
+    "item_id": "grug_alchemy:elixir_stoneskin_t5",
+    "texture": "grug_alchemy_stoneskin_t5.png"
+  },
+  {
+    "family": "stoneskin",
+    "tier": 6,
+    "item_id": "grug_alchemy:elixir_stoneskin_t6",
+    "texture": "grug_alchemy_stoneskin_t6.png"
+  },
+  {
+    "family": "antivenom",
+    "tier": 2,
+    "item_id": "grug_alchemy:potion_antivenom",
+    "texture": "grug_alchemy_antivenom.png"
+  },
+  {
+    "family": "swiftness",
+    "tier": 2,
+    "item_id": "grug_alchemy:potion_swiftness",
+    "texture": "grug_alchemy_swiftness.png"
+  },
+  {
+    "family": "cave",
+    "tier": 3,
+    "item_id": "grug_alchemy:potion_cave",
+    "texture": "grug_alchemy_cave.png"
+  },
+  {
+    "family": "deepwater",
+    "tier": 5,
+    "item_id": "grug_alchemy:elixir_deepwater",
+    "texture": "grug_alchemy_deepwater.png"
+  },
+  {
+    "family": "merchant",
+    "tier": null,
+    "item_id": "grug_traders:potion_healing_weak",
+    "texture": "grug_traders_potion_healing_weak_bottle.png"
+  }
+]

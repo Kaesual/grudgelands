@@ -87,6 +87,26 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   unforced form (the withdraw dialog: Cancel), so the field keeps its focus.
   Model and checks: `tools/r451_kf` (`focus.lua`); the book's read view
   (vendored `default`) focuses its ">" button.
+- **The Character page's Stats mode** (Round 88,
+  [inventory_equipment.md](../../design/inventory_equipment.md) §1):
+  `grug_inventory/stats.lua` builds the stat sheet
+  (`grug_inventory.stat_sheet.sheet(player)`: per stat the list value, the
+  hover line, the effects, the source lines and the rule) from the accessors
+  combat reads (grug_classes' attributes, pools, crit and dodge,
+  `grug_core.get_armor_rating` and `armor_reduction`); the per-slot lines come
+  from `grug_items.get_equipment_slot_sources` (grug_quality's one equipment
+  pass, kept per slot beside the totals) and
+  `grug_inventory.equipped_armor_pieces` (a copy of the per-slot ratings
+  the cached armor total is summed from, filled and dropped with it). A source the sheet does not repeat
+  shows as "Other sources", so the lines always add up. Built on a page build
+  only. `pages.lua` draws a row as a clear button over its label and a
+  right-aligned `hypertext[]` (drawn after them, the button keeps the hover,
+  the click and the tooltip) and the detail as one scrolling `hypertext[]`,
+  its number column padded with no-break spaces. The selection is
+  `context.grug_stat`, reset in `on_enter` and at the window's close.
+  Checks: `tools/r88_stats` (its `sheet_stubs.lua` gives fixtures that render
+  the page on their own stubs neutral accessors); engine pictures through
+  `tools/r88_stats/capture.sh`.
 
 ## Key presses
 
@@ -370,7 +390,7 @@ Sections: [UI and formspecs](#ui-and-formspecs), [Key presses](#key-presses), [T
   (pure: wild animals, zombies, families, named leaders by role, rares by
   registry id; a load audit logs any unclassified mob) and `init.lua` (the
   hooks, the Achievements mode body and the cloak dropdown that
-  `grug_inventory/pages.lua` reads at build time). Counters come from
+  `grug_inventory/pages.lua` reads at build time and draws under the model). Counters come from
   grug_mobs' eligible-kill hook (cached per entity name),
   `grug_mobs.register_on_boss_kill(fn(player, boss_id))` (every player the
   boss ledger credits, independent of the loot lockout; `bosses.lua`

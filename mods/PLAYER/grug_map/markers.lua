@@ -42,8 +42,15 @@ end
 function M.arrow(size)
  return math.max(1, math.floor(size * M.ARROW / M.SIZE + 0.5))
 end
+-- A quest marker's texture by its value (grug_quests.marker_states): the
+-- status's, a story quest's own ("story_<status>", Round 57); the grey "!"
+-- of a low giver (Round 88) is the file of Round 65's "soon" marker.
+local QUEST_FILE = {low = "locked"}
+function M.quest_texture(status)
+ return "grug_map_quest_" .. (QUEST_FILE[status] or status) .. ".png"
+end
 function M.texture(marker)
- if marker.kind == "quest" then return "grug_map_quest_" .. marker.status .. ".png" end
+ if marker.kind == "quest" then return M.quest_texture(marker.status) end
  if marker.texture then return marker.texture end
  if marker.kind == "home" or marker.kind == "innkeeper" or marker.kind == "waypoint" then
   return "grug_map_" .. marker.kind .. ".png"
@@ -54,12 +61,12 @@ end
 -- bottom to top, the minimap's layers before Round 67: places, bosses,
 -- trainers, innkeepers and every other kind (0), the Steward and the
 -- services (1, above the trainer books beside them), the home and waystones
--- (2), quest givers (3 and up: a locked "!" lowest, then in progress,
+-- (2), quest givers (3 and up: a low giver's grey "!" lowest, then in progress,
 -- available, ready, a story marker above the plain one of its status). The
 -- minimap's z-index and the map window's draw order both read it; the
 -- arrows stay above every marker.
 local KIND_RANK = {steward = 1, service = 1, home = 2, waypoint = 2}
-local QUEST_RANK = {locked = 0, active = 2, available = 4, ready = 6}
+local QUEST_RANK = {low = 0, active = 2, available = 4, ready = 6}
 function M.rank(marker)
  if marker.kind == "quest" then
   local status = tostring(marker.status or "")

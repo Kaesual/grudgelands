@@ -387,7 +387,7 @@ end
 -- The markers that do not move by themselves (ruling 8): quest givers with
 -- their state, the Steward, trainers, innkeepers, home and waystones.
 local PROVIDERS = {quest=true, service=true, home=true, waypoint=true,
- settlement=true, poi=true, boss=true, pvp=true}
+ settlement=true, poi=true, boss=true}
 -- Each at its anchor (Round 67 ruling 20: overlaps are allowed), with its
 -- importance (markers.rank) for the z-index.
 local function static_markers(player)

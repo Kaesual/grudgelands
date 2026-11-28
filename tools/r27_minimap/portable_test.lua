@@ -682,10 +682,11 @@ QUESTS.giver = "active"
 for _, fn in ipairs(quest_changes) do fn(me) end
 step(0.25)
 check(has("grug_map_quest_active.png") == 1, "R active quest icon")
-QUESTS.giver = "locked"
+-- Round 88: the grey "!" is the "low" value; its file keeps the old name.
+QUESTS.giver = "low"
 for _, fn in ipairs(quest_changes) do fn(me) end
 step(0.25)
-check(has("grug_map_quest_locked.png") == 1, "R locked quest icon")
+check(has("grug_map_quest_locked.png") == 1, "R low quest icon")
 
 -- Home: the chosen inn is home.
 HOME = {id = "highcourt", label = "Highcourt"}

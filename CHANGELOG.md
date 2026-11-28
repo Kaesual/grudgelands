@@ -13,6 +13,88 @@ The development record behind each round (lanes, reviews, tests) is in its
 round plan, section "Completion", linked from the
 [project status](docs/STATUS.md).
 
+## 0.88.0 — player feedback: knockback, the Character page, potion bottles (2026-11-27)
+
+Compatible: no map reset, no new world, nothing for the host to do. This
+round answers a batch of player feedback.
+
+- **Knockback belongs to the attack.** How far a hit pushes you no longer
+  depends on its damage or on anyone's level (from level 20 on almost every
+  mob hit pushed equally hard).
+  - A mob's melee and area hits push by its family's weight: none (critters,
+    bats, wisps, oozes), light (rats, foxes, goblins, skeletons), medium
+    (wolves, big cats, outlaws, zombies, spiders, boars, every guard and
+    person) or heavy (bears, apes, tigers, crocodiles, treants, golems). An
+    elite pushes a quarter more; the named rares and the bosses have their
+    own push.
+  - Arrows, bolts, thrown rocks, mud balls, hex bottles and breath push
+    nothing.
+  - Pushes do not add up: several wolves hitting at once push you about as
+    far as the strongest of them. Every push is level with the ground with a
+    small lift, so none drives you into the floor.
+  - Player melee in PvP pushes a small fixed amount, whatever the weapon.
+    Riders are not pushed. Some boss attacks push less than before (a King's
+    Shatter).
+- **The Character page's Stats mode is new.** The stats stand in a list,
+  name left and value right: Maximum HP, Maximum mana (or rage), Strength,
+  Intelligence, Dexterity, Armor, Dodge and Crit. Hovering Strength,
+  Intelligence or Dexterity shows what it does for you. A click opens a
+  scrolling detail box on the right: first what the stat does, then, smaller,
+  where the value comes from (one line per source, such as your level, your
+  class or each piece of gear by slot and name), then the rule. HP shows its
+  calculation (base × class factor × (1 + the percentages of gear, talents
+  and effects)), mana the same without the class factor, and Armor shows its
+  damage reduction against
+  enemies 5 levels below you, of your level, and 5 and 10 levels above. The
+  page opens on Maximum HP. The Damage reduction row is gone (it is in the
+  Armor detail). The cloak picker sits under the character model in every
+  mode. A Scout's "Quiver N/500" is one line, with Home on the same row.
+- **Every potion has a bottle of its own.** Each of the ten potion and elixir
+  families (Healing, Mana, Vigor, Focus, Precision, Stoneskin, Antivenom,
+  Swiftness, Cave, Deepwater) and the merchant's healing potion has its own
+  picture, a bottle with its family's emblem. The tier shows in the bottle
+  and its stopper: earthenware with a cork or wax (tiers I–II), blown glass
+  with a silver disc or a gem (III–IV), cut crystal with a winged clasp or an
+  amber sun (V–VI). The potion cooldown icon shows the merchant's bottle and
+  the alchemist's sign the Healing Potion I. The old tinted flasks are gone.
+- **Gathering in enemy land:** in the other faction's home territory you may
+  now gather herbs, spices, apples, berries, wild crops, mushrooms and the
+  other wild cooking and alchemy sources, and dig grass, ferns, flowers and
+  small ground plants, by digging or right-click picking. Trees, leaves,
+  blocks, ore and soil stay protected there, and so does building: you
+  cannot place anything, not even into grass. Roads, villages, camps, towns,
+  guild rooms and claims refuse as before. The Alchemy gate on the healing
+  herbs still applies.
+- **Quest markers show what is worth the walk:**
+  - a giver whose quests for you are all 10 or more levels below yours shows
+    a grey "!"; story quests never turn grey;
+  - a quest you cannot take yet shows no marker any more (the grey "soon"
+    "!" is gone); the giver's dialog still names the level of the next
+    quest;
+  - "ready" (yellow "?"), "in progress" (grey "?") and the story colour stay;
+    a quest in progress shows before a grey "!". The head marker, the
+    minimap and the map agree, and Help says so.
+- **Professions advance on the level-up:** a profession whose crafts for the
+  next tier are done advances as soon as your character reaches that tier's
+  level, with the usual message, sound and new Basic recipes, without
+  another craft. A character that was waiting for this advances at its next
+  login. The Crafting tab says "Capped by your level: tier N comes at level
+  M.", and the craft message names the level too.
+- **Faster Swiftness and Sprint:** the Swiftness Draught gives +30 % movement
+  speed for 5 s (was +10 %), and Sprint's cooldown is 180 s (was 300 s;
+  +50 % for 10 s as before). Together they stay at Sprint's top speed.
+- **One map filter less:** the PvP filter is gone. The fortresses, the
+  Battlegrounds war camps, the camps under construction and the arena are
+  under Places; a war camp's tooltip reads "War camp and mining camp:
+  <name>".
+- **The "Prepared … Mixture" items leave the game:** one still in a chest or
+  stand becomes a glass bottle.
+- Internal: the knockback numbers live in `grug_core.KNOCKBACK`, the weight
+  classes in `grug_mobs/knockback.lua`; the gathering exception in
+  `grug_gathering/territory.lua`; the stat sheet in
+  `grug_inventory/stats.lua`, with per-slot sources from
+  `grug_items.get_equipment_slot_sources`.
+
 ## 0.87.0 — Recording roads in housing areas (2026-11-22)
 
 Compatible upgrade from 0.86.1. The world records which housing-area chunks its

@@ -86,19 +86,28 @@ per session). Astra lanes through the Codex CLI:
    2026-11-11).
 7. **Lane D** (§4) writes the round's end records on its own branch and is
    merged into the round branch like any lane.
-8. **Round-end gates** (§3) on the round branch after lane D's merge,
-   including the one full fixture run. Then the coordinator lands the round
-   on main as **one squash commit** (`git merge --squash round<NN>`, a message describing the round: release
-   and classification, what shipped, review verdicts, gates), tags **that
-   squash commit** `round-<NN>` and deletes the branch and its worktrees
-   (user, 2026-11-09; the tag on the squash commit: Round 81 ruling 14,
-   2026-11-17). Main gets one commit per round, and the lane commits go with
-   the branch: no lane tags are made, and plans, reports and the Completion
-   name a lane's work by lane and finding id, never by a lane commit hash as
-   a lasting reference (a hash is a working note while the round runs). A
+8. **Round-end gates and the user's acceptance** (user, 2026-11-27: every
+   round develops on its local round branch and reaches main only after the
+   user's release). After lane D's merge the round-end gates (§3) run on the
+   round branch, including the one full fixture run. Then one independent
+   **whole-round review** reads the round branch against main. The
+   coordinator syncs the **round branch** into the user's game
+   (`tools/sync_to_luanti.sh` from the round worktree) and the user tests and
+   accepts it; fixes from that test land on the round branch first (a lane
+   or the coordinator, reviewed like any change).
+9. **Landing.** Only on the user's release does the coordinator land the
+   round on main as **one squash commit** (`git merge --squash round<NN>`, a
+   message describing the round: release and classification, what shipped,
+   review verdicts, gates) and tag **that squash commit** `round-<NN>` (the
+   tag on the squash commit: Round 81 ruling 14, 2026-11-17). The round
+   branch stays **local and is not deleted**; its lane worktrees may go.
+   Main gets one commit per round, and the lane commits stay on the local
+   branch: no lane tags are made, and plans, reports and the Completion name
+   a lane's work by lane and finding id, never by a lane commit hash as a
+   lasting reference (a hash is a working note while the round runs). A
    follow-up (for example after a playtest) is its own small round with its
    own squash commit and tag.
-9. **Sync and push.** The coordinator syncs main to the user's game
+10. **Sync and push.** The coordinator syncs main to the user's game
    (`tools/sync_to_luanti.sh`) and reports a sync only when it ran. The user
    pushes main and the round's tag (tags are pushed from 2026-11-16 on; the
    older round tags `round-72.1` to `round-76.2` stay local, Round 81 ruling
@@ -145,12 +154,12 @@ Running lanes go on.
 | The topic checks [checks.md](checks.md) names for what the lane changed | — | when that topic changed | — | — |
 | `python3 tools/building_templates/check.py` (the building templates' hard gate, Round 56 ruling 33; it runs the game's loader and builds every town and capital; the other template checks in [checks.md](checks.md)) | — | when templates, layouts, rosters, palettes or the loader (`wp13/templates.lua`) changed | — | yes |
 | `python3 tools/r451_mc/gen_bat_ride_mesh.py --check` (the ridden bats' mesh against its source; 0.45.1) | — | when the bat models or the tool changed | — | yes |
-| One smoke boot of the final branch (`tools/luanti_headless.sh`) | — | yes | — | one boot of the round branch before the squash (§2 step 8; the squash gives main the same tree) |
+| One smoke boot of the final branch (`tools/luanti_headless.sh`) | — | yes | — | one boot of the round branch before the user's test (§2 step 8; the squash gives main the same tree) |
 | Seed fleet (below) | — | `quick` for world-generation changes (a batch of similar lanes: once after the batch) | — | `full` when owed |
 | Before/after numbers on the same seed, area and probe | — | when the lane touches a hot path | — | — |
 | Link check of every touched link and anchor | — | — | yes | — |
 | Independent review | — | every non-trivial lane | every non-trivial lane, against the code | — |
-| `tools/sync_to_luanti.sh` (coordinator, from main) | — | — | — | after the squash (§2 step 9) |
+| `tools/sync_to_luanti.sh` (coordinator) | — | — | — | from the round branch for the user's test (§2 step 8), from main after the squash (§2 step 10) |
 
 **Fixture runs, only the necessary ones** (the user, 2026-10-08, tightened
 2026-10-09, 2026-11-08 and 2026-11-11; this paragraph is the one owner of the

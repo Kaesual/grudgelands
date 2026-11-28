@@ -3,11 +3,12 @@
 -- window"). The player picks one layer at a time with the buttons above the
 -- map (window.lua, Round 67); the player's and the party's arrows show in
 -- every one. The button labels since Round 67 (short): Quests, Bosses,
--- Services, Travel, Places, PvP, Zones, None.
+-- Services, Travel, Places, Zones, None (Round 88 ruling 1: the PvP layer
+-- went, its markers moved to Places).
 --
 --   Quests    the own faction's quest givers by their state (the "quest"
 --             provider, the minimap's precedence: ready, available, active,
---             locked)
+--             low)
 --   Bosses    the six kings, the two dragons (a dragon arena and its dragon
 --             are one icon, bake.lua SAME_PLACE), the rift boss at his
 --             clash site and the rare dens, both factions
@@ -18,9 +19,9 @@
 --             plus the own innkeepers, the home, the Claim Stone and the
 --             discovered waystones (the "home" and "waypoint" providers)
 --   POIs      bandit and Mirefolk camps, mines and gem camps, clash sites,
---             both factions
---   PvP       the two fortresses, the war camps and (Round 85) the arena
---             Breach Road
+--             the two fortresses, the war camps (also mining camps), the
+--             camps under construction and (Round 85) the arena Breach
+--             Road, both factions
 --   Zones     every zone's name and level band as text (zone_labels.lua)
 --   None      only the arrows
 --
@@ -50,7 +51,6 @@ L.LIST = {
 	{id = "towns", label = "Travel", title = "Settlements & travel",
 		providers = {settlement = true, home = true, waypoint = true}},
 	{id = "pois", label = "Places", title = "Points of interest", providers = {poi = true}},
-	{id = "pvp", label = "PvP", title = "PvP", providers = {pvp = true}},
 	{id = "zones", label = "Zones", title = "Zones", zones = true},
 	{id = "none", label = "None", title = "No markers"},
 }
@@ -69,7 +69,7 @@ for index, kind in ipairs(bake.KINDS) do L.ORDER[kind] = index end
 L.ORDER.rift_boss = L.ORDER.king
 
 -- provider name -> the static rows of its layer
-local rows = {settlement = {}, boss = {}, poi = {}, pvp = {}}
+local rows = {settlement = {}, boss = {}, poi = {}}
 L.rows = rows
 -- The zone labels {id, name, band, x, z} in zone order, and the placement
 -- figures for the log and the report.
@@ -105,7 +105,7 @@ local function build_rows()
 		end
 		return false
 	end
-	local providers = {towns = "settlement", pois = "poi", pvp = "pvp", bosses = "boss"}
+	local providers = {towns = "settlement", pois = "poi", bosses = "boss"}
 	for _, row in ipairs(grug_core.settlement_socket_settlements()) do
 		local kind, layer = icons.kind(row.slot), icons.layer(row.slot)
 		local name = row.display_name or row.key
@@ -139,12 +139,12 @@ local function build_rows()
 		end
 	end
 	-- The arena Breach Road (Round 85, grug_mapgen's layout of this world)
-	-- under PvP at its centre, with the clash sites' crossed swords; no
-	-- settlement, so it is added here.
+	-- under POIs (Round 88, the PvP layer's) at its centre, with the clash
+	-- sites' crossed swords; no settlement, so it is added here.
 	local mapgen = rawget(_G, "grug_mapgen")
 	local breach = mapgen and mapgen.breach
 	if breach then
-		rows.pvp[#rows.pvp + 1] = {id = breach.id, label = breach.name,
+		rows.poi[#rows.poi + 1] = {id = breach.id, label = breach.name,
 			detail = breach.name .. "\nArena: a hall for each faction", kind = "clash",
 			texture = texture("clash"),
 			position = {x = breach.centre.x, y = breach.datum, z = breach.centre.z}}

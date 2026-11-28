@@ -480,7 +480,7 @@ Sections: [Mapgen and biomes](#mapgen-and-biomes), [Preparation](#preparation), 
   `tools/r85_mask/world.lua` build their region maps with the same
   `reserved_of`, and the fleet's arena check refuses a camp, leader, quest
   place or rare patrol point on the footprint and fringe) and `grug_map` (the name on the
-  location line, `location.lua`, and the PvP layer's marker, `layers.lua`).
+  location line, `location.lua`, and the Places layer's marker, `layers.lua`).
   The protected box is a world-protection box of kind `arena`
   (`world_protection.lua` `arena_box`, added in `r7_loader.lua`), and
   `init.lua` registers a world alteration guard over the same box (fire,

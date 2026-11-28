@@ -16,8 +16,8 @@
 --      confirmation alone on it (Round 32 F3); the ready line below;
 --   5. the Riding Trainer (grug_mounts/state.lua tier_state + trainer.lua):
 --      all four tiers with the right state, buttons only for "buy";
---   6. the Character page (grug_inventory/pages.lua): "Damage reduction" with
---      its tooltip; the professions overview body (grug_jobs/overview.lua,
+--   6. the Character page (grug_inventory/pages.lua): the armor reduction
+--      (since Round 88 in the Armor detail, no Damage reduction row); the professions overview body (grug_jobs/overview.lua,
 --      on the Crafting tab since Round 45, no Character mode any more);
 --      the Scout's quiver cell at 0, 100, 101, 181 and 500 arrows (Round 41:
 --      above 100 the total as an overlay, its cover at gui_scaling 1 and 2);
@@ -653,7 +653,7 @@ has(trainer_fs, fs_escape(colorize("#ff6b6b", "You do not have enough money.")),
 for tier = 1, 4 do has(trainer_fs, rows[tier].name, "all four tiers listed: " .. tier) end
 
 ------------------------------------------------------------------------------
--- 6. Character page: Damage reduction, Professions tab.
+-- 6. Character page: the armor reduction, Professions tab.
 ------------------------------------------------------------------------------
 grug_jobs = {}
 dofile("mods/PLAYER/grug_jobs/registry.lua")
@@ -692,18 +692,18 @@ lacks(prof_fs, "Capped by your level", "no cap note while crafts are missing")
 smith.meta["grug_jobs:crafts:weaponsmith"] = 15
 overview = grug_jobs.profession_overview(smith)
 eq(overview[2].capped, true, "15/15 at level 15: the level blocks tier 3")
--- The note wraps to the mode area's width (Round 44).
+-- Round 88 ruling 4: the note names the level, no further craft (it fits
+-- the mode area's width on one line).
 local capped_fs = grug_jobs.professions_formspec(overview, AREA)
-has(capped_fs, fs_escape(colorize("#f0c75e", "Capped by your level: reach level 21, then craft")),
+has(capped_fs, fs_escape(colorize("#f0c75e", "Capped by your level: tier 3 comes at level 21.")),
 	"cap note when the level blocks")
-has(capped_fs, fs_escape(colorize("#f0c75e", "once more for tier 3.")), "cap note, wrapped")
 smith.meta["grug_jobs:crafts:weaponsmith"] = 7
 has(prof_fs, fs_escape("Crafts: 10/10 toward tier 2"), "cooking progress")
 char_level = 5
 overview = grug_jobs.profession_overview(smith)
 eq(overview[1].capped, true, "level 5 caps cooking T1")
 has(grug_jobs.professions_formspec(overview, AREA),
-	fs_escape(colorize("#f0c75e", "Capped by your level: reach level 11, then craft")),
+	fs_escape(colorize("#f0c75e", "Capped by your level: tier 2 comes at level 11.")), -- R88
 	"saturated cap note")
 char_level = 60
 smith.meta["grug_jobs:level:weaponsmith"] = 6
@@ -736,17 +736,28 @@ local resent = 0
 sfinv.set_player_inventory_formspec = function() resent = resent + 1 end
 -- Round 81: the per-player passes register through grug_core.
 dofile("tools/r81_passes/all_players_pass.lua")(grug_core, core)
+-- Round 88: the Stats mode's stat sheet on neutral stand-ins (tools/r88_stats).
+dofile("tools/r88_stats/sheet_stubs.lua")(".")
 dofile("mods/PLAYER/grug_inventory/pages.lua")
 local character = pages["grug_inventory:character"]
 local context = {page = "grug_inventory:character", grug_character_tab = "stats"}
 contexts.smith = context
 local stats_fs = character:get(smith, context)
 formspec_ok(stats_fs, "character stats")
-has(stats_fs, "label[10.10,3.10;Damage reduction: 12.3%]", "Damage reduction label")
-has(stats_fs, "label[10.10,2.60;Armor: 100]", "Armor shows the rating 10 x10 (Round 78)")
+-- Round 88 (ruling 8): the Damage reduction row and its tooltip went; the
+-- Armor detail shows the reduction against attackers of several levels.
+lacks(stats_fs, "Damage reduction", "no Damage reduction row (Round 88)")
 lacks(stats_fs, "Own-level", "old label gone")
-has(stats_fs, fs_escape("Armor reduction against an enemy of your level."), "tooltip text")
-has(stats_fs, "tooltip[10.10,2.85;9.25,0.50;", "tooltip covers the label line")
+context.grug_stat = "armor"
+local armor_fs = character:get(smith, context)
+-- The detail's header (the name, the value right-aligned at size 22): the
+-- rating 10 shown x10 (Round 78); the list's 100 could be the Warrior's rage.
+has(armor_fs, "label[14.70,1.65;Armor]", "the Armor detail is shown")
+has(armor_fs, "size=22>100]", "Armor shows the rating 10 x10 (Round 78)")
+has(armor_fs, "12.3 %", "the Armor detail shows the reduction")
+has(armor_fs, "level 15\\, your level", "... against your own level")
+has(armor_fs, "level 25", "... and ten levels above")
+context.grug_stat = nil
 -- Round 45: the overview moved to the Crafting tab (tools/r45_ui).
 lacks(stats_fs, "grug_character_professions", "no Professions mode button")
 lacks(stats_fs, "Weaponsmith — Tier", "no overview on the Character page")
@@ -785,7 +796,7 @@ local QUIVER_CELL = "list[current_player;grug_quiver_content;0.50,6.70;1,1;]"
 for _, total in ipairs({0, 100, 101, 250, 500}) do
 	local fs = quiver_page("archer" .. total, nil, total)
 	has(fs, QUIVER_CELL, "quiver " .. total .. ": native cell")
-	has(fs, "label[1.65,6.95;Quiver\n" .. total .. "/500]", "quiver: full adjacent total")
+	has(fs, "label[1.65,7.20;Quiver " .. total .. "/500]", "quiver: full adjacent total (one line, Round 88)")
 	lacks(fs, "item_image[", "quiver: no item-image overlay")
 	lacks(fs, "[fill:8x8:", "quiver: no opaque count cover")
 	if total == 0 then has(fs, "grug_inventory_quiver.png", "empty quiver: ghost") end

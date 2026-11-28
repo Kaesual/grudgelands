@@ -702,6 +702,13 @@ up to six per item, at the same price each.
   effective HP (the armor curve is fitted to plate).
 - Names count by tier with Roman numerals, like today's elixirs. Level
   requirement: the tier's first level.
+- **Every family has a bottle of its own** (Round 88 ruling 2): one picture
+  per item, `grug_alchemy_<family>_t<tier>.png`, and one without the tier for
+  the single-tier Antivenom, Swiftness Draught, Cave Draught and Deepwater
+  Elixir; the tier shows through the bottle's material and stopper, never a
+  numeral on the picture. The vendor's Weak Healing Potion has its own bottle
+  too. Until Round 88 every product was the vendor potion's corked flask,
+  tinted per item.
 - **The vendor's Weak Healing Potion** heals a fixed 35 HP (half of Healing
   Potion I) at its 8c price; before Round 33 it healed 15 % of maximum HP at
   every level.
@@ -727,7 +734,7 @@ up to six per item, at the same price each.
 | 2 | 11 | Elixir of Precision II | +5.2 percentage points Crit, 15 min | Dragonweed + Ridged Boar Tusk |
 | 2 | 11 | Stoneskin Elixir II | +16 armor rating, 30 min | Dragonweed + Ridged Crab Shell |
 | 2 | 11 | Antivenom | clears all poison (unchanged) | Dragonweed + Venom Gland |
-| 2 | 11 | Swiftness Draught | +10 % movement speed for 5 s (unchanged) | Dragonweed + Fang |
+| 2 | 11 | Swiftness Draught | +30 % movement speed for 5 s (Round 88) | Dragonweed + Fang |
 | 3 | 21 | Healing Potion III | restores 400 HP at once | Crimson Lotus + Gravemoss |
 | 3 | 21 | Mana Potion III | restores 400 Mana at once | Crimson Lotus + Sugar Cane |
 | 3 | 21 | Elixir of Vigor III | +5.6 % maximum HP, 15 min | Crimson Lotus + Bear Claw |

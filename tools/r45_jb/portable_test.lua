@@ -745,7 +745,9 @@ do
 	run_timers()
 	eq(J.crafts_in_tier(x, "cooking"), 10, "X 15 crafts with 6 XP left give 6 (saturated)")
 	eq(J.profession_level(x, "cooking"), 1, "X level 5: no advance yet")
-	check(chat[#chat]:find("tier progress is ready", 1, true) ~= nil, "X the ready notice")
+	-- Round 88 ruling 4: the notice names the level, no further craft.
+	check(chat[#chat]:find("tier progress is complete; tier 2 comes at character level 11.",
+		1, true) ~= nil, "X the ready notice")
 	-- A saturated profession advances at the job's end once the level allows.
 	character_level = 11
 	J.start_job(x, stew.id, 3)

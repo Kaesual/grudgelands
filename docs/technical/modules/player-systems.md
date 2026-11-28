@@ -97,10 +97,12 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   `def.min_level` (a registration naming one is refused; quest data names
   only `level`); `Q.npc_quests(player, npc)` returns the listed rows (ready,
   available, active, sorted by status, level, title) and the hint level (the
-  lowest acceptance level the player's level alone holds back), and
-  `Q.marker_states` gives a giver without rows `locked` only when that level
-  is at most `Q.SOON_LEVELS` (2) above the player's. Fixture
-  `tools/r65_quest`.
+  lowest acceptance level the player's level alone holds back). Round 88:
+  `Q.marker_states` gives a held-back quest no marker and turns an
+  available non-story quest whose level is `Q.LOW_LEVELS` (10) or more
+  below the player's into `low`, ranked below `active`; the map's file for
+  `low` is the old `grug_map_quest_locked.png` (`grug_map/markers.lua`
+  `quest_texture`). Fixtures `tools/r65_quest`, `tools/r88_quest`.
 
 ### Turn-in hook, state cache and markers
 
@@ -799,7 +801,7 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   static markers are re-asked on `grug_quests.register_on_markers_changed`
   and, when their key (quest version, home, waystones, faction) changed, at
   a 5 s check. The minimap asks the quest, service, home, waypoint (since
-  Round 29), settlement, poi, boss and pvp marker providers
+  Round 29), settlement, poi and boss marker providers (pvp until Round 88)
   (`minimap.lua` `PROVIDERS`, `atlas.collect_markers(player, only)`);
   since Round 44 trainers show one icon per profession
   (`grug_map.trainer_icon`); the
@@ -903,7 +905,9 @@ Sections: [Quests](#quests), [Parties](#parties), [Mail](#mail), [Housing](#hous
   Round 47 the world map's image bakes the region names only (since Round 64
   the minimap also uses separate icons), and `layers.lua` (loaded by `window.lua`) builds the
   marker layers: the static rows of settlements, places and bosses once in
-  its mods-loaded hook (providers `settlement`, `poi`, `pvp`, `boss`; boss
+  its mods-loaded hook (providers `settlement`, `poi`, `boss`; since Round 88
+  the fortresses, war camps, camps under construction and the arena are
+  `poi` rows, the `pvp` provider gone; boss
   levels through `grug_mobs.fixed_level`, the dragons' entities from
   `grug_mobs.dragon_map_markers`) and the zone labels (`zone_labels.lua`,
   pure: the grid sampled from the world authority, Round 28's pole

@@ -245,8 +245,9 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
   recipe makes Y from X) and `unlock_basic_tiers(player, profession, from,
   to[, quiet])` into player meta `grug_jobs:basic_unlocked`
   (`BASIC_UNLOCKED_KEY`, the held set's format with recipe ids, read once
-  per session), called by `learn` (tier 1), the tier advance in
-  `record_craft` and `admin_set` (tiers 1..N, quiet), and at every join for
+  per session), called by `learn` (tier 1), the tier advance
+  (`advance_if_ready` in `state.lua`, from `record_craft` and
+  `advance_professions`) and `admin_set` (tiers 1..N, quiet), and at every join for
   each learned profession's tiers 1..`profession_level` (quiet);
   `recipe_known` reads both sets
   `held_dirty(player)` (jobs.lua after a delivery). When: at the join,
@@ -299,8 +300,11 @@ Sections: [Professions](#professions), [Crop registration](#crop-registration), 
   against the base catalog, gear in its profession, durations, stations, the
   craft list and the removed APIs.
 - Player APIs are `learn`, `unlearn`, `has`, `profession_level`,
-  `crafts_in_tier`, `character_tier`, `record_craft`, `award_progress` and
-  `can_craft_recipe`; every craft path and station operation (enchants
+  `crafts_in_tier`, `character_tier`, `record_craft`, `award_progress`,
+  `advance_professions` and `can_craft_recipe`; `advance_professions(player)`
+  (Round 88 ruling 4) advances every saturated profession one tier when the
+  character's band allows it, from `init.lua`'s `grug_xp` level hook (which
+  also runs at the join); every craft path and station operation (enchants
   count, profession upgrades play their sound only) goes through
   `award_progress(player,
   recipe[, crafts[, no_xp]])`, which checks the recipe's flag and counts a

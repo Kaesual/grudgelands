@@ -38,7 +38,7 @@ def elixir_value(product, tier):
     if product.startswith("Mana Potion"):
         return "restores %d Mana at once" % POTION[tier - 1]
     return {"Antivenom": "clears all poison (unchanged)",
-            "Swiftness Draught": "+10 % movement speed for 5 s (unchanged)",
+            "Swiftness Draught": "+30 % movement speed for 5 s (Round 88)",
             "Cave Draught": "night vision for 10 min (unchanged)",
             "Deepwater Elixir": "water breathing for 10 min (unchanged)"}[product]
 

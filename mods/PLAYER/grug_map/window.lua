@@ -13,7 +13,7 @@
 -- then Round 44's fixed set) is plain image[] elements with positional
 -- tooltips. The player picks ONE marker layer with the flat buttons above
 -- the map (Round 67 ruling 22; layers.lua: quest givers, bosses, services,
--- travel, places, PvP, zone names, none; one or two rows, the active one
+-- travel, places, zone names, none; one or two rows, the active one
 -- marked). Selecting a quest is its own mode: only its targets
 -- (targets.lua, with objective tooltips) and hand-in NPC are shown, no
 -- button marked. Choosing a layer deselects the quest. Every marker sits at
@@ -87,12 +87,13 @@ local RING_MIN = 0.7
 -- party check compares these cells, so a move inside one sends nothing.
 local ARROW_STEP = 0.02
 local RING = "grug_map_ring.png"
--- A quest marker's texture by its value (grug_quests.marker_states): the
--- status, and a story quest's own (Round 57, "story_<status>").
-local QUEST_TEXTURE = {}
-for _, status in ipairs({"active", "ready", "available", "locked"}) do
-	QUEST_TEXTURE[status] = "grug_map_quest_" .. status .. ".png"
-	QUEST_TEXTURE["story_" .. status] = "grug_map_quest_story_" .. status .. ".png"
+-- A quest marker's texture by its value (grug_quests.marker_states,
+-- markers.quest_texture): the status, and a story quest's own (Round 57,
+-- "story_<status>"); a story quest is never low (Round 88).
+local QUEST_TEXTURE = {low = marker_art.quest_texture("low")}
+for _, status in ipairs({"active", "ready", "available"}) do
+	QUEST_TEXTURE[status] = marker_art.quest_texture(status)
+	QUEST_TEXTURE["story_" .. status] = marker_art.quest_texture("story_" .. status)
 end
 local SCROLL_X, SCROLL_Y = "grug_map_scroll_x", "grug_map_scroll_y"
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..

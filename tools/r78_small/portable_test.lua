@@ -135,7 +135,8 @@ check(entry ~= nil, "P the status appears when the cooldown starts")
 eq(entry and entry.caption, "30s", "P ...with the full countdown")
 eq(entry and entry.kind, "neutral", "P ...neutral")
 eq(entry and entry.name, "Potion cooldown", "P ...labelled Potion cooldown")
-check(row_texture(ada):find("grug_traders_item_potion_healing_weak.png", 1, true) ~= nil and
+-- Round 88: the plate shows the merchant potion's new bottle.
+check(row_texture(ada):find("grug_traders_potion_healing_weak_bottle.png", 1, true) ~= nil and
 	row_texture(ada):find("grug_status_frame_neutral.png", 1, true) ~= nil,
 	"P the row shows the potion on the neutral plate at once: " .. row_texture(ada))
 now_s, now_us = now_s + 29, now_us + 29e6

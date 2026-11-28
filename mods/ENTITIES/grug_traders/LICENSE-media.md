@@ -13,6 +13,12 @@ deterministically — re-running the script reproduces the PNG byte for byte.
 |------|--------|---------|-------|
 | `grug_traders_item_potion_healing_weak.png` | Grudgelands project | CC0 1.0 | generator, art `POTION_FLASK`, corked round flask with red liquid |
 
+## Round 88 merchant bottle
+
+| File | Author | License | Notes |
+|------|--------|---------|-------|
+| `grug_traders_potion_healing_weak_bottle.png` | GPT-6.2 Astra for Grudgelands | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Renamed copy of [merchant_B.png](../../../tools/r88_icons/proposals/merchant_B.png) |
+
 ## Reused media — no files in this mod
 
 The vendor NPCs carry **no media of their own**. They reference, by name only

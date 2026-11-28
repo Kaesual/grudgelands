@@ -627,9 +627,9 @@ local function push_player(self, player, origin, speed, lift)
 	if velocity then player:add_velocity(velocity) end
 end
 
--- The dive's slam pushes only through push_player: the engine's own
--- knockback (builtin knockback.lua, off every punch) is off for its hit,
--- since it would carry a player past the arena limit.
+-- The dive's slam pushes only through push_player: the knockback every
+-- punch carries (grug_core/knockback.lua, the mob's weight class) is off for
+-- its hit, since it would carry a player past the arena limit.
 local slam_hit = false
 local engine_knockback = core.calculate_knockback
 if engine_knockback then

@@ -22,13 +22,14 @@
 --      a giver with only future quests opens with the hint, says when to
 --      come back and offers no Accept; a giver with neither rows nor hint
 --      does not open; the legend and tooltip drop "Locked";
---   D  the marker: the grey "!" ("locked") at next quest L+1 and L+2, none at
---      L+3; story_locked when that next quest is a story quest; anything
---      acceptable wins; a level-up moves it (memo refresh); a quest behind
---      an unmet prerequisite gives no marker;
+--   D  the marker (since Round 88 ruling 5 the "soon" grey "!" is gone): no
+--      marker for a next quest at L+1, L+2 or L+3, a story one included;
+--      anything acceptable shows; a level-up opens it (memo refresh); a
+--      quest behind an unmet prerequisite gives no marker;
 --   E  validate.lua: a stale min_level is an [E-levels] error, its absence
 --      none;
---   F  Help -> Quests names the silver "!" as a new quest in one or two levels.
+--   F  Help -> Quests no longer names the silver "!" as a quest in one or two
+--      levels (Round 88; the new text is r88_quest F).
 -- Prints "R65 QUEST PORTABLE PASS checks=<n>" or the failures.
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 local repo = arg[1] or "."
@@ -402,26 +403,24 @@ quest("gated_q", {npc = "gated", level = 4, prerequisites = {"gated_first"}})
 local cid = new_player("cid")
 set_level(cid, 1)
 local marks = Q.marker_states(cid)
-eq(marks.soon1, "locked", "D next quest at L+1: the grey !")
-eq(marks.soon2, "locked", "D next quest at L+2: the grey !")
+-- Round 88 ruling 5: a quest not yet acceptable gives no marker (was the grey "!").
+eq(marks.soon1, nil, "D next quest at L+1: no marker")
+eq(marks.soon2, nil, "D next quest at L+2: no marker")
 eq(marks.far, nil, "D next quest at L+3: no marker")
-eq(marks.story, "story_locked", "D the next quest is a story quest: the story's grey !")
-eq(marks.mixed, "available", "D something acceptable wins over a soon quest")
+eq(marks.story, nil, "D the next quest is a story quest: no marker")
+eq(marks.mixed, "available", "D something acceptable shows beside a later quest")
 eq(marks.gated, nil, "D a quest behind an unmet prerequisite gives no marker")
 eq(marks.later, nil, "D the later giver (opens at 7) shows nothing at 1")
 eq(select(2, Q.npc_quests(cid, "gated")), nil, "D ...and no hint")
-set_level(cid, 2)
+set_level(cid, 4)
 marks = Q.marker_states(cid)
-eq(marks.far, "locked", "D a level-up brings the L+3 giver into reach (memo refreshed)")
-set_level(cid, 3)
-marks = Q.marker_states(cid)
-eq(marks.soon1, "available", "D at its acceptance level the quest is acceptable")
+eq(marks.far, "available", "D a level-up opens the L+3 giver's quest (memo refreshed)")
+eq(marks.soon1, "available", "D ...and the L+1 one")
 eq(marks.story, "story_available", "D ...the story quest too")
 set_level(cid, 1)
 eq(Q.marker_states(cid).far, nil, "D a level-down hides it again")
--- The map window and the minimap read these values; their status lists
--- keep "locked" (the grey "!").
-eq(table.concat(Q.MARKER_STATUSES, " "), "ready available active locked", "D the marker statuses are unchanged")
+-- Round 88: the statuses end in "low", not "locked" (r88_quest M).
+eq(table.concat(Q.MARKER_STATUSES, " "), "ready available active low", "D the marker statuses")
 
 -- ---------------------------------------------------------------------------
 -- E: validate.lua
@@ -447,7 +446,8 @@ end
 -- ---------------------------------------------------------------------------
 do
 	local help = read("mods/PLAYER/grug_inventory/help.lua")
-	has(help, "silver ! = a new quest in one or two levels", "F Help names the silver ! as a quest in one or two levels")
+	-- Round 88 ruling 5: the silver "!" now means far-below quests (r88_quest F).
+	lacks(help, "in one or two levels", "F Help no longer names a quest in one or two levels")
 	lacks(help, "needs a higher level", "F ...not as \"needs a higher level\"")
 end
 

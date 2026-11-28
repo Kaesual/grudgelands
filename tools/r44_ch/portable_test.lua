@@ -8,7 +8,8 @@ end
 --   1. the three modes (the professions overview moved to the Crafting tab in
 --      Round 45 and is checked there, tools/r45_ui; 3D and Stats are one
 --      Stats mode since the Round 45 playtest: the model, the stats right of
---      it, the cloak picker at the detail panel's foot; no balance and no
+--      it; since Round 88 the cloak picker under the model and the stat list
+--      with its detail, checked by tools/r88_stats; no balance and no
 --      Withdraw, they are on the Inventory tab): each renders, the selected
 --      button is styled, Stats is the default, a mode button switches the
 --      box only (runtime context), every mode keeps the gear box and the
@@ -121,8 +122,8 @@ local default_fs = H.page(warrior, nil)
 eq(H.context.grug_character_tab, nil, "no mode stored before a click")
 has(default_fs, nav_style("grug_character_stats", true), "Stats is the default mode")
 lacks(default_fs, "grug_character_3d", "no 3D mode (one Stats mode, Round 45 playtest)")
--- The Stats mode: the model on the left, the stats right of it, the cloak
--- picker at the foot of the stats column.
+-- The Stats mode: the model on the left, the stats right of it; the cloak
+-- picker under the model (Round 88).
 local mx, my, mw, mh = default_fs:match("model%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_preview;")
 mx, my, mw, mh = tonumber(mx), tonumber(my), tonumber(mw), tonumber(mh)
 check(mx ~= nil, "the model in the Stats mode")
@@ -131,34 +132,34 @@ check(mx ~= nil, "the model in the Stats mode")
 -- card (tools/r54_view checks the seam, the fallback and the escaping).
 has(default_fs, "grug_preview;grug_visuals_character.b3d;character.png,blank.png,blank.png,blank.png;",
 	"the preview seam's model and four textures")
-has(default_fs, "label[10.10,1.60;Maximum HP: 120]", "the stats right of the model")
+has(default_fs, "button[10.00,1.30;4.35,0.50;grug_stat_hp;]", "the stats right of the model")
 check(mx and mx >= 1.5 and mx + mw <= 8.05, "the model stays between the equipment columns")
--- The cloak label sits over the dropdown at the detail panel's foot; the
--- hint is the dropdown's tooltip.
-local dd_y = tonumber(default_fs:match("dropdown%[10%.10,([%d.]+);9%.25;grug_cloak;"))
-check(dd_y and dd_y + 1 <= BOXES_BOTTOM + 0.006,
-	"the cloak picker in the stats column, inside the detail panel")
-local cloak_y = tonumber(default_fs:match("label%[10%.10,([%d.]+);Cloak%]"))
-check(cloak_y and dd_y and math.abs(cloak_y + 0.35 - dd_y) < 0.006, "the cloak label above it")
+-- Round 88: the cloak label beside the dropdown under the model, both above
+-- the Scout's quiver rule (QUIVER_POS y - 0.25); the hint is the dropdown's
+-- tooltip.
+local dd_y, dd_h = default_fs:match("dropdown%[2%.95,([%d.]+);[%d.]+,([%d.]+);grug_cloak;")
+dd_y, dd_h = tonumber(dd_y), tonumber(dd_h)
+check(dd_y and dd_y + dd_h <= 6.45 + 0.006, "the cloak picker under the model, above the quiver row")
+local cloak_y = tonumber(default_fs:match("label%[1%.70,([%d.]+);Cloak%]"))
+check(cloak_y and dd_y and math.abs(cloak_y - (dd_y + dd_h / 2)) < 0.006, "the cloak label beside it")
 has(default_fs, "tooltip[grug_cloak;Cloaks unlock through achievements.]",
 	"the hint is the dropdown's tooltip")
 lacks(default_fs, "Cloaks unlock through\n", "no hint label any more")
--- A draft Claim Stone's status wraps inside the column (the
--- longest one, Round 45 PT2 delta review): its last line ends above the
--- Cloak label. grug_housing is read at build time.
+-- A draft Claim Stone's status wraps inside the list column (the
+-- longest one, Round 45 PT2 delta review; a read-only textarea since Round
+-- 88): below the list, inside the box. grug_housing is read at build time.
 rawset(_G, "grug_housing", {character_status = function()
 	return {text = "Your Claim Stone is not active yet: activate it within " ..
 		"23 h 59 min or it crumbles", color = "#ff5555"}
 end})
 local draft_fs = H.page(warrior, "stats")
 rawset(_G, "grug_housing", nil)
-local status_y, status_text = draft_fs:match(
-	"label%[10%.10,([%d.]+);[^%]]-(Your Claim Stone is not[^%]]*)%]")
-local status_lines = select(2, (status_text or ""):gsub("\n", "")) + 1
-check(status_lines >= 2 and status_lines <= 4, "a draft stone's status wraps in the detail column")
-check(status_y and cloak_y and
-	tonumber(status_y) + (status_lines - 1) * 0.5 + 0.25 <= cloak_y - 0.25 + 1e-6,
-	"the status's last line ends above the Cloak label")
+local sx, sy, sw, sh = draft_fs:match(
+	"textarea%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);;;Your Claim Stone is not")
+sx, sy, sw, sh = tonumber(sx), tonumber(sy), tonumber(sw), tonumber(sh)
+check(sx and sx >= 10.0 and sx + sw <= 14.35 + 1e-6, "a draft stone's status wraps in the list column")
+check(sy and sy >= 5.75 and sy + sh <= BOXES_BOTTOM + 1e-6,
+	"the status sits under the list, inside the box")
 check(my and my + mh <= BOXES_BOTTOM, "the model inside the mode box")
 lacks(default_fs, "Money", "no balance on the Character page")
 lacks(default_fs, "grug_money_withdraw", "no Withdraw on the Character page")
@@ -214,13 +215,14 @@ check(warrior.sent > sent, "the page is resent")
 has(warrior.formspec, "Hearty Stew", "the Effects mode is shown")
 eq(warrior:get_meta():get_string("grug_character_tab"), "", "the mode is runtime context only")
 
--- Stats.
+-- Stats (Round 88: a list of rows; tools/r88_stats checks the values and
+-- the detail).
 local stats = H.page(warrior, "stats")
-for _, line in ipairs({"Maximum HP: 120", "Maximum rage: 100", "Damage reduction: 12.3%",
-		"Crit: 5.0%", "Dodge: 5.0%"}) do
-	has(stats, line, "stats: " .. line)
+for _, id in ipairs({"hp", "rage", "str", "int", "dex", "armor", "dodge", "crit"}) do
+	has(stats, "grug_stat_" .. id .. ";]", "stats: the " .. id .. " row")
 end
-has(stats, "tooltip[10.10,2.85;9.25,0.50;Armor reduction against", "stats: the reduction tooltip")
+has(stats, "size=16>120]", "stats: Maximum HP 120")
+lacks(stats, "Damage reduction", "stats: no Damage reduction row (Round 88)")
 lacks(stats, "deposit", "no deposit slot on the Character page")
 H.click(warrior, {grug_money_withdraw = "Withdraw"})
 eq(H.withdrawn, 0, "the Character page no longer handles Withdraw")
@@ -304,7 +306,7 @@ for class_id, hands in pairs(HANDS) do
 			label .. ": the arrow slot")
 		has(fs, "listring[current_player;grug_quiver_content]listring[current_player;grug_shift]",
 			label .. ": the quiver rings to the routing list")
-		has(fs, "label[1.65,6.95;Quiver\n0/500]", label .. ": the quiver's total")
+		has(fs, "label[1.65,7.20;Quiver 0/500]", label .. ": the quiver's total (one line, Round 88)")
 		has(fs, "grug_inventory_quiver.png", label .. ": the empty quiver's ghost")
 	else
 		lacks(fs, "grug_quiver_content", label .. ": no arrow slot")
@@ -329,13 +331,14 @@ local cell = fs_q:find("list[current_player;grug_quiver_content;0.50,6.70;1,1;]"
 check(cell ~= nil, "181 arrows: the native quiver slot remains")
 lacks(fs_q, "[fill:8x8:", "181 arrows: no opaque count cover")
 lacks(fs_q, "item_image[", "181 arrows: no hover-blocking overlay")
-has(fs_q, "label[1.65,6.95;Quiver\n181/500]", "181 arrows: the total beside the slot")
+has(fs_q, "label[1.65,7.20;Quiver 181/500]", "181 arrows: the total beside the slot")
 
 -- Return home: every mode, the countdown in minutes, the click.
 H.home.remaining = 150
 has(H.page(archer, "achievements"), "button[0.50,8.00;8.85,0.65;grug_character_home;" ..
 	"Return home (3 min)]", "Return home: the cooldown in minutes")
-has(H.page(archer, "achievements"), "label[0.50,7.70;Home: Ironhold Inn]", "the home's name")
+-- Round 88: beside the quiver the Home line sits on the quiver's row.
+has(H.page(archer, "achievements"), "size=16>Home: Ironhold Inn]", "the home's name")
 H.home.remaining = 0
 local sent_home = archer.sent
 H.page(archer, "effects")

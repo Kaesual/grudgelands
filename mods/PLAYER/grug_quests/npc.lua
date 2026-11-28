@@ -20,7 +20,7 @@ Q.STATUS_COLORS = {available = "#ffd24a", ready = "#7ee06a", active = "#8fc1ff",
 -- lists and the story markers (the map icons, tools/r57_qsys/render_story_icons.py).
 Q.STORY_COLOR = "#c69cff"
 -- Round 65 ruling 1: no list shows a locked quest, so no legend names one
--- (the grey colour stays the hint line's and the "soon" marker's).
+-- (the grey colour stays the hint line's).
 local STATUS_ORDER = {"available", "ready", "active"}
 local STATUS_NAMES = {available = {"Available", "gold"}, ready = {"Ready to complete", "green"},
 	active = {"In progress", "blue"}}
@@ -390,11 +390,12 @@ core.register_on_leaveplayer(function(player) sessions[player:get_player_name()]
 local MARKER_SCALE = 5
 local MARKER_Y = 27 - (MARKER_SCALE - 1) * 0.54
 -- Marker value -> {symbol, colour} (Round 57 ruling 13: a story quest's
--- marker keeps the status's symbol and brightness in the story accent).
-local MARKERS = {}
-for _, status in ipairs({"ready", "available", "active", "locked"}) do
-	local symbol = (status == "ready" or status == "active") and "question" or "exclamation"
-	local bright = status == "ready" or status == "available"
+-- marker keeps the status's symbol and brightness in the story accent; a
+-- story quest is never low, Round 88 ruling 5).
+local MARKERS = {low = {symbol = "exclamation", color = "#c0c0c0"}}
+for _, status in ipairs({"ready", "available", "active"}) do
+	local symbol = status == "available" and "exclamation" or "question"
+	local bright = status ~= "active"
 	MARKERS[status] = {symbol = symbol, color = bright and "#ffd700" or "#c0c0c0"}
 	MARKERS["story_" .. status] = {symbol = symbol, color = bright and "#b46bff" or "#a99bc4"}
 end

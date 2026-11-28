@@ -337,6 +337,10 @@ local function shoot(self, target, arrow, offset_angle)
 		y = dy * velocity / length, z = dz * velocity / length})
 end
 
+-- Each hit pushes by the boss's own class (grug_core/knockback.lua); a
+-- `knockback` (m/s, the kings' shatter 8, the rift boss's pulse) is the
+-- attack's own push with its own lift of 4, in the same window, so the two
+-- never add up: the stronger one counts.
 local function hit_players(self, radius, multiplier, cone, knockback, faction)
 	local pos = self.object:get_pos()
 	if not pos then return end
@@ -353,9 +357,8 @@ local function hit_players(self, radius, multiplier, cone, knockback, faction)
 			if inside then
 				object:punch(self.object, 1, {full_punch_interval = 1,
 					damage_groups = {fleshy = self.damage * multiplier}}, nil)
-				if knockback and length > 0 then
-					object:add_velocity({x = dx * knockback / length, y = 4,
-						z = dz * knockback / length})
+				if knockback and knockback > 0 then
+					grug_core.push_player(object, pos, knockback, 4)
 				end
 			end
 		end

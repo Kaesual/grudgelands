@@ -520,8 +520,11 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   profession recipes and effects). Every product is an Alchemy recipe at the
   stand (2 s) that makes the finished potion or elixir and gives progress; the
   automatic brewing and its adapter are gone. The 40 `grug_alchemy:mixture_*`
-  ids stay registered as inert items (group `grug_potion_mixture`; no recipe
-  makes or uses them). Capital
+  ids are aliases of `vessels:glass_bottle` since Round 88 (inert items with
+  the group `grug_potion_mixture` before; the engine resolves an alias when a
+  stack is read, `src/inventory.cpp`). Each product's inventory image is its
+  family's bottle (`recipes.lua` `image`, Round 88; `register_consumable`
+  refuses a definition without one, so no tinted fallback is left). Capital
   personal workspaces derive from terrain-resolved,
   rotated `public_station` sockets in the themed outer premises.
   `grug_jobs.register_public_position(station, pos)` owns the shared registry
@@ -555,11 +558,16 @@ Sections: [Factions and character creation](#factions-and-character-creation), [
   `return true` always suppresses handled hostile engine damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
-  knockback on players is builtin's push off the engine's damage argument,
-  gated by the one `core.calculate_knockback` override
-  `grug_core.knockback_pushes` (Round 37: PvP melee swings and mob hits,
-  their projectiles included; refused punches and a player's casts, arrows
-  and ability damage push nothing): acquisition
+  knockback on players never comes from the engine's damage argument: the one
+  `core.calculate_knockback` override (`grug_core/knockback.lua`, Round 88)
+  hands builtin no push and pushes itself by the attack's weight class
+  (PvP melee a fixed push, a mob its family's class through the seam
+  `grug_core.mob_knockback` that `grug_mobs/knockback.lua` installs),
+  horizontally with one fixed lift, in a per-player window where only the
+  stronger push counts (`grug_core.push_player`); who pushes stays
+  `grug_core.knockback_pushes` (Round 37: PvP melee swings and a mob's own
+  hits; projectiles, refused punches and a player's casts, arrows and ability
+  damage push nothing): acquisition
   caps are zero, while the one authoritative punch supplies the real full
   caps. Swing ability items use the slot source, do not wear (the equipped
   weapon wears through REPAIR's settled action) and can carry the selected

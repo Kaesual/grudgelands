@@ -664,7 +664,8 @@ do
 	end
 	fs = open(p)
 	has(fs, grug_core.ui.heading(6.8, 1.35, "Weaponsmith — Tier 2"), "O the first row at the box's top")
-	says(fs, "Capped by your level: reach level 21, then craft once more for tier 3.",
+	-- Round 88 ruling 4: the tier comes at the level, no further craft.
+	says(fs, "Capped by your level: tier 3 comes at level 21.",
 		"O the cap note, wrapped")
 	says(fs, "Alchemy — Tier 6 Highest tier reached.", "O a T6 row")
 	says(fs, "Only crafts of the current tier count toward the next one.", "O the footer")

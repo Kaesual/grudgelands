@@ -157,6 +157,9 @@ end
 -- hook and the equipment-action hook below maintain them.
 --
 local armor_cache = {} -- player name -> summed armor points of the 4 slots
+-- player name -> {[list] = armor points}, filled with armor_cache in the same
+-- pass and dropped with it (Round 88: the Character page's Armor sources).
+local armor_pieces_cache = {}
 local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 
 -- ONE call for "an equipment list was written": it drops every cache and
@@ -195,6 +198,7 @@ function grug_inventory.equipment_changed(player, listname, reason)
 		if slot_cache[name] then slot_cache[name][listname] = nil end
 	else
 		armor_cache[name] = nil
+		armor_pieces_cache[name] = nil
 		slot_cache[name] = nil
 	end
 	grug_core.notify_equipment_change(player, listname, reason)
@@ -447,6 +451,7 @@ core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	last_warn[name] = nil
 	armor_cache[name] = nil
+	armor_pieces_cache[name] = nil
 	slot_cache[name] = nil
 end)
 
@@ -734,29 +739,36 @@ end)
 -- server-side write via grug_inventory.equipment_changed, and (re-)join.
 --
 
+-- One armor slot's base rating: 0 for an empty or broken slot.
+local function piece_armor(inv, list)
+	local stack = inv:get_stack(list, 1)
+	if stack:is_empty() or grug_core.equipment_is_broken(stack) then
+		return 0
+	end
+	local def = core.registered_items[stack:get_name()]
+	local armor = def and def._grug_armor
+	if grug_gear.describe_stack_base then
+		local ilvl = stack:get_meta():get_int("grug_ilvl")
+		if ilvl <= 0 then ilvl = def and def._grug_ilvl end
+		local _, stats = grug_gear.describe_stack_base(stack, ilvl)
+		armor = stats.armor or armor
+	end
+	return type(armor) == "number" and armor > 0 and armor or 0
+end
+
+-- The summed rating and the rating per armor slot.
 local function compute_equipped_armor(player)
 	local inv = player:get_inventory()
+	local pieces = {}
 	if not inv then
-		return 0
+		return 0, pieces
 	end
 	local total = 0
 	for _, list in ipairs(ARMOR_LISTS) do
-		local stack = inv:get_stack(list, 1)
-		if not stack:is_empty() and not grug_core.equipment_is_broken(stack) then
-			local def = core.registered_items[stack:get_name()]
-			local armor = def and def._grug_armor
-			if grug_gear.describe_stack_base then
-				local ilvl = stack:get_meta():get_int("grug_ilvl")
-				if ilvl <= 0 then ilvl = def and def._grug_ilvl end
-				local _, stats = grug_gear.describe_stack_base(stack, ilvl)
-				armor = stats.armor or armor
-			end
-			if type(armor) == "number" and armor > 0 then
-				total = total + armor
-			end
-		end
+		pieces[list] = piece_armor(inv, list)
+		total = total + pieces[list]
 	end
-	return total
+	return total, pieces
 end
 
 function grug_inventory.get_equipped_armor(player)
@@ -766,10 +778,22 @@ function grug_inventory.get_equipped_armor(player)
 	local name = player:get_player_name()
 	local total = armor_cache[name]
 	if not total then
-		total = compute_equipped_armor(player)
+		total, armor_pieces_cache[name] = compute_equipped_armor(player)
 		armor_cache[name] = total
 	end
 	return total
+end
+
+-- The base rating per armor slot, {list = rating} for the four armor lists
+-- (Round 88 STATS: the Character page's Armor sources): a copy of what the
+-- cached total above was summed from.
+function grug_inventory.equipped_armor_pieces(player)
+	grug_inventory.get_equipped_armor(player)
+	local pieces = {}
+	for list, value in pairs(armor_pieces_cache[player:get_player_name()] or {}) do
+		pieces[list] = value
+	end
+	return pieces
 end
 
 --

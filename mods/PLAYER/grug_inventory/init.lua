@@ -22,4 +22,6 @@ dofile(modpath .. "/navigation.lua")
 grug_inventory.furnace_progress = dofile(modpath .. "/furnace_progress.lua")
 dofile(modpath .. "/help.lua")
 dofile(modpath .. "/welcome.lua")
+-- The Character page's stat sheet (Round 88), read by pages.lua.
+dofile(modpath .. "/stats.lua")
 dofile(modpath .. "/pages.lua")

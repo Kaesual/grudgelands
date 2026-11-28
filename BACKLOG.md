@@ -276,6 +276,10 @@ Not planned yet.
   column at 0 (its string key reads "-0"); only float positions at the 36 functional anchor
   columns on x = 0 or z = 0, digging and placing are unaffected; a numeric key fixes it and
   changes protection there (the user, 2026-11-18: backlog; [M4](docs/audit-2026-11/findings/M4.md), [Round 82](docs/planning/round82-plan.md#carry-overs)).
+- **The arena's grade fallback on steep ground:** seed 9131126853283075236 logs
+  `[GRUG-SEVERE]` "the arena's ground is steeper than its grade rule" (`breach_site.lua`
+  fallback needs 198 nodes of blend, at most 128 built), on 0.87.0 main as on 0.88.0; found by
+  Round 88's random-seed smoke boot ([Round 88](docs/planning/round88-plan.md#carry-overs)).
 
 ## Mobs and NPCs
 
@@ -317,6 +321,10 @@ Not planned yet.
 - **Scout stealth v2** (deferred): the detection roll, the blocking conflicts with
   `grug_visuals` and the weapon entity, and the rules for nametags, the target veto, PvP and
   the telegraph ([scout.md §8](docs/design/scout.md#8-deferred-stealth-v2)).
+- **A knockback skill for the Warrior** (an open idea for a later class round): it would
+  move mobs through `grug_mobs.displace_mob`, which checks only the destination, so a long
+  push could cross a narrow gap; the user worries about mobs pushed into lava in
+  Expeditions ([Round 88](docs/planning/round88-plan.md#carry-overs)).
 - **Heal out of range says "full health":** Heal aimed at a hurt ally beyond its 15 m
   falls back to the caster and, at full health, answers "Target is at full health."
   (Hearten beyond 6 m alike); a range message would be clearer
@@ -392,6 +400,9 @@ Rules: [expeditions.md](docs/design/expeditions.md).
 - **`box[]` colours without alpha** are drawn at alpha 140 (an engine default): the
   Account page writes its alpha now, the other pages and `UI.input_background` do not
   ([Round 86](docs/planning/round86-plan.md#carry-overs)).
+- **Help → Quests on the map:** "the map (Z) shows a ? only for your active quests" has
+  been out of date since the Round 47 Quests layer
+  ([Round 88](docs/planning/round88-plan.md#carry-overs)).
 - **Quickbar hint at GUI scale 2:** "Click to use; the window closes." reaches the
   window's right edge ([Round 80](docs/planning/round80-plan.md#carry-overs)).
 
@@ -424,7 +435,9 @@ only facing +z, the waypost's arrow, the notice board's four steps, the glyph fi
 web join), [Round 73](docs/planning/round73-plan.md#carry-overs) (the ambush's dust, The Last
 Mint's emberglass, The Second Shift's lanterns),
 [Round 74](docs/planning/round74-plan.md#carry-overs) (the 50 % clock cover, the wall traps at
-2 s, Blink firing late along the look).
+2 s, Blink firing late along the look),
+[Round 88](docs/planning/round88-plan.md#carry-overs) (the knockback classes 0 / 2.5 / 4 /
+6 m/s, the elite factor 1.25, the lift and the 0.6 s window; the weaker boss pushes).
 
 ## Sound, art and looks
 
@@ -467,11 +480,15 @@ Every new sound goes through a listening page ([sound.md](docs/design/sound.md) 
   ([Round 72](docs/planning/round72-plan.md#carry-overs)); `r25_claim_core`'s probe, stale
   since Round 26's drafts, and about 20 `grug_probe_*` that write identity meta directly
   ([Round 81](docs/planning/round81-plan.md#carry-overs)); eleven claim probe mods still on
-  the 101 × 101 claim ([Round 85](docs/planning/round85-plan.md#carry-overs)).
+  the 101 × 101 claim ([Round 85](docs/planning/round85-plan.md#carry-overs)); six probes
+  still naming the removed PvP map layer ([Round 88](docs/planning/round88-plan.md#carry-overs)).
 - **Two small text bugs:** the mail count reads "1 sent letters" (`grug_mail/window.lua:396`;
   [Round 66](docs/planning/round66-plan.md#carry-overs)); the mapgen waypost labels Last
   Hedge Redoubt "Last" (`wayposts.lua` `short_label`, the first word;
   [Round 70](docs/planning/round70-plan.md#carry-overs)).
+- **Unused textures still shipped:** `grug_map_quest_story_locked.png` and the old potion
+  flask `grug_traders_item_potion_healing_weak.png`; remove each together with the tools
+  that still name it ([Round 88](docs/planning/round88-plan.md#carry-overs)).
 - **Smaller hygiene** (the `grug_gear` global in `talent_graph_ui.lua`, stale docstrings
   and comments): [Round 78](docs/planning/round78-plan.md#carry-overs).
 - **The start towns on `wp13/composition.lua`** (W2-04's rest, with the towns' W2-03 prop
@@ -654,7 +671,7 @@ since 2026-11-16), CMB-10 and MGS-08 (Round 81 rulings 2 and 3,
 
 The residual notes of each round live in its plan, in a section "Carry-overs" after
 "Completion": `docs/planning/round<NN>-plan.md#carry-overs` for Rounds 29–37, 40–49, 51–62,
-65–74, 76 and 78–86 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
+65–74, 76 and 78–88 (0.45.1 and 0.72.1/0.72.2 as subsections of Rounds 45 and 72), and in
 the plans with longer names for
 [24](docs/planning/round24-mining-underground-mobs-plan.md#carry-overs),
 [25](docs/planning/round25-housing-plan.md#carry-overs),

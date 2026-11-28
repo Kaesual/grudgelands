@@ -77,7 +77,7 @@ the class-neutral base pool; the numbers are the frozen balance calculator's
 |---|---|---|---|---|---|
 | **Loose** | cast, the basic attack | 1 arrow | cast interval 0.85 s | Requires a bow in the Ranged slot and a visible hostile within 25 m; LMB looses one **homing** arrow for **0.95 R**, held LMB repeats every 0.85 s, divided by the bow's own attack-speed affix, never below 0.65 s. With no arrow the held fallback swings Strike at a foe in reach | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`); the cast interval of Fireball |
 | **Sidestep** | cast | 6 % base mana | 18 s | Dodge chance **+15** percentage points for 3 s, **inside** the 30 % cap; occupies 0.25 s. Veil's Shake Loose also clears slows and roots and takes up to 3 s off the cooldown | `grug_classes.get_dodge_chance` (`grug_classes/stats.lua`) and the Sidestep window in `grug_classes/scout.lua` |
-| **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
+| **Sprint** ‼ | cast | 15 % base mana | **180 s** (300 s until Round 88) | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
 
 The talent kit (the Quarry and Veil graphs, `grug_classes/talent_graph_scout.lua`):
 
@@ -97,7 +97,7 @@ The talent kit (the Quarry and Veil graphs, `grug_classes/talent_graph_scout.lua
 ruling 10** — "skills may explicitly break the base inequalities… the bigger
 the break, the stronger the limit". It breaks the one inequality the whole mob
 game rests on, so it carries the strongest limit in the design: ten seconds,
-once every five minutes. The user's words: "a deliberate special, not an
+once every three minutes (every five until Round 88, ruling 3). The user's words: "a deliberate special, not an
 every-fight button."
 
 What is deliberately **not** in the base kit: a melee finisher (Opening, a
@@ -303,9 +303,10 @@ exception to the ordinary movement-speed disadvantage.
 
 At +50 % a sprinting Scout runs 6.0 nodes/s and outruns ordinary aggressive
 mobs for ten seconds. Ruling 10 permits this deliberate exception; the
-five-minute cooldown remains its limit. The user increased Sprint from +25% to
+long cooldown remains its limit. The user increased Sprint from +25% to
 **+50% on 2026-09-20**, superseding only ruling 29's speed amount. Duration
-remains 10 seconds, cooldown 300 seconds and cost 15% of the base mana pool.
+remains 10 seconds and cost 15% of the base mana pool; the cooldown is 180
+seconds since Round 88 (ruling 3; 300 before).
 The shared movement aggregator's existing additive modifiers and 1.5 speed cap
 still apply; this change does not raise the cap.
 

@@ -1186,22 +1186,20 @@ function grug_core.end_authoritative_swing(token)
 end
 
 --
--- Knockback on players (Round 37 ruling 2.1.3, CMB-04). Builtin pushes every
--- punched player off the engine's pre-callback damage (builtin/game/
--- knockback.lua), and its on_punchplayer is registered before any mod's, so
--- it pushes before our callbacks refuse or suppress the punch. One override
--- therefore decides by the source, ahead of them:
+-- Knockback on players (Round 37 ruling 2.1.3, CMB-04; Round 88 ruling 7).
+-- Builtin's on_punchplayer is registered before any mod's, so it asks
+-- core.calculate_knockback before our callbacks refuse or suppress the punch.
+-- This decides WHO pushes, by the source, ahead of them; how hard and where
+-- is knockback.lua's:
 --   * a player's melee pushes only as the authoritative swing at this exact
 --     target, not yet claimed (builtin runs first), on a pair grug_pvp lets
 --     harm each other -- PvP melee. A refused click, an ally, an unflagged
 --     player, an ordinary tool or fist packet and a nested punch push nothing;
---   * a mob's hit pushes: its melee and area hits (the mob as hitter) and its
---     projectiles (arrows, hex bottles, dragon breath and side shots, the
---     projectile entity as hitter; user ruling 2026-10-06);
---   * a player's casts, arrows and all ability damage (`in_ability_punch`)
---     push nothing.
--- The wrappers around it keep their own zero: attached riders (player_api)
--- and the dragon's slam (grug_mobs boss_dragons.lua).
+--   * a mob's own hit pushes: its melee and area hits (the mob as hitter);
+--   * projectiles push nothing (ruling 7): a mob's arrows, hex bottles, mud
+--     balls, rocks, dragon breath and side shots (the projectile entity as
+--     hitter, never a mob), and a player's casts, arrows and all ability
+--     damage (`in_ability_punch`).
 function grug_core.knockback_pushes(player, hitter)
 	if grug_core.in_ability_punch or not hitter then
 		return false
@@ -1212,18 +1210,9 @@ function grug_core.knockback_pushes(player, hitter)
 			and token.target == player and grug_core.pvp_can_harm ~= nil
 			and grug_core.pvp_can_harm(hitter, player) == true
 	end
-	-- Every other hitter is a mob or a mob's projectile.
-	return true
-end
-
-local engine_knockback = core.calculate_knockback
-if engine_knockback then
-	function core.calculate_knockback(player, hitter, ...)
-		if not grug_core.knockback_pushes(player, hitter) then
-			return 0
-		end
-		return engine_knockback(player, hitter, ...)
-	end
+	-- A mob's own hit; every other entity is a projectile.
+	local entity = hitter:get_luaentity()
+	return entity ~= nil and entity._cmi_is_mob == true
 end
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip

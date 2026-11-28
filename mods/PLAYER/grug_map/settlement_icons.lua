@@ -73,11 +73,12 @@ end
 -- The map window's layer of each kind (Round 47, the work package's §3):
 -- towns under Towns, camps, mines and clash sites under POIs, the dragon
 -- arenas and rare dens under Bosses (with the kings, the dragons and the
--- rift boss), fortresses and war camps under PvP.
+-- rift boss); since Round 88 (ruling 1, the PvP layer gone) fortresses, war
+-- camps and the camps under construction under POIs too.
 M.LAYER = {start = "towns", capital = "towns", village = "towns", outpost = "towns",
 	bandit = "pois", mirefolk = "pois", mine = "pois", clash = "pois",
 	rare_den = "bosses", dragon = "bosses", king = "bosses", rift_boss = "bosses",
-	fortress = "pvp", war_camp = "pvp"}
+	fortress = "pois", war_camp = "pois"}
 
 -- The layer of a settlement of `slot`, or nil (a slot of no known kind).
 function M.layer(slot)
@@ -86,12 +87,18 @@ function M.layer(slot)
 end
 
 -- A point of interest's tooltip word by slot (the work package: "kind +
--- name"); gem camps are the apex mines.
+-- name"); gem camps are the apex mines. A Battlegrounds camp
+-- (pvp_<faction>_<band>) is also a mining camp of its faction (Round 58;
+-- Round 88 ruling 1: its tooltip says so); fortresses and the camps under
+-- construction keep their name alone.
 M.POI_WORD = {bandit = "Bandit camp", mirefolk = "Mirefolk camp", mine = "Mine",
 	clash = "Clash site"}
 function M.poi_word(slot)
 	if slot == "apex_mine" then return "Gem camp" end
 	if slot == "mining_camp" then return "Mining camp" end
+	if type(slot) == "string" and slot:match("^pvp_%a+_%a+$") then
+		return "War camp and mining camp"
+	end
 	return M.POI_WORD[M.kind(slot) or ""]
 end
 

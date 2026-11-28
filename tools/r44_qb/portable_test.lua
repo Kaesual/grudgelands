@@ -342,10 +342,13 @@ grug_traders = {}
 load("mods/ENTITIES/grug_traders/potion.lua")
 grug_alchemy = {}
 load("mods/ITEMS/grug_alchemy/effects.lua")
+-- Round 88: register_consumable needs the item's own bottle (no tinted fallback).
 grug_alchemy.register_consumable("potion_healing_t1", {family = "potion", tier = 1,
-	description = "Healing Potion I", on_use = grug_alchemy.potion_use("health", 50)})
+	image = "grug_alchemy_healing_t1.png", description = "Healing Potion I",
+	on_use = grug_alchemy.potion_use("health", 50)})
 grug_alchemy.register_consumable("elixir_vigor_t1", {family = "elixir", tier = 1,
-	description = "Elixir of Vigor I", on_use = grug_alchemy.elixir_use({label = "Vigor",
+	image = "grug_alchemy_vigor_t1.png", description = "Elixir of Vigor I",
+	on_use = grug_alchemy.elixir_use({label = "Vigor",
 		modifier = "hp_pool_percent", value = 2, duration = 600})})
 registered_items["default:torch"] = {groups = {}, on_use = function() return nil end}
 grug_mounts = {}

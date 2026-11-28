@@ -444,8 +444,9 @@ Sections: [Mobs](#mobs), [Mob sub-types, loot and spawn regions](#mob-sub-types-
   pending node never reset or postponed; `ice_due` pops the events that are
   due; since Round 36 `push`, the velocity of the wing gust and the dive's
   slam, weakened by the player's live braking so that he stays within
-  radius − 4; `boss_dragons.lua` turns the engine's punch knockback off for
-  the slam's hit through a `core.calculate_knockback` wrapper);
+  radius − 4; `boss_dragons.lua` turns the punch push off for the slam's hit
+  through a `core.calculate_knockback` wrapper around grug_core's
+  weight-class push, `grug_core/knockback.lua`);
   `boss_dragons.lua` applies them (one `ice_break` sound per event):
   `_grug_target_veto` (a hook in the `init.lua` acquisition veto, honoured by
   `grug_core`'s `valid_target`, `add_threat` and `taunt`; since Round 51 the

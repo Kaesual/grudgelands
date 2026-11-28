@@ -48,6 +48,7 @@ local function load_alchemy(root, json)
 	_G.core = {
 		registered_items = registered,
 		register_craftitem = function(name, def) registered[name] = def end,
+		register_alias = function() end, -- Round 88: the mixture ids are aliases
 		register_on_mods_loaded = function() end,
 	}
 	_G.grug_alchemy = {TIER_LEVELS = {1, 11, 21, 31, 41, 51},

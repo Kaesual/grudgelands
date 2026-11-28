@@ -272,6 +272,9 @@ local function lands_ok(label, list, centre, reach)
 end
 
 grug_core = {particles = helper(nil)}
+-- Round 88: a boss's own push (bosses.lua hit_players) goes through grug_core's
+-- knockback window; the pushes are tools/r88_knock's, not this fixture's.
+grug_core.push_player = function() end
 -- Round 81 MOBRUN (X4-12): the ambusher and the aura ask grug_core's player
 -- snapshot first (the nearest player's squared distance).
 function grug_core.nearest_tag_player_d2(pos)

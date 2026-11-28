@@ -386,7 +386,7 @@ and "Chapter 2's town place".
 - Dependent quests remain hidden until every prerequisite has been turned
   in. Acceptance or completed objectives alone do not reveal successors.
   Once its prerequisites pass, a quest the level still holds back is not
-  listed; it counts toward the giver's hint line and the silver "!"
+  listed and gives no marker; it counts toward the giver's hint line
   ("The giver's dialog", "Quest markers").
 - Exactly 20 active quests maximum; accepting beyond that is refused with a
   clear explanation. Completion or abandonment frees a slot.
@@ -499,11 +499,17 @@ text. A system quest has no dialog: its mod posts its own completion line.
   states. The symbols are five times their original size, their upper
   extent held fixed (they grow downward).
 - Marker precedence: ready to turn in (yellow question mark), available
-  (yellow exclamation mark), active but incomplete (silver question mark);
-  with none of these, the silver exclamation mark when the giver's next
-  quest (the hint line's level) opens one or two levels above the player's
-  (Round 65 ruling 2; the marker value `locked`), otherwise none. A level
-  change recomputes the markers.
+  (yellow exclamation mark), active but incomplete (silver question mark),
+  low (silver exclamation mark; the marker value `low`, Round 88 ruling 5).
+  An acceptable quest is low when its quest level (not its acceptance
+  level) is 10 or more below the player's level (`Q.LOW_LEVELS`); a giver
+  shows the silver "!" only when every quest it offers is low, so one
+  current quest keeps the yellow "!", and a quest in progress there keeps
+  its silver "?" (low ranks last). Acceptable quests above the player's
+  level stay yellow. Story quests are never low. A quest the level still
+  holds back gives no marker (the dialog's hint line keeps its "more quests
+  at level N"); Round 65's silver "!" for a quest one or two levels ahead
+  is gone. A level change recomputes the markers.
 - Story quests have their own marker (Round 57 ruling 13): the same symbol
   with the ordinary gold/silver glyph and a violet story star, so the
   status still reads on its own. The most urgent status of a giver wins

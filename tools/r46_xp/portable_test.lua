@@ -365,7 +365,8 @@ do
 	end
 	local markers_ok, states = pcall(Q.marker_states, player)
 	check(markers_ok, "D the markers compute: " .. tostring(states))
-	eq(markers_ok and states.r14_dwarf_steward, "available", "D the steward offers the second survey")
+	-- Round 88 ruling 5: the level-1 offer is low for a level-20 player and ranks below the kept quest in progress.
+	eq(markers_ok and states.r14_dwarf_steward, "active", "D the steward shows the kept survey in progress")
 	check(pcall(Q.credit_kill, player, {object = {}, description = "Mangy Rat"}, {x = 0, y = 0, z = 0}),
 		"D a kill credit with removed active ids does not crash")
 	local status_ok, status = pcall(Q.status, player, "copperfell_bounty_rats")

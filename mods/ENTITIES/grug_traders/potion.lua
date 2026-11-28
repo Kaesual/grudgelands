@@ -100,7 +100,9 @@ end)
 core.register_craftitem("grug_traders:potion_healing_weak", {
 	description = "Weak Healing Potion\nRestores " ..
 		grug_traders.POTION_HEAL_AMOUNT .. " HP at once",
-	inventory_image = "grug_traders_item_potion_healing_weak.png",
+	-- Round 88: the merchant's own bottle. The corked flask it had before is
+	-- no longer used by any item, sign or status icon.
+	inventory_image = "grug_traders_potion_healing_weak_bottle.png",
 	stack_max = 20,
 	-- Group dispatch (AGENTS.md): WP10's potions join this group instead of
 	-- being name-listed anywhere.

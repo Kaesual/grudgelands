@@ -24,3 +24,10 @@ local station_factory = dofile(modpath .. "/station_nodes.lua")
 station_factory.install_jobs(grug_jobs)
 dofile(modpath .. "/trainers.lua")
 dofile(modpath .. "/admin.lua")
+
+-- Round 88 ruling 4: a saturated profession advances when the character
+-- reaches the tier's level, without another craft; grug_xp also calls the
+-- hook at the join (old_level nil), for a character saturated before.
+grug_xp.register_on_level_change(function(player)
+	grug_jobs.advance_professions(player)
+end)

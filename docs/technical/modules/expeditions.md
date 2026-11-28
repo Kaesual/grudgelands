@@ -124,9 +124,9 @@ in the [mod map](../mod-map.md); **the public interface is the header of `init.l
 - **Packs** (`packs.lua`, its header proves that nobody is held with nothing able to reach
   them). `_grug_pack` is the one field `grug_mobs` reads: leash, evade and give-up in
   `aggro.lua`, stuck and dawn cleanup through `mob_bound`, every accepted `do_attack` in
-  `init.lua`. It wraps `grug_core.engage_mob`, `settle_mob_death`, `live_claim` and
-  `core.calculate_knockback`: a pack's hit pushes level, because a pack swings as one and
-  the downward pushes of one step add up to a fall. Jumps stand on the feet's cell,
+  `init.lua`. It wraps `grug_core.engage_mob`, `settle_mob_death` and `live_claim`; a
+  pack's hit pushes like any mob's (`grug_core/knockback.lua`: level with one small lift,
+  and a pack swinging as one pushes once per window). Jumps stand on the feet's cell,
   `floor(y + 0.5)`: `math.round` takes a floor below y 0 into the floor's own cell.
 
 ### The walk grid

@@ -952,8 +952,9 @@ superseded by the graph of §1 under the user's rulings of 2026-10-19 and
 28. **A bow's damage is weapon damage + Dex/10**, through
     `grug_classes.get_ranged_bonus` (fractions count since Round 33,
     `combat_stats.md` §2).
-29. **Sprint** is +50 % for 10 s on a 300 s cooldown (+25 % as ruled, amended
-    by the user on 2026-09-20; [scout.md](scout.md) §2).
+29. **Sprint** is +50 % for 10 s on a 180 s cooldown (+25 % as ruled, amended
+    by the user on 2026-09-20; the cooldown 300 s until Round 88 ruling 3;
+    [scout.md](scout.md) §2).
 
 ---
 

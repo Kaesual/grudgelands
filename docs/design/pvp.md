@@ -26,7 +26,10 @@ eligibility and flag".
 - **Depth (round31-plan §6 item 15):** under peaceful land the tiers T1–T3
   (down to y = −500) behave like the surface above: the owners stay
   unflagged, a visitor of the other faction is flagged by enemy territory,
-  and the other faction may not dig or build. From T4
+  and the other faction may not dig or build, except that it may gather
+  herbs, spices, found food, apples, berries, the wild cooking and alchemy
+  sources and the small ground plants (grass, ferns, flowers)
+  ([world.md](world.md) R2; Round 88 ruling 6). From T4
   (`CONTESTED_DEPTH_Y = −501`, `grug_mapgen/wp40/zones.lua`) every player is
   flagged by location and every player may dig and place blocks
   ([world.md](world.md) §4c).
@@ -314,7 +317,8 @@ layout (`grug_mapgen/wp40/breach_layout.lua`, published as
   ([spawn_regions.md](spawn_regions.md)), and the POI placement keeps a
   rare's patrol points off it. Mobs may walk in.
 - **Name:** "Breach Road" on the location line over the footprint and as a
-  marker of the map window's PvP layer (the clash sites' crossed swords).
+  marker of the map window's Places layer (the clash sites' crossed swords;
+  the PvP layer until Round 88).
 
 ## 7. Quests
 

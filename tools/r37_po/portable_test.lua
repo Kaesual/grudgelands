@@ -328,19 +328,20 @@ local boar = {name = "grug_mobs:boar", description = "Boar", object = {}}
 -- ---------------------------------------------------------------------------
 -- K: quest markers
 -- ---------------------------------------------------------------------------
-local priority = {ready = 1, available = 2, active = 3}
--- A full recompute: the most urgent npc_quests row per NPC (no memo); without
--- a row the grey "!" (locked) when the hint level is at most two above the
--- player's (Round 65 ruling 2).
+local priority = {ready = 1, available = 2, active = 3, low = 4}
+-- A full recompute: the most urgent npc_quests row per NPC (no memo); an
+-- available side quest 10 or more levels below is low, a held-back quest
+-- gives no marker (Round 88 ruling 5, replacing Round 65's "soon" marker).
 local function full(player)
 	local result = {}
+	local level = levels[player:get_player_name()] or 1
 	for _, npc in ipairs({"elder", "hunter", "envoy"}) do
 		local best
-		local rows, hint = Q.npc_quests(player, npc)
-		for _, row in ipairs(rows) do
-			if not best or priority[row.status] < priority[best] then best = row.status end
+		for _, row in ipairs((Q.npc_quests(player, npc))) do
+			local status = row.status
+			if status == "available" and not row.story and row.level <= level - 10 then status = "low" end
+			if not best or priority[status] < priority[best] then best = status end
 		end
-		if not best and hint and hint <= (levels[player:get_player_name()] or 1) + 2 then best = "locked" end
 		result[npc] = best
 	end
 	return result
@@ -380,7 +381,8 @@ Q.turn_in(ann, "hunt")
 check(recomputes(ann), "K a turn-in recomputes")
 agrees(ann, "after turn-in")
 eq(Q.marker_states(ann).elder, "available", "K the follow-up unlocks")
-eq(Q.marker_states(ann).envoy, "locked", "K level 1: the veteran quest is locked")
+-- Round 88 ruling 5: a quest not yet acceptable gives no marker (was "locked").
+eq(Q.marker_states(ann).envoy, nil, "K level 1: the veteran quest gives no marker")
 level_up(ann, 5)
 check(recomputes(ann), "K a level-up recomputes")
 eq(Q.marker_states(ann).envoy, "available", "K level 5: the veteran quest is available")

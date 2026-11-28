@@ -95,10 +95,10 @@ function grug_jobs.professions_formspec(rows, area, player)
 			progress = "Highest tier reached."
 		end
 		if row.capped then
-			-- The full count advances on the next current-tier craft once the
-			-- level allows it (state.lua record_craft).
-			note = ("Capped by your level: reach level %d, then craft " ..
-				"once more for tier %d."):format(row.next_level, row.tier + 1)
+			-- The full count advances by itself when the character reaches
+			-- the level (Round 88 ruling 4, state.lua advance_professions).
+			note = ("Capped by your level: tier %d comes at level %d."):format(
+				row.tier + 1, row.next_level)
 		end
 		local needed = 1 + count(progress) + (note and count(note) or 0)
 		-- Room for the pointer after it, unless it is the last row.

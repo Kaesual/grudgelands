@@ -2802,10 +2802,12 @@ end)
 -- other — this one never returns true outside the hostile path.
 --
 -- Knockback: builtin's own on_punchplayer (builtin/game/knockback.lua:25-48)
--- runs before this one and pushes off the ENGINE's `damage` argument (the
--- pre-pipeline hitparams.hp). Whether a punch pushes at all is decided there,
--- by grug_core.knockback_pushes (Round 37): only an authoritative swing on a
--- player this hitter may harm, never a refused or suppressed packet.
+-- runs before this one and asks core.calculate_knockback, which
+-- grug_core/knockback.lua overrides: the push comes from the attack (PvP melee
+-- a fixed value), never from the damage, and builtin itself pushes nothing.
+-- Whether a punch pushes at all is grug_core.knockback_pushes (Round 37): only
+-- an authoritative swing on a player this hitter may harm, never a refused or
+-- suppressed packet.
 --
 -- enable_pvp = false means this callback never fires at all: PlayerSAO::punch
 -- returns before the script callback when PvP is off (player_sao.cpp:463-470),

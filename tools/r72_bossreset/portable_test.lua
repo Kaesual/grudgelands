@@ -191,6 +191,9 @@ grug_core = {}
 local tracked = {}
 grug_mobs = {registered_cadence = tracked}
 dofile(repo .. "/mods/CORE/grug_core/combat.lua")
+-- Round 88: Shatter's own push goes through grug_core's knockback window
+-- (tools/r88_knock); this fixture counts the hit, not the push.
+grug_core.push_player = function() end
 grug_core.death_message = function(name) return "fled", name .. " fled" end
 grug_core.damage_source = function(object)
 	local ent = object and object.get_luaentity and object:get_luaentity()

@@ -70,7 +70,7 @@ icons.STATUS = {
 		stoneskin = art("elixir_stoneskin"),
 		deepwater = art("elixir_deepwater"),
 	}),
-	alchemy_swiftness = def("buff", "Swiftness Draught", "+10% movement speed",
+	alchemy_swiftness = def("buff", "Swiftness Draught", "+30% movement speed",
 		art("alchemy_swiftness")),
 	alchemy_cave = def("buff", "Cave Draught", "Night vision",
 		art("alchemy_cave")),
@@ -149,10 +149,11 @@ icons.STATUS = {
 		"Flagged enemies can attack you", art("pvp_contested")),
 	-- Round 78 ruling 2: the shared potion cooldown (grug_traders potion.lua, a
 	-- status source), the one cooldown on the row. No art of its own: the
-	-- potion's item image on the plate, like a food item's.
+	-- merchant potion's item image on the plate, like a food item's (its new
+	-- bottle since Round 88).
 	potion_cooldown = def("neutral", "Potion cooldown", "No other potion until it ends",
 		"[fill:16x16:" .. icons.PLATE ..
-		"^(grug_traders_item_potion_healing_weak.png)^[resize:64x64"),
+		"^(grug_traders_potion_healing_weak_bottle.png)^[resize:64x64"),
 }
 
 -- The Effects tab's remaining time: coarse on purpose, so the cached page

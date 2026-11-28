@@ -1118,6 +1118,8 @@ dofile(modpath .. "/swimmer.lua")
 -- Round 28 rulings 5-7: environmental damage shares, separation, knockback.
 dofile(modpath .. "/env_damage.lua")
 dofile(modpath .. "/separation.lua")
+-- Round 88: how hard each mob's hit pushes a player (its weight class).
+dofile(modpath .. "/knockback.lua")
 dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/voices.lua")
 dofile(modpath .. "/disposition.lua")

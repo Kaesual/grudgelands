@@ -129,11 +129,40 @@ function grug_jobs.crafts_in_tier(player, profession)
 	return math.max(0, player:get_meta():get_int(META_CRAFTS .. profession))
 end
 
+-- The character level of a profession tier's first level band.
+local function tier_level(tier)
+	return (tier - 1) * 10 + 1
+end
+
+-- One saturated profession advances one tier as soon as the character's
+-- level band allows it (Round 88 ruling 4: no further craft), with the
+-- message and the next tier's Basic recipes a craft's advance always gave.
+-- One step: the next tier's count starts at 0, so a profession is never
+-- saturated for two tiers at once. Returns whether it advanced and the level.
+local function advance_if_ready(player, profession)
+	local current = grug_jobs.profession_level(player, profession)
+	local threshold = grug_jobs.CRAFTS_TO_ADVANCE[current]
+	if not threshold or grug_jobs.crafts_in_tier(player, profession) < threshold or
+			grug_jobs.character_tier(player) <= current then
+		return false, current
+	end
+	local meta = player:get_meta()
+	set_int(meta, META_LEVEL .. profession, current + 1)
+	set_int(meta, META_CRAFTS .. profession, 0)
+	message(player, grug_jobs.PROFESSIONS[profession].name ..
+		" advanced to tier " .. (current + 1) .. ".")
+	if grug_jobs.unlock_basic_tiers then
+		grug_jobs.unlock_basic_tiers(player, profession, current + 1, current + 1)
+	end
+	return true, current + 1
+end
+
 -- `crafts` crafts of `tier` at once (a job, lane JB): each counts while the
 -- tier's threshold is not reached, so the XP is min(crafts, XP left in the
--- tier) (spec §2.22); a saturated profession advances at the first counted
--- craft once the character's level band allows it. Returns whether it
--- advanced, the level and the XP gained.
+-- tier) (spec §2.22); a profession that is saturated advances at once when
+-- the character's level band allows it, otherwise at that level
+-- (grug_jobs.advance_professions). Returns whether it advanced, the level
+-- and the XP gained.
 local function record_craft(player, profession, tier, crafts)
 	if not grug_jobs.has(player, profession) then return false, 0, 0 end
 	local current = grug_jobs.profession_level(player, profession)
@@ -144,24 +173,16 @@ local function record_craft(player, profession, tier, crafts)
 	local threshold = grug_jobs.CRAFTS_TO_ADVANCE[current]
 	local count = math.min(threshold,
 		math.max(0, meta:get_int(META_CRAFTS .. profession)))
-	-- A capped threshold stays saturated. Entering the next character band does
-	-- not advance automatically; the next successful current-tier craft does.
 	local gained = math.min(math.max(1, crafts or 1), threshold - count)
 	count = count + gained
 	if gained > 0 then set_int(meta, META_CRAFTS .. profession, count) end
-	if count >= threshold and grug_jobs.character_tier(player) > current then
-		set_int(meta, META_LEVEL .. profession, current + 1)
-		set_int(meta, META_CRAFTS .. profession, 0)
+	if count < threshold then return false, current, gained end
+	local advanced, level = advance_if_ready(player, profession)
+	if advanced then return true, level, gained end
+	if gained > 0 then
 		message(player, grug_jobs.PROFESSIONS[profession].name ..
-			" advanced to tier " .. (current + 1) .. ".")
-		if grug_jobs.unlock_basic_tiers then
-			grug_jobs.unlock_basic_tiers(player, profession, current + 1, current + 1)
-		end
-		return true, current + 1, gained
-	elseif count >= threshold and gained > 0 then
-		message(player, grug_jobs.PROFESSIONS[profession].name ..
-			" tier progress is ready; craft once more at character level " ..
-			(current * 10 + 1) .. " to advance.")
+			" tier progress is complete; tier " .. (current + 1) ..
+			" comes at character level " .. tier_level(current + 1) .. ".")
 	end
 	return false, current, gained
 end
@@ -172,6 +193,29 @@ function grug_jobs.record_craft(player, profession, tier, crafts)
 	local advanced, level, gained = record_craft(player, profession, tier, crafts)
 	if advanced then grug_sounds.play("profession_tier", player) end
 	return advanced, level, gained
+end
+
+-- Every learned profession that is saturated advances as far as the
+-- character's level allows (Round 88 ruling 4): called on a level change
+-- and at the join (init.lua: grug_xp's level hook), so a character that was
+-- saturated before 0.88.0, or offline at its level-up, advances there. The
+-- tier sound once and a resend of an open Crafting tab when any advanced.
+-- Returns the number of professions that advanced.
+function grug_jobs.advance_professions(player)
+	local order = {}
+	for _, profession in ipairs(grug_jobs.SECONDARY_PROFESSIONS) do order[#order + 1] = profession end
+	for slot = 1, PRIMARY_SLOTS do order[#order + 1] = grug_jobs.primary_at(player, slot) end
+	local advanced = 0
+	for _, profession in ipairs(order) do
+		if grug_jobs.has(player, profession) and advance_if_ready(player, profession) then
+			advanced = advanced + 1
+		end
+	end
+	if advanced > 0 then
+		grug_sounds.play("profession_tier", player)
+		if grug_jobs.refresh_crafting_page then grug_jobs.refresh_crafting_page(player) end
+	end
+	return advanced
 end
 
 -- The one place a finished craft or station operation awards progress (Round

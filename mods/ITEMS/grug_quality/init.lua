@@ -1166,6 +1166,9 @@ end)
 -- Cache invalidation wraps the one equipment write seam before its deliberately
 -- first grug_classes consumer runs, so max-pool clamping sees current rolls.
 local aggregate_cache = {}
+-- The same pass per slot (Round 88 STATS): the Character page's "where it
+-- comes from" lines, so they sum to the totals combat reads.
+local slot_cache = {}
 
 local function equipment_totals(player)
 	local name = player:get_player_name()
@@ -1174,6 +1177,7 @@ local function equipment_totals(player)
 	local totals = {str = 0, dex = 0, int = 0, crit_percent = 0,
 		dodge_percent = 0, armor_rating = 0, max_hp_percent = 0,
 		max_mana_percent = 0}
+	local slots = {}
 	local inventory = player:get_inventory()
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local stack = inventory:get_stack(slot.list, 1)
@@ -1181,20 +1185,39 @@ local function equipment_totals(player)
 				not grug_core.equipment_is_broken(stack) then
 			local meta = stack:get_meta()
 			local affixes = read_affixes(meta)
+			local own = {}
 			for index = 1, #affixes do
 				local affix = affixes[index]
 				totals[affix.stat] = (totals[affix.stat] or 0) + affix.value
+				own[affix.stat] = (own[affix.stat] or 0) + affix.value
 			end
 			local def = stack:get_definition() or {}
-			totals.max_hp_percent = totals.max_hp_percent +
-				(tonumber(def._grug_max_hp_percent) or 0)
-			totals.max_mana_percent = totals.max_mana_percent +
-				(tonumber(def._grug_max_mana_percent) or 0)
-
+			local hp = tonumber(def._grug_max_hp_percent) or 0
+			local mana = tonumber(def._grug_max_mana_percent) or 0
+			totals.max_hp_percent = totals.max_hp_percent + hp
+			totals.max_mana_percent = totals.max_mana_percent + mana
+			own.max_hp_percent = (own.max_hp_percent or 0) + hp
+			own.max_mana_percent = (own.max_mana_percent or 0) + mana
+			slots[#slots + 1] = {list = slot.list, name = stack:get_name(), stats = own}
 		end
 	end
 	aggregate_cache[name] = totals
+	slot_cache[name] = slots
 	return totals
+end
+
+-- Per equipped, unbroken slot in slot order: {list, name (the item), stats
+-- = {stat = value}}, the affixes plus the definition's pool percentages.
+-- A copy; read on a Character page build, never per step.
+function grug_items.get_equipment_slot_sources(player)
+	equipment_totals(player)
+	local result = {}
+	for index, entry in ipairs(slot_cache[player:get_player_name()] or {}) do
+		local stats = {}
+		for key, value in pairs(entry.stats) do stats[key] = value end
+		result[index] = {list = entry.list, name = entry.name, stats = stats}
+	end
+	return result
 end
 
 function grug_items.get_equipment_affix_totals(player)
@@ -1299,6 +1322,7 @@ end
 
 core.register_on_leaveplayer(function(player)
 	aggregate_cache[player:get_player_name()] = nil
+	slot_cache[player:get_player_name()] = nil
 end)
 
 core.log("action", "[grug_quality] deterministic PcgRandom quality rolls enabled")

@@ -363,7 +363,8 @@ end
 ------------------------------------------------------------------------------
 do
 	local sites = {
-		{"mods/PLAYER/grug_inventory/pages.lua", "\"Armor: \" .. grug_gear.format_armor(armor.result)"},
+		-- Round 88: the Character page's Armor row and detail (its stat sheet).
+		{"mods/PLAYER/grug_inventory/stats.lua", "local shown = grug_gear.format_armor"},
 		{"mods/PLAYER/grug_abilities/kits_warrior.lua", "grug_gear.format_armor(v.armor)"},
 		{"mods/PLAYER/grug_abilities/kits_mage.lua", "grug_gear.format_armor(values.armor)"},
 		{"mods/PLAYER/grug_classes/talent_graph_ui.lua", "grug_gear.format_armor(graph.level_amount("},

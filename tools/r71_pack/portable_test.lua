@@ -489,31 +489,11 @@ do
 	reset_world()
 end
 
--- The push of a pack's hit stays level: the line from a mob's origin to a player's feet
--- points down, and a pack swinging as one sums past the fall tolerance on flat ground.
+-- Round 88: a pack's hit pushes by grug_core's one rule (level with a small lift, one
+-- push per window: tools/r88_knock), so packs.lua no longer wraps the engine's push.
 do
-	local run = new_run()
-	local pack = mixed(run)
-	local ana = fake_player("ana", run)
-	local bodies = living()
-	hit(bodies[1], ana)
-	local pushes = {}
-	function ana.add_velocity(_, v) pushes[#pushes + 1] = v end
-	local dir = {x = 0.6, y = -0.8, z = 0}
-	check(core.calculate_knockback(ana, bodies[1].object, 1, {}, dir, 1, 21) == 0,
-		"C a pack's hit leaves the engine no push")
-	check(#pushes == 1 and pushes[1].x == 0.6 * 8 and pushes[1].y == 0 and pushes[1].z == 0,
-		"C it pushes level, at the engine's strength")
-	-- its rock counts as its hit, whoever else stays with the engine
-	local rock = {is_player = function() return false end,
-		get_luaentity = function() return {_grug_source = bodies[1].object} end}
-	check(core.calculate_knockback(ana, rock, 1, {}, dir, 1, 21) == 0 and #pushes == 2,
-		"C so does its rock")
-	local stray = {is_player = function() return false end,
-		get_luaentity = function() return {name = "grug_mobs:wolf"} end}
-	check(core.calculate_knockback(ana, stray, 1, {}, dir, 1, 21) == 8 and #pushes == 2,
-		"C any other mob keeps the engine's push")
-	reset_world()
+	check(core.calculate_knockback(nil, nil, 1, {}, {x = 0, y = -1, z = 0}, 1, 21) == 8,
+		"C packs.lua leaves core.calculate_knockback alone")
 end
 
 -- ---- D. Wedged ------------------------------------------------------------------

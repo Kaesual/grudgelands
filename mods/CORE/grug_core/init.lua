@@ -126,6 +126,9 @@ dofile(modpath .. "/particle_effects.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")
 dofile(modpath .. "/combat.lua")
+-- Knockback on players by weight class (Round 88); needs combat.lua's
+-- knockback_pushes.
+dofile(modpath .. "/knockback.lua")
 -- The area helpers of the class rework (Round 52): ground anchor, area query,
 -- group recipients, delayed impact. They read combat_ray and the particles
 -- only when called.

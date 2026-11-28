@@ -338,6 +338,13 @@ dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
 -- Round 81: the per-player passes register through grug_core.
 dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
+-- Round 88: the Stats mode's stat sheet, on neutral stand-ins for what the
+-- stubs above lack (tools/r88_stats checks its numbers on the real formulas).
+local sheet = io.open(repo .. "/mods/PLAYER/grug_inventory/stats.lua")
+if sheet then
+	sheet:close()
+	dofile(repo .. "/tools/r88_stats/sheet_stubs.lua")(repo)
+end
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 H.refreshes = 0
 local real_set = sfinv.set_player_inventory_formspec

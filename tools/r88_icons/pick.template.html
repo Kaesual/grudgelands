@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17262b">
+<title>The alchemist’s bottles · Grudgelands</title>
+<style>
+:root {
+  --paper:#f3f0e7; --surface:#f9f7f0; --ink:#202d2c; --mute:#52605a;
+  --rule:#c8c8b9; --dark:#111a24; --light:#e1ded0; --brass:#dfba82;
+  --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif;
+  --sans:system-ui,sans-serif;
+}
+* {box-sizing:border-box}
+html {scroll-padding-top:1rem}
+body {margin:0; background:var(--paper); color:var(--ink); font:1rem/1.48 var(--sans)}
+h1,h2,h3,p,figure,fieldset,ol {margin:0}
+h1,h2,h3 {font:normal 2rem/1.06 var(--serif); text-wrap:balance}
+a {color:inherit; text-underline-offset:.2em}
+img {display:block; image-rendering:pixelated; flex:none}
+code,.tier,.rank,.mast,.count {font-family:ui-monospace,"DejaVu Sans Mono",monospace}
+.wrap {max-width:85rem; margin:auto; padding-inline:clamp(.75rem,3.4vw,3rem)}
+.hero {background:#19282c; color:#f7f1df; border-bottom:4px solid #b68751}
+.mast {display:flex; align-items:center; justify-content:space-between; gap:1rem; padding-block:1.1rem;
+  color:#d9cfb6; border-bottom:1px solid #46534f; font-size:.82rem}
+.mast strong {letter-spacing:.15em; text-transform:uppercase; color:var(--brass)}
+.mast a {white-space:nowrap}
+.intro {display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2rem; align-items:end; padding-block:2.3rem 2rem}
+h1 {font-size:clamp(2.55rem,5.2vw,4.8rem); letter-spacing:-.045em}
+.intro p {margin-top:.8rem; max-width:41rem; color:#e2dfd3; font-size:1.05rem}
+.illustration {display:flex; align-items:flex-end; justify-content:center; border-bottom:2px solid #947855;
+  gap:.25rem; padding-inline:.3rem; background:radial-gradient(ellipse at bottom,#334241,transparent 72%)}
+.key {padding-block:1.8rem 1.9rem; border-bottom:1px solid var(--rule)}
+.section-title {display:flex; align-items:baseline; flex-wrap:wrap; gap:.35rem 1.15rem; margin-bottom:.9rem}
+h2 {font-size:clamp(1.65rem,3vw,2.2rem); letter-spacing:-.03em}
+.section-title p,.family-head p,.help {color:var(--mute); font-size:.92rem}
+.key ol {list-style:none; padding:0; display:grid; grid-template-columns:repeat(6,minmax(0,1fr));
+  overflow:hidden; background:#273536; color:#faf4e8; border:1px solid #344442; border-radius:.35rem}
+.key li {display:grid; align-content:start; justify-items:start; padding:.85rem clamp(.6rem,2vw,1.5rem);
+  border-right:1px solid #51605a}
+.key li:last-child {border-right:0}
+.tier {font-size:.81rem; color:var(--brass)}
+.key-art {display:flex; align-items:end; gap:.65rem; margin:.7rem 0}
+.key strong {font-size:1rem}
+.closure {font-size:.9rem; color:#dcdfce}
+.catalog {padding-block:2rem}
+.compact-compare {display:none}
+.families {display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:2rem clamp(1.4rem,3.2vw,3rem)}
+.family {min-width:0; border-top:2px solid #68746a}
+.family-head {display:flex; justify-content:space-between; align-items:center; min-height:5.15rem; gap:.5rem}
+h3 {font-size:clamp(1.55rem,2.75vw,2rem); letter-spacing:-.03em}
+.family-head p {margin-top:.25rem}
+.buff {display:flex; align-items:center; flex-direction:row-reverse; gap:.45rem}
+.buff img {background:var(--dark); border-radius:.2rem}
+figcaption {font-size:.8rem; color:var(--mute)}
+fieldset {min-width:0; padding:0; border:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem}
+.option {min-width:0; display:flex; flex-direction:column; position:relative; container-type:inline-size;
+  background:var(--surface); border:1px solid var(--rule); border-radius:.4rem; cursor:pointer}
+.option:hover {border-color:#748479}
+.option:has(:checked) {border-color:#356553; box-shadow:0 0 0 1px #356553; background:#edf3e9}
+.option:has(:focus-visible),:focus-visible {outline:3px solid #b56736; outline-offset:2px}
+.pick-id {display:flex; align-items:center; gap:.4rem; padding:.65rem .6rem .15rem; font-size:.88rem; overflow-wrap:anywhere}
+.pick-id input {margin:0; width:1.05rem; height:1.05rem; accent-color:#386451}
+.study {display:grid; place-items:center; margin:.45rem auto .25rem; width:100%}
+.name {display:grid; place-items:center; flex:1; text-align:center; padding:0 .3rem .65rem;
+  font:normal 1.1rem/1.16 var(--serif)}
+.samples {display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); padding:0 .25rem .25rem; gap:1px}
+.sample {display:grid; text-align:center; align-content:start}
+.rank {font-size:.77rem; color:var(--mute); margin-bottom:.15rem}
+.well {display:flex; flex-direction:column; justify-content:center; align-items:center; gap:3px; padding:5px 0}
+.dark {background:var(--dark)}
+.light {background:var(--light)}
+.single,.single .sample {display:grid; grid-template-columns:repeat(2,minmax(0,1fr))}
+.single .sample {grid-column:span 2}
+.single .well {flex-direction:row}
+@container (max-width:13.6rem) {
+  .ranked {grid-template-columns:repeat(3,minmax(0,1fr)); row-gap:.25rem}
+}
+@container (max-width:8rem) {
+  .single .well {flex-direction:column}
+}
+.reply {padding-block:1.8rem 2.5rem; border-top:2px solid #68746a}
+.reply h2 {display:flex; align-items:baseline; gap:1rem}
+.count {font-size:.85rem; color:var(--mute); letter-spacing:0}
+.reply-fields {display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-block:1rem}
+.reply-fields label {font-size:.9rem; font-weight:600}
+textarea {display:block; width:100%; min-height:7rem; padding:.7rem; margin-top:.35rem; font:1rem/1.5 var(--sans);
+  color:var(--ink); border:1px solid #9baba0; background:var(--surface); border-radius:.25rem; resize:vertical}
+button {padding:.65rem 1.2rem; border:1px solid #254b3c; border-radius:.25rem; background:#305741;
+  color:white; cursor:pointer; font:600 .96rem var(--sans)}
+button:disabled {background:#647269; cursor:default}
+#copy-state {margin-left:.5rem; color:var(--mute); font-size:.9rem}
+@media(max-width:62rem) {
+  .families {grid-template-columns:1fr}
+  .compact-compare {display:flex; gap:1rem; flex-wrap:wrap; margin:.75rem 0 1rem}
+  .comparison {display:flex; gap:1px; padding:1px; background:#b7b9aa; border-radius:.3rem; overflow:hidden}
+  .comparison a {display:grid; grid-template-columns:auto auto; justify-content:center; background:#e7e6da;
+    padding:.3rem .7rem; text-align:center; text-decoration:none}
+  .comparison span {grid-column:span 2; font-size:.86rem}
+  .comparison a:hover {background:var(--surface); text-decoration:underline}
+  .intro {gap:1rem}
+  .illustration img:first-child,.illustration img:last-child {display:none}
+}
+@media(max-width:40rem) {
+  .intro {display:block; padding-block:1.6rem}
+  .illustration {display:none}
+  .mast {padding-block:.65rem}
+  .key,.catalog,.reply {padding-block:1.35rem}
+  .key ol {grid-template-columns:repeat(3,minmax(0,1fr))}
+  .key li {padding:.63rem .55rem}
+  .key li:nth-child(3) {border-right:0}
+  .key li:nth-child(-n+3) {border-bottom:1px solid #51605a}
+  .key-art {margin:.4rem 0}
+  .key strong,.closure {font-size:.87rem}
+  .compact-compare {gap:.45rem}
+  .comparison {flex:1}
+  .comparison a {flex:1; padding:.25rem 0}
+  .reply-fields {grid-template-columns:1fr}
+  .pick-id {font-size:.82rem}
+  .name {font-size:1.02rem}
+}
+@media(prefers-reduced-motion:no-preference) {
+  .option {transition:background-color .12s,border-color .12s}
+}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div class="mast"><span><strong>Grudgelands</strong> / Alchemy</span><a href="#reply">Your picks <span id="mast-count">0/11</span></a></div>
+  <div class="intro"><div><h1>The alchemist’s bottles</h1>
+    <p>Pick one ID per family, plus any changes you’d like. Select bottles to build a reply, or send the IDs directly.</p>
+  </div><div class="illustration" aria-hidden="true">$still_life</div></div>
+</div></header>
+<main class="wrap">
+  <section class="key" aria-labelledby="tier-key">
+    <div class="section-title"><h2 id="tier-key">Reading the six tiers</h2>
+      <p>Healing A at 32 and 16 px. The material changes every two tiers.</p></div>
+    <ol>$key</ol>
+  </section>
+  <section class="catalog" aria-labelledby="catalog-title">
+    <div class="section-title"><h2 id="catalog-title">Choose the bottles</h2>
+      <p>Each slot shows 32 and 16 px. Ranked studies above the strips show tier 3.</p></div>
+    <nav class="compact-compare" aria-label="Compare same-colour families at tier 3, A then B">$red$blue</nav>
+    <div class="families">$families</div>
+  </section>
+  <section class="reply" id="reply" aria-labelledby="reply-title">
+    <h2 id="reply-title">Your picks <span class="count" id="count" aria-live="polite">0 of 11 chosen</span></h2>
+    <div class="reply-fields">
+      <label for="notes">Requested changes (optional)<textarea id="notes"></textarea></label>
+      <label for="answer">Reply to send<textarea id="answer" readonly></textarea></label>
+    </div>
+    <button type="button" id="copy" disabled>Copy reply</button><span id="copy-state" role="status"></span>
+  </section>
+</main>
+<script>
+const notes = document.querySelector('#notes');
+const answer = document.querySelector('#answer');
+const copyButton = document.querySelector('#copy');
+const copyState = document.querySelector('#copy-state');
+function updateReply() {
+  const picks = Array.from(document.querySelectorAll('input:checked'), input => input.value);
+  const total = document.querySelectorAll('.family').length;
+  document.querySelector('#count').textContent = picks.length + ' of ' + total + ' chosen';
+  document.querySelector('#mast-count').textContent = picks.length + '/' + total;
+  answer.value = [picks.join(', '), notes.value.trim()].filter(Boolean).join('\n\n');
+  copyButton.disabled = !answer.value;
+  copyState.textContent = '';
+}
+document.addEventListener('change', updateReply);
+notes.addEventListener('input', updateReply);
+window.addEventListener('pageshow', updateReply);
+copyButton.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(answer.value);
+    copyState.textContent = 'Reply copied.';
+  } catch {
+    answer.focus();
+    answer.select();
+    copyState.textContent = 'Reply selected. Use Copy to copy it.';
+  }
+});
+</script>
+</body>
+</html>

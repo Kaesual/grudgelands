@@ -92,10 +92,13 @@ personal stations, access, digging) is
   profession tier is capped by the character band: T1 L1–10, T2 L11–20,
   T3 L21–30, T4 L31–40, T5 L41–50, T6 L51–60. Reaching a craft threshold
   while character-capped leaves the stored profession tier unchanged and
-  saturates the current-tier counter at its threshold. Entering the next
-  character band does not advance the profession automatically: the next
-  successful craft of the previous tier opens the new tier and clears the
-  counter. Further crafts while still character-capped count nothing.
+  saturates the current-tier counter at its threshold. Since Round 88
+  (ruling 4) a saturated profession advances by itself as soon as the
+  character enters the next band (the level-up, or the next join of a
+  character that was offline or saturated before 0.88.0), with the same
+  message, tier sound and Basic-recipe unlock as a craft's advance, and the
+  counter clears; before Round 88 the next craft of the previous tier did it.
+  Further crafts while still character-capped count nothing.
 - **Only real recipes count (Round 33, Round 45):** enchants and the
   profession's own end products (gear, trinkets, bags, potions
   and elixirs, dishes and raw dish assemblies). Upgrades (Round 45, spec
@@ -290,9 +293,9 @@ Basic lists what the character has held the ingredients of (Round 47,
     costs N times one own material of the item's tier (a weapon also N
     Sticks) and gives no XP.
 - **A job's XP** is min(crafts, XP left in the tier) for a counting recipe of
-  the current profession tier, awarded at its end; a saturated profession
-  advances at the end of its next counting job once the character band
-  allows it. Unlearning a profession while its job runs lets the job finish
+  the current profession tier, awarded at its end; a profession it
+  saturates advances at once when the character band allows it, otherwise
+  at the level-up (§1). Unlearning a profession while its job runs lets the job finish
   without XP, and so do its waiting jobs. The list, search and ×N of the
   Crafting tab, its crafting box, overflow, job strip, queue view and recipe
   details page (where each ingredient comes from, Round 57):

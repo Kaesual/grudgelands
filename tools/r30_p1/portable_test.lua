@@ -381,16 +381,17 @@ local ann = new_player("ann", {x = 100, y = 10, z = -205})
 join(ann)
 verify("join")
 
-local priority = {ready = 1, available = 2, active = 3}
--- Round 65 ruling 2: without a row, the grey "!" (locked) when the hint
--- level is at most two above the player's.
+local priority = {ready = 1, available = 2, active = 3, low = 4}
+-- Round 88 ruling 5 (replacing Round 65's "soon" marker): a held-back quest
+-- gives no marker; an available side quest 10 or more levels below is low.
 local function best_row(player, npc)
 	local best
-	local rows, hint = Q.npc_quests(player, npc)
+	local rows = Q.npc_quests(player, npc)
 	for _, row in ipairs(rows) do
-		if not best or priority[row.status] < priority[best] then best = row.status end
+		local status = row.status
+		if status == "available" and not row.story and row.level <= level - 10 then status = "low" end
+		if not best or priority[status] < priority[best] then best = status end
 	end
-	if not best and hint and hint <= level + 2 then best = "locked" end
 	return best
 end
 -- marker_states equals the most urgent npc_quests row for every NPC.
@@ -690,7 +691,8 @@ do
 	hud_steps(0.5)
 	local states, version = Q.marker_states(ann)
 	eq(states.hunter, "active", "I two of three logs: the hunter's marker is the logs' (in progress)")
-	eq(states.envoy, "locked", "I level 1: the envoy's veteran quest is locked")
+	-- Round 88 ruling 5: a quest not yet acceptable gives no marker (was "locked").
+	eq(states.envoy, nil, "I level 1: the envoy's veteran quest gives no marker")
 	-- quiet HUD polls and a non-objective item keep the memo
 	local decoded, polled = deserializations, scans
 	hud_steps(2.0)
@@ -720,7 +722,7 @@ do
 	level_up(ann, 5)
 	eq(Q.marker_states(ann).envoy, "available", "I a level-up unlocks the envoy's quest at once")
 	level_up(ann, 1)
-	eq(Q.marker_states(ann).envoy, "locked", "I ...and a level-down locks it again")
+	eq(Q.marker_states(ann).envoy, nil, "I ...and a level-down hides it again")
 	ann.get_inventory = real_inventory
 end
 
@@ -825,6 +827,8 @@ do
 	dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
 	-- Round 81: the per-player passes register through grug_core.
 	dofile(repo .. "/tools/r81_passes/all_players_pass.lua")(grug_core, core)
+	-- Round 88: the Stats mode's stat sheet on neutral stand-ins (tools/r88_stats).
+	dofile(repo .. "/tools/r88_stats/sheet_stubs.lua")(repo)
 	dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 	local character_step = registered.register_globalstep[steps_before + 1]
 	check(character_step ~= nil and #registered.register_globalstep == steps_before + 1,

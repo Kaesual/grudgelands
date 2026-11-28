@@ -7,6 +7,11 @@ local function esc(text)
 	return core.formspec_escape(text)
 end
 
+-- hypertext[] markup escapes; the whole element is formspec-escaped after.
+local function ht(text)
+	return (tostring(text):gsub("[\\<>]", "\\%0"))
+end
+
 -- model[] takes a COMMA-SEPARATED texture list, so the list separators must
 -- stay raw while each texture name is escaped on its own.
 -- Trap: core.formspec_escape() escapes commas too (builtin/common/
@@ -66,11 +71,11 @@ end
 
 --
 -- Character page (Round 44, spec ruling 6 and §3.3, wireframe v1), in real
--- coordinates: equipment and the model on the left, Stats (with the cloak
--- picker), Effects and Achievements on the right; the professions overview
--- remains on Crafting. Both share the Scout's quiver and Return home, and
--- below them the frame's short inventory view. Both boxes end a gap above
--- the view's Inventory box.
+-- coordinates: equipment, the model and the cloak picker (Round 88) on the
+-- left, Stats, Effects and Achievements on the right; the professions
+-- overview remains on Crafting. Both share the Scout's quiver and Return
+-- home, and below them the frame's short inventory view. Both boxes end a
+-- gap above the view's Inventory box.
 --
 
 local CHARACTER_PAGE = "grug_inventory:character"
@@ -102,11 +107,20 @@ local SLOT_POS = {
 	grug_trinket1 = {8.05, 3.75}, grug_trinket2 = {8.05, 5.1},
 }
 local QUIVER_POS = {0.5, 6.7}
+-- Round 88 (the user): beside a quiver, the Home line moves up onto the
+-- quiver's row, right-aligned to the gear box's inner right edge (where the
+-- Return home button ends) in a box that starts right of the widest quiver
+-- total ("Quiver 500/500"): a name too long for one line wraps inside the
+-- box instead of reaching the total.
+local QUIVER_HOME = {x = 4.1, h = 0.9}
 local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
 local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.1, BOX_BOTTOM - 0.8
--- A 40% larger viewport keeps the figure near the equipment columns' height.
--- Center it between the columns and on their vertical midpoint.
-local MODEL = {x = 2.675, y = 0.285, w = 4.2, h = 6.58}
+-- A 40% larger viewport keeps the figure near the equipment columns' height,
+-- centred between the columns. Since Round 88 (STATS, ruling 8) the cloak
+-- picker sits under it, between the columns, so the figure is lower and the
+-- picker ends above the Scout's quiver row (its rule at QUIVER_POS y - 0.25).
+local MODEL = {x = 2.675, y = 0.285, w = 4.2, h = 5.55}
+local CLOAK = {label_x = 1.7, x = 2.95, y = 5.85, w = 3.9, h = 0.56}
 -- The engine provides mouse rotation; no preview timer or separate input.
 local MODEL_VIEW = "0,130"
 
@@ -149,12 +163,10 @@ for _, slot in ipairs(grug_inventory.equipment_slots) do
 	end
 end
 
-local DAMAGE_REDUCTION_TOOLTIP = "Armor reduction against an enemy of your " ..
-	"level. Higher against lower-level enemies, lower against higher-level ones."
-
 -- The Scout's quiver slot (Round 28 ruling 26): the first cell of the quiver
 -- list with its native stack count, its name and the true arrow total
--- beside it. No opaque cover or item-image overlay captures the slot hover.
+-- beside it, one line on the slot's middle (Round 88). No opaque cover or
+-- item-image overlay captures the slot hover.
 local function quiver_content(player)
 	local inv = player:get_inventory()
 	local total = grug_inventory.quiver_count(player)
@@ -168,8 +180,8 @@ local function quiver_content(player)
 			esc("Quiver — up to " .. grug_inventory.quiver_capacity() ..
 				" arrows. Drag or shift-click arrows in; click to take up to " ..
 				"100. Shots draw from here first.")),
-		("label[%.2f,%.2f;%s]"):format(x + 1.15, y + 0.25,
-			esc("Quiver\n" .. total .. "/" .. grug_inventory.quiver_capacity())),
+		("label[%.2f,%.2f;%s]"):format(x + 1.15, y + 0.5,
+			esc("Quiver " .. total .. "/" .. grug_inventory.quiver_capacity())),
 	}
 	local first = inv:get_stack(grug_inventory.QUIVER_LIST, 1)
 	if first:is_empty() then
@@ -332,88 +344,196 @@ local function gear_content(player, context)
 	context.grug_home_text = home_text(player)
 	if label then
 		local x = SLOT_POS.grug_head[1]
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x, HOME_LABEL_Y,
-			esc("Home: " .. label))
+		local right = GEAR_BOX.x + GEAR_BOX.w - 0.15
+		if grug_inventory.has_quiver(player) then
+			fs[#fs + 1] = ("hypertext[%.2f,%.2f;%.2f,%.2f;;%s]"):format(QUIVER_HOME.x,
+				QUIVER_POS[2] + 0.5 - QUIVER_HOME.h / 2, right - QUIVER_HOME.x, QUIVER_HOME.h,
+				esc(("<global margin=0 valign=middle halign=right color=%s size=%d>%s"):format(
+					grug_core.ui.colors.text, math.floor(16 * grug_core.ui.text_growth(player) + 0.5),
+					ht("Home: " .. label))))
+		else
+			fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x, HOME_LABEL_Y, esc("Home: " .. label))
+		end
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.65;grug_character_home;%s]"):format(
-			x, HOME_BUTTON_Y, GEAR_BOX.x + GEAR_BOX.w - 0.15 - x,
+			x, HOME_BUTTON_Y, right - x,
 			esc(("Return home (%s)"):format(state)))
+	end
+	-- The cloak picker (Round 88: from the Stats mode to under the model, in
+	-- every mode). grug_achievements depends on this mod, so it is read at
+	-- build time.
+	local achievements = rawget(_G, "grug_achievements")
+	if achievements then
+		fs[#fs + 1] = ("label[%.2f,%.2f;Cloak]"):format(CLOAK.label_x, CLOAK.y + CLOAK.h / 2)
+		fs[#fs + 1] = achievements.cloak_dropdown(player, CLOAK.x, CLOAK.y, CLOAK.w, CLOAK.h)
+		fs[#fs + 1] = "tooltip[grug_cloak;" .. esc("Cloaks unlock through achievements.") .. "]"
 	end
 	if notice then fs[#fs + 1] = notice_content(player, notice) end
 	return table.concat(fs)
 end
 
--- The detail column keeps the actual pool/combat values, guild balance,
--- housing status and Stats-only cloak picker. No illustrative browser stats.
-local STAT_X, STAT_Y, STAT_STEP = 10.1, 1.6, 0.5
-local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.25 - STAT_X
-local STAT_CHARS = math.floor(STAT_W / 0.15)
-local CLOAK_Y = BOX_BOTTOM - 1.15
-local function stats_content(player)
-	local class = grug_classes.get_class_def(player)
-	local hp = grug_classes.get_pool_breakdown(player, "hp")
-	local mana = class and class.resource == "mana"
-		and grug_classes.get_pool_breakdown(player, "mana") or nil
-	local armor = grug_core.get_armor_rating_breakdown and
-		grug_core.get_armor_rating_breakdown(player) or {
-			base = grug_core.get_armor_rating(player),
-			result = grug_core.get_armor_rating(player)}
-	local armor_reduction = grug_core.armor_reduction(armor.result,
-		grug_core.get_player_level(player), 0.70) * 100
-	local crit = grug_classes.get_crit_chance(player) * 100
-	local dodge = grug_classes.get_dodge_chance(player) * 100
-	local lines = {
-		("Maximum HP: %d"):format(hp.final),
-		mana and ("Maximum mana: " .. mana.final) or "Maximum rage: 100",
-		"Armor: " .. grug_gear.format_armor(armor.result),
-		("Damage reduction: %.1f%%"):format(armor_reduction),
-		("Crit: %.1f%%"):format(crit),
-		("Dodge: %.1f%%"):format(dodge),
-	}
-	local fs = {}
-	for index, line in ipairs(lines) do
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
-			STAT_Y + (index - 1) * STAT_STEP, esc(line))
+-- The Stats mode (Round 88 STATS, plan ruling 8): a list column of the stats
+-- (name left, value right; a row is a button) and the selected stat's detail
+-- box beside it. The list's foot keeps the Miner's Guild and the Claim Stone
+-- status. The selection is runtime context (the sfinv context) like the
+-- mode, reset to Maximum HP whenever the page opens (on_enter, and at the
+-- window's close, see the page below); never stored.
+local LIST_X, LIST_Y, LIST_W = 10.0, 1.3, 4.35
+local ROW_H, GAP_H = 0.5, 0.15
+local DETAIL = {x = 14.5, y = 1.3, w = 4.85, h = BOX_BOTTOM - 0.15 - 1.3}
+local STAT_FIELD = "grug_stat_"
+local DEFAULT_STAT = "hp"
+local SELECTED_VALUE_COLOR = "#f3e2b8"
+local SOURCE_COLOR, RULE_COLOR = "#c9ccc4", "#8f948c"
+local GAP_COLOR = "#d4b77d26"
+local DETAIL_BG = "#0a1017a8"
+local PLAIN_STEP = 0.4
+
+local function selected_stat(context, sheet)
+	local wanted = context.grug_stat or DEFAULT_STAT
+	for _, entry in ipairs(sheet) do
+		if entry ~= "gap" and entry.id == wanted then return entry end
 	end
-	-- Round 28 ruling 21: the tooltip covers exactly the Damage reduction
-	-- line (a real-coordinate label is centred on its y).
-	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(STAT_X,
-		STAT_Y + 3 * STAT_STEP - STAT_STEP / 2, STAT_W, STAT_STEP,
-		esc(grug_inventory.wrap_text(DAMAGE_REDUCTION_TOOLTIP, 48)))
+	return sheet[1]
+end
+
+-- The number column of the detail: a hypertext line cannot hold two
+-- alignments, so each number is padded on the left with no-break spaces to
+-- the widest number of its section. The client font (Arimo, Arial's
+-- metrics, the same advance in bold) gives a digit two spaces' width; the
+-- pad is exact for digits and within a third of a space otherwise.
+local NBSP = "\194\160"
+local ADVANCE = {["."] = 1, [","] = 1, [" "] = 1, ["%"] = 3.2, ["+"] = 2.1}
+local function advance(text)
+	local width = 0
+	for char in text:gmatch("[%z\1-\127\194-\244][\128-\191]*") do
+		width = width + (ADVANCE[char] or 2)
+	end
+	return width
+end
+local function number_column(rows)
+	local widest = 0
+	for _, row in ipairs(rows) do widest = math.max(widest, advance(row[1])) end
+	return function(text)
+		return NBSP:rep(math.floor(widest - advance(text) + 0.5)) .. ht(text)
+	end
+end
+
+local function detail_markup(entry, growth)
+	local function size(px) return math.floor(px * growth + 0.5) end
+	local colors = grug_core.ui.colors
+	local out = {("<global margin=6 valign=top color=%s size=%d>"):format(colors.text, size(15)),
+		("<style color=%s size=%d>%s</style>"):format(colors.muted, size(13), ht(entry.what)),
+		("<style color=%s size=%d><b>EFFECT</b></style>"):format(colors.accent, size(13))}
+	if entry.effects_note then out[#out + 1] = ht(entry.effects_note) end
+	local pad = number_column(entry.effects)
+	for _, row in ipairs(entry.effects) do
+		out[#out + 1] = ("<b>%s</b>  %s"):format(pad(row[1]), ht(row[2]))
+	end
+	out[#out + 1] = ("<style color=%s size=%d><b>WHERE IT COMES FROM</b></style>"):format(
+		colors.muted, size(12))
+	local rows = {}
+	for _, row in ipairs(entry.sources) do rows[#rows + 1] = row end
+	rows[#rows + 1] = entry.total
+	pad = number_column(rows)
+	for index, row in ipairs(rows) do
+		if index == #rows then
+			out[#out + 1] = ("<style size=%d><b>%s</b>  %s</style>"):format(size(13),
+				pad(row[1]), ht(row[2]))
+		else
+			out[#out + 1] = ("<style color=%s size=%d>%s  </style><style color=%s size=%d>%s</style>")
+				:format(SOURCE_COLOR, size(13), pad(row[1]), colors.muted, size(13), ht(row[2]))
+		end
+	end
+	out[#out + 1] = ("<style color=%s size=%d>%s</style>"):format(RULE_COLOR, size(12), ht(entry.rule))
+	return table.concat(out, "\n")
+end
+
+local function detail_content(entry, growth)
+	local colors = grug_core.ui.colors
+	local d = DETAIL
+	return table.concat({
+		("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(d.x, d.y, d.w, d.h, DETAIL_BG),
+		("style_type[label;font_size=%s]"):format(grug_core.ui.font_size(1.1, growth)),
+		("label[%.2f,%.2f;%s]"):format(d.x + 0.2, d.y + 0.35, esc(entry.name)),
+		("style_type[label;font_size=%s]"):format(grug_core.ui.font_size(nil, growth)),
+		("hypertext[%.2f,%.2f;%.2f,0.7;;%s]"):format(d.x + 2.0, d.y, d.w - 2.15,
+			esc(("<global valign=middle halign=right color=%s size=%d>%s"):format(
+				colors.accent, math.floor(22 * growth + 0.5), ht(entry.value)))),
+		("hypertext[%.2f,%.2f;%.2f,%.2f;;%s]"):format(d.x + 0.05, d.y + 0.7,
+			d.w - 0.1, d.h - 0.75, esc(detail_markup(entry, growth))),
+	})
+end
+
+-- One list row: the name and the value under a clear button, which takes
+-- the hover, the click and an attribute's tooltip (labels and hypertext
+-- drawn after it would take them instead); the navigation textures are
+-- translucent, so the text shows through.
+local function row_content(entry, y, selected, growth)
+	local colors = grug_core.ui.colors
+	local field = STAT_FIELD .. entry.id
+	local fs = {
+		("label[%.2f,%.2f;%s]"):format(LIST_X + 0.2, y + ROW_H / 2,
+			esc(core.colorize(selected and colors.accent or colors.muted, entry.name))),
+		("hypertext[%.2f,%.2f;%.2f,%.2f;;%s]"):format(LIST_X + 1.8, y, LIST_W - 1.95, ROW_H,
+			esc(("<global margin=0 valign=middle halign=right color=%s size=%d>%s"):format(
+				selected and SELECTED_VALUE_COLOR or colors.text,
+				math.floor(16 * growth + 0.5), ht(entry.value)))),
+		grug_core.ui.navigation_style(field, selected, LIST_X, y, LIST_W, ROW_H, true),
+		("button[%.2f,%.2f;%.2f,%.2f;%s;]"):format(LIST_X, y, LIST_W, ROW_H, field),
+	}
+	if entry.tip then
+		fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(entry.tip))
+	end
+	return table.concat(fs)
+end
+
+local function stats_content(player, context)
+	local growth = grug_core.ui.text_growth(player)
+	local sheet = grug_inventory.stat_sheet.sheet(player)
+	local selected = selected_stat(context, sheet)
+	local fs = {}
+	local y = LIST_Y
+	for _, entry in ipairs(sheet) do
+		if entry == "gap" then
+			fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,0.015;%s]"):format(LIST_X + 0.15,
+				y + GAP_H / 2, LIST_W - 0.3, GAP_COLOR)
+			y = y + GAP_H
+		else
+			fs[#fs + 1] = row_content(entry, y, entry == selected, growth)
+			y = y + ROW_H
+		end
+	end
+	fs[#fs + 1] = detail_content(selected, growth)
 	-- The Miner's Guild (Round 58): the own guild's rank and the balance, two
-	-- lines under the stats. grug_guild depends on this mod, so it is read at
+	-- lines under the list. grug_guild depends on this mod, so it is read at
 	-- build time; it re-sends the cached page on every change itself.
-	local next_row = #lines + 0.5
+	fs[#fs + 1] = ("style_type[label;font_size=%s]"):format(grug_core.ui.font_size(0.85, growth))
+	local x, line_y = LIST_X + 0.2, y + 0.3
 	local guild = rawget(_G, "grug_guild")
 	local view = guild and guild.summary(player)
 	if view then
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X, STAT_Y + next_row * STAT_STEP,
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x, line_y,
 			esc(("%s: Rank %d"):format(guild.catalog.UI_NAME, view.rank)))
-		fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(STAT_X,
-			STAT_Y + (next_row - 0.5) * STAT_STEP, STAT_W, 2 * STAT_STEP,
+		fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(LIST_X,
+			line_y - PLAIN_STEP / 2, LIST_W, 2 * PLAIN_STEP,
 			esc("Lifetime reputation " .. guild.format_points(view.lifetime)))
-		fs[#fs + 1] = guild.reputation_formspec(STAT_X, STAT_Y + (next_row + 1) * STAT_STEP,
-			view.balance)
-		next_row = next_row + 2
+		fs[#fs + 1] = guild.reputation_formspec(x, line_y + PLAIN_STEP, view.balance)
+		line_y = line_y + 2 * PLAIN_STEP
 	end
-	-- Claim Stone status (Round 25 ruling 14), wrapped to the column. Neither
-	-- mod depends on the other, so grug_housing is read at build time; it has
-	-- no status until the player has received a stone and keeps the cached
-	-- page current itself.
+	fs[#fs + 1] = ("style_type[label;font_size=%s]"):format(grug_core.ui.font_size(nil, growth))
+	-- Claim Stone status (Round 25 ruling 14), wrapped to the column by a
+	-- read-only textarea. Neither mod depends on the other, so grug_housing
+	-- is read at build time; it has no status until the player has received
+	-- a stone and keeps the cached page current itself.
 	local housing = rawget(_G, "grug_housing")
 	local status = housing and housing.character_status and
 		housing.character_status(player:get_player_name())
 	if status then
-		local text = esc(grug_inventory.wrap_text(status.text, STAT_CHARS))
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
-			STAT_Y + next_row * STAT_STEP,
-			status.color and core.colorize(status.color, text) or text)
-	end
-	-- grug_achievements depends on this mod, so it is read at build time.
-	local achievements = rawget(_G, "grug_achievements")
-	if achievements then
-		fs[#fs + 1] = ("label[%.2f,%.2f;Cloak]"):format(STAT_X, CLOAK_Y - 0.35)
-		fs[#fs + 1] = achievements.cloak_dropdown(player, STAT_X, CLOAK_Y, STAT_W)
-		fs[#fs + 1] = "tooltip[grug_cloak;" .. esc("Cloaks unlock through achievements.") .. "]"
+		local top = line_y - 0.2
+		fs[#fs + 1] = grug_core.ui.prose(LIST_X + 0.05, top, LIST_W - 0.05,
+			DETAIL.y + DETAIL.h - top, status.color and core.colorize(status.color,
+				status.text) or status.text, false, growth,
+			0.85 * growth)
 	end
 	return table.concat(fs)
 end
@@ -545,7 +665,7 @@ local function mode_content(player, context, selected)
 	elseif selected == "achievements" then
 		fs[#fs + 1] = achievements_content(player, context)
 	else
-		fs[#fs + 1] = stats_content(player)
+		fs[#fs + 1] = stats_content(player, context)
 	end
 	return table.concat(fs)
 end
@@ -558,7 +678,26 @@ sfinv.register_page(CHARACTER_PAGE, {
 			mode_content(player, context, selected) .. gear_content(player, context),
 			"short")
 	end,
+	-- Maximum HP is selected whenever the page opens (Round 88 ruling 8):
+	-- entering it from another tab (a mode button re-enters it too) ...
+	on_enter = function(self, player, context)
+		context.grug_stat = nil
+	end,
 	on_player_receive_fields = function(self, player, context, fields)
+		-- ... and closing the window, whose cached form the client shows
+		-- again at the next open: re-sent only when another stat was shown.
+		if fields.quit and context.grug_stat then
+			context.grug_stat = nil
+			sfinv.set_player_inventory_formspec(player, context)
+		end
+		for field in pairs(fields) do
+			local id = type(field) == "string" and field:match("^" .. STAT_FIELD .. "(%w+)$")
+			if id then
+				context.grug_stat = id ~= DEFAULT_STAT and id or nil
+				sfinv.set_player_inventory_formspec(player, context)
+				return true
+			end
+		end
 		local achievements = rawget(_G, "grug_achievements")
 		if achievements then
 			-- A new cloak redraws the character first, then the page, whose

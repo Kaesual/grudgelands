@@ -75,11 +75,11 @@ local SECTIONS = {
 		"",
 		heading("Protected ground"),
 		"• Nobody can dig or place blocks in capitals, start towns and the treeless strip around them (only grass and low plants grow there, so you can see where the protection ends). This applies from 100 blocks below the town up to the sky; deeper down the normal rules apply.",
-		"• In the level 1-30 zones only their own faction may dig and build. Zones of level 31 and above, and everything below y -500, are open to both factions.",
+		"• In the level 1-30 zones only their own faction may build or dig blocks; the other faction may still gather herbs, food and ground plants there. Zones of level 31 and above, and everything below y -500, are open to both factions.",
 	})},
 	{id = "quests", label = "Story & Craft", tooltip = "Quests & Professions", x = 1.3, w = 2.9, text = body({
 		heading("Quests"),
-		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = a new quest in one or two levels. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
+		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = only quests far below your level. A quest you cannot take yet shows no symbol. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
 		"• Story quests have violet symbols and their own \"Story\" heading in the quest lists; the rest are side quests you can take in any order.",
 		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, take it to the person with the yellow ? (often the giver) and press Complete.",
 		"• You can accept a quest from two levels below its level. The list shows only quests you can complete, accept or are doing; a grey line below it names the level at which that giver has more for you.",
