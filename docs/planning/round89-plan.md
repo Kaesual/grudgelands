@@ -1,7 +1,10 @@
 # Round 89 — Shield feedback, home names and the arena's balconies
 
-**Draft, not started.** Release 0.89.0, planned as **compatible** with 0.88.0
-(one one-off box rewrite of the arena's two halls, no map reset). The round
+**Agreed 2026-11-28.** Release 0.89.0, planned as **migrate** from 0.88.0: no
+map reset, but one declared migration step whose online part rewrites the
+arena's two halls in place (the upgrade contract classifies a protected
+composition rewritten inside its unchanged box as migrate, §5.9; the pattern
+of 0.69.0). The round
 shows how long an effect still runs on its icon, draws an active shield as a
 bubble around the player, names the own home in the waypoint list and gives each
 hall of the arena Breach Road a stair to a roofed balcony from which players
@@ -70,7 +73,9 @@ HALLS waits only for the user's go on the draft and for REWRITE's merge.
 - **The hall rewrite** (coordinator default). The pattern of Round 69's camp
   rewrite (`camp_rewrite.lua`, upgrade contract §5.9): once after the load,
   every cell of each hall's template box becomes what the new generation writes
-  there, read back before the pending key goes. The arena is protected for
+  there, read back before the pending key goes. A declared step `0.89.0` of
+  `tools/migrate.py` writes only the world marker; its world handler records the
+  job, as 0.69.0's does. The arena is protected for
   every player, so no built cell has to survive. The two hall waystones keep
   working (the same node on the same cell, its travel state lives with the
   players). A fresh or reset map generates the new halls and never has the key.
@@ -123,8 +128,8 @@ design documents the lanes did not own, the Completion.
 ## 5. Rules
 
 Every lane states its upgrade classification. The planned outcome is
-compatible; REWRITE's job is the declared exception of the upgrade contract
-§5.9. BUBBLE and HALLS are merged only after the user's go on their pictures.
+migrate, because of REWRITE's job alone (upgrade contract §5.9); UI and BUBBLE
+are expected compatible. BUBBLE and HALLS are merged only after the user's go on their pictures.
 No lane changes a shield's numbers, a flag rule or the arena outside the two
 hall boxes.
 
